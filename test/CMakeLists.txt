@@ -1,0 +1,40 @@
+project(krado-test)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+file(GLOB SRCS CONFIGURE_DEPENDS src/*.cpp)
+
+add_executable(${PROJECT_NAME} ${SRCS})
+
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        -DKRADO_UNIT_TESTS_ROOT="${KRADO_UNIT_TESTS_ROOT}"
+)
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PUBLIC
+        ${CMAKE_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/lib/include
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE
+        krado
+        gtest_main
+        gmock_main
+)
+
+add_test(
+    NAME krado-test
+    COMMAND ${PROJECT_NAME}
+)
+if(KRADO_CODE_COVERAGE)
+    set_tests_properties(
+        krado-test
+        PROPERTIES
+            ENVIRONMENT LLVM_PROFILE_FILE=${PROJECT_NAME}.profraw
+    )
+endif()
