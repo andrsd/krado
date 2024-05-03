@@ -20,4 +20,10 @@ target_include_directories(
         ${CMAKE_SOURCE_DIR}/lib/include
 )
 
+target_link_libraries(
+    ${NAME}
+    PRIVATE
+        fmt::fmt
+)
+
 configure_file(include/config.h.in include/krado/config.h)
