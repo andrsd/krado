@@ -16,6 +16,7 @@ target_include_directories(
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib/include>
         $<INSTALL_INTERFACE:include>
+        ${OpenCASCADE_INCLUDE_DIR}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/lib/include
 )
@@ -23,6 +24,7 @@ target_include_directories(
 target_link_libraries(
     ${NAME}
     PRIVATE
+        ${OpenCASCADE_DataExchange_LIBRARIES}
         fmt::fmt
 )
 

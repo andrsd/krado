@@ -1,13 +1,18 @@
 #pragma once
 
+#include "krado/geo/model.h"
 #include <string>
 
 namespace krado {
 
+/// Class for reading STEP files
 class STEPFile {
 public:
-    STEPFile();
-    void load(const std::string & file_name);
+    STEPFile(const std::string & file_name);
+    Model load() const;
+
+private:
+    std::string file_name;
 };
 
 } // namespace krado

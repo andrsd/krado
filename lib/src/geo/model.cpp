@@ -2,6 +2,6 @@
 
 namespace krado {
 
-Model::Model() {}
+Model::Model(const TopoDS_Shape & root_shape) : root_shape(root_shape) {}
 
 } // namespace krado

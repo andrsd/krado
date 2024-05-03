@@ -23,6 +23,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
         krado
+        ${OpenCASCADE_DataExchange_LIBRARIES}
         gtest_main
         gmock_main
 )
