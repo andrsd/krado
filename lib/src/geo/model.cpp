@@ -10,7 +10,7 @@
 
 namespace krado::geo {
 
-Model::Model(const Shape & root_shape) : root_shape(root_shape)
+Model::Model(const Shape & root_shape) : root_shape(root_shape), internal_id_counter(0)
 {
     bind_shape(root_shape);
 }

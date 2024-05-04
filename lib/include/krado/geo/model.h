@@ -10,7 +10,7 @@ class Curve;
 
 class Model {
 public:
-    Model(const Shape & root_shape);
+    explicit Model(const Shape & root_shape);
 
 private:
     void bind_shape(const Shape & shape);

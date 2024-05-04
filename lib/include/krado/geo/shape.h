@@ -6,7 +6,7 @@ namespace krado::geo {
 
 class Shape {
 public:
-    Shape(const TopoDS_Shape & shape);
+    explicit Shape(const TopoDS_Shape & shape);
 
     void clean();
     void heal(double tolerance);

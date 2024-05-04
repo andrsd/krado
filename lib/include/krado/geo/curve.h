@@ -8,7 +8,7 @@ namespace krado::geo {
 
 class Curve {
 public:
-    Curve(const TopoDS_Edge & edge);
+    explicit Curve(const TopoDS_Edge & edge);
 
     /// Get physical location from parametrical position
     ///

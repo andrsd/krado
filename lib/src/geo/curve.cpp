@@ -6,7 +6,7 @@
 
 namespace krado::geo {
 
-Curve::Curve(const TopoDS_Edge & edge) : edge(edge)
+Curve::Curve(const TopoDS_Edge & edge) : edge(edge), first(0), last(0)
 {
     // force orientation of internal/external edges, otherwise reverse will not produce the expected
     // result
