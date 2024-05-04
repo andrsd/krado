@@ -21,6 +21,11 @@ public:
     /// @return Length of the curve
     double length() const;
 
+    /// Get range of the parameter
+    ///
+    /// @return Range as a tuple [lower, upper]
+    std::tuple<double, double> param_range() const;
+
 private:
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;

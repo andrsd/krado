@@ -34,4 +34,10 @@ Curve::length() const
     return this->len;
 }
 
+std::tuple<double, double>
+Curve::param_range() const
+{
+    return { this->first, this->last };
+}
+
 } // namespace krado::geo

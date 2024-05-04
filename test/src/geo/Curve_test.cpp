@@ -38,3 +38,15 @@ TEST(Geo_CurveTest, length)
     geo::Curve curve(make_edge.Edge());
     EXPECT_DOUBLE_EQ(curve.length(), 5.);
 }
+
+TEST(Geo_CurveTest, param_range)
+{
+    gp_Pnt pt1(0, 0, 0);
+    gp_Pnt pt2(3, 4, 0);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+    auto [low, hi] = curve.param_range();
+    EXPECT_DOUBLE_EQ(low, 0.);
+    EXPECT_DOUBLE_EQ(hi, 5.);
+}
