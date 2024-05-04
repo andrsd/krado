@@ -29,3 +29,13 @@ TEST(Geo_CurveTest, point)
     EXPECT_DOUBLE_EQ(pt_half.y, 2.);
     EXPECT_DOUBLE_EQ(pt_half.z, 0.);
 }
+
+TEST(Geo_CurveTest, length)
+{
+    gp_Pnt pt1(0, 0, 0);
+    gp_Pnt pt2(3, 4, 0);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+    EXPECT_DOUBLE_EQ(curve.length(), 5.);
+}

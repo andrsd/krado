@@ -16,10 +16,17 @@ public:
     /// @return Location in 3D space corresponding to the parameterical position
     Point point(double u) const;
 
+    /// Get length of the curve
+    ///
+    /// @return Length of the curve
+    double length() const;
+
 private:
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
     double first, last;
+    /// Curve length
+    double len;
 };
 
 } // namespace krado::geo
