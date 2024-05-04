@@ -17,6 +17,7 @@ target_include_directories(
     PUBLIC
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}/lib/include
+        ${PROJECT_SOURCE_DIR}/src
 )
 
 target_link_libraries(
