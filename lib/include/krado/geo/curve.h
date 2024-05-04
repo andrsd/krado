@@ -1,6 +1,7 @@
 #pragma once
 
 #include "krado/point.h"
+#include "krado/vector.h"
 #include "TopoDS_Edge.hxx"
 #include "Geom_Curve.hxx"
 
@@ -20,6 +21,12 @@ public:
     /// @param u Parameter specifying location [0..<length_of_curve>]
     /// @return Location in 3D space corresponding to the parametrical position
     Point point(double u) const;
+
+    /// Compute first derivative at parameterical position
+    ///
+    /// @param u Parameter specifying location [0..<length_of_curve>]
+    /// @return First derivative
+    Vector d1(double u) const;
 
     /// Get curvature
     ///

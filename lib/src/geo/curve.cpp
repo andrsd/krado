@@ -36,6 +36,16 @@ Curve::point(double u) const
     return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
+Vector
+Curve::d1(double u) const
+{
+    BRepAdaptor_Curve brepc(this->edge);
+    BRepLProp_CLProps prop(brepc, 1, 1e-10);
+    prop.SetParameter(u);
+    gp_Vec d1 = prop.D1();
+    return Vector(d1.X(), d1.Y(), d1.Z());
+}
+
 double
 Curve::curvature(double u) const
 {
