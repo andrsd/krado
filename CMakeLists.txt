@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 include(FetchContent)
+include(CodeCoverage)
 
 set(BuildValues "Release;Debug;RelWithDebInfo;MinSizeRel")
 if(NOT CMAKE_BUILD_TYPE)
