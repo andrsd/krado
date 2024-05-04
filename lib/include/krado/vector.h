@@ -7,6 +7,8 @@ public:
     Vector();
     explicit Vector(double x, double y = 0., double z = 0.);
 
+    double operator()(int idx) const;
+
     double x, y, z;
 };
 
