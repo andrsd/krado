@@ -6,7 +6,7 @@
 using namespace krado;
 namespace fs = std::filesystem;
 
-TEST(ModelTest, load)
+TEST(Geo_ModelTest, load)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
 

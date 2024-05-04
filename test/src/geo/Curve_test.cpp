@@ -6,7 +6,7 @@
 
 using namespace krado;
 
-TEST(CurveTest, point)
+TEST(Geo_CurveTest, point)
 {
     gp_Pnt pt1(0, 0, 0);
     gp_Pnt pt2(3, 4, 0);
@@ -28,5 +28,4 @@ TEST(CurveTest, point)
     EXPECT_DOUBLE_EQ(pt_half.x, 1.5);
     EXPECT_DOUBLE_EQ(pt_half.y, 2.);
     EXPECT_DOUBLE_EQ(pt_half.z, 0.);
-
 }

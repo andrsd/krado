@@ -3,7 +3,7 @@ project(krado-test)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB SRCS CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS})
 
