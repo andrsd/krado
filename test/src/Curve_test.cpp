@@ -1,0 +1,32 @@
+#include "gmock/gmock.h"
+#include "krado/io/step_file.h"
+#include "krado/geo/curve.h"
+#include "Geom_Line.hxx"
+#include "BRepLib_MakeEdge.hxx"
+
+using namespace krado;
+
+TEST(CurveTest, point)
+{
+    gp_Pnt pt1(0, 0, 0);
+    gp_Pnt pt2(3, 4, 0);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+
+    auto pt_start = curve.point(0.);
+    EXPECT_DOUBLE_EQ(pt_start.x, 0.);
+    EXPECT_DOUBLE_EQ(pt_start.y, 0.);
+    EXPECT_DOUBLE_EQ(pt_start.z, 0.);
+
+    auto pt_end = curve.point(5.);
+    EXPECT_DOUBLE_EQ(pt_end.x, 3.);
+    EXPECT_DOUBLE_EQ(pt_end.y, 4.);
+    EXPECT_DOUBLE_EQ(pt_end.z, 0.);
+
+    auto pt_half = curve.point(2.5);
+    EXPECT_DOUBLE_EQ(pt_half.x, 1.5);
+    EXPECT_DOUBLE_EQ(pt_half.y, 2.);
+    EXPECT_DOUBLE_EQ(pt_half.z, 0.);
+
+}

@@ -15,4 +15,11 @@ Curve::Curve(const TopoDS_Edge & edge) : edge(edge)
     this->curve = BRep_Tool::Curve(this->edge, this->first, this->last);
 }
 
+Point
+Curve::point(double u) const
+{
+    gp_Pnt pnt = this->curve->Value(u);
+    return Point(pnt.X(), pnt.Y(), pnt.Z());
+}
+
 } // namespace krado::geo
