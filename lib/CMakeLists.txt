@@ -28,6 +28,7 @@ target_link_libraries(
     PRIVATE
         ${OpenCASCADE_DataExchange_LIBRARIES}
         fmt::fmt
+        Eigen3::Eigen
 )
 
 configure_file(include/config.h.in include/krado/config.h)

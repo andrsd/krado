@@ -25,6 +25,7 @@ if(OpenCASCADE_FOUND)
     if(OpenCASCADE_VERSION VERSION_LESS 7.7.0)
     endif()
 endif()
+find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 
 add_subdirectory(lib)
 add_subdirectory(src)
