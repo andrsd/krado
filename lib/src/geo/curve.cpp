@@ -21,6 +21,12 @@ Curve::Curve(const TopoDS_Edge & edge) : edge(edge), first(0), last(0)
     this->len = props.Mass();
 }
 
+bool
+Curve::is_degenerated() const
+{
+    return BRep_Tool::Degenerated(this->edge);
+}
+
 Point
 Curve::point(double u) const
 {

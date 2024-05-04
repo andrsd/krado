@@ -10,6 +10,11 @@ class Curve {
 public:
     explicit Curve(const TopoDS_Edge & edge);
 
+    /// Check if the edge is degenerated
+    ///
+    /// @return `true` if degenerated, `false` otherwise
+    bool is_degenerated() const;
+
     /// Get physical location from parametrical position
     ///
     /// @param u Parameter specifying location [0..<length_of_curve>]

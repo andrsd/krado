@@ -50,3 +50,13 @@ TEST(Geo_CurveTest, param_range)
     EXPECT_DOUBLE_EQ(low, 0.);
     EXPECT_DOUBLE_EQ(hi, 5.);
 }
+
+TEST(Geo_CurveTest, is_degenerated)
+{
+    gp_Pnt pt1(0, 0, 0);
+    gp_Pnt pt2(3, 4, 0);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+    EXPECT_FALSE(curve.is_degenerated());
+}
