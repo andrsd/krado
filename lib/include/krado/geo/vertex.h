@@ -8,9 +8,13 @@ class Vertex {
 public:
     explicit Vertex(const TopoDS_Vertex & vertex);
 
+    double x() const;
+    double y() const;
+    double z() const;
+
 private:
     TopoDS_Vertex vertex;
-    double x, y, z;
+    double x_coord, y_coord, z_coord;
 };
 
 } // namespace krado::geo
