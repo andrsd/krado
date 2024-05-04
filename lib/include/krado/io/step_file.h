@@ -1,6 +1,6 @@
 #pragma once
 
-#include "krado/geo/model.h"
+#include "krado/geo/shape.h"
 #include <string>
 
 namespace krado {
@@ -9,7 +9,7 @@ namespace krado {
 class STEPFile {
 public:
     STEPFile(const std::string & file_name);
-    Model load() const;
+    Shape load() const;
 
 private:
     std::string file_name;

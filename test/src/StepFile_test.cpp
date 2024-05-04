@@ -11,6 +11,6 @@ TEST(STEPFileTest, load)
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());
-        auto model = file.load();
+        auto shape = file.load();
     });
 }

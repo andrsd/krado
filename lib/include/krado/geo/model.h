@@ -1,15 +1,15 @@
 #pragma once
 
-#include "TopoDS_Shape.hxx"
+#include "krado/geo/shape.h"
 
 namespace krado {
 
 class Model {
 public:
-    Model(const TopoDS_Shape & root_shape);
+    Model(const Shape & root_shape);
 
 private:
-    TopoDS_Shape root_shape;
+    Shape root_shape;
 };
 
 } // namespace krado
