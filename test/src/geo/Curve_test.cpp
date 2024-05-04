@@ -2,6 +2,8 @@
 #include "krado/geo/curve.h"
 #include "Geom_Line.hxx"
 #include "BRepLib_MakeEdge.hxx"
+#include "BRepBuilderAPI_MakeEdge.hxx"
+#include "GC_MakeArcOfCircle.hxx"
 
 using namespace krado;
 
@@ -59,4 +61,29 @@ TEST(Geo_CurveTest, is_degenerated)
     make_edge.Build();
     geo::Curve curve(make_edge.Edge());
     EXPECT_FALSE(curve.is_degenerated());
+}
+
+TEST(Geo_CurveTest, curvature_line)
+{
+    gp_Pnt pt1(0, 0, 0);
+    gp_Pnt pt2(3, 4, 0);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+    EXPECT_DOUBLE_EQ(curve.curvature(0.5), 0.);
+}
+
+TEST(Geo_CurveTest, curvature_arc)
+{
+    gp_Pnt pt1(-1, 0, 0);
+    gp_Pnt pt2(0, 1, 0);
+    gp_Pnt pt3(1, 0, 0);
+    GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
+    BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+    auto [lo, hi] = curve.param_range();
+    EXPECT_DOUBLE_EQ(curve.curvature(lo), 1.);
+    EXPECT_DOUBLE_EQ(curve.curvature((lo + hi) / 2.), 1.);
+    EXPECT_DOUBLE_EQ(curve.curvature(hi), 1.);
 }

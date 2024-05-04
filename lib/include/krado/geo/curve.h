@@ -21,6 +21,12 @@ public:
     /// @return Location in 3D space corresponding to the parametrical position
     Point point(double u) const;
 
+    /// Get curvature
+    ///
+    /// @param u Parameter specifying location [0..<length_of_curve>]
+    /// @return Curvature at location `u`
+    double curvature(double u) const;
+
     /// Get length of the curve
     ///
     /// @return Length of the curve

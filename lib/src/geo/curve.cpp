@@ -2,6 +2,8 @@
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
+#include "BRepLProp_CLProps.hxx"
+#include "BRepAdaptor_Curve.hxx"
 #include "GProp_GProps.hxx"
 
 namespace krado::geo {
@@ -32,6 +34,23 @@ Curve::point(double u) const
 {
     gp_Pnt pnt = this->curve->Value(u);
     return Point(pnt.X(), pnt.Y(), pnt.Z());
+}
+
+double
+Curve::curvature(double u) const
+{
+    if (is_degenerated())
+        return 0.;
+
+    Standard_Real curvature;
+    BRepAdaptor_Curve brepc(this->edge);
+    BRepLProp_CLProps prop(brepc, 2, 1e-15);
+    prop.SetParameter(u);
+    if (!prop.IsTangentDefined())
+        curvature = 0.;
+    else
+        curvature = prop.Curvature();
+    return curvature;
 }
 
 double
