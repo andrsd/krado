@@ -2,7 +2,7 @@
 
 #include "TopoDS_Shape.hxx"
 
-namespace krado {
+namespace krado::geo {
 
 class Shape {
 public:
@@ -11,6 +11,8 @@ public:
     void clean();
     void heal(double tolerance);
     void scale(double scale_factor);
+
+    operator const TopoDS_Shape &() const;
 
 private:
     void remove_degenerated_edges();
@@ -26,4 +28,4 @@ private:
     TopoDS_Shape shape;
 };
 
-} // namespace krado
+} // namespace krado::geo

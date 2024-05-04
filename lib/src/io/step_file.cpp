@@ -7,7 +7,7 @@ namespace krado {
 
 STEPFile::STEPFile(const std::string & file_name) : file_name(file_name) {}
 
-Shape
+geo::Shape
 STEPFile::load() const
 {
     TCollection_AsciiString fname(file_name.c_str());
@@ -21,7 +21,7 @@ STEPFile::load() const
     reader.NbRootsForTransfer();
     reader.TransferRoots();
     auto result = reader.OneShape();
-    return Shape(result);
+    return geo::Shape(result);
 }
 
 } // namespace krado

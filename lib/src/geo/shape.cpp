@@ -21,7 +21,7 @@
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
 
-namespace krado {
+namespace krado::geo {
 
 Shape::Shape(const TopoDS_Shape & shape) : shape(shape) {}
 
@@ -222,4 +222,9 @@ Shape::make_solids(double tolerance)
     }
 }
 
-} // namespace krado
+Shape::operator const TopoDS_Shape &() const
+{
+    return this->shape;
+}
+
+} // namespace krado::geo
