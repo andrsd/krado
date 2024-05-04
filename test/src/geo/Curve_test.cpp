@@ -1,5 +1,4 @@
 #include "gmock/gmock.h"
-#include "krado/io/step_file.h"
 #include "krado/geo/curve.h"
 #include "Geom_Line.hxx"
 #include "BRepLib_MakeEdge.hxx"
