@@ -13,7 +13,7 @@ public:
     /// Get physical location from parametrical position
     ///
     /// @param u Parameter specifying location [0..<length_of_curve>]
-    /// @return Location in 3D space corresponding to the parameterical position
+    /// @return Location in 3D space corresponding to the parametrical position
     Point point(double u) const;
 
     /// Get length of the curve
