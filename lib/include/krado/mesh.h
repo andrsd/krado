@@ -3,7 +3,6 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_point.h"
-#include "krado/line2.h"
 #include <vector>
 
 namespace krado::geo {
