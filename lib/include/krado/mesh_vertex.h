@@ -8,6 +8,9 @@ class MeshVertex {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
 
+    /// Get geometrical vertex associated with this vertex
+    ///
+    /// @return Geometrical vertex associated with this vertex
     const GeomVertex & geom_vertex() const;
 
     /// Get vertex marker

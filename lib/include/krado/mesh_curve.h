@@ -11,6 +11,9 @@ class MeshCurve {
 public:
     MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2);
 
+    /// Get geometrical curve associated with this curve
+    ///
+    /// @return Geometrical curve associated with this curve
     const GeomCurve & geom_curve() const;
 
     /// Get curve marker
