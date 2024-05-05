@@ -6,13 +6,39 @@
 
 using namespace krado;
 
+namespace {
+
+TopoDS_Edge
+build_line(Point pt1, Point pt2)
+{
+    gp_Pnt pnt1(pt1.x, pt1.y, pt1.z);
+    gp_Pnt pnt2(pt2.x, pt2.y, pt2.z);
+    BRepLib_MakeEdge make_edge(pnt1, pnt2);
+    make_edge.Build();
+    return make_edge.Edge();
+}
+
+} // namespace
+
+TEST(MeshCurveTest, api) {
+    auto edge = build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve gcurve(edge);
+
+    MeshVertex v1(gcurve.first_vertex());
+    MeshVertex v2(gcurve.last_vertex());
+    MeshCurve mcurve(gcurve, &v1, &v2);
+
+    EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
+    EXPECT_EQ(mcurve.marker(), 0);
+
+    mcurve.set_marker(234);
+    EXPECT_EQ(mcurve.marker(), 234);
+}
+
 TEST(MeshCurveTest, mesh)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve gcurve(make_edge.Edge());
+    auto edge = build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve gcurve(edge);
     auto gvtx1 = gcurve.first_vertex();
     auto gvtx2 = gcurve.last_vertex();
 
