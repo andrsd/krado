@@ -133,3 +133,22 @@ TEST(Geo_CurveTest, d1_arc)
     EXPECT_NEAR(v_2.y, -1., 1e-10);
     EXPECT_NEAR(v_2.z, 0., 1e-10);
 }
+
+TEST(Geo_CurveTest, vertices)
+{
+    gp_Pnt pt1(1, 2, 3);
+    gp_Pnt pt2(3, 4, 5);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    geo::Curve curve(make_edge.Edge());
+
+    auto first = curve.first_vertex();
+    EXPECT_DOUBLE_EQ(first.x(), 1.);
+    EXPECT_DOUBLE_EQ(first.y(), 2.);
+    EXPECT_DOUBLE_EQ(first.z(), 3.);
+
+    auto last = curve.last_vertex();
+    EXPECT_DOUBLE_EQ(last.x(), 3.);
+    EXPECT_DOUBLE_EQ(last.y(), 4.);
+    EXPECT_DOUBLE_EQ(last.z(), 5.);
+}

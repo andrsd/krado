@@ -2,6 +2,7 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/geo/vertex.h"
 #include "TopoDS_Edge.hxx"
 #include "Geom_Curve.hxx"
 
@@ -43,6 +44,16 @@ public:
     ///
     /// @return Range as a tuple [lower, upper]
     std::tuple<double, double> param_range() const;
+
+    /// Get the first edge vertex
+    ///
+    /// @return First edge vertex
+    Vertex first_vertex() const;
+
+    /// Get the last edge vertex
+    ///
+    /// @return Last edge vertex
+    Vertex last_vertex() const;
 
 private:
     TopoDS_Edge edge;

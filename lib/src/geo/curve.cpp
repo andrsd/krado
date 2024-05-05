@@ -5,6 +5,7 @@
 #include "BRepLProp_CLProps.hxx"
 #include "BRepAdaptor_Curve.hxx"
 #include "GProp_GProps.hxx"
+#include "TopExp.hxx"
 
 namespace krado::geo {
 
@@ -73,6 +74,18 @@ std::tuple<double, double>
 Curve::param_range() const
 {
     return { this->first, this->last };
+}
+
+Vertex
+Curve::first_vertex() const
+{
+    return Vertex(TopExp::FirstVertex(this->edge));
+}
+
+Vertex
+Curve::last_vertex() const
+{
+    return Vertex(TopExp::LastVertex(this->edge));
 }
 
 } // namespace krado::geo
