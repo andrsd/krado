@@ -1,6 +1,5 @@
 #pragma once
 
-#include "krado/scheme1d.h"
 #include "krado/mesh_curve.h"
 
 namespace krado {
