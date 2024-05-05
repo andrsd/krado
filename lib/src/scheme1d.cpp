@@ -1,7 +1,7 @@
 #include "krado/scheme1d.h"
 
-namespace krado::mesh {
+namespace krado {
 
 Scheme1D::Scheme1D() {}
 
-} // namespace krado::mesh
+} // namespace krado

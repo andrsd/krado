@@ -12,14 +12,14 @@ TEST(MeshCurveTest, mesh)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve gcurve(make_edge.Edge());
+    GeomCurve gcurve(make_edge.Edge());
     auto gvtx1 = gcurve.first_vertex();
     auto gvtx2 = gcurve.last_vertex();
 
-    mesh::MeshVertex v1(gvtx1);
-    mesh::MeshVertex v2(gvtx2);
-    mesh::MeshCurve mcurve(gcurve, &v1, &v2);
+    MeshVertex v1(gvtx1);
+    MeshVertex v2(gvtx2);
+    MeshCurve mcurve(gcurve, &v1, &v2);
 
-    mesh::Equal equal(4);
+    Equal equal(4);
     equal.mesh_curve(mcurve);
 }

@@ -2,16 +2,16 @@
 
 #include "krado/geom_vertex.h"
 
-namespace krado::mesh {
+namespace krado {
 
 class MeshVertex {
 public:
-    MeshVertex(const geo::GeomVertex & geom_vertex);
+    MeshVertex(const GeomVertex & geom_vertex);
 
-    const geo::GeomVertex & geom_vertex() const;
+    const GeomVertex & geom_vertex() const;
 
 private:
-    const geo::GeomVertex & gvtx;
+    const GeomVertex & gvtx;
 };
 
-} // namespace krado::mesh
+} // namespace krado

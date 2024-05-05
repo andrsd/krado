@@ -1,6 +1,6 @@
 #pragma once
 
-namespace krado::mesh {
+namespace krado {
 
 class MeshPoint {
 public:
@@ -9,4 +9,4 @@ public:
     double x, y, z;
 };
 
-} // namespace krado::mesh
+} // namespace krado

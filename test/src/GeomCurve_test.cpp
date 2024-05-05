@@ -13,7 +13,7 @@ TEST(GeomCurveTest, point)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
 
     auto pt_start = curve.point(0.);
     EXPECT_DOUBLE_EQ(pt_start.x, 0.);
@@ -37,7 +37,7 @@ TEST(GeomCurveTest, length)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     EXPECT_DOUBLE_EQ(curve.length(), 5.);
 }
 
@@ -47,7 +47,7 @@ TEST(GeomCurveTest, param_range)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     auto [low, hi] = curve.param_range();
     EXPECT_DOUBLE_EQ(low, 0.);
     EXPECT_DOUBLE_EQ(hi, 5.);
@@ -59,7 +59,7 @@ TEST(GeomCurveTest, is_degenerated)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     EXPECT_FALSE(curve.is_degenerated());
 }
 
@@ -69,7 +69,7 @@ TEST(GeomCurveTest, curvature_line)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     EXPECT_DOUBLE_EQ(curve.curvature(0.5), 0.);
 }
 
@@ -81,7 +81,7 @@ TEST(GeomCurveTest, curvature_arc)
     GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
     BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     auto [lo, hi] = curve.param_range();
     EXPECT_DOUBLE_EQ(curve.curvature(lo), 1.);
     EXPECT_DOUBLE_EQ(curve.curvature((lo + hi) / 2.), 1.);
@@ -94,7 +94,7 @@ TEST(GeomCurveTest, d1_line)
     gp_Pnt pt2(3, 4, 0);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
 
     auto v_0 = curve.d1(0.);
     EXPECT_DOUBLE_EQ(v_0.x, 0.6);
@@ -115,7 +115,7 @@ TEST(GeomCurveTest, d1_arc)
     GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
     BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
     auto [lo, hi] = curve.param_range();
 
     auto v_0 = curve.d1(lo);
@@ -140,7 +140,7 @@ TEST(GeomCurveTest, vertices)
     gp_Pnt pt2(3, 4, 5);
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
-    geo::GeomCurve curve(make_edge.Edge());
+    GeomCurve curve(make_edge.Edge());
 
     auto first = curve.first_vertex();
     EXPECT_DOUBLE_EQ(first.x(), 1.);

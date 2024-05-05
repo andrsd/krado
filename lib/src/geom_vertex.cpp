@@ -1,7 +1,7 @@
 #include "krado/geom_vertex.h"
 #include "BRep_Tool.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : vertex(vertex)
 {
@@ -34,4 +34,4 @@ GeomVertex::operator const TopoDS_Shape &() const
     return this->vertex;
 }
 
-} // namespace krado::geo
+} // namespace krado

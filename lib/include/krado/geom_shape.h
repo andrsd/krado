@@ -2,7 +2,7 @@
 
 #include "TopoDS_Shape.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 class GeomShape {
 public:
@@ -28,4 +28,4 @@ private:
     TopoDS_Shape shape;
 };
 
-} // namespace krado::geo
+} // namespace krado

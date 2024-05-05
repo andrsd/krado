@@ -6,7 +6,7 @@
 #include "TopoDS_Edge.hxx"
 #include "Geom_Curve.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 class Model;
 
@@ -67,4 +67,4 @@ private:
     double len;
 };
 
-} // namespace krado::geo
+} // namespace krado

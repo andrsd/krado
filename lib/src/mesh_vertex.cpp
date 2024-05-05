@@ -1,13 +1,13 @@
 #include "krado/mesh_vertex.h"
 
-namespace krado::mesh {
+namespace krado {
 
-MeshVertex::MeshVertex(const geo::GeomVertex & geom_vertex) : gvtx(geom_vertex) {}
+MeshVertex::MeshVertex(const GeomVertex & geom_vertex) : gvtx(geom_vertex) {}
 
-const geo::GeomVertex &
+const GeomVertex &
 MeshVertex::geom_vertex() const
 {
     return this->gvtx;
 }
 
-} // namespace krado::mesh
+} // namespace krado

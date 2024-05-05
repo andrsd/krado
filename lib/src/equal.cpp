@@ -1,15 +1,12 @@
 #include "krado/equal.h"
 #include "krado/exception.h"
 
-namespace krado::mesh {
+namespace krado {
 
-Equal::Equal(int n_intervals) :
-    n_intervals(n_intervals)
-{
-}
+Equal::Equal(int n_intervals) : n_intervals(n_intervals) {}
 
 void
-Equal::mesh_curve(const mesh::MeshCurve & mcurve)
+Equal::mesh_curve(const MeshCurve & mcurve)
 {
     auto gcurve = mcurve.geom_curve();
     auto [lo, hi] = gcurve.param_range();
@@ -63,4 +60,4 @@ Equal::solve(const Eigen::SparseMatrix<double> & A, const Eigen::VectorXd & b)
         throw Exception("LU decomposition failed");
 }
 
-} // namespace krado::mesh
+} // namespace krado

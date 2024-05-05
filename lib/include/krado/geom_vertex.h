@@ -2,7 +2,7 @@
 
 #include "TopoDS_Vertex.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 class Model;
 
@@ -21,4 +21,4 @@ private:
     double x_coord, y_coord, z_coord;
 };
 
-} // namespace krado::geo
+} // namespace krado

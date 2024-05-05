@@ -9,7 +9,7 @@
 #include "TopoDS_Face.hxx"
 #include "TopoDS_Solid.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 Model::Model(const GeomShape & root_shape) : root_shape(root_shape), internal_id_counter(0)
 {
@@ -130,4 +130,4 @@ Model::get_next_id()
     return this->internal_id_counter;
 }
 
-} // namespace krado::geo
+} // namespace krado

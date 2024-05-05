@@ -5,15 +5,13 @@
 #include "krado/mesh_point.h"
 #include <vector>
 
-namespace krado::geo {
-class Model;
-}
+namespace krado {
 
-namespace krado::mesh {
+class Model;
 
 class Mesh {
 public:
-    Mesh(const geo::Model & model);
+    Mesh(const Model & model);
 
     /// Vertex
     const MeshVertex & vertex(int id) const;
@@ -28,10 +26,10 @@ public:
     const std::vector<MeshCurve> & curves() const;
 
 private:
-    void initialize(const geo::Model & model);
+    void initialize(const Model & model);
 
     std::vector<MeshVertex> vtxs;
     std::vector<MeshCurve> crvs;
 };
 
-} // namespace krado::mesh
+} // namespace krado

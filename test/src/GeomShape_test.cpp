@@ -32,10 +32,10 @@ TEST(GeomShapeTest, scale) {
     make_vtx.Build();
     auto vtx = make_vtx.Vertex();
 
-    geo::GeomShape sh(vtx);
+    GeomShape sh(vtx);
     sh.scale(0.5);
 
-    geo::GeomVertex v(TopoDS::Vertex(sh));
+    GeomVertex v(TopoDS::Vertex(sh));
     EXPECT_DOUBLE_EQ(v.x(), 0.5);
     EXPECT_DOUBLE_EQ(v.y(), 1.);
     EXPECT_DOUBLE_EQ(v.z(), 1.5);

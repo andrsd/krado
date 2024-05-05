@@ -6,7 +6,7 @@
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
 
-namespace krado::geo {
+namespace krado {
 
 class Model {
 public:
@@ -56,4 +56,4 @@ private:
     int internal_id_counter;
 };
 
-} // namespace krado::geo
+} // namespace krado

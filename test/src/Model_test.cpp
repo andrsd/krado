@@ -13,7 +13,7 @@ TEST(ModelTest, load)
 
     STEPFile file(input_file.string());
     auto shape = file.load();
-    geo::Model model(shape);
+    Model model(shape);
 
     auto v1 = model.vertex(1);
     EXPECT_DOUBLE_EQ(v1.x(), 0.);

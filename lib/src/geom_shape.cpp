@@ -21,7 +21,7 @@
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
 
-namespace krado::geo {
+namespace krado {
 
 GeomShape::GeomShape(const TopoDS_Shape & shape) : shape(shape) {}
 
@@ -227,4 +227,4 @@ GeomShape::operator const TopoDS_Shape &() const
     return this->shape;
 }
 
-} // namespace krado::geo
+} // namespace krado

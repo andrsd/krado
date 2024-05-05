@@ -11,7 +11,7 @@ TEST(GeomVertexTest, ctor)
     make_vtx.Build();
     auto vtx = make_vtx.Vertex();
 
-    geo::GeomVertex v(vtx);
+    GeomVertex v(vtx);
     EXPECT_DOUBLE_EQ(v.x(), 1.);
     EXPECT_DOUBLE_EQ(v.y(), 2.);
     EXPECT_DOUBLE_EQ(v.z(), 3.);

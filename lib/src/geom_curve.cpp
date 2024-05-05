@@ -7,12 +7,9 @@
 #include "GProp_GProps.hxx"
 #include "TopExp.hxx"
 
-namespace krado::geo {
+namespace krado {
 
-GeomCurve::GeomCurve(const TopoDS_Edge & edge) :
-    edge(edge),
-    first(0),
-    last(0)
+GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), first(0), last(0)
 {
     // force orientation of internal/external edges, otherwise reverse will not produce the expected
     // result
@@ -96,4 +93,4 @@ GeomCurve::operator const TopoDS_Shape &() const
     return this->edge;
 }
 
-} // namespace krado::geo
+} // namespace krado

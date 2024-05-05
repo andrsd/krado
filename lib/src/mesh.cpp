@@ -1,9 +1,9 @@
 #include "krado/mesh.h"
 #include "krado/model.h"
 
-namespace krado::mesh {
+namespace krado {
 
-Mesh::Mesh(const geo::Model & model)
+Mesh::Mesh(const Model & model)
 {
     initialize(model);
 }
@@ -33,7 +33,7 @@ Mesh::curves() const
 }
 
 void
-Mesh::initialize(const geo::Model & model)
+Mesh::initialize(const Model & model)
 {
     for (auto & [id, gvtx] : model.vertices()) {
         MeshVertex mvtx(gvtx);
@@ -51,4 +51,4 @@ Mesh::initialize(const geo::Model & model)
     }
 }
 
-} // namespace krado::mesh
+} // namespace krado
