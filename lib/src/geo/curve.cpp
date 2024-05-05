@@ -88,4 +88,9 @@ Curve::last_vertex() const
     return Vertex(TopExp::LastVertex(this->edge));
 }
 
+Curve::operator const TopoDS_Shape &() const
+{
+    return this->edge;
+}
+
 } // namespace krado::geo

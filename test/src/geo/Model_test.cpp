@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/io/step_file.h"
 #include "krado/geo/model.h"
+#include "krado/exception.h"
 #include <filesystem>
 
 using namespace krado;
@@ -13,4 +14,21 @@ TEST(Geo_ModelTest, load)
     STEPFile file(input_file.string());
     auto shape = file.load();
     geo::Model model(shape);
+
+    auto v1 = model.vertex(1);
+    EXPECT_DOUBLE_EQ(v1.x(), 0.);
+    EXPECT_DOUBLE_EQ(v1.y(), 0.);
+    EXPECT_DOUBLE_EQ(v1.z(), 0.);
+
+    auto v2 = model.vertex(2);
+    EXPECT_DOUBLE_EQ(v2.x(), 1.);
+    EXPECT_DOUBLE_EQ(v2.y(), 0.);
+    EXPECT_DOUBLE_EQ(v2.z(), 0.);
+
+    auto curve = model.curve(3);
+    EXPECT_EQ(model.vertex_id(curve.first_vertex()), 1);
+    EXPECT_EQ(model.vertex_id(curve.last_vertex()), 2);
+    EXPECT_EQ(model.curve_id(curve), 3);
+
+    EXPECT_THROW({model.vertex(0);}, Exception);
 }

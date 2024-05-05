@@ -55,6 +55,8 @@ public:
     /// @return Last edge vertex
     Vertex last_vertex() const;
 
+    operator const TopoDS_Shape &() const;
+
 private:
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
