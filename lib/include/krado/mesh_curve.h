@@ -5,8 +5,6 @@
 
 namespace krado {
 
-class Mesh;
-
 class MeshCurve {
 public:
     MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2);
