@@ -9,7 +9,7 @@ class Equal : public Scheme1D {
 public:
     Equal(int n_intervals);
 
-    void mesh_curve(const MeshCurve & mcurve) override;
+    void mesh_curve(MeshCurve & mcurve) override;
 
 private:
     Eigen::SparseMatrix<double> build_matrix();

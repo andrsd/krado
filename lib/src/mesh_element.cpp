@@ -4,7 +4,7 @@ namespace krado {
 
 MeshElement::MeshElement(Type type, const std::vector<int> vtx_ids) :
     elem_type(type),
-    vertex_id(vtx_ids)
+    vtx_id(vtx_ids)
 {
 }
 
@@ -17,7 +17,13 @@ MeshElement::type() const
 int
 MeshElement::num_vertices() const
 {
-    return this->vertex_id.size();
+    return this->vtx_id.size();
+}
+
+int
+MeshElement::vertex_id(int idx) const
+{
+    return this->vtx_id[idx];
 }
 
 MeshElement

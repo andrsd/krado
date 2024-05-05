@@ -1,18 +1,33 @@
 #include "krado/equal.h"
 #include "krado/exception.h"
+#include "krado/mesh_curve_vertex.h"
 
 namespace krado {
 
 Equal::Equal(int n_intervals) : n_intervals(n_intervals) {}
 
 void
-Equal::mesh_curve(const MeshCurve & mcurve)
+Equal::mesh_curve(MeshCurve & mcurve)
 {
-    auto gcurve = mcurve.geom_curve();
+    auto & gcurve = mcurve.geom_curve();
     auto [lo, hi] = gcurve.param_range();
     auto A = build_matrix();
     auto b = build_rhs(lo, hi);
     auto u = solve(A, b);
+
+    for (int i = 1; i < this->n_intervals; i++) {
+        MeshCurveVertex curve_vert(gcurve, u(i));
+        mcurve.add_curve_vertex(curve_vert);
+    }
+    if (this->n_intervals > 1) {
+        mcurve.add_curve_segment(MeshCurve::FIRST_VERTEX, 0);
+        for (int i = 1; i < this->n_intervals - 1; i++)
+            mcurve.add_curve_segment(i - 1, i);
+        mcurve.add_curve_segment(this->n_intervals - 2, MeshCurve::LAST_VERTEX);
+    }
+    else {
+        mcurve.add_curve_segment(MeshCurve::FIRST_VERTEX, MeshCurve::LAST_VERTEX);
+    }
 }
 
 Eigen::SparseMatrix<double>

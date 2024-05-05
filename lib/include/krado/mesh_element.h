@@ -20,9 +20,15 @@ public:
     /// @return Number of vertices
     int num_vertices() const;
 
+    /// Get vertex ID fom local index
+    ///
+    /// @param idx Local vertex index
+    /// @return Vertex ID
+    int vertex_id(int idx) const;
+
 private:
     Type elem_type;
-    std::vector<int> vertex_id;
+    std::vector<int> vtx_id;
 
 public:
     static MeshElement Line2(int v1, int v2);

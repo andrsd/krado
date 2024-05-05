@@ -10,7 +10,7 @@ class Scheme1D {
 public:
     Scheme1D();
 
-    virtual void mesh_curve(const MeshCurve & mcurve) = 0;
+    virtual void mesh_curve(MeshCurve & mcurve) = 0;
 };
 
 } // namespace krado
