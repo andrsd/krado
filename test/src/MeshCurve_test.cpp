@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
+#include "krado/exception.h"
 #include "krado/equal.h"
 #include "BRepLib_MakeEdge.hxx"
 
@@ -33,6 +34,13 @@ TEST(MeshCurveTest, api) {
 
     mcurve.set_marker(234);
     EXPECT_EQ(mcurve.marker(), 234);
+
+    auto & vtx_first = mcurve.vertex(0);
+    EXPECT_EQ(&vtx_first, &v1);
+    auto & vtx_last = mcurve.vertex(1);
+    EXPECT_EQ(&vtx_last, &v2);
+
+    EXPECT_THROW({mcurve.vertex(100);}, Exception);
 }
 
 TEST(MeshCurveTest, mesh)
