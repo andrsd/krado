@@ -6,6 +6,7 @@
 #include "krado/geom_surface.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
+#include <vector>
 
 namespace krado {
 
@@ -16,7 +17,7 @@ public:
     /// Get model vertices
     ///
     /// @return Vertices
-    const std::map<int, GeomVertex> & vertices() const;
+    const std::vector<GeomVertex> & vertices() const;
 
     /// Get vertex with specified ID
     ///
@@ -33,7 +34,7 @@ public:
     /// Get model curves
     ///
     /// @return Curves
-    const std::map<int, GeomCurve> & curves() const;
+    const std::vector<GeomCurve> & curves() const;
 
     /// Get curve with specified ID
     ///
@@ -50,7 +51,7 @@ public:
     /// Get model surfaces
     ///
     /// @return Surfaces
-    const std::map<int, GeomSurface> & surfaces() const;
+    const std::vector<GeomSurface> & surfaces() const;
 
 private:
     void bind_shape(const GeomShape & shape);
@@ -62,9 +63,19 @@ private:
     int get_next_id();
 
     GeomShape root_shape;
-    std::map<int, GeomVertex> vtxs;
-    std::map<int, GeomCurve> crvs;
-    std::map<int, GeomSurface> srfs;
+
+    std::vector<GeomVertex> vtxs;
+    /// Shape ID -> index into `vtxs`
+    std::map<int, int> vtx_index;
+
+    std::vector<GeomCurve> crvs;
+    /// Shape ID -> index into `crvs`
+    std::map<int, int> crv_index;
+
+    std::vector<GeomSurface> srfs;
+    /// Shape ID -> index into `srfs`
+    std::map<int, int> srf_index;
+
     TopTools_DataMapOfShapeInteger shape_id;
     int internal_id_counter;
 };

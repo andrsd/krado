@@ -35,12 +35,12 @@ Mesh::curves() const
 void
 Mesh::initialize(const Model & model)
 {
-    for (auto & [id, gvtx] : model.vertices()) {
+    for (auto & gvtx : model.vertices()) {
         MeshVertex mvtx(gvtx);
         this->vtxs.emplace_back(mvtx);
     }
 
-    for (auto & [id, geom_curve] : model.curves()) {
+    for (auto & geom_curve : model.curves()) {
         auto id1 = model.vertex_id(geom_curve.first_vertex());
         auto id2 = model.vertex_id(geom_curve.last_vertex());
         auto v1 = vertex(id1);
