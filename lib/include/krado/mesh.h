@@ -2,6 +2,7 @@
 
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
+#include "krado/mesh_surface.h"
 #include "krado/mesh_point.h"
 #include <vector>
 
@@ -25,11 +26,18 @@ public:
     /// Curves
     const std::vector<MeshCurve> & curves() const;
 
+    /// Surface
+    const MeshSurface & surface(int id) const;
+
+    /// Surfaces
+    const std::vector<MeshSurface> & surfaces() const;
+
 private:
     void initialize(const Model & model);
 
     std::vector<MeshVertex> vtxs;
     std::vector<MeshCurve> crvs;
+    std::vector<MeshSurface> surfs;
 };
 
 } // namespace krado

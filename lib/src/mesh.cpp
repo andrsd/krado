@@ -32,6 +32,18 @@ Mesh::curves() const
     return this->crvs;
 }
 
+const MeshSurface &
+Mesh::surface(int id) const
+{
+    return this->surfs[0];
+}
+
+const std::vector<MeshSurface> &
+Mesh::surfaces() const
+{
+    return this->surfs;
+}
+
 void
 Mesh::initialize(const Model & model)
 {
@@ -48,6 +60,11 @@ Mesh::initialize(const Model & model)
 
         MeshCurve mesh_crv(geom_curve, &v1, &v2);
         this->crvs.emplace_back(mesh_crv);
+    }
+
+    for (auto & geom_surface : model.surfaces()) {
+        MeshSurface mesh_surf(geom_surface);
+        this->surfs.emplace_back(mesh_surf);
     }
 }
 
