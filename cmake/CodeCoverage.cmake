@@ -1,3 +1,5 @@
+if (${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME})
+
 # Code coverage
 
 option(KRADO_CODE_COVERAGE "Builds targets with code coverage instrumentation" OFF)
@@ -173,5 +175,7 @@ else()
 
     function(add_test_with_coverage)
     endfunction()
+
+endif()
 
 endif()

@@ -1,0 +1,3 @@
+[submodule "contrib/triangulo"]
+	path = contrib/triangulo
+	url = git@github.com:andrsd/triangulo

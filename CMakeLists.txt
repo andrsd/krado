@@ -27,6 +27,10 @@ if(OpenCASCADE_FOUND)
 endif()
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 
+# triangulo
+set(TRIANGULO_BUILD_APP NO)
+add_subdirectory(contrib/triangulo)
+
 add_subdirectory(lib)
 add_subdirectory(src)
 

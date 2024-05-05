@@ -29,6 +29,7 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
         fmt::fmt
         Eigen3::Eigen
+        triangulo
 )
 
 configure_file(include/config.h.in include/krado/config.h)
