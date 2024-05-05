@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 namespace krado {
 
 class Vector {
@@ -13,3 +15,10 @@ public:
 };
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::Vector & vector)
+{
+    stream << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
+    return stream;
+}
