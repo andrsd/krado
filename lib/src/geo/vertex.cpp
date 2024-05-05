@@ -29,4 +29,9 @@ Vertex::z() const
     return this->z_coord;
 }
 
+Vertex::operator const TopoDS_Shape &() const
+{
+    return this->vertex;
+}
+
 } // namespace krado::geo

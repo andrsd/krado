@@ -12,6 +12,8 @@ public:
     double y() const;
     double z() const;
 
+    operator const TopoDS_Shape &() const;
+
 private:
     TopoDS_Vertex vertex;
     double x_coord, y_coord, z_coord;
