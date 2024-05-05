@@ -12,6 +12,9 @@ class Model {
 public:
     explicit Model(const GeomShape & root_shape);
 
+    /// Get model vertices
+    ///
+    /// @return Vertices
     const std::map<int, GeomVertex> & vertices() const;
 
     /// Get vertex with specified ID
@@ -26,6 +29,9 @@ public:
     /// @return Vertex ID
     int vertex_id(const GeomVertex & vertex) const;
 
+    /// Get model curves
+    ///
+    /// @return Curves
     const std::map<int, GeomCurve> & curves() const;
 
     /// Get curve with specified ID

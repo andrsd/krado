@@ -1,6 +1,4 @@
 #include "krado/model.h"
-#include "krado/geom_vertex.h"
-#include "krado/geom_curve.h"
 #include "krado/exception.h"
 #include "TopExp_Explorer.hxx"
 #include "TopoDS.hxx"
@@ -105,9 +103,11 @@ Model::bind_edges(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
-        auto id = get_next_id();
-        this->crvs.emplace(id, GeomCurve(edge));
-        this->shape_id.Bind(edge, id);
+        if (!this->shape_id.IsBound(edge)) {
+            auto id = get_next_id();
+            this->crvs.emplace(id, GeomCurve(edge));
+            this->shape_id.Bind(edge, id);
+        }
     }
 }
 
@@ -117,9 +117,11 @@ Model::bind_vertices(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
-        auto id = get_next_id();
-        this->vtxs.emplace(id, GeomVertex(vertex));
-        this->shape_id.Bind(vertex, id);
+        if (!this->shape_id.IsBound(vertex)) {
+            auto id = get_next_id();
+            this->vtxs.emplace(id, GeomVertex(vertex));
+            this->shape_id.Bind(vertex, id);
+        }
     }
 }
 
