@@ -53,6 +53,18 @@ public:
     /// @return Surfaces
     const std::vector<GeomSurface> & surfaces() const;
 
+    /// Get surface with specified ID
+    ///
+    /// @param id Surface ID
+    /// @return Surface with specified ID
+    const GeomSurface & surface(int id) const;
+
+    /// Get surface ID
+    ///
+    /// @param surface Surface
+    /// @return Surface ID
+    int surface_id(const GeomSurface & surface) const;
+
 private:
     void bind_shape(const GeomShape & shape);
     void bind_vertices(const GeomShape & shape);

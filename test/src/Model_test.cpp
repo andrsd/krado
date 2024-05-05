@@ -30,7 +30,7 @@ TEST(ModelTest, load)
     EXPECT_EQ(model.vertex_id(curve.last_vertex()), 2);
     EXPECT_EQ(model.curve_id(curve), 3);
 
-    EXPECT_THROW({model.vertex(0);}, Exception);
+    EXPECT_THROW({ model.vertex(0); }, Exception);
 }
 
 TEST(ModelTest, load_quad)
@@ -42,5 +42,9 @@ TEST(ModelTest, load_quad)
     Model model(shape);
     EXPECT_EQ(model.vertices().size(), 4);
     EXPECT_EQ(model.curves().size(), 4);
+
     EXPECT_EQ(model.surfaces().size(), 1);
+    auto surface = model.surface(9);
+    EXPECT_EQ(model.surface_id(surface), 9);
+    EXPECT_THROW({ model.surface(1000); }, Exception);
 }

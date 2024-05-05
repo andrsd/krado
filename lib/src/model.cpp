@@ -78,6 +78,29 @@ Model::surfaces() const
     return this->srfs;
 }
 
+const GeomSurface &
+Model::surface(int id) const
+{
+    try {
+        auto index = this->srf_index.at(id);
+        return this->srfs.at(index);
+    }
+    catch (std::out_of_range & e) {
+        throw Exception("No surface with id {}", id);
+    }
+}
+
+int
+Model::surface_id(const GeomSurface & surface) const
+{
+    try {
+        return this->shape_id.Find(surface);
+    }
+    catch (...) {
+        throw Exception("No ID for surface");
+    }
+}
+
 void
 Model::bind_shape(const GeomShape & shape)
 {
