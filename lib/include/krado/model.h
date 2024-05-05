@@ -3,6 +3,7 @@
 #include "krado/geom_shape.h"
 #include "krado/geom_vertex.h"
 #include "krado/geom_curve.h"
+#include "krado/geom_surface.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
 
@@ -46,6 +47,11 @@ public:
     /// @return Curve ID
     int curve_id(const GeomCurve & curve) const;
 
+    /// Get model surfaces
+    ///
+    /// @return Surfaces
+    const std::map<int, GeomSurface> & surfaces() const;
+
 private:
     void bind_shape(const GeomShape & shape);
     void bind_vertices(const GeomShape & shape);
@@ -58,6 +64,7 @@ private:
     GeomShape root_shape;
     std::map<int, GeomVertex> vtxs;
     std::map<int, GeomCurve> crvs;
+    std::map<int, GeomSurface> srfs;
     TopTools_DataMapOfShapeInteger shape_id;
     int internal_id_counter;
 };

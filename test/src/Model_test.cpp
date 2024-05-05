@@ -32,3 +32,15 @@ TEST(ModelTest, load)
 
     EXPECT_THROW({model.vertex(0);}, Exception);
 }
+
+TEST(ModelTest, load_quad)
+{
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
+
+    STEPFile file(input_file.string());
+    auto shape = file.load();
+    Model model(shape);
+    EXPECT_EQ(model.vertices().size(), 4);
+    EXPECT_EQ(model.curves().size(), 4);
+    EXPECT_EQ(model.surfaces().size(), 1);
+}

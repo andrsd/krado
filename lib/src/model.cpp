@@ -70,6 +70,12 @@ Model::curve_id(const GeomCurve & curve) const
     }
 }
 
+const std::map<int, GeomSurface> &
+Model::surfaces() const
+{
+    return this->srfs;
+}
+
 void
 Model::bind_shape(const GeomShape & shape)
 {
@@ -94,6 +100,11 @@ Model::bind_faces(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
+        if (!this->shape_id.IsBound(face)) {
+            auto id = get_next_id();
+            this->srfs.emplace(id, GeomSurface(face));
+            this->shape_id.Bind(face, id);
+        }
     }
 }
 
