@@ -68,7 +68,7 @@ Model::curve_id(const GeomCurve & curve) const
         return this->shape_id.Find(curve);
     }
     catch (...) {
-        throw Exception("No ID for vertex");
+        throw Exception("No ID for curve");
     }
 }
 
