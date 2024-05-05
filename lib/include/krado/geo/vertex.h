@@ -4,6 +4,8 @@
 
 namespace krado::geo {
 
+class Model;
+
 class Vertex {
 public:
     explicit Vertex(const TopoDS_Vertex & vertex);

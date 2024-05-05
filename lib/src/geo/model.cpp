@@ -16,6 +16,12 @@ Model::Model(const Shape & root_shape) : root_shape(root_shape), internal_id_cou
     bind_shape(root_shape);
 }
 
+const std::map<int, Vertex> &
+Model::vertices() const
+{
+    return this->vtxs;
+}
+
 const Vertex &
 Model::vertex(int id) const
 {
@@ -36,6 +42,12 @@ Model::vertex_id(const Vertex & vertex) const
     catch (...) {
         throw Exception("No ID for vertex");
     }
+}
+
+const std::map<int, Curve> &
+Model::curves() const
+{
+    return this->crvs;
 }
 
 const Curve &

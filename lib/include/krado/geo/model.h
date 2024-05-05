@@ -12,6 +12,8 @@ class Model {
 public:
     explicit Model(const Shape & root_shape);
 
+    const std::map<int, Vertex> & vertices() const;
+
     /// Get vertex with specified ID
     ///
     /// @param id Vertex id
@@ -23,6 +25,8 @@ public:
     /// @param vertex Vertex
     /// @return Vertex ID
     int vertex_id(const Vertex & vertex) const;
+
+    const std::map<int, Curve> & curves() const;
 
     /// Get curve with specified ID
     ///

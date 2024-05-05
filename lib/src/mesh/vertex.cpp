@@ -2,6 +2,12 @@
 
 namespace krado::mesh {
 
-Vertex::Vertex() {}
+Vertex::Vertex(const geo::Vertex & geom_vertex) : gvtx(geom_vertex) {}
 
-} // namespace krado
+const geo::Vertex &
+Vertex::geom_vertex() const
+{
+    return this->gvtx;
+}
+
+} // namespace krado::mesh

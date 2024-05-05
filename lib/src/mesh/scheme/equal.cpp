@@ -8,19 +8,14 @@ Equal::Equal(int n_intervals) :
 {
 }
 
-mesh::Curve
-Equal::mesh_curve(const geo::Curve & gcurve)
+void
+Equal::mesh_curve(const mesh::Curve & mcurve)
 {
+    auto gcurve = mcurve.geom_curve();
     auto [lo, hi] = gcurve.param_range();
     auto A = build_matrix();
     auto b = build_rhs(lo, hi);
     auto u = solve(A, b);
-
-    mesh::Vertex * v0 = nullptr;
-    mesh::Vertex * v1 = nullptr;
-    mesh::Curve mcurve(v0, v1);
-
-    return mcurve;
 }
 
 Eigen::SparseMatrix<double>

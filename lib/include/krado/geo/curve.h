@@ -8,6 +8,8 @@
 
 namespace krado::geo {
 
+class Model;
+
 class Curve {
 public:
     explicit Curve(const TopoDS_Edge & edge);

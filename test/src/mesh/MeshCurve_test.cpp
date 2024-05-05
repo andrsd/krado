@@ -15,7 +15,13 @@ TEST(Mesh_CurveTest, mesh)
     BRepLib_MakeEdge make_edge(pt1, pt2);
     make_edge.Build();
     geo::Curve gcurve(make_edge.Edge());
+    auto gvtx1 = gcurve.first_vertex();
+    auto gvtx2 = gcurve.last_vertex();
+
+    mesh::Vertex v1(gvtx1);
+    mesh::Vertex v2(gvtx2);
+    mesh::Curve mcurve(gcurve, &v1, &v2);
 
     mesh::Equal equal(4);
-    auto mcurve = equal.mesh_curve(gcurve);
+    equal.mesh_curve(mcurve);
 }
