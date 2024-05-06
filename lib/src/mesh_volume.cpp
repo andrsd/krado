@@ -6,27 +6,17 @@ namespace krado {
 MeshVolume::MeshVolume(const GeomVolume & gvolume,
                        const std::vector<const MeshSurface *> & mesh_surfaces) :
     gvolume(gvolume),
-    volume_marker(0),
     mesh_surfaces(mesh_surfaces)
 {
+    auto & mpars = meshing_parameters();
+    mpars.set<std::string>("scheme") = "auto";
+    mpars.set<int>("marker") = 0;
 }
 
 const GeomVolume &
 MeshVolume::geom_volume() const
 {
     return this->gvolume;
-}
-
-int
-MeshVolume::marker() const
-{
-    return this->volume_marker;
-}
-
-void
-MeshVolume::set_marker(int marker)
-{
-    this->volume_marker = marker;
 }
 
 const std::vector<const MeshSurface *> &

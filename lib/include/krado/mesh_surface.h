@@ -17,23 +17,11 @@ public:
     /// @return Geometrical surface associated with this surface
     const GeomSurface & geom_surface() const;
 
-    /// Get surface marker
-    ///
-    /// @return Surface marker
-    int marker() const;
-
-    /// Set surface marker
-    ///
-    /// @param marker New surface marker
-    void set_marker(int marker);
-
     /// Get curves bounding this surface
     const std::vector<const MeshCurve *> & curves() const;
 
 private:
     const GeomSurface & gsurface;
-    /// Surface marker
-    int surface_marker;
     /// Mesh curves bounding this surface
     std::vector<const MeshCurve *> mesh_curves;
 };

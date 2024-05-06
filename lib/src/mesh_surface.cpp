@@ -6,27 +6,17 @@ namespace krado {
 MeshSurface::MeshSurface(const GeomSurface & gsurface,
                          const std::vector<const MeshCurve *> & mesh_curves) :
     gsurface(gsurface),
-    surface_marker(0),
     mesh_curves(mesh_curves)
 {
+    auto & mpars = meshing_parameters();
+    mpars.set<std::string>("scheme") = "auto";
+    mpars.set<int>("marker") = 0;
 }
 
 const GeomSurface &
 MeshSurface::geom_surface() const
 {
     return this->gsurface;
-}
-
-int
-MeshSurface::marker() const
-{
-    return this->surface_marker;
-}
-
-void
-MeshSurface::set_marker(int marker)
-{
-    this->surface_marker = marker;
 }
 
 const std::vector<const MeshCurve *> &

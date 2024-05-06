@@ -29,16 +29,6 @@ public:
     /// @return Two bounding vertices
     const std::vector<const MeshVertex *> & vertices() const;
 
-    /// Get curve marker
-    ///
-    /// @return Curve marker
-    int marker() const;
-
-    /// Set curve marker
-    ///
-    /// @param marker New curve marker
-    void set_marker(int marker);
-
     /// Add internal vertex
     ///
     /// @param curve_vertex (Internal) curve vertex to add
@@ -64,8 +54,6 @@ private:
     const GeomCurve & gcurve;
     /// Bounding vertices
     std::vector<const MeshVertex *> vtxs;
-    /// Curve marker
-    int curve_marker;
     /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge

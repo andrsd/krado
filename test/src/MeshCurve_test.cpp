@@ -30,10 +30,10 @@ TEST(MeshCurveTest, api) {
     MeshCurve mcurve(gcurve, &v1, &v2);
 
     EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
-    EXPECT_EQ(mcurve.marker(), 0);
 
-    mcurve.set_marker(234);
-    EXPECT_EQ(mcurve.marker(), 234);
+    auto mpars = mcurve.meshing_parameters();
+    EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
+    EXPECT_EQ(mpars.get<int>("marker"), 0);
 
     auto & vtx = mcurve.vertices();
     ASSERT_EQ(vtx.size(), 2);

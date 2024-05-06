@@ -5,9 +5,11 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2) :
     gcurve(gcurve),
-    vtxs({ v1, v2 }),
-    curve_marker(0)
+    vtxs({ v1, v2 })
 {
+    auto & mpars = meshing_parameters();
+    mpars.set<std::string>("scheme") = "auto";
+    mpars.set<int>("marker") = 0;
 }
 
 const GeomCurve &
@@ -20,18 +22,6 @@ const std::vector<const MeshVertex *> &
 MeshCurve::vertices() const
 {
     return this->vtxs;
-}
-
-int
-MeshCurve::marker() const
-{
-    return this->curve_marker;
-}
-
-void
-MeshCurve::set_marker(int marker)
-{
-    this->curve_marker = marker;
 }
 
 void

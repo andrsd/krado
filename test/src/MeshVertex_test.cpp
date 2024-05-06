@@ -26,8 +26,6 @@ TEST(MeshVertexTest, api) {
     MeshVertex mvertex(gvertex);
 
     EXPECT_EQ(&mvertex.geom_vertex(), &gvertex);
-    EXPECT_EQ(mvertex.marker(), 0);
-
-    mvertex.set_marker(234);
-    EXPECT_EQ(mvertex.marker(), 234);
+    auto & mpars = mvertex.meshing_parameters();
+    EXPECT_EQ(mpars.get<int>("marker"), 0);
 }
