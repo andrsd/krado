@@ -26,4 +26,16 @@ MeshVertex::set_global_id(int id)
     this->gid = id;
 }
 
+bool
+MeshVertex::is_meshed() const
+{
+    return this->meshed;
+}
+
+void
+MeshVertex::set_meshed()
+{
+    this->meshed = true;
+}
+
 } // namespace krado

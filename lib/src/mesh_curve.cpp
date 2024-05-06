@@ -5,7 +5,8 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve(gcurve),
-    vtxs({ v1, v2 })
+    vtxs({ v1, v2 }),
+    meshed(false)
 {
     auto & mpars = meshing_parameters();
     mpars.set<std::string>("scheme") = "auto";
@@ -48,5 +49,18 @@ MeshCurve::curve_segments() const
 {
     return this->curve_segs;
 }
+
+bool
+MeshCurve::is_meshed() const
+{
+    return this->meshed;
+}
+
+void
+MeshCurve::set_meshed()
+{
+    this->meshed = true;
+}
+
 
 } // namespace krado

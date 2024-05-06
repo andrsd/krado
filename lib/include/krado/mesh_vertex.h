@@ -24,8 +24,18 @@ public:
     /// @param id New ID to assign
     void set_global_id(int id);
 
+    /// Check if the vertex is already meshed
+    ///
+    /// @return `true` if mesh is already present, `false` otherwise
+    bool is_meshed() const;
+
+    /// Mark vertex as meshed
+    void set_meshed();
+
 private:
     const GeomVertex & gvtx;
+    /// Flag indicating if the vertex is meshed
+    bool meshed;
     int gid;
 };
 

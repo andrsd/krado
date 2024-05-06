@@ -49,6 +49,14 @@ public:
     /// @return Curse segments using vertex indexing local to this edge
     const std::vector<MeshElement> & curve_segments() const;
 
+    /// Check if the curve is already meshed
+    ///
+    /// @return `true` if mesh is already present, `false` otherwise
+    bool is_meshed() const;
+
+    /// Mark curve as meshed
+    void set_meshed();
+
 private:
     const GeomCurve & gcurve;
     /// Bounding vertices
@@ -57,6 +65,8 @@ private:
     std::vector<MeshCurveVertex> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge
     std::vector<MeshElement> curve_segs;
+    /// Flag indicating if the curve is meshed
+    bool meshed;
 };
 
 } // namespace krado
