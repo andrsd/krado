@@ -58,8 +58,10 @@ public:
     void mesh_volume(MeshVolume & volume);
 
 protected:
-    template<typename T>
-    T * get_scheme(const std::string & scheme_name, Mesh & mesh, Parameters & params) const {
+    template <typename T>
+    T *
+    get_scheme(const std::string & scheme_name, Mesh & mesh, Parameters & params) const
+    {
         auto * scheme = this->scheme_factory.create(scheme_name, mesh, params);
         return dynamic_cast<T *>(scheme);
     }
