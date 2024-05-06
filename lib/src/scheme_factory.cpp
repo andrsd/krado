@@ -1,0 +1,20 @@
+#include "krado/scheme_factory.h"
+#include "krado/scheme_equal.h"
+#include "krado/scheme_triangulo.h"
+
+namespace krado {
+
+SchemeFactory &
+SchemeFactory::instance()
+{
+    static SchemeFactory factory;
+    return factory;
+}
+
+SchemeFactory::SchemeFactory()
+{
+    add<SchemeEqual>("equal");
+    add<SchemeTriangulo>("triangulo");
+}
+
+} // namespace krado

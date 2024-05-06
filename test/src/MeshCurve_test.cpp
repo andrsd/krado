@@ -52,7 +52,9 @@ TEST(MeshCurveTest, mesh)
     MeshVertex v2(gvtx2);
     MeshCurve mcurve(gcurve, &v1, &v2);
 
-    SchemeEqual equal(4);
+    Parameters pars;
+    pars.set<int>("intervals") = 4;
+    SchemeEqual equal(pars);
     equal.mesh_curve(mcurve);
 
     auto vtx = mcurve.vertices();

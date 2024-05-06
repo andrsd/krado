@@ -4,7 +4,11 @@
 
 namespace krado {
 
-SchemeEqual::SchemeEqual(int n_intervals) : n_intervals(n_intervals) {}
+SchemeEqual::SchemeEqual(const Parameters & params) :
+    Scheme(params),
+    n_intervals(params.get<int>("intervals"))
+{
+}
 
 void
 SchemeEqual::mesh_curve(MeshCurve & mcurve)
