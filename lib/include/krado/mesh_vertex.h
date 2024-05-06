@@ -1,10 +1,11 @@
 #pragma once
 
 #include "krado/geom_vertex.h"
+#include "krado/size_parameters.h"
 
 namespace krado {
 
-class MeshVertex {
+class MeshVertex : public SizeParameters {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
 

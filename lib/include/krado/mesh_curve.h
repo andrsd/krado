@@ -4,11 +4,12 @@
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/size_parameters.h"
 #include <vector>
 
 namespace krado {
 
-class MeshCurve {
+class MeshCurve : public SizeParameters {
 public:
     enum VertexType {
         FIRST_VERTEX = -1,
