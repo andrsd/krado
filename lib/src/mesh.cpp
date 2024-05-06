@@ -44,6 +44,18 @@ Mesh::surfaces() const
     return this->surfs;
 }
 
+const MeshVolume &
+Mesh::volume(int id) const
+{
+    return this->vols.at(id);
+}
+
+const std::map<int, MeshVolume> &
+Mesh::volumes() const
+{
+    return this->vols;
+}
+
 void
 Mesh::initialize(const Model & model)
 {
@@ -73,6 +85,19 @@ Mesh::initialize(const Model & model)
 
         MeshSurface mesh_surf(geom_surface, mesh_curves);
         this->surfs.emplace(id, mesh_surf);
+    }
+
+    for (auto & [id, geom_volume] : model.volumes()) {
+        auto volume_surfaces = geom_volume.surfaces();
+        std::vector<const MeshSurface *> mesh_surfaces;
+        for (auto & gsurface : volume_surfaces) {
+            auto sid = model.surface_id(gsurface);
+            auto * msurface = &surface(sid);
+            mesh_surfaces.push_back(msurface);
+        }
+
+        MeshVolume mesh_vol(geom_volume, mesh_surfaces);
+        this->vols.emplace(id, mesh_vol);
     }
 }
 
