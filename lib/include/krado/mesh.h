@@ -14,6 +14,7 @@ class Model;
 
 class Mesh {
 public:
+    Mesh();
     Mesh(const Model & model);
 
     /// Vertex
@@ -58,8 +59,8 @@ public:
 
 protected:
     template<typename T>
-    T * get_scheme(const std::string & scheme_name, Parameters & params) const {
-        auto * scheme = this->scheme_factory.create(scheme_name, params);
+    T * get_scheme(const std::string & scheme_name, Mesh & mesh, Parameters & params) const {
+        auto * scheme = this->scheme_factory.create(scheme_name, mesh, params);
         return dynamic_cast<T *>(scheme);
     }
 

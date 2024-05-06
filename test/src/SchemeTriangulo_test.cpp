@@ -24,7 +24,7 @@ TEST(SchemeTrianguloTest, mesh_quarter_circle)
     mesh.mesh_curve(4);
 
     auto & side1 = mesh.curve(5);
-    auto & mpars_side1 = arc.meshing_parameters();
+    auto & mpars_side1 = side1.meshing_parameters();
     mpars_side1.set<int>("marker") = 101;
 
     auto & qcirc = mesh.surface(7);

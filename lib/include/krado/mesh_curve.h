@@ -16,7 +16,7 @@ public:
         LAST_VERTEX = -2
     };
 
-    MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2);
+    MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2);
 
     /// Get geometrical curve associated with this curve
     ///
@@ -26,7 +26,7 @@ public:
     /// Get bounding vertices
     ///
     /// @return Two bounding vertices
-    const std::vector<const MeshVertex *> & vertices() const;
+    const std::vector<MeshVertex *> & vertices() const;
 
     /// Add internal vertex
     ///
@@ -52,7 +52,7 @@ public:
 private:
     const GeomCurve & gcurve;
     /// Bounding vertices
-    std::vector<const MeshVertex *> vtxs;
+    std::vector<MeshVertex *> vtxs;
     /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge

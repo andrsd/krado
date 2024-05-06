@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
+#include "krado/mesh.h"
 #include "krado/mesh_curve.h"
 #include "krado/exception.h"
 #include "krado/scheme_equal.h"
@@ -52,9 +53,10 @@ TEST(MeshCurveTest, mesh)
     MeshVertex v2(gvtx2);
     MeshCurve mcurve(gcurve, &v1, &v2);
 
+    Mesh mesh;
     Parameters pars;
     pars.set<int>("intervals") = 4;
-    SchemeEqual equal(pars);
+    SchemeEqual equal(mesh, pars);
     equal.mesh_curve(mcurve);
 
     auto vtx = mcurve.vertices();

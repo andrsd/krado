@@ -4,7 +4,7 @@
 namespace krado {
 
 MeshVolume::MeshVolume(const GeomVolume & gvolume,
-                       const std::vector<const MeshSurface *> & mesh_surfaces) :
+                       const std::vector<MeshSurface *> & mesh_surfaces) :
     gvolume(gvolume),
     mesh_surfaces(mesh_surfaces)
 {
@@ -19,7 +19,7 @@ MeshVolume::geom_volume() const
     return this->gvolume;
 }
 
-const std::vector<const MeshSurface *> &
+const std::vector<MeshSurface *> &
 MeshVolume::surfaces() const
 {
     return this->mesh_surfaces;

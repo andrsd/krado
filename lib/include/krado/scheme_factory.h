@@ -7,23 +7,17 @@
 namespace krado {
 
 class Scheme;
+class Mesh;
 
 using SchemePtr = Scheme *;
 
-using BuildPtr = SchemePtr (*)(const Parameters & parameters);
+using BuildPtr = SchemePtr (*)(Mesh & mesh, const Parameters & parameters);
 
 template <typename T>
 SchemePtr
-build_scheme(const Parameters & parameters)
+build_scheme(Mesh & mesh, const Parameters & parameters)
 {
-    return new T(parameters);
-}
-
-template <typename T>
-auto
-call_parameters() -> decltype(T::parameters(), Parameters())
-{
-    return T::parameters();
+    return new T(mesh, parameters);
 }
 
 class SchemeFactory {
@@ -39,10 +33,10 @@ public:
     }
 
     Scheme *
-    create(const std::string & scheme_name, Parameters & parameters)
+    create(const std::string & scheme_name, Mesh & mesh, Parameters & parameters)
     {
         auto entry = get_entry(scheme_name);
-        auto * object = entry.build_ptr(parameters);
+        auto * object = entry.build_ptr(mesh, parameters);
         this->objects.push_back(object);
         return object;
     }
@@ -72,7 +66,7 @@ private:
     {
         auto it = this->classes.find(class_name);
         if (it == this->classes.end())
-            throw Exception("Class '{}' is not registered.", class_name);
+            throw Exception("Unknown scheme '{}'.", class_name);
         return it->second;
     }
 

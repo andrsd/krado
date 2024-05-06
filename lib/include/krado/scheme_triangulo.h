@@ -2,15 +2,18 @@
 
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
+#include "krado/mesh_curve.h"
 
 namespace krado {
 
 class SchemeTriangulo : public Scheme, public Scheme2D {
 public:
-    SchemeTriangulo(const Parameters & params);
+    SchemeTriangulo(Mesh & mesh, const Parameters & params);
     void mesh_surface(MeshSurface & msurface) override;
 
 private:
+    void select_meshing_scheme(MeshCurve & curve);
+
     /// Holes positions to pass into the triangulation
     std::vector<Point> holes;
 };

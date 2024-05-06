@@ -6,6 +6,8 @@
 
 namespace krado {
 
+Mesh::Mesh() : scheme_factory(SchemeFactory::instance()), gid_ctr(0) {}
+
 Mesh::Mesh(const Model & model) : scheme_factory(SchemeFactory::instance()), gid_ctr(0)
 {
     initialize(model);
@@ -143,7 +145,7 @@ Mesh::initialize(const Model & model)
 
     for (auto & [id, geom_surface] : model.surfaces()) {
         auto surface_curves = geom_surface.curves();
-        std::vector<const MeshCurve *> mesh_curves;
+        std::vector<MeshCurve *> mesh_curves;
         for (auto & gcurve : surface_curves) {
             int cid = model.curve_id(gcurve);
             auto * mcurve = &curve(cid);
@@ -156,7 +158,7 @@ Mesh::initialize(const Model & model)
 
     for (auto & [id, geom_volume] : model.volumes()) {
         auto volume_surfaces = geom_volume.surfaces();
-        std::vector<const MeshSurface *> mesh_surfaces;
+        std::vector<MeshSurface *> mesh_surfaces;
         for (auto & gsurface : volume_surfaces) {
             auto sid = model.surface_id(gsurface);
             auto * msurface = &surface(sid);
@@ -180,7 +182,7 @@ Mesh::mesh_curve(MeshCurve & curve)
 {
     auto mesh_pars = curve.meshing_parameters();
     auto scheme_name = mesh_pars.get<std::string>("scheme");
-    auto scheme = get_scheme<Scheme1D>(scheme_name, mesh_pars);
+    auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
     scheme->mesh_curve(curve);
 }
 
@@ -196,31 +198,35 @@ Mesh::mesh_surface(MeshSurface & surface)
 {
     auto mesh_pars = surface.meshing_parameters();
     auto scheme_name = mesh_pars.get<std::string>("scheme");
-    auto scheme = get_scheme<Scheme2D>(scheme_name, mesh_pars);
+    auto scheme = get_scheme<Scheme2D>(scheme_name, *this, mesh_pars);
     scheme->mesh_surface(surface);
 }
 
-void Mesh::mesh_volume(int id)
+void
+Mesh::mesh_volume(int id)
 {
     auto & volume = this->vols.at(id);
     mesh_volume(volume);
 }
 
-void Mesh::mesh_volume(MeshVolume & volume)
+void
+Mesh::mesh_volume(MeshVolume & volume)
 {
     auto mesh_pars = volume.meshing_parameters();
     auto scheme_name = mesh_pars.get<std::string>("scheme");
-    auto scheme = get_scheme<Scheme3D>(scheme_name, mesh_pars);
+    auto scheme = get_scheme<Scheme3D>(scheme_name, *this, mesh_pars);
     scheme->mesh_volume(volume);
 }
 
-void Mesh::assign_gid(MeshVertex & vertex)
+void
+Mesh::assign_gid(MeshVertex & vertex)
 {
     vertex.set_global_id(this->gid_ctr);
     this->gid_ctr++;
 }
 
-void Mesh::assign_gid(MeshCurveVertex & vertex)
+void
+Mesh::assign_gid(MeshCurveVertex & vertex)
 {
     vertex.set_global_id(this->gid_ctr);
     this->gid_ctr++;

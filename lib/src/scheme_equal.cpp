@@ -1,11 +1,12 @@
 #include "krado/scheme_equal.h"
+#include "krado/mesh.h"
 #include "krado/exception.h"
 #include "krado/mesh_curve_vertex.h"
 
 namespace krado {
 
-SchemeEqual::SchemeEqual(const Parameters & params) :
-    Scheme(params),
+SchemeEqual::SchemeEqual(Mesh & mesh, const Parameters & params) :
+    Scheme(mesh, params),
     n_intervals(params.get<int>("intervals"))
 {
 }

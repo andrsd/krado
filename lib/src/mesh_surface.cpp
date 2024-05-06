@@ -4,7 +4,7 @@
 namespace krado {
 
 MeshSurface::MeshSurface(const GeomSurface & gsurface,
-                         const std::vector<const MeshCurve *> & mesh_curves) :
+                         const std::vector<MeshCurve *> & mesh_curves) :
     gsurface(gsurface),
     mesh_curves(mesh_curves)
 {
@@ -19,7 +19,7 @@ MeshSurface::geom_surface() const
     return this->gsurface;
 }
 
-const std::vector<const MeshCurve *> &
+const std::vector<MeshCurve *> &
 MeshSurface::curves() const
 {
     return this->mesh_curves;

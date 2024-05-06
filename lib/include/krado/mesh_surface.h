@@ -9,7 +9,7 @@ class MeshCurve;
 
 class MeshSurface : public MeshingParameters {
 public:
-    MeshSurface(const GeomSurface & gcurve, const std::vector<const MeshCurve *> & mesh_curves);
+    MeshSurface(const GeomSurface & gcurve, const std::vector<MeshCurve *> & mesh_curves);
 
     /// Get geometrical surface associated with this surface
     ///
@@ -17,12 +17,12 @@ public:
     const GeomSurface & geom_surface() const;
 
     /// Get curves bounding this surface
-    const std::vector<const MeshCurve *> & curves() const;
+    const std::vector<MeshCurve *> & curves() const;
 
 private:
     const GeomSurface & gsurface;
     /// Mesh curves bounding this surface
-    std::vector<const MeshCurve *> mesh_curves;
+    std::vector<MeshCurve *> mesh_curves;
 };
 
 } // namespace krado

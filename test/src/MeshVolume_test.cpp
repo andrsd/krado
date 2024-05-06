@@ -32,7 +32,7 @@ TEST(MeshVolumeTest, api)
     for (auto & gs : surfs)
         msurfs.emplace_back(MeshSurface(gs, {}));
 
-    std::vector<const MeshSurface *> msurfs_ptrs;
+    std::vector<MeshSurface *> msurfs_ptrs;
     for (auto & ms : msurfs)
         msurfs_ptrs.push_back(&ms);
 

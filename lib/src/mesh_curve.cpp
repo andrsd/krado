@@ -3,7 +3,7 @@
 
 namespace krado {
 
-MeshCurve::MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2) :
+MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve(gcurve),
     vtxs({ v1, v2 })
 {
@@ -18,7 +18,7 @@ MeshCurve::geom_curve() const
     return this->gcurve;
 }
 
-const std::vector<const MeshVertex *> &
+const std::vector<MeshVertex *> &
 MeshCurve::vertices() const
 {
     return this->vtxs;
