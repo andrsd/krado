@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 namespace krado {
 
 class MeshPoint {
@@ -10,3 +12,10 @@ public:
 };
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::MeshPoint & pt)
+{
+    stream << "(" << pt.x << ", " << pt.y << ", " << pt.z << ")";
+    return stream;
+}
