@@ -2,10 +2,11 @@
 
 #include "krado/geom_vertex.h"
 #include "krado/size_parameters.h"
+#include "krado/meshing_parameters.h"
 
 namespace krado {
 
-class MeshVertex : public SizeParameters {
+class MeshVertex : public SizeParameters, public MeshingParameters {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
 
