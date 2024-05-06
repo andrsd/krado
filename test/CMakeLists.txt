@@ -27,6 +27,7 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
         gtest_main
         gmock_main
+        fmt::fmt
 )
 
 add_test(
