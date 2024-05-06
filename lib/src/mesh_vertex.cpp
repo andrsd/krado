@@ -26,6 +26,12 @@ MeshVertex::set_global_id(int id)
     this->gid = id;
 }
 
+Point
+MeshVertex::point() const
+{
+    return Point(this->gvtx.x(), this->gvtx.y(), this->gvtx.z());
+}
+
 bool
 MeshVertex::is_meshed() const
 {

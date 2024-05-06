@@ -171,6 +171,23 @@ Mesh::initialize(const Model & model)
 }
 
 void
+Mesh::mesh_vertex(int id)
+{
+    auto & vertex = this->vtxs.at(id);
+    mesh_vertex(vertex);
+}
+
+void
+Mesh::mesh_vertex(MeshVertex & vertex)
+{
+    if (!vertex.is_meshed()) {
+        MeshPoint mpnt(vertex.point());
+        this->pnts.emplace_back(mpnt);
+        vertex.set_meshed();
+    }
+}
+
+void
 Mesh::mesh_curve(int id)
 {
     auto & curve = this->crvs.at(id);
@@ -185,6 +202,10 @@ Mesh::mesh_curve(MeshCurve & curve)
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
         scheme->mesh_curve(curve);
+        for (auto & edge_vtx : curve.curve_vertices()) {
+            MeshPoint mpnt(edge_vtx.point());
+            this->pnts.emplace_back(mpnt);
+        }
         curve.set_meshed();
     }
 }
@@ -239,6 +260,12 @@ Mesh::assign_gid(MeshCurveVertex & vertex)
 {
     vertex.set_global_id(this->gid_ctr);
     this->gid_ctr++;
+}
+
+const std::vector<MeshPoint> &
+Mesh::points() const
+{
+    return this->pnts;
 }
 
 } // namespace krado

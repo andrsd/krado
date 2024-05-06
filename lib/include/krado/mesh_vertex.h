@@ -2,6 +2,7 @@
 
 #include "krado/geom_vertex.h"
 #include "krado/meshing_parameters.h"
+#include "krado/point.h"
 
 namespace krado {
 
@@ -13,6 +14,11 @@ public:
     ///
     /// @return Geometrical vertex associated with this vertex
     const GeomVertex & geom_vertex() const;
+
+    /// Get physical position in the 3D space
+    ///
+    /// @return Physical position in the 3D space
+    Point point() const;
 
     /// Get global ID
     ///

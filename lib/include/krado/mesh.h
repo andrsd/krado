@@ -45,6 +45,10 @@ public:
     /// Volumes
     const std::map<int, MeshVolume> & volumes() const;
 
+    /// Create vertex mesh
+    void mesh_vertex(int id);
+    void mesh_vertex(MeshVertex & vertex);
+
     /// Create curve mesh
     void mesh_curve(int id);
     void mesh_curve(MeshCurve & curve);
@@ -56,6 +60,11 @@ public:
     /// Create volume mesh
     void mesh_volume(int id);
     void mesh_volume(MeshVolume & volume);
+
+    /// Get mesh points
+    ///
+    /// @return Mesh points
+    const std::vector<MeshPoint> & points() const;
 
 protected:
     template <typename T>
@@ -85,6 +94,8 @@ private:
     std::map<int, MeshVolume> vols;
 
     SchemeFactory & scheme_factory;
+
+    std::vector<MeshPoint> pnts;
 
     /// Global ID counter
     int gid_ctr;

@@ -4,9 +4,12 @@
 
 namespace krado {
 
+class Point;
+
 class MeshPoint {
 public:
     explicit MeshPoint(double x, double y = 0., double = 0.);
+    explicit MeshPoint(const Point & pt);
 
     double x, y, z;
 };
