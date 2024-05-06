@@ -35,12 +35,19 @@ TEST(MeshSurfaceTest, api)
 {
     auto circ = build_circle(Point(0, 0, 0), 2.);
     GeomSurface gsurf(circ);
+    auto crvs = gsurf.curves();
+    ASSERT_EQ(crvs.size(), 1);
+    MeshCurve mcurve(crvs[0], nullptr, nullptr);
 
-    MeshSurface msurface(gsurf);
+    MeshSurface msurface(gsurf, { &mcurve });
     EXPECT_EQ(&msurface.geom_surface(), &gsurf);
 
     EXPECT_EQ(msurface.marker(), 0);
 
     msurface.set_marker(123);
     EXPECT_EQ(msurface.marker(), 123);
+
+    auto mcs = msurface.curves();
+    EXPECT_EQ(mcs.size(), 1);
+    EXPECT_EQ(mcs[0], &mcurve);
 }

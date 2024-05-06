@@ -63,7 +63,15 @@ Mesh::initialize(const Model & model)
     }
 
     for (auto & geom_surface : model.surfaces()) {
-        MeshSurface mesh_surf(geom_surface);
+        auto surface_curves = geom_surface.curves();
+        std::vector<const MeshCurve *> mesh_curves;
+        for (auto & gcurve : surface_curves) {
+            int cid = model.curve_id(gcurve);
+            auto * mcurve = &curve(cid);
+            mesh_curves.push_back(mcurve);
+        }
+
+        MeshSurface mesh_surf(geom_surface, mesh_curves);
         this->surfs.emplace_back(mesh_surf);
     }
 }

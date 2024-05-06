@@ -3,9 +3,11 @@
 
 namespace krado {
 
-MeshSurface::MeshSurface(const GeomSurface & gsurface) :
+MeshSurface::MeshSurface(const GeomSurface & gsurface,
+                         const std::vector<const MeshCurve *> & mesh_curves) :
     gsurface(gsurface),
-    surface_marker(0)
+    surface_marker(0),
+    mesh_curves(mesh_curves)
 {
 }
 
@@ -25,6 +27,12 @@ void
 MeshSurface::set_marker(int marker)
 {
     this->surface_marker = marker;
+}
+
+const std::vector<const MeshCurve *> &
+MeshSurface::curves() const
+{
+    return this->mesh_curves;
 }
 
 } // namespace krado
