@@ -1,9 +1,12 @@
 #include "krado/mesh.h"
 #include "krado/model.h"
+#include "krado/scheme1d.h"
+#include "krado/scheme2d.h"
+#include "krado/scheme3d.h"
 
 namespace krado {
 
-Mesh::Mesh(const Model & model)
+Mesh::Mesh(const Model & model) : scheme_factory(SchemeFactory::instance())
 {
     initialize(model);
 }
@@ -11,7 +14,23 @@ Mesh::Mesh(const Model & model)
 const MeshVertex &
 Mesh::vertex(int id) const
 {
-    return this->vtxs.at(id);
+    try {
+        return this->vtxs.at(id);
+    }
+    catch (...) {
+        throw Exception("No vertex with ID = {}", id);
+    }
+}
+
+MeshVertex &
+Mesh::vertex(int id)
+{
+    try {
+        return this->vtxs.at(id);
+    }
+    catch (...) {
+        throw Exception("No vertex with ID = {}", id);
+    }
 }
 
 const std::map<int, MeshVertex> &
@@ -23,7 +42,23 @@ Mesh::vertices() const
 const MeshCurve &
 Mesh::curve(int id) const
 {
-    return this->crvs.at(id);
+    try {
+        return this->crvs.at(id);
+    }
+    catch (...) {
+        throw Exception("No curve with ID = {}", id);
+    }
+}
+
+MeshCurve &
+Mesh::curve(int id)
+{
+    try {
+        return this->crvs.at(id);
+    }
+    catch (...) {
+        throw Exception("No curve with ID = {}", id);
+    }
 }
 
 const std::map<int, MeshCurve> &
@@ -35,7 +70,23 @@ Mesh::curves() const
 const MeshSurface &
 Mesh::surface(int id) const
 {
-    return this->surfs.at(id);
+    try {
+        return this->surfs.at(id);
+    }
+    catch (...) {
+        throw Exception("No surface with ID = {}", id);
+    }
+}
+
+MeshSurface &
+Mesh::surface(int id)
+{
+    try {
+        return this->surfs.at(id);
+    }
+    catch (...) {
+        throw Exception("No surface with ID = {}", id);
+    }
 }
 
 const std::map<int, MeshSurface> &
@@ -47,7 +98,23 @@ Mesh::surfaces() const
 const MeshVolume &
 Mesh::volume(int id) const
 {
-    return this->vols.at(id);
+    try {
+        return this->vols.at(id);
+    }
+    catch (...) {
+        throw Exception("No volume with ID = {}", id);
+    }
+}
+
+MeshVolume &
+Mesh::volume(int id)
+{
+    try {
+        return this->vols.at(id);
+    }
+    catch (...) {
+        throw Exception("No volume with ID = {}", id);
+    }
 }
 
 const std::map<int, MeshVolume> &
@@ -99,6 +166,52 @@ Mesh::initialize(const Model & model)
         MeshVolume mesh_vol(geom_volume, mesh_surfaces);
         this->vols.emplace(id, mesh_vol);
     }
+}
+
+void
+Mesh::mesh_curve(int id)
+{
+    auto & curve = this->crvs.at(id);
+    mesh_curve(curve);
+}
+
+void
+Mesh::mesh_curve(MeshCurve & curve)
+{
+    auto mesh_pars = curve.meshing_parameters();
+    auto scheme_name = mesh_pars.get<std::string>("scheme");
+    auto scheme = get_scheme<Scheme1D>(scheme_name, mesh_pars);
+    scheme->mesh_curve(curve);
+}
+
+void
+Mesh::mesh_surface(int id)
+{
+    auto & surface = this->surfs.at(id);
+    mesh_surface(surface);
+}
+
+void
+Mesh::mesh_surface(MeshSurface & surface)
+{
+    auto mesh_pars = surface.meshing_parameters();
+    auto scheme_name = mesh_pars.get<std::string>("scheme");
+    auto scheme = get_scheme<Scheme2D>(scheme_name, mesh_pars);
+    scheme->mesh_surface(surface);
+}
+
+void Mesh::mesh_volume(int id)
+{
+    auto & volume = this->vols.at(id);
+    mesh_volume(volume);
+}
+
+void Mesh::mesh_volume(MeshVolume & volume)
+{
+    auto mesh_pars = volume.meshing_parameters();
+    auto scheme_name = mesh_pars.get<std::string>("scheme");
+    auto scheme = get_scheme<Scheme3D>(scheme_name, mesh_pars);
+    scheme->mesh_volume(volume);
 }
 
 } // namespace krado

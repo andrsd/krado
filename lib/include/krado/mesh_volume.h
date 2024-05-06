@@ -1,14 +1,13 @@
 #pragma once
 
 #include "krado/geom_volume.h"
-#include "krado/size_parameters.h"
 #include "krado/meshing_parameters.h"
 
 namespace krado {
 
 class MeshSurface;
 
-class MeshVolume : public SizeParameters, public MeshingParameters {
+class MeshVolume : public MeshingParameters {
 public:
     MeshVolume(const GeomVolume & gvolume, const std::vector<const MeshSurface *> & mesh_surfaces);
 
