@@ -4,7 +4,6 @@
 #include "BRepLib_MakeEdge.hxx"
 #include "BRepLib_MakeWire.hxx"
 #include "BRepLib_MakeFace.hxx"
-#include "TopoDS_Edge.hxx"
 #include "TopoDS_Wire.hxx"
 #include "TopoDS_Face.hxx"
 #include "BRepGProp.hxx"
@@ -23,6 +22,33 @@ build_circle(const Point & center, double radius)
     make_edge.Build();
     auto edge = make_edge.Edge();
     BRepLib_MakeWire make_wire(edge);
+    make_wire.Build();
+    auto wire = make_wire.Wire();
+    BRepLib_MakeFace make_face(wire);
+    make_face.Build();
+    return make_face.Face();
+}
+
+TopoDS_Face
+build_triangle(const Point & center, double radius)
+{
+    gp_Pnt ctr(center.x, center.y, center.z);
+    gp_Pnt pt1(center.x, center.y + radius, center.z);
+    gp_Pnt pt2(center.x + radius, center.y, center.z);
+
+    BRepLib_MakeEdge make_edge0(pt1, pt2);
+    make_edge0.Build();
+    auto edge0 = make_edge0.Edge();
+
+    BRepLib_MakeEdge make_edge1(ctr, pt1);
+    make_edge1.Build();
+    auto edge1 = make_edge1.Edge();
+
+    BRepLib_MakeEdge make_edge2(ctr, pt2);
+    make_edge2.Build();
+    auto edge2 = make_edge2.Edge();
+
+    BRepLib_MakeWire make_wire(edge0, edge1, edge2);
     make_wire.Build();
     auto wire = make_wire.Wire();
     BRepLib_MakeFace make_face(wire);
@@ -75,4 +101,17 @@ TEST(GeomSurfaceTest, op_topods_face)
     GProp_GProps props;
     BRepGProp::SurfaceProperties(circ, props);
     EXPECT_DOUBLE_EQ(props.Mass(), 4. * M_PI);
+}
+
+TEST(GeomSurfaceTest, curves)
+{
+    constexpr double r = 2.;
+    auto qcirc_face = build_triangle(Point(0, 0, 0), r);
+    GeomSurface circ(qcirc_face);
+
+    auto crvs = circ.curves();
+    EXPECT_EQ(crvs.size(), 3);
+    EXPECT_DOUBLE_EQ(crvs[0].length(), std::sqrt(8));
+    EXPECT_DOUBLE_EQ(crvs[1].length(), r);
+    EXPECT_DOUBLE_EQ(crvs[2].length(), r);
 }

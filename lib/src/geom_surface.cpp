@@ -5,7 +5,7 @@
 #include "BRepLProp_SLProps.hxx"
 #include "BRepAdaptor_Surface.hxx"
 #include "GProp_GProps.hxx"
-#include "TopExp.hxx"
+#include "TopExp_Explorer.hxx"
 
 namespace krado {
 
@@ -40,6 +40,19 @@ double
 GeomSurface::area() const
 {
     return this->surf_area;
+}
+
+std::vector<GeomCurve>
+GeomSurface::curves() const
+{
+    std::vector<GeomCurve> crvs;
+    TopExp_Explorer exp;
+    for (exp.Init(this->face, TopAbs_EDGE); exp.More(); exp.Next()) {
+        TopoDS_Edge edge = TopoDS::Edge(exp.Current());
+        auto gcurve = GeomCurve(edge);
+        crvs.emplace_back(gcurve);
+    }
+    return crvs;
 }
 
 GeomSurface::operator const TopoDS_Shape &() const

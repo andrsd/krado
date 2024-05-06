@@ -2,8 +2,10 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/geom_curve.h"
 #include "TopoDS_Face.hxx"
 #include "Geom_Surface.hxx"
+#include <vector>
 
 namespace krado {
 
@@ -31,6 +33,11 @@ public:
     ///
     /// @return Area of the surface
     double area() const;
+
+    /// Get curves bounding this surface
+    ///
+    /// @return Curves bounding the surface
+    std::vector<GeomCurve> curves() const;
 
     operator const TopoDS_Shape &() const;
 
