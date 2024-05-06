@@ -4,6 +4,7 @@
 #include "krado/geom_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
+#include "krado/geom_volume.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
 
@@ -64,6 +65,23 @@ public:
     /// @return Surface ID
     int surface_id(const GeomSurface & surface) const;
 
+    /// Get model volume
+    ///
+    /// @return Volume
+    const std::map<int, GeomVolume> & volumes() const;
+
+    /// Get volume with specified ID
+    ///
+    /// @param id Volume ID
+    /// @return Volume with specified ID
+    const GeomVolume & volume(int id) const;
+
+    /// Get volume ID
+    ///
+    /// @param volume Volume
+    /// @return Volume ID
+    int volume_id(const GeomVolume & volume) const;
+
 private:
     void bind_shape(const GeomShape & shape);
     void bind_vertices(const GeomShape & shape);
@@ -78,6 +96,7 @@ private:
     std::map<int, GeomVertex> vtxs;
     std::map<int, GeomCurve> crvs;
     std::map<int, GeomSurface> srfs;
+    std::map<int, GeomVolume> vols;
 
     TopTools_DataMapOfShapeInteger shape_id;
     int internal_id_counter;

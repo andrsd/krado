@@ -48,3 +48,20 @@ TEST(ModelTest, load_quad)
     EXPECT_EQ(model.surface_id(surface), 9);
     EXPECT_THROW({ model.surface(1000); }, Exception);
 }
+
+TEST(ModelTest, load_box)
+{
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box.step";
+
+    STEPFile file(input_file.string());
+    auto shape = file.load();
+    Model model(shape);
+    EXPECT_EQ(model.vertices().size(), 8);
+    EXPECT_EQ(model.curves().size(), 12);
+    EXPECT_EQ(model.surfaces().size(), 6);
+
+    EXPECT_EQ(model.volumes().size(), 1);
+    auto box = model.volume(27);
+    EXPECT_EQ(model.volume_id(box), 27);
+    EXPECT_THROW({ model.volume(1000); }, Exception);
+}

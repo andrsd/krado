@@ -98,6 +98,34 @@ Model::surface_id(const GeomSurface & surface) const
     }
 }
 
+const std::map<int, GeomVolume> &
+Model::volumes() const
+{
+    return this->vols;
+}
+
+const GeomVolume &
+Model::volume(int id) const
+{
+    try {
+        return this->vols.at(id);
+    }
+    catch (std::out_of_range & e) {
+        throw Exception("No volume with id {}", id);
+    }
+}
+
+int
+Model::volume_id(const GeomVolume & volume) const
+{
+    try {
+        return this->shape_id.Find(volume);
+    }
+    catch (...) {
+        throw Exception("No ID for volume");
+    }
+}
+
 void
 Model::bind_shape(const GeomShape & shape)
 {
@@ -113,6 +141,11 @@ Model::bind_solids(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
+        if (!this->shape_id.IsBound(solid)) {
+            auto id = get_next_id();
+            this->vols.emplace(id, GeomVolume(solid));
+            this->shape_id.Bind(solid, id);
+        }
     }
 }
 
