@@ -14,7 +14,7 @@ Model::Model(const GeomShape & root_shape) : root_shape(root_shape), internal_id
     bind_shape(root_shape);
 }
 
-const std::vector<GeomVertex> &
+const std::map<int, GeomVertex> &
 Model::vertices() const
 {
     return this->vtxs;
@@ -24,8 +24,7 @@ const GeomVertex &
 Model::vertex(int id) const
 {
     try {
-        auto index = this->vtx_index.at(id);
-        return this->vtxs.at(index);
+        return this->vtxs.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No vertex with id {}", id);
@@ -43,7 +42,7 @@ Model::vertex_id(const GeomVertex & vertex) const
     }
 }
 
-const std::vector<GeomCurve> &
+const std::map<int, GeomCurve> &
 Model::curves() const
 {
     return this->crvs;
@@ -53,8 +52,7 @@ const GeomCurve &
 Model::curve(int id) const
 {
     try {
-        auto index = this->crv_index.at(id);
-        return this->crvs.at(index);
+        return this->crvs.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No curve with id {}", id);
@@ -72,7 +70,7 @@ Model::curve_id(const GeomCurve & curve) const
     }
 }
 
-const std::vector<GeomSurface> &
+const std::map<int, GeomSurface> &
 Model::surfaces() const
 {
     return this->srfs;
@@ -82,8 +80,7 @@ const GeomSurface &
 Model::surface(int id) const
 {
     try {
-        auto index = this->srf_index.at(id);
-        return this->srfs.at(index);
+        return this->srfs.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No surface with id {}", id);
@@ -127,9 +124,7 @@ Model::bind_faces(const GeomShape & shape)
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->shape_id.IsBound(face)) {
             auto id = get_next_id();
-            auto index = this->srfs.size();
-            this->srfs.emplace_back(GeomSurface(face));
-            this->srf_index[id] = index;
+            this->srfs.emplace(id, GeomSurface(face));
             this->shape_id.Bind(face, id);
         }
     }
@@ -143,9 +138,7 @@ Model::bind_edges(const GeomShape & shape)
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->shape_id.IsBound(edge)) {
             auto id = get_next_id();
-            auto index = this->crvs.size();
-            this->crvs.emplace_back(GeomCurve(edge));
-            this->crv_index[id] = index;
+            this->crvs.emplace(id, GeomCurve(edge));
             this->shape_id.Bind(edge, id);
         }
     }
@@ -159,9 +152,7 @@ Model::bind_vertices(const GeomShape & shape)
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->shape_id.IsBound(vertex)) {
             auto id = get_next_id();
-            auto index = this->vtxs.size();
-            this->vtxs.emplace_back(GeomVertex(vertex));
-            this->vtx_index[id] = index;
+            this->vtxs.emplace(id, GeomVertex(vertex));
             this->shape_id.Bind(vertex, id);
         }
     }

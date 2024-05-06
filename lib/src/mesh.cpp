@@ -11,10 +11,10 @@ Mesh::Mesh(const Model & model)
 const MeshVertex &
 Mesh::vertex(int id) const
 {
-    return this->vtxs[0];
+    return this->vtxs.at(id);
 }
 
-const std::vector<MeshVertex> &
+const std::map<int, MeshVertex> &
 Mesh::vertices() const
 {
     return this->vtxs;
@@ -23,10 +23,10 @@ Mesh::vertices() const
 const MeshCurve &
 Mesh::curve(int id) const
 {
-    return this->crvs[0];
+    return this->crvs.at(id);
 }
 
-const std::vector<MeshCurve> &
+const std::map<int, MeshCurve> &
 Mesh::curves() const
 {
     return this->crvs;
@@ -35,10 +35,10 @@ Mesh::curves() const
 const MeshSurface &
 Mesh::surface(int id) const
 {
-    return this->surfs[0];
+    return this->surfs.at(id);
 }
 
-const std::vector<MeshSurface> &
+const std::map<int, MeshSurface> &
 Mesh::surfaces() const
 {
     return this->surfs;
@@ -47,22 +47,22 @@ Mesh::surfaces() const
 void
 Mesh::initialize(const Model & model)
 {
-    for (auto & gvtx : model.vertices()) {
+    for (auto & [id, gvtx] : model.vertices()) {
         MeshVertex mvtx(gvtx);
-        this->vtxs.emplace_back(mvtx);
+        this->vtxs.emplace(id, mvtx);
     }
 
-    for (auto & geom_curve : model.curves()) {
+    for (auto & [id, geom_curve] : model.curves()) {
         auto id1 = model.vertex_id(geom_curve.first_vertex());
         auto id2 = model.vertex_id(geom_curve.last_vertex());
         auto v1 = vertex(id1);
         auto v2 = vertex(id2);
 
         MeshCurve mesh_crv(geom_curve, &v1, &v2);
-        this->crvs.emplace_back(mesh_crv);
+        this->crvs.emplace(id, mesh_crv);
     }
 
-    for (auto & geom_surface : model.surfaces()) {
+    for (auto & [id, geom_surface] : model.surfaces()) {
         auto surface_curves = geom_surface.curves();
         std::vector<const MeshCurve *> mesh_curves;
         for (auto & gcurve : surface_curves) {
@@ -72,7 +72,7 @@ Mesh::initialize(const Model & model)
         }
 
         MeshSurface mesh_surf(geom_surface, mesh_curves);
-        this->surfs.emplace_back(mesh_surf);
+        this->surfs.emplace(id, mesh_surf);
     }
 }
 

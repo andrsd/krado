@@ -4,7 +4,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_point.h"
-#include <vector>
+#include <map>
 
 namespace krado {
 
@@ -18,26 +18,26 @@ public:
     const MeshVertex & vertex(int id) const;
 
     /// Vertices
-    const std::vector<MeshVertex> & vertices() const;
+    const std::map<int, MeshVertex> & vertices() const;
 
     /// Curve
     const MeshCurve & curve(int id) const;
 
     /// Curves
-    const std::vector<MeshCurve> & curves() const;
+    const std::map<int, MeshCurve> & curves() const;
 
     /// Surface
     const MeshSurface & surface(int id) const;
 
     /// Surfaces
-    const std::vector<MeshSurface> & surfaces() const;
+    const std::map<int, MeshSurface> & surfaces() const;
 
 private:
     void initialize(const Model & model);
 
-    std::vector<MeshVertex> vtxs;
-    std::vector<MeshCurve> crvs;
-    std::vector<MeshSurface> surfs;
+    std::map<int, MeshVertex> vtxs;
+    std::map<int, MeshCurve> crvs;
+    std::map<int, MeshSurface> surfs;
 };
 
 } // namespace krado
