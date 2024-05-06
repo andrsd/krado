@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/geom_surface.h"
 #include "krado/mesh_surface.h"
-#include "krado/equal.h"
+#include "krado/scheme_equal.h"
 #include "gp_Circ.hxx"
 #include "BRepLib_MakeEdge.hxx"
 #include "BRepLib_MakeWire.hxx"

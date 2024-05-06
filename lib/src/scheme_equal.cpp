@@ -1,13 +1,13 @@
-#include "krado/equal.h"
+#include "krado/scheme_equal.h"
 #include "krado/exception.h"
 #include "krado/mesh_curve_vertex.h"
 
 namespace krado {
 
-Equal::Equal(int n_intervals) : n_intervals(n_intervals) {}
+SchemeEqual::SchemeEqual(int n_intervals) : n_intervals(n_intervals) {}
 
 void
-Equal::mesh_curve(MeshCurve & mcurve)
+SchemeEqual::mesh_curve(MeshCurve & mcurve)
 {
     auto & gcurve = mcurve.geom_curve();
     auto [lo, hi] = gcurve.param_range();
@@ -31,7 +31,7 @@ Equal::mesh_curve(MeshCurve & mcurve)
 }
 
 Eigen::SparseMatrix<double>
-Equal::build_matrix()
+SchemeEqual::build_matrix()
 {
     int n = this->n_intervals + 2;
     Eigen::SparseMatrix<double> A(n, n);
@@ -49,7 +49,7 @@ Equal::build_matrix()
 }
 
 Eigen::VectorXd
-Equal::build_rhs(double lo, double hi)
+SchemeEqual::build_rhs(double lo, double hi)
 {
     int n = this->n_intervals + 2;
     Eigen::VectorXd b(n);
@@ -60,7 +60,7 @@ Equal::build_rhs(double lo, double hi)
 }
 
 Eigen::VectorXd
-Equal::solve(const Eigen::SparseMatrix<double> & A, const Eigen::VectorXd & b)
+SchemeEqual::solve(const Eigen::SparseMatrix<double> & A, const Eigen::VectorXd & b)
 {
     Eigen::SparseLU<Eigen::SparseMatrix<double>> lu;
     lu.compute(A);

@@ -5,9 +5,9 @@
 
 namespace krado {
 
-class Equal : public Scheme1D {
+class SchemeEqual : public Scheme1D {
 public:
-    Equal(int n_intervals);
+    SchemeEqual(int n_intervals);
 
     void mesh_curve(MeshCurve & mcurve) override;
 

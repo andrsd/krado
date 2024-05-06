@@ -2,7 +2,7 @@
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 #include "krado/exception.h"
-#include "krado/equal.h"
+#include "krado/scheme_equal.h"
 #include "BRepLib_MakeEdge.hxx"
 
 using namespace krado;
@@ -52,7 +52,7 @@ TEST(MeshCurveTest, mesh)
     MeshVertex v2(gvtx2);
     MeshCurve mcurve(gcurve, &v1, &v2);
 
-    Equal equal(4);
+    SchemeEqual equal(4);
     equal.mesh_curve(mcurve);
 
     auto vtx = mcurve.vertices();
