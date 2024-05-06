@@ -1,3 +1,6 @@
 [submodule "contrib/triangulo"]
 	path = contrib/triangulo
 	url = git@github.com:andrsd/triangulo
+[submodule "contrib/kvaredro"]
+	path = contrib/kvaredro
+	url = https://github.com/andrsd/kvaredro.git

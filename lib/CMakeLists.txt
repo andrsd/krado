@@ -30,6 +30,7 @@ target_link_libraries(
         fmt::fmt
         Eigen3::Eigen
         triangulo
+        kvaredro
 )
 
 configure_file(include/config.h.in include/krado/config.h)

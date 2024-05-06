@@ -31,6 +31,10 @@ find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 set(TRIANGULO_BUILD_APP NO)
 add_subdirectory(contrib/triangulo)
 
+# kvaredro
+set(KVAREDRO_BUILD_APP NO)
+add_subdirectory(contrib/kvaredro)
+
 add_subdirectory(lib)
 add_subdirectory(src)
 
