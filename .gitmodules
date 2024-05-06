@@ -3,4 +3,4 @@
 	url = git@github.com:andrsd/triangulo
 [submodule "contrib/kvaredro"]
 	path = contrib/kvaredro
-	url = https://github.com/andrsd/kvaredro.git
+	url = git@github.com:andrsd/kvaredro
