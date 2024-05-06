@@ -4,11 +4,9 @@
 
 namespace krado {
 
-/// Base class for mesh generation schemes
+/// Base class for 1-dimensional mesh generation schemes
 class Scheme1D {
 public:
-    Scheme1D();
-
     virtual void mesh_curve(MeshCurve & mcurve) = 0;
 };
 
