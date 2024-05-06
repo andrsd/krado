@@ -1,15 +1,20 @@
 #pragma once
 
+#include "krado/flags.h"
 #include "TopoDS_Shape.hxx"
 
 namespace krado {
 
 class GeomShape {
 public:
+    enum HealFlag { FIX_DEGENERATED, FIX_SMALL_EDGES, FIX_SMALL_FACES, SEW_FACES, MAKE_SOLIDS };
+
     explicit GeomShape(const TopoDS_Shape & shape);
 
     void clean();
-    void heal(double tolerance);
+    void heal(double tolerance,
+              Flags<HealFlag> flags = FIX_DEGENERATED | FIX_SMALL_EDGES | FIX_SMALL_FACES |
+                                      SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
 
     operator const TopoDS_Shape &() const;

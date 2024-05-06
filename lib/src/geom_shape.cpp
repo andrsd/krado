@@ -32,14 +32,19 @@ GeomShape::clean()
 }
 
 void
-GeomShape::heal(double tolerance)
+GeomShape::heal(double tolerance, Flags<HealFlag> flags)
 {
-    fix_degenerated();
-    fix_small_edges(tolerance);
-    fix_small_faces(tolerance);
-    sew_faces(tolerance);
+    if (flags & FIX_DEGENERATED)
+        fix_degenerated();
+    if (flags & FIX_SMALL_EDGES)
+        fix_small_edges(tolerance);
+    if (flags & FIX_SMALL_FACES)
+        fix_small_faces(tolerance);
+    if (flags & SEW_FACES)
+        sew_faces(tolerance);
     remove_degenerated_edges();
-    make_solids(tolerance);
+    if (flags & MAKE_SOLIDS)
+        make_solids(tolerance);
 }
 
 void
