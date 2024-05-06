@@ -22,7 +22,10 @@ public:
     /// @return Geometrical curve associated with this curve
     const GeomCurve & geom_curve() const;
 
-    const MeshVertex & vertex(int id) const;
+    /// Get bounding vertices
+    ///
+    /// @return Two bounding vertices
+    const std::vector<const MeshVertex *> & vertices() const;
 
     /// Get curve marker
     ///
@@ -57,13 +60,11 @@ public:
 
 private:
     const GeomCurve & gcurve;
-    /// Start vertex
-    const MeshVertex * v1;
-    /// End vertex
-    const MeshVertex * v2;
+    /// Bounding vertices
+    std::vector<const MeshVertex *> vtxs;
     /// Curve marker
     int curve_marker;
-    /// Vertices on the curve (excluding the bounding vertices, i.e. `v1`, `v2`)
+    /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge
     std::vector<MeshElement> curve_segs;

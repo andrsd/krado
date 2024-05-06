@@ -35,12 +35,10 @@ TEST(MeshCurveTest, api) {
     mcurve.set_marker(234);
     EXPECT_EQ(mcurve.marker(), 234);
 
-    auto & vtx_first = mcurve.vertex(0);
-    EXPECT_EQ(&vtx_first, &v1);
-    auto & vtx_last = mcurve.vertex(1);
-    EXPECT_EQ(&vtx_last, &v2);
-
-    EXPECT_THROW({mcurve.vertex(100);}, Exception);
+    auto & vtx = mcurve.vertices();
+    ASSERT_EQ(vtx.size(), 2);
+    EXPECT_EQ(vtx[0], &v1);
+    EXPECT_EQ(vtx[1], &v2);
 }
 
 TEST(MeshCurveTest, mesh)
@@ -57,15 +55,14 @@ TEST(MeshCurveTest, mesh)
     Equal equal(4);
     equal.mesh_curve(mcurve);
 
-    auto vtx_first = mcurve.vertex(0);
-    EXPECT_EQ(&vtx_first.geom_vertex(), &gvtx1);
+    auto vtx = mcurve.vertices();
+    ASSERT_EQ(vtx.size(), 2);
+    EXPECT_EQ(&vtx[0]->geom_vertex(), &gvtx1);
+    EXPECT_EQ(&vtx[1]->geom_vertex(), &gvtx2);
 
-    auto vtx_last = mcurve.vertex(1);
-    EXPECT_EQ(&vtx_last.geom_vertex(), &gvtx2);
-
-    auto vtx = mcurve.curve_vertices();
-    EXPECT_EQ(vtx.size(), 3);
-    auto vtx2 = vtx[1];
+    auto curve_vtx = mcurve.curve_vertices();
+    EXPECT_EQ(curve_vtx.size(), 3);
+    auto vtx2 = curve_vtx[1];
     EXPECT_DOUBLE_EQ(vtx2.parameter(), 2.5);
     EXPECT_DOUBLE_EQ(vtx2.point().x, 1.5);
     EXPECT_DOUBLE_EQ(vtx2.point().y, 2.0);

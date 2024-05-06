@@ -5,8 +5,7 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, const MeshVertex * v1, const MeshVertex * v2) :
     gcurve(gcurve),
-    v1(v1),
-    v2(v2),
+    vtxs({ v1, v2 }),
     curve_marker(0)
 {
 }
@@ -17,15 +16,10 @@ MeshCurve::geom_curve() const
     return this->gcurve;
 }
 
-const MeshVertex &
-MeshCurve::vertex(int id) const
+const std::vector<const MeshVertex *> &
+MeshCurve::vertices() const
 {
-    if (id == 0)
-        return *this->v1;
-    else if (id == 1)
-        return *this->v2;
-    else
-        throw Exception("Vertex index can be only 0 or 1.");
+    return this->vtxs;
 }
 
 int
@@ -64,6 +58,5 @@ MeshCurve::curve_segments() const
 {
     return this->curve_segs;
 }
-
 
 } // namespace krado
