@@ -22,7 +22,7 @@ public:
     /// @return Location in 3D space corresponding to the parametrical position
     Point point(double u, double v) const;
 
-    /// Compute first derivative at parameterical position
+    /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location

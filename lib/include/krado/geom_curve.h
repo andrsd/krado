@@ -25,7 +25,7 @@ public:
     /// @return Location in 3D space corresponding to the parametrical position
     Point point(double u) const;
 
-    /// Compute first derivative at parameterical position
+    /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location [0..<length_of_curve>]
     /// @return First derivative

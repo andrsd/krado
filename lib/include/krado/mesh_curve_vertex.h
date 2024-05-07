@@ -17,9 +17,9 @@ public:
     /// @return Geometrical curve this vertex is connected to
     const GeomCurve & geom_curve() const;
 
-    /// Get the parameterical position of the vertex on the curve
+    /// Get the parametrical position of the vertex on the curve
     ///
-    /// @return Parameterical position of the vertex on the curve
+    /// @return Parametrical position of the vertex on the curve
     double parameter() const;
 
     /// Get physical position in the 3D space
