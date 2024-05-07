@@ -7,7 +7,7 @@
 #include "krado/vector.h"
 #include "krado/utils.h"
 #include "krado/types.h"
-#include "krado/robust_predicates.h"
+#include "krado/predicates.h"
 #include <array>
 
 namespace krado {
@@ -89,11 +89,7 @@ qm_eta<ElementType::TETRA4>(const MeshElement & el)
                               el.vertex(2)->point(),
                               el.vertex(3)->point() };
 
-    double p0[3] = { pt[0].x, pt[0].y, pt[0].z };
-    double p1[3] = { pt[1].x, pt[1].y, pt[1].z };
-    double p2[3] = { pt[2].x, pt[2].y, pt[2].z };
-    double p3[3] = { pt[3].x, pt[3].y, pt[3].z };
-    auto volume = std::abs(robust_predicates::orient3d(p0, p1, p2, p3)) / 6.0;
+    auto volume = std::abs(orient3d(pt[0], pt[1], pt[2], pt[3])) / 6.0;
 
     auto & x1 = pt[0].x;
     auto & y1 = pt[0].y;
@@ -165,12 +161,7 @@ qm_gamma<ElementType::TETRA4>(const MeshElement & el)
                               el.vertex(2)->point(),
                               el.vertex(3)->point() };
 
-    double p0[3] = { pt[0].x, pt[0].y, pt[0].z };
-    double p1[3] = { pt[1].x, pt[1].y, pt[1].z };
-    double p2[3] = { pt[2].x, pt[2].y, pt[2].z };
-    double p3[3] = { pt[3].x, pt[3].y, pt[3].z };
-
-    auto volume = (robust_predicates::orient3d(p0, p1, p2, p3)) / 6.0;
+    auto volume = orient3d(pt[0], pt[1], pt[2], pt[3]) / 6.0;
 
     if (std::fabs(volume) == 0)
         return 0;

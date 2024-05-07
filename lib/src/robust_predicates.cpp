@@ -129,9 +129,7 @@
 #include <fpu_control.h>
 #endif /* LINUX */
 
-namespace krado {
-namespace robust_predicates
-{
+namespace robust_predicates {
 
 /* On some machines, the exact arithmetic routines might be defeated by the  */
 /*   use of internal extended precision floating-point registers.  Sometimes */
@@ -2562,4 +2560,3 @@ REAL insphere(const REAL* const __restrict__ pa,
 }
 
 } // end namespace
-} // namespace krado
