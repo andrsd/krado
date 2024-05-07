@@ -198,7 +198,7 @@ void
 Mesh::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
-        auto mesh_pars = curve.meshing_parameters();
+        auto & mesh_pars = curve.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
         scheme->mesh_curve(curve);
@@ -221,7 +221,7 @@ void
 Mesh::mesh_surface(MeshSurface & surface)
 {
     if (!surface.is_meshed()) {
-        auto mesh_pars = surface.meshing_parameters();
+        auto & mesh_pars = surface.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme2D>(scheme_name, *this, mesh_pars);
         scheme->mesh_surface(surface);
@@ -240,7 +240,7 @@ void
 Mesh::mesh_volume(MeshVolume & volume)
 {
     if (!volume.is_meshed()) {
-        auto mesh_pars = volume.meshing_parameters();
+        auto & mesh_pars = volume.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme3D>(scheme_name, *this, mesh_pars);
         scheme->mesh_volume(volume);

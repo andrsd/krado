@@ -32,7 +32,7 @@ TEST(MeshCurveTest, api) {
 
     EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
 
-    auto mpars = mcurve.meshing_parameters();
+    auto & mpars = mcurve.meshing_parameters();
     EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
     EXPECT_EQ(mpars.get<int>("marker"), 0);
 
