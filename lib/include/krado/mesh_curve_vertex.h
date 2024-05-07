@@ -27,12 +27,23 @@ public:
     /// @return Physical position in the 3D space
     Point point() const;
 
+    /// Get global ID
+    ///
+    /// @return Global ID of this vertex
+    int global_id() const;
+
+    /// Set global ID
+    ///
+    /// @param id New ID to assign
+    void set_global_id(int id);
+
 private:
     const GeomCurve & gcurve;
     /// Parametrical position on the curve
     double u;
     /// Physical location corresponding to the `u` parameter
     Point phys_pt;
+    int gid;
 };
 
 } // namespace krado

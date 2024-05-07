@@ -6,7 +6,7 @@
 
 namespace krado {
 
-Mesh::Mesh(const Model & model) : scheme_factory(SchemeFactory::instance())
+Mesh::Mesh(const Model & model) : scheme_factory(SchemeFactory::instance()), gid_ctr(0)
 {
     initialize(model);
 }
@@ -212,6 +212,18 @@ void Mesh::mesh_volume(MeshVolume & volume)
     auto scheme_name = mesh_pars.get<std::string>("scheme");
     auto scheme = get_scheme<Scheme3D>(scheme_name, mesh_pars);
     scheme->mesh_volume(volume);
+}
+
+void Mesh::assign_gid(MeshVertex & vertex)
+{
+    vertex.set_global_id(this->gid_ctr);
+    this->gid_ctr++;
+}
+
+void Mesh::assign_gid(MeshCurveVertex & vertex)
+{
+    vertex.set_global_id(this->gid_ctr);
+    this->gid_ctr++;
 }
 
 } // namespace krado

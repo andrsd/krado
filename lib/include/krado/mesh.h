@@ -63,6 +63,16 @@ protected:
         return dynamic_cast<T *>(scheme);
     }
 
+    /// Assign a new global ID to a vertex
+    ///
+    /// @param vertex Vertex to assign global ID to
+    void assign_gid(MeshVertex & vertex);
+
+    /// Assign a new global ID to a curve vertex
+    ///
+    /// @param vertex Curve vertex to assign global ID to
+    void assign_gid(MeshCurveVertex & vertex);
+
 private:
     void initialize(const Model & model);
 
@@ -72,6 +82,9 @@ private:
     std::map<int, MeshVolume> vols;
 
     SchemeFactory & scheme_factory;
+
+    /// Global ID counter
+    int gid_ctr;
 };
 
 } // namespace krado

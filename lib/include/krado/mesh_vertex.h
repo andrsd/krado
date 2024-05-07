@@ -14,8 +14,19 @@ public:
     /// @return Geometrical vertex associated with this vertex
     const GeomVertex & geom_vertex() const;
 
+    /// Get global ID
+    ///
+    /// @return Global ID of this vertex
+    int global_id() const;
+
+    /// Set global ID
+    ///
+    /// @param id New ID to assign
+    void set_global_id(int id);
+
 private:
     const GeomVertex & gvtx;
+    int gid;
 };
 
 } // namespace krado
