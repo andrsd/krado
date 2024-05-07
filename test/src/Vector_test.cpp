@@ -27,5 +27,75 @@ TEST(VectorTest, op_call)
     EXPECT_DOUBLE_EQ(vec(1), 6.);
     EXPECT_DOUBLE_EQ(vec(2), 9.);
 
-    EXPECT_THROW({vec(10);}, Exception);
+    EXPECT_THROW({ vec(10); }, Exception);
+}
+
+TEST(VectorTest, norm)
+{
+    Vector a(3, 4, 0);
+    EXPECT_DOUBLE_EQ(a.norm(), 5.);
+}
+
+TEST(VectorTest, normalize)
+{
+    Vector a(3, 4, 5);
+    a.normalize();
+    double l = std::sqrt(3*3 + 4*4 + 5*5);
+    EXPECT_DOUBLE_EQ(a(0), 3. / l);
+    EXPECT_DOUBLE_EQ(a(1), 4. / l);
+    EXPECT_DOUBLE_EQ(a(2), 5. / l);
+}
+
+TEST(VectorTest, op_add)
+{
+    Vector a(1, 2, 3);
+    Vector b(4, 1, -4);
+    auto c = a + b;
+    EXPECT_DOUBLE_EQ(c(0), 5.);
+    EXPECT_DOUBLE_EQ(c(1), 3.);
+    EXPECT_DOUBLE_EQ(c(2), -1.);
+}
+
+TEST(VectorTest, op_add2)
+{
+    Vector a(1, 2, 3);
+    Vector b(4, 1, -4);
+    b += a;
+    EXPECT_DOUBLE_EQ(b(0), 5.);
+    EXPECT_DOUBLE_EQ(b(1), 3.);
+    EXPECT_DOUBLE_EQ(b(2), -1.);
+}
+
+TEST(VectorTest, op_sub)
+{
+    Vector a(1, 2, 3);
+    Vector b(4, 1, -4);
+    auto c = a - b;
+    EXPECT_DOUBLE_EQ(c(0), -3);
+    EXPECT_DOUBLE_EQ(c(1), 1.);
+    EXPECT_DOUBLE_EQ(c(2), 7.);
+}
+
+TEST(VectorTest, op_mult_scalar)
+{
+    Vector a(1, 2, 3);
+    auto c = 2. * a;
+    EXPECT_DOUBLE_EQ(c(0), 2.);
+    EXPECT_DOUBLE_EQ(c(1), 4.);
+    EXPECT_DOUBLE_EQ(c(2), 6.);
+
+    auto d = a * 3.;
+    EXPECT_DOUBLE_EQ(d(0), 3.);
+    EXPECT_DOUBLE_EQ(d(1), 6.);
+    EXPECT_DOUBLE_EQ(d(2), 9.);
+}
+
+TEST(VectorTest, cross_product)
+{
+    Vector a(1, 0, 0);
+    Vector b(0, 1, 0);
+    auto c = cross_product(a, b);
+    EXPECT_DOUBLE_EQ(c(0), 0.);
+    EXPECT_DOUBLE_EQ(c(1), 0.);
+    EXPECT_DOUBLE_EQ(c(2), 1.);
 }

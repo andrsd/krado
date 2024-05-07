@@ -20,4 +20,30 @@ Vector::operator()(int idx) const
         throw Exception("'idx' can be only 0, 1, or 2.");
 }
 
+double
+Vector::norm() const
+{
+    return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+}
+
+void
+Vector::normalize()
+{
+    double n = norm();
+    if (n) {
+        this->x /= n;
+        this->y /= n;
+        this->z /= n;
+    }
+}
+
+Vector &
+Vector::operator+=(const Vector & a)
+{
+    this->x += a.x;
+    this->y += a.y;
+    this->z += a.z;
+    return *this;
+}
+
 } // namespace krado
