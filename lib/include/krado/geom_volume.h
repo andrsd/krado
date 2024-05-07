@@ -10,6 +10,7 @@
 
 namespace krado {
 
+class GeomSurface;
 class GeomModel;
 
 class GeomVolume : public GeomShape {

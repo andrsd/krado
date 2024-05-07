@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"

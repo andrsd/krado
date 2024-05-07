@@ -12,7 +12,7 @@ TEST(GeomSurfaceTest, point)
     auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
-    auto pt_center = circ.point(0., 0.);
+    auto pt_center = circ.point({ 0., 0. });
     EXPECT_EQ(pt_center, Point(0., 0., 0.));
 }
 
@@ -45,7 +45,7 @@ TEST(GeomSurfaceTest, d1_circ)
     auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
-    auto [d1u, d1v] = circ.d1(0., 0.);
+    auto [d1u, d1v] = circ.d1({ 0., 0. });
 
     EXPECT_DOUBLE_EQ(d1u.x, 1.);
     EXPECT_DOUBLE_EQ(d1u.y, 0.);
@@ -84,7 +84,7 @@ TEST(GeomSurfaceTest, normal)
     auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
-    auto n = circ.normal(0., 0.);
+    auto n = circ.normal({ 0., 0. });
     EXPECT_DOUBLE_EQ(n.x, 0.);
     EXPECT_DOUBLE_EQ(n.y, 0.);
     EXPECT_DOUBLE_EQ(n.z, 1.);

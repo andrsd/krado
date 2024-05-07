@@ -9,12 +9,15 @@
 namespace krado {
 
 class Vector;
+class UVParam;
 
 /// Point in 3D space
 class Point {
 public:
     /// Construct point at origin
     Point();
+
+    explicit Point(const UVParam & uv);
 
     /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);
@@ -57,6 +60,12 @@ public:
     /// Z-component
     double z;
 };
+
+inline Point
+operator*(double alpha, const Point & pt)
+{
+    return Point(pt(0) * alpha, pt(1) * alpha, pt(2) * alpha);
+}
 
 bool operator==(const Point & a, const Point & b);
 

@@ -26,7 +26,30 @@
 
 namespace krado {
 
-GeomShape::GeomShape(const TopoDS_Shape & shape) : shape_(shape) {}
+GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) :
+    dim_(dim),
+    shape_(shape),
+    entity_tag_(-1)
+{
+}
+
+int
+GeomShape::dim() const
+{
+    return this->dim_;
+}
+
+int
+GeomShape::tag() const
+{
+    return this->entity_tag_;
+}
+
+void
+GeomShape::setTag(int tag)
+{
+    this->entity_tag_ = tag;
+}
 
 void
 GeomShape::clean()

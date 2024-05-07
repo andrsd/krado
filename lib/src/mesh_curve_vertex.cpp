@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh_curve_vertex.h"
+#include "krado/geom_curve.h"
 
 namespace krado {
 

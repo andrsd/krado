@@ -10,13 +10,14 @@
 namespace krado {
 
 class GeomCurve;
-class MeshVertexAbstract;
 class MeshVertex;
 class MeshCurveVertex;
 
 class MeshCurve : public MeshingParameters {
 public:
     MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2);
+
+    int tag() const;
 
     /// Get geometrical curve associated with this curve
     ///
@@ -61,6 +62,10 @@ public:
     /// @return Curse segments using vertex indexing local to this edge
     [[nodiscard]] const std::vector<MeshElement> & segments() const;
 
+    bool is_mesh_degenerated() const;
+
+    void set_too_small(bool value);
+
 private:
     const GeomCurve & gcurve_;
     /// All vertices on this curve
@@ -71,6 +76,13 @@ private:
     std::vector<MeshCurveVertex *> curve_vtx_;
     /// Segments of this curve, using vertex indexing local to this edge
     std::vector<MeshElement> segs_;
+    ///
+    bool too_smoll;
+};
+
+/// TODO: move this to mesh_element.h
+struct MEdgeLessThan {
+    bool operator()(const MeshElement & e1, const MeshElement & e2) const;
 };
 
 } // namespace krado

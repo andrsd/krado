@@ -3,6 +3,7 @@
 
 #include "krado/point.h"
 #include "krado/exception.h"
+#include "krado/uv_param.h"
 #include "krado/vector.h"
 #include <iostream>
 #include <iomanip>
@@ -10,6 +11,8 @@
 namespace krado {
 
 Point::Point() : x(0.), y(0.), z(0.) {}
+
+Point::Point(const UVParam & uv) : x(uv.u), y(uv.v), z(0.) {}
 
 Point::Point(double x, double y, double z) : x(x), y(y), z(z) {}
 

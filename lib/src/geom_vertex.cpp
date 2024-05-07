@@ -6,7 +6,7 @@
 
 namespace krado {
 
-GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex_(vertex)
+GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(0, vertex), vertex_(vertex)
 {
     if (!this->vertex_.IsNull()) {
         gp_Pnt pnt = BRep_Tool::Pnt(this->vertex_);

@@ -3,16 +3,20 @@
 
 #pragma once
 
-#include "krado/geom_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/meshing_parameters.h"
-#include "krado/point.h"
 
 namespace krado {
+
+class GeomEntity;
+class GeomVertex;
+class Point;
 
 class MeshVertex : public MeshVertexAbstract, public MeshingParameters {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
+
+    int tag() const;
 
     /// Get geometrical vertex associated with this vertex
     ///
@@ -24,8 +28,20 @@ public:
     /// @return Physical position in the 3D space
     [[nodiscard]] Point point() const override;
 
+    ///
+    double prescribed_mesh_size_at_vertex() const;
+
 private:
     const GeomVertex & gvtx_;
+
+public:
+    struct PtrLessThan {
+        bool
+        operator()(const MeshVertex * v1, const MeshVertex * v2) const
+        {
+            return v1->tag() < v2->tag();
+        }
+    };
 };
 
 } // namespace krado

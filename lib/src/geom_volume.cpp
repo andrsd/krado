@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_volume.h"
+#include "krado/geom_surface.h"
 #include "TopoDS.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
@@ -9,7 +10,7 @@
 
 namespace krado {
 
-GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(solid), solid_(solid)
+GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(3, solid), solid_(solid)
 {
     GProp_GProps props;
     BRepGProp::VolumeProperties(this->solid_, props);

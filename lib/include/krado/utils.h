@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/types.h"
+#include "krado/uv_param.h"
 #include <cstdint>
 #include <string>
 #include <algorithm>
@@ -12,7 +13,8 @@
 
 namespace krado {
 class Point;
-}
+class UVParam;
+} // namespace krado
 
 namespace krado::utils {
 
@@ -148,5 +150,7 @@ std::string to_str(T val);
 /// @param p2 The second point
 /// @return The distance between the two points
 [[nodiscard]] double distance(const Point & p1, const Point & p2);
+
+[[nodiscard]] double distance(const UVParam & p1, const UVParam & p2);
 
 } // namespace krado::utils

@@ -52,8 +52,8 @@ public:
         auto it = this->surf_idx_.find(pt);
         if (it == this->surf_idx_.end()) {
             auto & geom_surface = surface_.geom_surface();
-            auto [u, v] = geom_surface.parameter_from_point(pt);
-            auto sv = new MeshSurfaceVertex(geom_surface, u, v);
+            auto uv = geom_surface.parameter_from_point(pt);
+            auto sv = new MeshSurfaceVertex(geom_surface, uv);
             this->surf_idx_.try_emplace(pt, sv);
             this->surface_.add_vertex(sv);
             return sv;

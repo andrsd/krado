@@ -5,6 +5,9 @@
 
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/types.h"
+#include "krado/utils.h"
+#include <array>
+#include <iostream>
 
 namespace krado {
 
@@ -33,9 +36,42 @@ public:
     /// @return Vertex
     [[nodiscard]] MeshVertexAbstract * vertex(int idx) const;
 
+    /// FIXME: DA
+    Point barycenter() const;
+
+    /// FIXME: DA
+    double volume() const;
+
+    const std::vector<MeshVertexAbstract *> & vertices() const;
+
+    MeshElement get_edge(int i) const;
+
+    /// Swap two vertices
+    ///
+    /// @param idx1 Index of the first vertex
+    /// @param idx2 Index of the second vertex
+    ///
+    /// @note This is useful for reorienting elements
+    void swap_vertices(int idx1, int idx2);
+
 private:
     ElementType type_;
     std::vector<MeshVertexAbstract *> vtx_;
+
+public:
+    static MeshElement Line2(const std::array<MeshVertexAbstract *, 2> & vtx);
+    static MeshElement Tri3(const std::array<MeshVertexAbstract *, 3> & vtx);
+    static MeshElement Quad4(const std::array<MeshVertexAbstract *, 4> & vtx);
 };
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::MeshElement & el)
+{
+    stream << "(" << krado::utils::to_str(el.type()) << ":";
+    for (auto & vtx : el.vertices())
+        stream << " " << vtx;
+    stream << ")";
+    return stream;
+}

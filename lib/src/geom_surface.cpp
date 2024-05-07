@@ -3,6 +3,8 @@
 
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
+#include "krado/predicates.h"
+#include "krado/geom_shape.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -12,11 +14,10 @@
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
-#include "krado/geom_shape.h"
 
 namespace krado {
 
-GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face), face_(face)
+GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(2, face), face_(face)
 {
     this->surface_ = BRep_Tool::Surface(this->face_);
 
@@ -68,28 +69,28 @@ GeomSurface::GeomSurface(GeomSurface && other) :
 }
 
 Point
-GeomSurface::point(double u, double v) const
+GeomSurface::point(const UVParam & param) const
 {
-    gp_Pnt pnt = this->surface_->Value(u, v);
+    gp_Pnt pnt = this->surface_->Value(param.u, param.v);
     return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
 Vector
-GeomSurface::normal(double u, double v) const
+GeomSurface::normal(const UVParam & param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
-    prop.SetParameters(u, v);
+    prop.SetParameters(param.u, param.v);
     auto n = prop.Normal();
     return Vector(n.X(), n.Y(), n.Z());
 }
 
 std::tuple<Vector, Vector>
-GeomSurface::d1(double u, double v) const
+GeomSurface::d1(const UVParam & param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
-    prop.SetParameters(u, v);
+    prop.SetParameters(param.u, param.v);
     auto d1u = prop.D1U();
     auto d1v = prop.D1V();
     return { Vector(d1u.X(), d1u.Y(), d1u.Z()), Vector(d1v.X(), d1v.Y(), d1v.Z()) };
@@ -128,9 +129,9 @@ GeomSurface::curves() const
 UVParam
 GeomSurface::parameter_from_point(const Point & pt) const
 {
-    auto [found, u, v] = project(pt);
+    auto [found, uv] = project(pt);
     if (found)
-        return { u, v };
+        return uv;
     else
         throw Exception("Projection of point failed to find parameter");
 }
@@ -140,7 +141,12 @@ GeomSurface::operator const TopoDS_Shape &() const
     return this->face_;
 }
 
-std::tuple<bool, double, double>
+GeomSurface::operator const TopoDS_Face &() const
+{
+    return this->face_;
+}
+
+std::tuple<bool, UVParam>
 GeomSurface::project(const Point & pt) const
 {
     gp_Pnt pnt(pt.x, pt.y, pt.z);
@@ -149,10 +155,10 @@ GeomSurface::project(const Point & pt) const
     if (this->proj_pt_on_surface_.NbPoints() > 0) {
         double u, v;
         this->proj_pt_on_surface_.LowerDistanceParameters(u, v);
-        return { true, u, v };
+        return { true, { u, v } };
     }
     else
-        return { false, 0., 0. };
+        return { false, { 0., 0. } };
 }
 
 Point
@@ -171,12 +177,46 @@ GeomSurface::nearest_point(const Point & pt) const
 bool
 GeomSurface::contains_point(const Point & pt) const
 {
-    Point xyz = nearest_point(pt);
-    const Standard_Real tolerance = BRep_Tool::Tolerance(this->face_);
+    auto xyz = nearest_point(pt);
+    const auto tolerance = BRep_Tool::Tolerance(this->face_);
     if (pt.distance(xyz) <= tolerance)
         return true;
     else
         return false;
+}
+
+const std::set<GeomVertex *> &
+GeomSurface::embedded_vertices() const
+{
+    return this->embedded_vtxs_;
+}
+
+const std::vector<GeomCurve *> &
+GeomSurface::embedded_curves() const
+{
+    return this->embedded_crvs_;
+}
+
+bool
+point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam & out, int & N)
+{
+    int count = 0;
+    for (size_t i = 0; i < bnd.size(); i += 2) {
+        UVParam p1 = bnd[i];
+        UVParam p2 = bnd[i + 1];
+        double a = orient2d(p1, p2, p);
+        double b = orient2d(p1, p2, out);
+        if (a * b < 0) {
+            a = orient2d(p, out, p1);
+            b = orient2d(p, out, p2);
+            if (a * b < 0)
+                count++;
+        }
+    }
+    N = count;
+    if (count % 2 == 0)
+        return false;
+    return true;
 }
 
 } // namespace krado

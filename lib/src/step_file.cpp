@@ -24,7 +24,7 @@ STEPFile::load() const
     reader.NbRootsForTransfer();
     reader.TransferRoots();
     auto result = reader.OneShape();
-    return GeomShape(result);
+    return GeomShape(-1, result);
 }
 
 } // namespace krado

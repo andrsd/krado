@@ -173,7 +173,9 @@ GeomModel::bind_solids(const GeomShape & shape)
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
             auto id = this->vols_.size() + 1;
-            this->vols_.emplace(id, GeomVolume(solid));
+            GeomVolume gvol(solid);
+            gvol.setTag(id);
+            this->vols_.emplace(id, gvol);
             this->vol_id_.Bind(solid, id);
         }
     }
@@ -187,7 +189,9 @@ GeomModel::bind_faces(const GeomShape & shape)
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
             auto id = this->srfs_.size() + 1;
-            this->srfs_.emplace(id, GeomSurface(face));
+            GeomSurface gsurf(face);
+            gsurf.setTag(id);
+            this->srfs_.emplace(id, gsurf);
             this->srf_id_.Bind(face, id);
         }
     }
@@ -201,7 +205,9 @@ GeomModel::bind_edges(const GeomShape & shape)
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
             auto id = this->crvs_.size() + 1;
-            this->crvs_.emplace(id, GeomCurve(edge));
+            GeomCurve gedge(edge);
+            gedge.setTag(id);
+            this->crvs_.emplace(id, gedge);
             this->crv_id_.Bind(edge, id);
         }
     }
@@ -215,7 +221,9 @@ GeomModel::bind_vertices(const GeomShape & shape)
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
             auto id = this->vtxs_.size() + 1;
-            this->vtxs_.emplace(id, GeomVertex(vertex));
+            GeomVertex gvtx(vertex);
+            gvtx.setTag(id);
+            this->vtxs_.emplace(id, gvtx);
             this->vtx_id_.Bind(vertex, id);
         }
     }

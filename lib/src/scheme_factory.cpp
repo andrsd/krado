@@ -11,6 +11,7 @@
 #include "krado/scheme/bamg.h"
 #include "krado/scheme/triangle.h"
 #include "krado/scheme/trisurf.h"
+#include "krado/scheme/frontal_delaunay.h"
 
 namespace krado {
 
@@ -32,6 +33,7 @@ SchemeFactory::SchemeFactory()
     add<SchemeBAMG>("bamg");
     add<SchemeTriangle>("triangle");
     add<SchemeTriSurf>("trisurf");
+    add<SchemeFrontalDelaunay>("frontal-delaunay");
 }
 
 } // namespace krado

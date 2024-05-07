@@ -14,6 +14,7 @@
 namespace krado {
 
 class GeomModel;
+class GeomSurface;
 
 class GeomCurve : public GeomShape {
 public:
@@ -86,6 +87,8 @@ public:
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
     [[nodiscard]] bool contains_point(const Point & pt) const;
+
+    bool is_seam(const GeomSurface & surface) const;
 
     operator const TopoDS_Shape &() const;
 

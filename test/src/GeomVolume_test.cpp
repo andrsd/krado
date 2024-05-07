@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "BRepPrimAPI_MakeBox.hxx"
 #include "TopoDS_Solid.hxx"

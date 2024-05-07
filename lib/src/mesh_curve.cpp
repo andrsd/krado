@@ -5,6 +5,7 @@
 #include "krado/geom_curve.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_element.h"
 #include "krado/exception.h"
 #include "krado/scheme.h"
 #include "krado/types.h"
@@ -14,8 +15,15 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve_(gcurve),
-    bnd_vtxs_({ v1, v2 })
+    bnd_vtxs_({ v1, v2 }),
+    too_smoll(false)
 {
+}
+
+int
+MeshCurve::tag() const
+{
+    return this->gcurve_.tag();
 }
 
 const GeomCurve &
@@ -72,6 +80,46 @@ const std::vector<MeshElement> &
 MeshCurve::segments() const
 {
     return this->segs_;
+}
+
+bool
+MeshCurve::is_mesh_degenerated() const
+{
+    // if (this->too_small)
+    //     Msg::Debug("Degenerated mesh on curve %d: too small", tag());
+    // if (this->bnd_vtxs[0] && this->bnd_vtxs[0] == this->bnd_vtxs[1] && this->vtxs.size() < 2)
+    //     Msg::Debug("Degenerated mesh on curve %d: %d mesh nodes",
+    //                tag(),
+    //                (int) this->vtxs.size());
+    return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
+                               this->vtxs_.size() < 2);
+}
+
+void
+MeshCurve::set_too_small(bool value)
+{
+    this->too_smoll = value;
+}
+
+//
+
+bool
+MEdgeLessThan::operator()(const MeshElement & e1, const MeshElement & e2) const
+{
+    auto vtx1 = e1.vertices();
+    if (vtx1[0]->num() > vtx1[1]->num())
+        std::swap(vtx1[0], vtx1[1]);
+    auto vtx2 = e2.vertices();
+    if (vtx2[0]->num() > vtx2[1]->num())
+        std::swap(vtx2[0], vtx2[1]);
+
+    if (vtx1[0]->num() < vtx2[0]->num())
+        return true;
+    if (vtx1[0]->num() > vtx2[0]->num())
+        return false;
+    if (vtx1[1]->num() < vtx2[1]->num())
+        return true;
+    return false;
 }
 
 } // namespace krado

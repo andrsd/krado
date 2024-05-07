@@ -13,13 +13,19 @@ public:
     enum HealFlag { FIX_DEGENERATED, FIX_SMALL_EDGES, FIX_SMALL_FACES, SEW_FACES, MAKE_SOLIDS };
 
     GeomShape() = default;
-    explicit GeomShape(const TopoDS_Shape & shape);
+    explicit GeomShape(int dim, const TopoDS_Shape & shape);
+
+    int dim() const;
 
     void clean();
     void heal(double tolerance,
               Flags<HealFlag> flags = FIX_DEGENERATED | FIX_SMALL_EDGES | FIX_SMALL_FACES |
                                       SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
+
+    int tag() const;
+
+    void setTag(int tag);
 
     operator const TopoDS_Shape &() const;
 
@@ -34,7 +40,9 @@ private:
     void sew_faces(double tolerance);
     void make_solids(double tolerance);
 
+    int dim_;
     TopoDS_Shape shape_;
+    int entity_tag_;
 };
 
 } // namespace krado

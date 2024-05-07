@@ -7,6 +7,7 @@
 
 #include "krado/exception.h"
 #include "krado/vector.h"
+#include "krado/uv_param.h"
 #include <set>
 #include <vector>
 #include <algorithm>
@@ -203,11 +204,11 @@ public:
 };
 
 class BDS_SwapEdgeTestNormals : public BDS_SwapEdgeTest {
-    GeomSurface * gf;
+    const GeomSurface & gf;
     double _ori;
 
 public:
-    BDS_SwapEdgeTestNormals(GeomSurface * _gf, double ori) : gf(_gf), _ori(ori) {}
+    BDS_SwapEdgeTestNormals(const GeomSurface & gf, double ori) : gf(gf), _ori(ori) {}
     bool operator()(BDS_Point * p1, BDS_Point * p2, BDS_Point * q1, BDS_Point * q2) const override;
     bool operator()(BDS_Point * p1,
                     BDS_Point * p2,
@@ -225,9 +226,9 @@ public:
 
 struct EdgeToRecover {
     int p1, p2;
-    GeomCurve * ge;
+    const GeomCurve * ge;
 
-    EdgeToRecover(int p1, int p2, GeomCurve * ge);
+    EdgeToRecover(int p1, int p2, const GeomCurve * ge);
     bool operator<(const EdgeToRecover & other) const;
 };
 
@@ -238,7 +239,7 @@ public:
     BDS_Mesh(const BDS_Mesh & other);
     // Points
     BDS_Point * add_point(int num, double x, double y, double z);
-    BDS_Point * add_point(int num, double u, double v, const GeomSurface * gf);
+    BDS_Point * add_point(int num, UVParam uv, const GeomSurface & gf);
     void del_point(BDS_Point * p);
     BDS_Point * find_point(int num);
     // Edges
@@ -257,17 +258,16 @@ public:
     void add_geom(int degree, int tag);
     BDS_GeomEntity * get_geom(int p1, int p2);
     // 2D operators
-    BDS_Edge * recover_edge(int p1,
-                            int p2,
-                            bool & fatal,
-                            std::set<EdgeToRecover> * e2r = nullptr,
-                            std::set<EdgeToRecover> * not_recovered = nullptr);
+    std::tuple<BDS_Edge *, bool> recover_edge(int p1,
+                                              int p2,
+                                              std::set<EdgeToRecover> & e2r,
+                                              std::set<EdgeToRecover> & not_recovered);
     BDS_Edge * recover_edge_fast(BDS_Point * p1, BDS_Point * p2);
 
     /// Can invalidate the iterators for \p edge
     bool swap_edge(BDS_Edge *, const BDS_SwapEdgeTest & theTest, bool force = false);
     bool collapse_edge_parametric(BDS_Edge *, BDS_Point *, bool = false);
-    bool smooth_point_centroid(BDS_Point * p, GeomSurface * gf, double thresh);
+    bool smooth_point_centroid(BDS_Point * p, const GeomSurface & gf, double thresh);
     bool split_edge(BDS_Edge *, BDS_Point *, bool check_area_param = false);
     bool edge_constraint(BDS_Point * p1, BDS_Point * p2);
     // Global operators

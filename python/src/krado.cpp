@@ -137,7 +137,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
-        .def(py::init<const TopoDS_Shape &>())
+        .def(py::init<int, const TopoDS_Shape &>())
         .def("clean", &GeomShape::clean)
         .def("heal", &GeomShape::heal)
         .def("scale", &GeomShape::scale)
@@ -283,6 +283,7 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<MeshSurfaceVertex, MeshVertexAbstract>(m, "MeshSurfaceVertex")
         .def(py::init<const GeomSurface &, double, double>())
+        .def(py::init<const GeomSurface &, UVParam>())
         .def("parameter", &MeshSurfaceVertex::parameter)
     ;
 
@@ -297,9 +298,9 @@ PYBIND11_MODULE(krado, m)
     py::class_<MeshSurface, MeshingParameters>(m, "MeshSurface")
         .def(py::init<const GeomSurface &, const std::vector<MeshCurve *> &>())
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
-        .def("all_vertices", &MeshSurface::all_vertices, py::return_value_policy::reference)
-        .def("surface_vertices", &MeshSurface::surface_vertices, py::return_value_policy::reference)
-        .def("triangles", &MeshSurface::triangles, py::return_value_policy::reference)
+        .def("all_vertices", py::overload_cast<>(&MeshSurface::all_vertices, py::const_), py::return_value_policy::reference)
+        .def("surface_vertices", py::overload_cast<>(&MeshSurface::surface_vertices, py::const_), py::return_value_policy::reference)
+        .def("triangles", py::overload_cast<>(&MeshSurface::triangles, py::const_), py::return_value_policy::reference)
     ;
 
     py::class_<MeshVolume, MeshingParameters>(m, "MeshVolume")

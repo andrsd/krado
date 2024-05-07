@@ -4,11 +4,13 @@
 #pragma once
 
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/point.h"
 #include "krado/uv_param.h"
 
 namespace krado {
 
 class GeomSurface;
+class UVParam;
 
 class MeshSurfaceVertex : public MeshVertexAbstract {
 public:
@@ -18,6 +20,8 @@ public:
     /// @param u Parameter on the curve
     /// @param v Parameter on the curve
     MeshSurfaceVertex(const GeomSurface & geom_surface, double u, double v);
+
+    MeshSurfaceVertex(const GeomSurface & geom_surface, UVParam uv);
 
     /// Get geometrical curve this vertex is connected to
     ///
@@ -37,7 +41,7 @@ public:
 private:
     const GeomSurface & gsurface_;
     /// Parametrical position on the curve
-    double u_, v_;
+    UVParam uv_;
     /// Physical location corresponding to the (`u`, `v`) parameter
     Point phys_pt_;
 };

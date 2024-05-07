@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/geom_shape.h"
+#include "krado/geom_vertex.h"
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/uv_param.h"
@@ -12,6 +13,7 @@
 #include "Geom_Surface.hxx"
 #include "GeomAPI_ProjectPointOnSurf.hxx"
 #include <vector>
+#include <set>
 
 namespace krado {
 
@@ -28,21 +30,21 @@ public:
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Location in 3D space corresponding to the parametrical position
-    [[nodiscard]] Point point(double u, double v) const;
+    [[nodiscard]] Point point(const UVParam & uv) const;
 
     /// Get normal vector at parametrical location
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Normal vector at location (u, v)
-    [[nodiscard]] Vector normal(double u, double v) const;
+    [[nodiscard]] Vector normal(const UVParam & param) const;
 
     /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return First derivative
-    [[nodiscard]] std::tuple<Vector, Vector> d1(double u, double v) const;
+    [[nodiscard]] std::tuple<Vector, Vector> d1(const UVParam & param) const;
 
     /// Get area of the surface
     ///
@@ -77,10 +79,18 @@ public:
     /// @return `true` if the point is on the curve, `false` otherwise
     [[nodiscard]] bool contains_point(const Point & pt) const;
 
+    /// Get embedded vertices
+    const std::set<GeomVertex *> & embedded_vertices() const;
+
+    /// Get embedded curves
+    const std::vector<GeomCurve *> & embedded_curves() const;
+
     operator const TopoDS_Shape &() const;
 
+    operator const TopoDS_Face &() const;
+
 private:
-    std::tuple<bool, double, double> project(const Point & pt) const;
+    std::tuple<bool, UVParam> project(const Point & pt) const;
 
     TopoDS_Face face_;
     Handle(Geom_Surface) surface_;
@@ -88,8 +98,17 @@ private:
     double surf_area_;
     double umin_, umax_;
     double vmin_, vmax_;
+    /// Embedded curves
+    std::vector<GeomCurve *> embedded_crvs_;
+    /// Embedded vertices
+    std::set<GeomVertex * /*, GEntityPtrLessThan*/> embedded_vtxs_;
+
     /// Needs to be a pointer, because GeomSurface must be movable
     mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface_;
 };
+
+// TODO: move this somewhere else
+bool
+point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam & out, int & N);
 
 } // namespace krado

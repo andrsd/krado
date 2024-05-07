@@ -3,6 +3,7 @@
 // Rewrite of PolyMesh from gmsh
 
 #include "krado/vector.h"
+#include "krado/point.h"
 #include <vector>
 #include <algorithm>
 #include <stack>
@@ -18,7 +19,7 @@ public:
     public:
         Vertex(double x, double y, double z, int d = -1);
 
-        Vector position;
+        Point position;
         /// one incident half edge
         HalfEdge * he;
         int data;

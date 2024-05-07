@@ -127,13 +127,6 @@ Element::set_ids(const std::vector<gidx_t> & ids)
 }
 
 Element
-Element::Point(gidx_t id)
-{
-    Element pt(ElementType::POINT, { id });
-    return pt;
-}
-
-Element
 Element::Line2(const std::array<gidx_t, 2> & ids)
 {
     Element line2(ElementType::LINE2, { ids[0], ids[1] });

@@ -9,10 +9,17 @@ namespace krado {
 MeshSurfaceVertex::MeshSurfaceVertex(const GeomSurface & geom_surface, double u, double v) :
     MeshVertexAbstract(geom_surface),
     gsurface_(geom_surface),
-    u_(u),
-    v_(v)
+    uv_(u, v)
 {
-    this->phys_pt_ = geom_surface.point(u, v);
+    this->phys_pt_ = geom_surface.point(this->uv_);
+}
+
+MeshSurfaceVertex::MeshSurfaceVertex(const GeomSurface & geom_surface, UVParam uv) :
+    MeshVertexAbstract(geom_surface),
+    gsurface_(geom_surface),
+    uv_(uv)
+{
+    this->phys_pt_ = geom_surface.point(this->uv_);
 }
 
 const GeomSurface &
@@ -24,7 +31,7 @@ MeshSurfaceVertex::geom_surface() const
 UVParam
 MeshSurfaceVertex::parameter() const
 {
-    return { this->u_, this->v_ };
+    return this->uv_;
 }
 
 Point

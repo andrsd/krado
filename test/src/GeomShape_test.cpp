@@ -26,13 +26,14 @@ TEST(GeomShapeTest, heal)
     // TODO: actual check that things were healed
 }
 
-TEST(GeomShapeTest, scale) {
+TEST(GeomShapeTest, scale)
+{
     gp_Pnt pt(1, 2, 3);
     BRepLib_MakeVertex make_vtx(pt);
     make_vtx.Build();
     auto vtx = make_vtx.Vertex();
 
-    GeomShape sh(vtx);
+    GeomShape sh(1, vtx);
     sh.scale(0.5);
 
     GeomVertex v(TopoDS::Vertex(sh));

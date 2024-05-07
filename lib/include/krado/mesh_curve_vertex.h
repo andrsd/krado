@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include "krado/geom_curve.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/point.h"
 
 namespace krado {
+
+class GeomEntity;
+class GeomCurve;
 
 class MeshCurveVertex : public MeshVertexAbstract {
 public:

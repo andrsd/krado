@@ -14,6 +14,8 @@ class MeshVolume : public MeshingParameters {
 public:
     MeshVolume(const GeomVolume & gvolume, const std::vector<MeshSurface *> & mesh_surfaces);
 
+    int tag() const;
+
     /// Get geometrical volume associated with this surface
     ///
     /// @return Geometrical volume associated with this surface

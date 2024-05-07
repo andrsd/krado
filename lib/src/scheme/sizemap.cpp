@@ -9,6 +9,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/numerics.h"
 #include "krado/utils.h"
+#include "krado/consts.h"
 #include <array>
 
 namespace krado {
@@ -24,7 +25,7 @@ public:
     {
         // auto p = curve.point(u);
         // auto [u_lo, u_hi] = curve.param_range();
-        double lc_here = 1.e22;
+        double lc_here = MAX_LC;
 
         // if(t == t_begin && ge->getBeginVertex())
         //     lc_here = BGM_MeshSize(ge->getBeginVertex(), t, 0, p.x(), p.y(), p.z());

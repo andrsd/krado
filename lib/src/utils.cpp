@@ -4,6 +4,7 @@
 #include "krado/utils.h"
 #include "krado/point.h"
 #include "krado/types.h"
+#include "krado/uv_param.h"
 #include "krado/vector.h"
 #include "boost/functional/hash.hpp"
 #include <cstdint>
@@ -105,6 +106,13 @@ distance(const Point & p1, const Point & p2)
 {
     auto delta = p1 - p2;
     return std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+}
+
+double
+distance(const UVParam & p1, const UVParam & p2)
+{
+    UVParam delta(p1.u - p2.u, p1.v - p2.v);
+    return std::sqrt(delta.u * delta.u + delta.v * delta.v);
 }
 
 } // namespace krado::utils
