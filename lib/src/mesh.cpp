@@ -198,6 +198,10 @@ void
 Mesh::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
+        auto mvtxs = curve.vertices();
+        for (auto & v : mvtxs)
+            mesh_vertex(*v);
+
         auto & mesh_pars = curve.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
