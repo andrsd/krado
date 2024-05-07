@@ -182,7 +182,7 @@ Mesh::mesh_vertex(MeshVertex & vertex)
 {
     if (!vertex.is_meshed()) {
         MeshPoint mpnt(vertex.point());
-        this->pnts.emplace_back(mpnt);
+        add_mesh_point(mpnt);
         vertex.set_meshed();
     }
 }
@@ -208,7 +208,7 @@ Mesh::mesh_curve(MeshCurve & curve)
         scheme->mesh_curve(curve);
         for (auto & edge_vtx : curve.curve_vertices()) {
             MeshPoint mpnt(edge_vtx.point());
-            this->pnts.emplace_back(mpnt);
+            add_mesh_point(mpnt);
         }
         curve.set_meshed();
     }
@@ -270,6 +270,12 @@ const std::vector<MeshPoint> &
 Mesh::points() const
 {
     return this->pnts;
+}
+
+void
+Mesh::add_mesh_point(MeshPoint & mpnt)
+{
+    this->pnts.emplace_back(mpnt);
 }
 
 } // namespace krado

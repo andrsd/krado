@@ -85,6 +85,8 @@ protected:
     /// @param vertex Curve vertex to assign global ID to
     void assign_gid(MeshCurveVertex & vertex);
 
+    void add_mesh_point(MeshPoint & mpnt);
+
 private:
     void initialize(const Model & model);
 
