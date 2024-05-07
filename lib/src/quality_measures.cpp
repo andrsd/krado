@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/quality_measures.h"
+#include "krado/element.h"
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/vector.h"
 #include "krado/utils.h"
 #include "krado/types.h"
 #include "krado/predicates.h"
+#include "krado/bds.h"
 #include <array>
 
 namespace krado {
@@ -17,16 +19,12 @@ namespace {
 
 /// Compute eta quality measure for a given element
 template <ElementType ET>
-double qm_eta(const MeshElement & e);
+double qm_eta(const std::array<Point, ElementSelector<ET>::N_VERTICES> & pts);
 
 template <>
 double
-qm_eta<ElementType::TRI3>(const MeshElement & el)
+qm_eta<ElementType::TRI3>(const std::array<Point, 3> & pt)
 {
-    std::array<Point, 3> pt = { el.vertex(0)->point(),
-                                el.vertex(1)->point(),
-                                el.vertex(2)->point() };
-
     auto a1 = 180 * utils::angle(pt[0], pt[1], pt[2]) / M_PI;
     auto a2 = 180 * utils::angle(pt[1], pt[2], pt[0]) / M_PI;
     auto a3 = 180 * utils::angle(pt[2], pt[0], pt[1]) / M_PI;
@@ -38,14 +36,9 @@ qm_eta<ElementType::TRI3>(const MeshElement & el)
 
 template <>
 double
-qm_eta<ElementType::QUAD4>(const MeshElement & el)
+qm_eta<ElementType::QUAD4>(const std::array<Point, 4> & pt)
 {
     double AR = 1; // pow(el->minEdge()/el->maxEdge(),.25);
-
-    std::array<Point, 4> pt { el.vertex(0)->point(),
-                              el.vertex(1)->point(),
-                              el.vertex(2)->point(),
-                              el.vertex(3)->point() };
 
     auto v01 = pt[1] - pt[0];
     auto v12 = pt[2] - pt[1];
@@ -82,13 +75,8 @@ qm_eta<ElementType::QUAD4>(const MeshElement & el)
 
 template <>
 double
-qm_eta<ElementType::TETRA4>(const MeshElement & el)
+qm_eta<ElementType::TETRA4>(const std::array<Point, 4> & pt)
 {
-    std::array<Point, 4> pt { el.vertex(0)->point(),
-                              el.vertex(1)->point(),
-                              el.vertex(2)->point(),
-                              el.vertex(3)->point() };
-
     auto volume = std::abs(orient3d(pt[0], pt[1], pt[2], pt[3])) / 6.0;
 
     auto & x1 = pt[0].x;
@@ -115,16 +103,13 @@ qm_eta<ElementType::TETRA4>(const MeshElement & el)
 
 /// gamma quality measure for a given element
 template <ElementType ET>
-double qm_gamma(const MeshElement & e);
+double qm_gamma(const std::array<Point, ElementSelector<ET>::N_VERTICES> & pts);
 
 template <>
 double
-qm_gamma<ElementType::TRI3>(const MeshElement & el)
+qm_gamma<ElementType::TRI3>(const std::array<Point, 3> & pt)
 {
     // quality = rho / R = 2 * inscribed radius / circumradius
-    std::array<Point, 3> pt = { el.vertex(0)->point(),
-                                el.vertex(1)->point(),
-                                el.vertex(2)->point() };
     auto a = pt[2] - pt[1];
     auto b = pt[0] - pt[2];
     auto c = pt[1] - pt[0];
@@ -145,21 +130,16 @@ qm_gamma<ElementType::TRI3>(const MeshElement & el)
 
 template <>
 double
-qm_gamma<ElementType::QUAD4>(const MeshElement & el)
+qm_gamma<ElementType::QUAD4>(const std::array<Point, 4> & pt)
 {
-    return qm_eta<ElementType::QUAD4>(el);
+    return qm_eta<ElementType::QUAD4>(pt);
 }
 
 template <>
 double
-qm_gamma<ElementType::TETRA4>(const MeshElement & el)
+qm_gamma<ElementType::TETRA4>(const std::array<Point, 4> & pt)
 {
     // quality = rho / R = 3 * inradius / circumradius
-
-    std::array<Point, 4> pt { el.vertex(0)->point(),
-                              el.vertex(1)->point(),
-                              el.vertex(2)->point(),
-                              el.vertex(3)->point() };
 
     auto volume = orient3d(pt[0], pt[1], pt[2], pt[3]) / 6.0;
 
@@ -214,12 +194,26 @@ qm_gamma<ElementType::TETRA4>(const MeshElement & el)
 double
 eta(const MeshElement & e)
 {
-    if (e.type() == ElementType::TRI3)
-        return qm_eta<ElementType::TRI3>(e);
-    else if (e.type() == ElementType::QUAD4)
-        return qm_eta<ElementType::QUAD4>(e);
-    else if (e.type() == ElementType::TETRA4)
-        return qm_eta<ElementType::TETRA4>(e);
+    if (e.type() == ElementType::TRI3) {
+        std::array<Point, 3> pts = { e.vertex(0)->point(),
+                                     e.vertex(1)->point(),
+                                     e.vertex(2)->point() };
+        return qm_eta<ElementType::TRI3>(pts);
+    }
+    else if (e.type() == ElementType::QUAD4) {
+        std::array<Point, 4> pts { e.vertex(0)->point(),
+                                   e.vertex(1)->point(),
+                                   e.vertex(2)->point(),
+                                   e.vertex(3)->point() };
+        return qm_eta<ElementType::QUAD4>(pts);
+    }
+    else if (e.type() == ElementType::TETRA4) {
+        std::array<Point, 4> pts { e.vertex(0)->point(),
+                                   e.vertex(1)->point(),
+                                   e.vertex(2)->point(),
+                                   e.vertex(3)->point() };
+        return qm_eta<ElementType::TETRA4>(pts);
+    }
     else
         return 0.;
 }
@@ -227,14 +221,38 @@ eta(const MeshElement & e)
 double
 gamma(const MeshElement & e)
 {
-    if (e.type() == ElementType::TRI3)
-        return qm_gamma<ElementType::TRI3>(e);
-    else if (e.type() == ElementType::QUAD4)
-        return qm_gamma<ElementType::QUAD4>(e);
-    else if (e.type() == ElementType::TETRA4)
-        return qm_gamma<ElementType::TETRA4>(e);
+    if (e.type() == ElementType::TRI3) {
+        std::array<Point, 3> pts = { e.vertex(0)->point(),
+                                     e.vertex(1)->point(),
+                                     e.vertex(2)->point() };
+        return qm_gamma<ElementType::TRI3>(pts);
+    }
+    else if (e.type() == ElementType::QUAD4) {
+        std::array<Point, 4> pts { e.vertex(0)->point(),
+                                   e.vertex(1)->point(),
+                                   e.vertex(2)->point(),
+                                   e.vertex(3)->point() };
+        return qm_gamma<ElementType::QUAD4>(pts);
+    }
+    else if (e.type() == ElementType::TETRA4) {
+        std::array<Point, 4> pts { e.vertex(0)->point(),
+                                   e.vertex(1)->point(),
+                                   e.vertex(2)->point(),
+                                   e.vertex(3)->point() };
+        return qm_gamma<ElementType::TETRA4>(pts);
+    }
     else
         return 0.;
+}
+
+template <>
+double
+gamma<ElementType::TRI3>(const std::array<BDS_Point *, 3> & bds_pts)
+{
+    std::array<Point, 3> pts = { Point(bds_pts[0]->x, bds_pts[0]->y, bds_pts[0]->z),
+                                 Point(bds_pts[1]->x, bds_pts[1]->y, bds_pts[1]->z),
+                                 Point(bds_pts[2]->x, bds_pts[2]->y, bds_pts[2]->z) };
+    return qm_gamma<ElementType::TRI3>(pts);
 }
 
 } // namespace quality

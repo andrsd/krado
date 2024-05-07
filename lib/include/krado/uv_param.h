@@ -53,6 +53,12 @@ operator*(double alpha, const UVParam & param)
     return UVParam(param.u * alpha, param.v * alpha);
 }
 
+inline double
+determinant(const UVParam & a, const UVParam & b)
+{
+    return a.u * b.v - a.v * b.u;
+}
+
 } // namespace krado
 
 inline std::ostream &

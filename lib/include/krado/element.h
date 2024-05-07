@@ -154,6 +154,22 @@ template <ElementType ET>
 struct ElementSelector;
 
 template <>
+struct ElementSelector<ElementType::TRI3> {
+    static constexpr int N_VERTICES = Tri3::N_VERTICES;
+};
+
+template <>
+struct ElementSelector<ElementType::QUAD4> {
+    static constexpr int N_VERTICES = Quad4::N_VERTICES;
+};
+
+template <>
+struct ElementSelector<ElementType::TETRA4> {
+    static constexpr int N_VERTICES = Tetra4::N_VERTICES;
+    static constexpr int N_FACES = Tetra4::N_FACES;
+};
+
+template <>
 struct ElementSelector<ElementType::HEX8> {
     static constexpr int N_VERTICES = Hex8::N_VERTICES;
     static constexpr int N_FACES = Hex8::N_FACES;
