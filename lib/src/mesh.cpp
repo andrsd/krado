@@ -136,8 +136,8 @@ Mesh::initialize(const Model & model)
     for (auto & [id, geom_curve] : model.curves()) {
         auto id1 = model.vertex_id(geom_curve.first_vertex());
         auto id2 = model.vertex_id(geom_curve.last_vertex());
-        auto v1 = vertex(id1);
-        auto v2 = vertex(id2);
+        auto & v1 = vertex(id1);
+        auto & v2 = vertex(id2);
 
         MeshCurve mesh_crv(geom_curve, &v1, &v2);
         this->crvs.emplace(id, mesh_crv);
