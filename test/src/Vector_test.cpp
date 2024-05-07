@@ -99,3 +99,11 @@ TEST(VectorTest, cross_product)
     EXPECT_DOUBLE_EQ(c(1), 0.);
     EXPECT_DOUBLE_EQ(c(2), 1.);
 }
+
+TEST(VectorTest, dot_product)
+{
+    Vector a(1, 2, 3);
+    Vector b(2, -1, 3);
+    auto c = dot_product(a, b);
+    EXPECT_DOUBLE_EQ(c, 9.);
+}
