@@ -37,6 +37,12 @@ MeshCurve::curve_vertices() const
     return this->curve_vtx;
 }
 
+std::vector<MeshCurveVertex> &
+MeshCurve::curve_vertices()
+{
+    return this->curve_vtx;
+}
+
 void
 MeshCurve::add_curve_segment(int idx1, int idx2)
 {

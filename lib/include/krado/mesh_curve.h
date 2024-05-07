@@ -38,6 +38,11 @@ public:
     /// @return Vertices on the curve
     const std::vector<MeshCurveVertex> & curve_vertices() const;
 
+    /// Get (internal) vertices on the curve
+    ///
+    /// @return Vertices on the curve
+    std::vector<MeshCurveVertex> & curve_vertices();
+
     /// Add new curve segment
     ///
     /// @param idx1 Local index of the first vertex

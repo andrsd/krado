@@ -181,6 +181,7 @@ void
 Mesh::mesh_vertex(MeshVertex & vertex)
 {
     if (!vertex.is_meshed()) {
+        assign_gid(vertex);
         MeshPoint mpnt(vertex.point());
         add_mesh_point(mpnt);
         vertex.set_meshed();
@@ -207,6 +208,7 @@ Mesh::mesh_curve(MeshCurve & curve)
         auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
         scheme->mesh_curve(curve);
         for (auto & edge_vtx : curve.curve_vertices()) {
+            assign_gid(edge_vtx);
             MeshPoint mpnt(edge_vtx.point());
             add_mesh_point(mpnt);
         }
@@ -255,15 +257,15 @@ Mesh::mesh_volume(MeshVolume & volume)
 void
 Mesh::assign_gid(MeshVertex & vertex)
 {
-    vertex.set_global_id(this->gid_ctr);
     this->gid_ctr++;
+    vertex.set_global_id(this->gid_ctr);
 }
 
 void
 Mesh::assign_gid(MeshCurveVertex & vertex)
 {
-    vertex.set_global_id(this->gid_ctr);
     this->gid_ctr++;
+    vertex.set_global_id(this->gid_ctr);
 }
 
 const std::vector<MeshPoint> &
