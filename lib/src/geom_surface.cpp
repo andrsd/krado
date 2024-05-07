@@ -29,6 +29,16 @@ GeomSurface::point(double u, double v) const
     return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
+Vector
+GeomSurface::normal(double u, double v) const
+{
+    BRepAdaptor_Surface breps(this->face);
+    BRepLProp_SLProps prop(breps, 1, 1e-10);
+    prop.SetParameters(u, v);
+    auto n = prop.Normal();
+    return Vector(n.X(), n.Y(), n.Z());
+}
+
 std::tuple<Vector, Vector>
 GeomSurface::d1(double u, double v) const
 {

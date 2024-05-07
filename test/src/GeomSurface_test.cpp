@@ -132,3 +132,14 @@ TEST(GeomSurfaceTest, curves)
     EXPECT_DOUBLE_EQ(crvs[1].length(), r);
     EXPECT_DOUBLE_EQ(crvs[2].length(), r);
 }
+
+TEST(GeomSurfaceTest, normal)
+{
+    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    GeomSurface circ(circ_face);
+
+    auto n = circ.normal(0., 0.);
+    EXPECT_DOUBLE_EQ(n.x, 0.);
+    EXPECT_DOUBLE_EQ(n.y, 0.);
+    EXPECT_DOUBLE_EQ(n.z, 1.);
+}
