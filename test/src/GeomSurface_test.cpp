@@ -143,3 +143,17 @@ TEST(GeomSurfaceTest, normal)
     EXPECT_DOUBLE_EQ(n.y, 0.);
     EXPECT_DOUBLE_EQ(n.z, 1.);
 }
+
+TEST(GeomSurfaceTest, param_from_pt)
+{
+    constexpr double r = 2.;
+    auto qcirc_face = build_triangle(Point(0, 0, 0), r);
+    GeomSurface circ(qcirc_face);
+
+    auto [u, v] = circ.parameter_from_point(Point(0.5, 1, 0));
+    EXPECT_DOUBLE_EQ(u, 0.2071067811865474);
+    EXPECT_DOUBLE_EQ(v, 0.2928932188134525);
+
+    // point "outside" the surface
+    EXPECT_THROW(circ.parameter_from_point(Point(3, 3, 0)), Exception);
+}

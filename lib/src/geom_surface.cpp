@@ -20,6 +20,32 @@ GeomSurface::GeomSurface(const TopoDS_Face & face) : face(face)
     this->surf_area = props.Mass();
 
     ShapeAnalysis::GetFaceUVBounds(this->face, this->umin, this->umax, this->vmin, this->vmax);
+
+    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
+}
+
+GeomSurface::GeomSurface(const GeomSurface & other) :
+    face(other.face),
+    surface(other.surface),
+    surf_area(other.surf_area),
+    umin(other.umin),
+    umax(other.umax),
+    vmin(other.vmin),
+    vmax(other.vmax)
+{
+    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
+}
+
+GeomSurface::GeomSurface(GeomSurface && other) :
+    face(other.face),
+    surface(other.surface),
+    surf_area(other.surf_area),
+    umin(other.umin),
+    umax(other.umax),
+    vmin(other.vmin),
+    vmax(other.vmax)
+{
+    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
 }
 
 Point
@@ -80,9 +106,34 @@ GeomSurface::curves() const
     return crvs;
 }
 
+std::tuple<double, double>
+GeomSurface::parameter_from_point(const Point & pt) const
+{
+    auto [found, u, v] = project(pt);
+    if (found)
+        return { u, v };
+    else
+        throw Exception("Projection of point failed to find parameter");
+}
+
 GeomSurface::operator const TopoDS_Shape &() const
 {
     return this->face;
+}
+
+std::tuple<bool, double, double>
+GeomSurface::project(const Point & pt) const
+{
+    gp_Pnt pnt(pt.x, pt.y, pt.z);
+    this->proj_pt_on_surface.Perform(pnt);
+
+    if (this->proj_pt_on_surface.NbPoints() > 0) {
+        double u, v;
+        this->proj_pt_on_surface.LowerDistanceParameters(u, v);
+        return { true, u, v };
+    }
+    else
+        return { false, 0., 0. };
 }
 
 } // namespace krado

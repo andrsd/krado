@@ -62,7 +62,7 @@ public:
     ///
     /// @param pt Physical location
     /// @return Parameter
-    double parameter_from_point(const Point &pt) const;
+    double parameter_from_point(const Point & pt) const;
 
     /// Find nearest point
     ///
@@ -79,7 +79,7 @@ public:
     operator const TopoDS_Shape &() const;
 
 private:
-    std::tuple<bool, double> project(const Point &pt) const;
+    std::tuple<bool, double> project(const Point & pt) const;
 
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;

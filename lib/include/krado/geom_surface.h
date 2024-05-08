@@ -5,6 +5,7 @@
 #include "krado/geom_curve.h"
 #include "TopoDS_Face.hxx"
 #include "Geom_Surface.hxx"
+#include "GeomAPI_ProjectPointOnSurf.hxx"
 #include <vector>
 
 namespace krado {
@@ -14,6 +15,8 @@ class Model;
 class GeomSurface {
 public:
     explicit GeomSurface(const TopoDS_Face & face);
+    GeomSurface(const GeomSurface & other);
+    GeomSurface(GeomSurface && other);
 
     /// Get physical location from parametrical position
     ///
@@ -51,15 +54,25 @@ public:
     /// @return Curves bounding the surface
     std::vector<GeomCurve> curves() const;
 
+    /// Get parameter on the surface from a physical location
+    ///
+    /// @param pt Physical location
+    /// @return Parameters (u, v)
+    std::tuple<double, double> parameter_from_point(const Point &pt) const;
+
     operator const TopoDS_Shape &() const;
 
 private:
+    std::tuple<bool, double, double> project(const Point &pt) const;
+
     TopoDS_Face face;
     Handle(Geom_Surface) surface;
     /// Surface area
     double surf_area;
     double umin, umax;
     double vmin, vmax;
+    /// Needs to be a pointer, because GeomSurface must be movable
+    mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface;
 };
 
 } // namespace krado
