@@ -1,10 +1,11 @@
 #pragma once
 
 #include "krado/geom_curve.h"
+#include "krado/mesh_vertex_abstract.h"
 
 namespace krado {
 
-class MeshCurveVertex {
+class MeshCurveVertex : public MeshVertexAbstract {
 public:
     /// Construct vertex on a curve
     ///
@@ -25,17 +26,7 @@ public:
     /// Get physical position in the 3D space
     ///
     /// @return Physical position in the 3D space
-    Point point() const;
-
-    /// Get global ID
-    ///
-    /// @return Global ID of this vertex
-    int global_id() const;
-
-    /// Set global ID
-    ///
-    /// @param id New ID to assign
-    void set_global_id(int id);
+    Point point() const override;
 
 private:
     const GeomCurve & gcurve;
@@ -43,7 +34,6 @@ private:
     double u;
     /// Physical location corresponding to the `u` parameter
     Point phys_pt;
-    int gid;
 };
 
 } // namespace krado
