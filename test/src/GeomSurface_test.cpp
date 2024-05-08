@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/geom_surface.h"
+#include "krado/exception.h"
 #include "gp_Circ.hxx"
 #include "BRepLib_MakeEdge.hxx"
 #include "BRepLib_MakeWire.hxx"
@@ -75,6 +76,22 @@ TEST(GeomSurfaceTest, surface_area)
     GeomSurface circ(circ_face);
 
     EXPECT_DOUBLE_EQ(circ.area(), 4. * M_PI);
+}
+
+TEST(GeomSurfaceTest, param_range)
+{
+    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    GeomSurface circ(circ_face);
+
+    auto [u_lo, u_hi] = circ.param_range(0);
+    EXPECT_DOUBLE_EQ(u_lo, -2);
+    EXPECT_DOUBLE_EQ(u_hi, 2.);
+
+    auto [v_lo, v_hi] = circ.param_range(1);
+    EXPECT_DOUBLE_EQ(v_lo, -2.);
+    EXPECT_DOUBLE_EQ(v_hi, 2.);
+
+    EXPECT_THROW({ circ.param_range(2); }, Exception);
 }
 
 TEST(GeomSurfaceTest, d1_circ)

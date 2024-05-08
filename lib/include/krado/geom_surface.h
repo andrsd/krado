@@ -34,6 +34,11 @@ public:
     /// @return Area of the surface
     double area() const;
 
+    /// Get range of the parameter
+    ///
+    /// @return Range as a tuple [lower, upper]
+    std::tuple<double, double> param_range(int i) const;
+
     /// Get curves bounding this surface
     ///
     /// @return Curves bounding the surface
@@ -46,6 +51,8 @@ private:
     Handle(Geom_Surface) surface;
     /// Surface area
     double surf_area;
+    double umin, umax;
+    double vmin, vmax;
 };
 
 } // namespace krado

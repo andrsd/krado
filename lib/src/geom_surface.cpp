@@ -1,4 +1,5 @@
 #include "krado/geom_surface.h"
+#include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -6,6 +7,7 @@
 #include "BRepAdaptor_Surface.hxx"
 #include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
+#include "ShapeAnalysis.hxx"
 
 namespace krado {
 
@@ -16,6 +18,8 @@ GeomSurface::GeomSurface(const TopoDS_Face & face) : face(face)
     GProp_GProps props;
     BRepGProp::SurfaceProperties(this->face, props);
     this->surf_area = props.Mass();
+
+    ShapeAnalysis::GetFaceUVBounds(this->face, this->umin, this->umax, this->vmin, this->vmax);
 }
 
 Point
@@ -40,6 +44,17 @@ double
 GeomSurface::area() const
 {
     return this->surf_area;
+}
+
+std::tuple<double, double>
+GeomSurface::param_range(int i) const
+{
+    if (i == 0)
+        return { this->umin, this->umax };
+    else if (i == 1)
+        return { this->vmin, this->vmax };
+    else
+        throw Exception("Incorrect index.");
 }
 
 std::vector<GeomCurve>
