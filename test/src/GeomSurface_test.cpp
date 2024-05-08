@@ -157,3 +157,16 @@ TEST(GeomSurfaceTest, param_from_pt)
     // point "outside" the surface
     EXPECT_THROW(circ.parameter_from_point(Point(3, 3, 0)), Exception);
 }
+
+TEST(GeomSurfaceTest, nearest_point)
+{
+    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    GeomSurface circ(circ_face);
+
+    auto npt = circ.nearest_point(Point(1, 0.5, 0.1));
+    EXPECT_DOUBLE_EQ(npt.x, 1.0);
+    EXPECT_DOUBLE_EQ(npt.y, 0.5);
+    EXPECT_DOUBLE_EQ(npt.z, 0.0);
+
+    EXPECT_THROW(circ.nearest_point(Point(5, 6, 7)), Exception);
+}

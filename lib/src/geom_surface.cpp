@@ -136,4 +136,17 @@ GeomSurface::project(const Point & pt) const
         return { false, 0., 0. };
 }
 
+Point
+GeomSurface::nearest_point(const Point & pt) const
+{
+    gp_Pnt gpnt(pt.x, pt.y, pt.z);
+    this->proj_pt_on_surface.Perform(gpnt);
+    if (this->proj_pt_on_surface.NbPoints()) {
+        gpnt = this->proj_pt_on_surface.NearestPoint();
+        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
+    }
+    else
+        throw Exception("Projection of point failed to find parameter");
+}
+
 } // namespace krado

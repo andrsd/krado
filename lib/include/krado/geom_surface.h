@@ -60,6 +60,12 @@ public:
     /// @return Parameters (u, v)
     std::tuple<double, double> parameter_from_point(const Point &pt) const;
 
+    /// Find nearest point
+    ///
+    /// @param pt Physical point
+    /// @return Point on the curve, nearest to `pt`
+    Point nearest_point(const Point & pt) const;
+
     operator const TopoDS_Shape &() const;
 
 private:
