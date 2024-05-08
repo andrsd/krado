@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
+#include "krado/exception.h"
 #include "Geom_Line.hxx"
 #include "BRepLib_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
@@ -151,4 +152,21 @@ TEST(GeomCurveTest, vertices)
     EXPECT_DOUBLE_EQ(last.x(), 3.);
     EXPECT_DOUBLE_EQ(last.y(), 4.);
     EXPECT_DOUBLE_EQ(last.z(), 5.);
+}
+
+TEST(GeomCurveTest, param_from_pt)
+{
+    gp_Pnt pt1(1, 2, 3);
+    gp_Pnt pt2(3, 4, 5);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    GeomCurve curve(make_edge.Edge());
+
+    auto [ulo, uhi] = curve.param_range();
+    auto umid = (ulo + uhi) * 0.5;
+    auto u = curve.parameter_from_point(Point(2, 3, 4));
+    EXPECT_DOUBLE_EQ(u, umid);
+
+    // point "outside" the curve
+    EXPECT_THROW(curve.parameter_from_point(Point(5, 6, 7)), Exception);
 }

@@ -1,4 +1,5 @@
 #include "krado/geom_curve.h"
+#include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -9,7 +10,7 @@
 
 namespace krado {
 
-GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), first(0), last(0)
+GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), umin(0), umax(0)
 {
     // force orientation of internal/external edges, otherwise reverse will not produce the expected
     // result
@@ -17,11 +18,13 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), first(0), last(0)
         this->edge.Orientation() == TopAbs_EXTERNAL) {
         this->edge = TopoDS::Edge(this->edge.Oriented(TopAbs_FORWARD));
     }
-    this->curve = BRep_Tool::Curve(this->edge, this->first, this->last);
+    this->curve = BRep_Tool::Curve(this->edge, this->umin, this->umax);
 
     GProp_GProps props;
     BRepGProp::LinearProperties(this->edge, props);
     this->len = props.Mass();
+
+    this->proj_pt_on_curve.Init(this->curve, this->umin, this->umax);
 }
 
 bool
@@ -73,7 +76,7 @@ GeomCurve::length() const
 std::tuple<double, double>
 GeomCurve::param_range() const
 {
-    return { this->first, this->last };
+    return { this->umin, this->umax };
 }
 
 GeomVertex
@@ -88,9 +91,33 @@ GeomCurve::last_vertex() const
     return GeomVertex(TopExp::LastVertex(this->edge));
 }
 
+double
+GeomCurve::parameter_from_point(const Point & pt) const
+{
+    auto [found, par] = project(pt);
+    if (found)
+        return par;
+    else
+        throw Exception("Projection of point failed to find parameter");
+}
+
 GeomCurve::operator const TopoDS_Shape &() const
 {
     return this->edge;
+}
+
+std::tuple<bool, double>
+GeomCurve::project(const Point & pt) const
+{
+    gp_Pnt pnt(pt.x, pt.y, pt.z);
+    this->proj_pt_on_curve.Perform(pnt);
+
+    if (this->proj_pt_on_curve.NbPoints() > 0) {
+        auto u = this->proj_pt_on_curve.LowerDistanceParameter();
+        return { true, u };
+    }
+    else
+        return { false, 0. };
 }
 
 } // namespace krado

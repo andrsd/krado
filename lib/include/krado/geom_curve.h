@@ -5,6 +5,7 @@
 #include "krado/geom_vertex.h"
 #include "TopoDS_Edge.hxx"
 #include "Geom_Curve.hxx"
+#include "GeomAPI_ProjectPointOnCurve.hxx"
 
 namespace krado {
 
@@ -57,14 +58,27 @@ public:
     /// @return Last edge vertex
     GeomVertex last_vertex() const;
 
+    /// Get parameter on the curve from a physical location
+    ///
+    /// @param pt Physical location
+    /// @return Parameter
+    double parameter_from_point(const Point &pt) const;
+
     operator const TopoDS_Shape &() const;
 
 private:
+    std::tuple<bool, double> project(const Point &pt) const;
+
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
-    double first, last;
+    /// Minimum value of the parameter
+    double umin;
+    /// Maximum value of the parameter
+    double umax;
     /// Curve length
     double len;
+    ///
+    mutable GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
 };
 
 } // namespace krado
