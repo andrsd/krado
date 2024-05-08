@@ -20,19 +20,18 @@ SchemeEqual::mesh_curve(MeshCurve & mcurve)
     auto b = build_rhs(lo, hi);
     auto u = solve(A, b);
 
+    // TODO: create a better way how to construct curve mesh
+
+    auto & bnd_verts = mcurve.bounding_vertices();
+    mcurve.add_vertex(bnd_verts[0]);
     for (int i = 1; i < this->n_intervals; i++) {
-        MeshCurveVertex curve_vert(gcurve, u(i));
+        auto curve_vert = new MeshCurveVertex(gcurve, u(i));
         mcurve.add_curve_vertex(curve_vert);
     }
-    if (this->n_intervals > 1) {
-        mcurve.add_curve_segment(MeshCurve::FIRST_VERTEX, 0);
-        for (int i = 1; i < this->n_intervals - 1; i++)
-            mcurve.add_curve_segment(i - 1, i);
-        mcurve.add_curve_segment(this->n_intervals - 2, MeshCurve::LAST_VERTEX);
-    }
-    else {
-        mcurve.add_curve_segment(MeshCurve::FIRST_VERTEX, MeshCurve::LAST_VERTEX);
-    }
+    mcurve.add_vertex(bnd_verts[1]);
+
+    for (int i = 0; i < this->n_intervals; i++)
+        mcurve.add_curve_segment(i, i + 1);
 }
 
 Eigen::SparseMatrix<double>
