@@ -101,6 +101,19 @@ GeomCurve::parameter_from_point(const Point & pt) const
         throw Exception("Projection of point failed to find parameter");
 }
 
+Point
+GeomCurve::nearest_point(const Point & pt) const
+{
+    gp_Pnt gpnt(pt.x, pt.y, pt.z);
+    this->proj_pt_on_curve.Perform(gpnt);
+    if (this->proj_pt_on_curve.NbPoints()) {
+        gpnt = this->proj_pt_on_curve.NearestPoint();
+        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
+    }
+    else
+        throw Exception("Projection of point failed to find parameter");
+}
+
 GeomCurve::operator const TopoDS_Shape &() const
 {
     return this->edge;

@@ -170,3 +170,19 @@ TEST(GeomCurveTest, param_from_pt)
     // point "outside" the curve
     EXPECT_THROW(curve.parameter_from_point(Point(5, 6, 7)), Exception);
 }
+
+TEST(GeomCurveTest, nearest_point)
+{
+    gp_Pnt pt1(1, 2, 3);
+    gp_Pnt pt2(3, 4, 5);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    GeomCurve curve(make_edge.Edge());
+
+    auto npt = curve.nearest_point(Point(1.2, 2.3, 3.1));
+    EXPECT_DOUBLE_EQ(npt.x, 1.2);
+    EXPECT_DOUBLE_EQ(npt.y, 2.2);
+    EXPECT_DOUBLE_EQ(npt.z, 3.2);
+
+    EXPECT_THROW(curve.nearest_point(Point(5, 6, 7)), Exception);
+}
