@@ -11,11 +11,6 @@ namespace krado {
 
 class MeshCurve : public MeshingParameters {
 public:
-    enum VertexType {
-        FIRST_VERTEX = -1,
-        LAST_VERTEX = -2
-    };
-
     MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2);
 
     /// Get geometrical curve associated with this curve
@@ -23,25 +18,33 @@ public:
     /// @return Geometrical curve associated with this curve
     const GeomCurve & geom_curve() const;
 
-    /// Get bounding vertices
+    /// Get vertices on this curve
     ///
-    /// @return Two bounding vertices
-    const std::vector<MeshVertex *> & vertices() const;
+    /// @return Curve vertices
+    const std::vector<MeshVertexAbstract *> & all_vertices() const;
+
+    ///
+    const std::vector<MeshVertex *> & bounding_vertices() const;
 
     /// Add internal vertex
     ///
     /// @param curve_vertex (Internal) curve vertex to add
-    void add_curve_vertex(const MeshCurveVertex & curve_vertex);
+    void add_vertex(MeshVertex * vertex);
+
+    /// Add internal vertex
+    ///
+    /// @param curve_vertex (Internal) curve vertex to add
+    void add_curve_vertex(MeshCurveVertex * curve_vertex);
 
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    const std::vector<MeshCurveVertex> & curve_vertices() const;
+    const std::vector<MeshCurveVertex *> & curve_vertices() const;
 
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    std::vector<MeshCurveVertex> & curve_vertices();
+    std::vector<MeshCurveVertex *> & curve_vertices();
 
     /// Add new curve segment
     ///
@@ -64,10 +67,12 @@ public:
 
 private:
     const GeomCurve & gcurve;
+    /// All vertices on this curve
+    std::vector<MeshVertexAbstract *> vtxs;
     /// Bounding vertices
-    std::vector<MeshVertex *> vtxs;
+    std::vector<MeshVertex *> bnd_vtxs;
     /// Vertices on the curve (excluding the bounding vertices)
-    std::vector<MeshCurveVertex> curve_vtx;
+    std::vector<MeshCurveVertex *> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge
     std::vector<MeshElement> curve_segs;
     /// Flag indicating if the curve is meshed

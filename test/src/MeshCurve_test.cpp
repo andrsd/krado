@@ -36,7 +36,7 @@ TEST(MeshCurveTest, api) {
     EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
     EXPECT_EQ(mpars.get<int>("marker"), 0);
 
-    auto & vtx = mcurve.vertices();
+    auto & vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);
     EXPECT_EQ(vtx[0], &v1);
     EXPECT_EQ(vtx[1], &v2);
@@ -59,7 +59,7 @@ TEST(MeshCurveTest, mesh)
     SchemeEqual equal(mesh, pars);
     equal.mesh_curve(mcurve);
 
-    auto vtx = mcurve.vertices();
+    auto vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);
     EXPECT_EQ(&vtx[0]->geom_vertex(), &gvtx1);
     EXPECT_EQ(&vtx[1]->geom_vertex(), &gvtx2);
@@ -67,20 +67,20 @@ TEST(MeshCurveTest, mesh)
     auto curve_vtx = mcurve.curve_vertices();
     EXPECT_EQ(curve_vtx.size(), 3);
     auto vtx2 = curve_vtx[1];
-    EXPECT_DOUBLE_EQ(vtx2.parameter(), 2.5);
-    EXPECT_DOUBLE_EQ(vtx2.point().x, 1.5);
-    EXPECT_DOUBLE_EQ(vtx2.point().y, 2.0);
-    EXPECT_EQ(&vtx2.geom_curve(), &gcurve);
+    EXPECT_DOUBLE_EQ(vtx2->parameter(), 2.5);
+    EXPECT_DOUBLE_EQ(vtx2->point().x, 1.5);
+    EXPECT_DOUBLE_EQ(vtx2->point().y, 2.0);
+    EXPECT_EQ(&vtx2->geom_curve(), &gcurve);
 
     auto segs = mcurve.curve_segments();
     EXPECT_EQ(segs.size(), 4);
     EXPECT_EQ(segs[0].type(), MeshElement::LINE2);
     EXPECT_EQ(segs[0].num_vertices(), 2);
-    EXPECT_EQ(segs[0].vertex_id(0), MeshCurve::FIRST_VERTEX);
-    EXPECT_EQ(segs[0].vertex_id(1), 0);
+    EXPECT_EQ(segs[0].vertex_id(0), 0);
+    EXPECT_EQ(segs[0].vertex_id(1), 1);
 
     EXPECT_EQ(segs[3].type(), MeshElement::LINE2);
     EXPECT_EQ(segs[3].num_vertices(), 2);
-    EXPECT_EQ(segs[3].vertex_id(0), 2);
-    EXPECT_EQ(segs[3].vertex_id(1), MeshCurve::LAST_VERTEX);
+    EXPECT_EQ(segs[3].vertex_id(0), 3);
+    EXPECT_EQ(segs[3].vertex_id(1), 4);
 }

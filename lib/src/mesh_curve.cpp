@@ -5,7 +5,7 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve(gcurve),
-    vtxs({ v1, v2 }),
+    bnd_vtxs({ v1, v2 }),
     meshed(false)
 {
     auto & mpars = meshing_parameters();
@@ -19,25 +19,38 @@ MeshCurve::geom_curve() const
     return this->gcurve;
 }
 
-const std::vector<MeshVertex *> &
-MeshCurve::vertices() const
+const std::vector<MeshVertexAbstract *> &
+MeshCurve::all_vertices() const
 {
     return this->vtxs;
 }
 
-void
-MeshCurve::add_curve_vertex(const MeshCurveVertex & curve_vertex)
+const std::vector<MeshVertex *> &
+MeshCurve::bounding_vertices() const
 {
-    this->curve_vtx.push_back(curve_vertex);
+    return this->bnd_vtxs;
 }
 
-const std::vector<MeshCurveVertex> &
+void
+MeshCurve::add_vertex(MeshVertex * vertex)
+{
+    this->vtxs.push_back(vertex);
+}
+
+void
+MeshCurve::add_curve_vertex(MeshCurveVertex * curve_vertex)
+{
+    this->curve_vtx.push_back(curve_vertex);
+    this->vtxs.push_back(curve_vertex);
+}
+
+const std::vector<MeshCurveVertex * > &
 MeshCurve::curve_vertices() const
 {
     return this->curve_vtx;
 }
 
-std::vector<MeshCurveVertex> &
+std::vector<MeshCurveVertex *> &
 MeshCurve::curve_vertices()
 {
     return this->curve_vtx;
@@ -67,6 +80,5 @@ MeshCurve::set_meshed()
 {
     this->meshed = true;
 }
-
 
 } // namespace krado
