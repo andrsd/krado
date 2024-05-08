@@ -7,7 +7,15 @@ namespace krado {
 /// Base class for 2-dimensional mesh generation schemes
 class Scheme2D {
 public:
-    virtual void mesh_surface(MeshSurface & msurface) = 0;
+    /// Mesh surface
+    ///
+    /// @param surface Surface to mesh
+    virtual void mesh_surface(MeshSurface & surface) = 0;
+
+    /// Select meshing scheme for a curve
+    ///
+    /// @param curve Curve to select the scheme for
+    virtual void select_curve_scheme(MeshCurve & curve);
 };
 
 } // namespace krado

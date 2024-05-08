@@ -199,17 +199,18 @@ void
 Mesh::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
-        auto mvtxs = curve.vertices();
-        for (auto & v : mvtxs)
-            mesh_vertex(*v);
-
         auto & mesh_pars = curve.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
+
+        auto bnd_vtxs = curve.bounding_vertices();
+        for (auto & v : bnd_vtxs)
+            mesh_vertex(*v);
+
         scheme->mesh_curve(curve);
         for (auto & edge_vtx : curve.curve_vertices()) {
-            assign_gid(edge_vtx);
-            MeshPoint mpnt(edge_vtx.point());
+            assign_gid(*edge_vtx);
+            MeshPoint mpnt(edge_vtx->point());
             add_mesh_point(mpnt);
         }
         curve.set_meshed();
@@ -230,6 +231,13 @@ Mesh::mesh_surface(MeshSurface & surface)
         auto & mesh_pars = surface.meshing_parameters();
         auto scheme_name = mesh_pars.get<std::string>("scheme");
         auto scheme = get_scheme<Scheme2D>(scheme_name, *this, mesh_pars);
+
+        auto curves = surface.curves();
+        for (auto & crv : curves)
+            scheme->select_curve_scheme(*crv);
+        for (auto & crv : curves)
+            mesh_curve(*crv);
+
         scheme->mesh_surface(surface);
         surface.set_meshed();
     }

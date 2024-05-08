@@ -9,11 +9,9 @@ namespace krado {
 class SchemeTriangulo : public Scheme, public Scheme2D {
 public:
     SchemeTriangulo(Mesh & mesh, const Parameters & params);
-    void mesh_surface(MeshSurface & msurface) override;
+    void mesh_surface(MeshSurface & surface) override;
 
 private:
-    void select_meshing_scheme(MeshCurve & curve);
-
     /// Holes positions to pass into the triangulation
     std::vector<Point> holes;
 };

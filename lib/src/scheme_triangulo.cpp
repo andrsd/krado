@@ -11,25 +11,8 @@ SchemeTriangulo::SchemeTriangulo(Mesh & mesh, const Parameters & params) :
 }
 
 void
-SchemeTriangulo::mesh_surface(MeshSurface & msurface)
+SchemeTriangulo::mesh_surface(MeshSurface & surface)
 {
-    auto mcurves = msurface.curves();
-    for (auto & crv : mcurves)
-        select_meshing_scheme(*crv);
-
-    for (auto & crv : mcurves)
-        mesh().mesh_curve(*crv);
-}
-
-void
-SchemeTriangulo::select_meshing_scheme(MeshCurve & curve)
-{
-    auto & pars = curve.meshing_parameters();
-    auto scheme_name = pars.get<std::string>("scheme");
-    if (scheme_name == "auto") {
-        pars.set<std::string>("scheme") = "equal";
-        pars.set<int>("intervals") = 1;
-    }
 }
 
 } // namespace krado
