@@ -1,1 +1,3 @@
 #pragma once
+
+#cmakedefine KRADO_WITH_TRIANGLE

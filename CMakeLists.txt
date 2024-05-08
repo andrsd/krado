@@ -16,6 +16,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
 option(KRADO_BUILD_TESTS "Build tests" NO)
+option(KRADO_WITH_TRIANGLE "Build with triangle support, set TRIANGLE_DIR to the location with triangle source files" NO)
 
 find_package(fmt 9.0 REQUIRED)
 find_package(exodusIIcpp 1.9 REQUIRED)
@@ -34,6 +35,10 @@ add_subdirectory(contrib/triangulo)
 # kvaredro
 set(KVAREDRO_BUILD_APP NO)
 add_subdirectory(contrib/kvaredro)
+
+if (KRADO_WITH_TRIANGLE)
+    add_subdirectory(contrib/triangle)
+endif()
 
 add_subdirectory(lib)
 add_subdirectory(src)

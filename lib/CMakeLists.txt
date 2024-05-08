@@ -33,4 +33,8 @@ target_link_libraries(
         kvaredro
 )
 
+if (KRADO_WITH_TRIANGLE)
+    target_link_libraries(${NAME} PUBLIC triangle)
+endif()
+
 configure_file(include/config.h.in include/krado/config.h)
