@@ -186,3 +186,17 @@ TEST(GeomCurveTest, nearest_point)
 
     EXPECT_THROW(curve.nearest_point(Point(5, 6, 7)), Exception);
 }
+
+TEST(GeomCurveTest, contains_point)
+{
+    gp_Pnt pt1(1, 2, 3);
+    gp_Pnt pt2(3, 4, 5);
+    BRepLib_MakeEdge make_edge(pt1, pt2);
+    make_edge.Build();
+    GeomCurve curve(make_edge.Edge());
+
+    EXPECT_TRUE(curve.contains_point(Point(1, 2, 3)));
+    EXPECT_TRUE(curve.contains_point(Point(1.1, 2.1, 3.1)));
+
+    EXPECT_FALSE(curve.contains_point(Point(1.2, 2.2, 3.1)));
+}

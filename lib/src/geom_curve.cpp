@@ -114,6 +114,17 @@ GeomCurve::nearest_point(const Point & pt) const
         throw Exception("Projection of point failed to find parameter");
 }
 
+bool
+GeomCurve::contains_point(const Point & pt) const
+{
+    Point xyz = nearest_point(pt);
+    const Standard_Real tolerance = BRep_Tool::Tolerance(this->edge);
+    if (pt.distance(xyz) <= tolerance)
+        return true;
+    else
+        return false;
+}
+
 GeomCurve::operator const TopoDS_Shape &() const
 {
     return this->edge;

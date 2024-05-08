@@ -70,6 +70,12 @@ public:
     /// @return Point on the curve, nearest to `pt`
     Point nearest_point(const Point & pt) const;
 
+    /// Check if point is on the curve
+    ///
+    /// @param pt Point to investigate
+    /// @return `true` if the point is on the curve, `false` otherwise
+    bool contains_point(const Point &pt) const;
+
     operator const TopoDS_Shape &() const;
 
 private:
