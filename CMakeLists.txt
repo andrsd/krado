@@ -28,10 +28,6 @@ if(OpenCASCADE_FOUND)
 endif()
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 
-# kvaredro
-set(KVAREDRO_BUILD_APP NO)
-add_subdirectory(contrib/kvaredro)
-
 if (KRADO_WITH_TRIANGLE)
     add_subdirectory(contrib/triangle)
 endif()

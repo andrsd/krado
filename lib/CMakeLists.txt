@@ -29,7 +29,6 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
         fmt::fmt
         Eigen3::Eigen
-        kvaredro
 )
 
 if (KRADO_WITH_TRIANGLE)
