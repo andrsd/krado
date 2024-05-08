@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <ostream>
 
 namespace krado {
 
@@ -36,3 +37,10 @@ operator-(const Point & a, const Point & b)
 }
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::Point & pt)
+{
+    stream << "(x = " << pt.x << ", y = " << pt.y << ", z = " << pt.z << ")";
+    return stream;
+}
