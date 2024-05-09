@@ -2,26 +2,13 @@
 #include "krado/geom_volume.h"
 #include "BRepPrimAPI_MakeBox.hxx"
 #include "TopoDS_Solid.hxx"
+#include "builder.h"
 
 using namespace krado;
 
-namespace {
-
-TopoDS_Solid
-build_box(const Point & v1, const Point & v2)
-{
-    gp_Pnt pnt1(v1.x, v1.y, v1.z);
-    gp_Pnt pnt2(v2.x, v2.y, v2.z);
-    BRepPrimAPI_MakeBox make_box(pnt1, pnt2);
-    make_box.Build();
-    return make_box.Solid();
-}
-
-} // namespace
-
 TEST(GeomVolumeTest, volume)
 {
-    auto box_solid = build_box(Point(0, 0, 0), Point(1, 2, 3));
+    auto box_solid = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
     GeomVolume box(box_solid);
 
     EXPECT_DOUBLE_EQ(box.volume(), 6.);
@@ -29,7 +16,7 @@ TEST(GeomVolumeTest, volume)
 
 TEST(GeomVolumeTest, surfaces)
 {
-    auto box_solid = build_box(Point(0, 0, 0), Point(2, 3, 4));
+    auto box_solid = testing::build_box(Point(0, 0, 0), Point(2, 3, 4));
     GeomVolume box(box_solid);
 
     auto surfs = box.surfaces();

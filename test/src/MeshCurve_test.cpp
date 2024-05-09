@@ -5,26 +5,13 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/exception.h"
 #include "krado/scheme_equal.h"
-#include "BRepLib_MakeEdge.hxx"
+#include "builder.h"
 
 using namespace krado;
 
-namespace {
-
-TopoDS_Edge
-build_line(Point pt1, Point pt2)
+TEST(MeshCurveTest, api)
 {
-    gp_Pnt pnt1(pt1.x, pt1.y, pt1.z);
-    gp_Pnt pnt2(pt2.x, pt2.y, pt2.z);
-    BRepLib_MakeEdge make_edge(pnt1, pnt2);
-    make_edge.Build();
-    return make_edge.Edge();
-}
-
-} // namespace
-
-TEST(MeshCurveTest, api) {
-    auto edge = build_line(Point(0, 0, 0), Point(3, 4, 0));
+    auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
     GeomCurve gcurve(edge);
 
     MeshVertex v1(gcurve.first_vertex());
@@ -45,7 +32,7 @@ TEST(MeshCurveTest, api) {
 
 TEST(MeshCurveTest, mesh)
 {
-    auto edge = build_line(Point(0, 0, 0), Point(3, 4, 0));
+    auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
     GeomCurve gcurve(edge);
     auto gvtx1 = gcurve.first_vertex();
     auto gvtx2 = gcurve.last_vertex();

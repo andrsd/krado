@@ -3,38 +3,13 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme_equal.h"
-#include "gp_Circ.hxx"
-#include "BRepLib_MakeEdge.hxx"
-#include "BRepLib_MakeWire.hxx"
-#include "BRepLib_MakeFace.hxx"
-#include "TopoDS_Wire.hxx"
-#include "TopoDS_Face.hxx"
+#include "builder.h"
 
 using namespace krado;
 
-namespace {
-
-TopoDS_Face
-build_circle(const Point & center, double radius)
-{
-    gp_Ax2 ax2;
-    gp_Circ circ(ax2, radius);
-    BRepLib_MakeEdge make_edge(circ);
-    make_edge.Build();
-    auto edge = make_edge.Edge();
-    BRepLib_MakeWire make_wire(edge);
-    make_wire.Build();
-    auto wire = make_wire.Wire();
-    BRepLib_MakeFace make_face(wire);
-    make_face.Build();
-    return make_face.Face();
-}
-
-} // namespace
-
 TEST(MeshSurfaceTest, api)
 {
-    auto circ = build_circle(Point(0, 0, 0), 2.);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface gsurf(circ);
     auto crvs = gsurf.curves();
     ASSERT_EQ(crvs.size(), 1);

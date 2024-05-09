@@ -1,67 +1,15 @@
 #include "gmock/gmock.h"
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
-#include "gp_Circ.hxx"
-#include "BRepLib_MakeEdge.hxx"
-#include "BRepLib_MakeWire.hxx"
-#include "BRepLib_MakeFace.hxx"
-#include "TopoDS_Wire.hxx"
-#include "TopoDS_Face.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
+#include "builder.h"
 
 using namespace krado;
 
-namespace {
-
-TopoDS_Face
-build_circle(const Point & center, double radius)
-{
-    gp_Ax2 ax2;
-    gp_Circ circ(ax2, radius);
-    BRepLib_MakeEdge make_edge(circ);
-    make_edge.Build();
-    auto edge = make_edge.Edge();
-    BRepLib_MakeWire make_wire(edge);
-    make_wire.Build();
-    auto wire = make_wire.Wire();
-    BRepLib_MakeFace make_face(wire);
-    make_face.Build();
-    return make_face.Face();
-}
-
-TopoDS_Face
-build_triangle(const Point & center, double radius)
-{
-    gp_Pnt ctr(center.x, center.y, center.z);
-    gp_Pnt pt1(center.x, center.y + radius, center.z);
-    gp_Pnt pt2(center.x + radius, center.y, center.z);
-
-    BRepLib_MakeEdge make_edge0(pt1, pt2);
-    make_edge0.Build();
-    auto edge0 = make_edge0.Edge();
-
-    BRepLib_MakeEdge make_edge1(ctr, pt1);
-    make_edge1.Build();
-    auto edge1 = make_edge1.Edge();
-
-    BRepLib_MakeEdge make_edge2(ctr, pt2);
-    make_edge2.Build();
-    auto edge2 = make_edge2.Edge();
-
-    BRepLib_MakeWire make_wire(edge0, edge1, edge2);
-    make_wire.Build();
-    auto wire = make_wire.Wire();
-    BRepLib_MakeFace make_face(wire);
-    make_face.Build();
-    return make_face.Face();
-}
-
-} // namespace
-
 TEST(GeomSurfaceTest, point)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     auto pt_center = circ.point(0., 0.);
@@ -72,7 +20,7 @@ TEST(GeomSurfaceTest, point)
 
 TEST(GeomSurfaceTest, surface_area)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     EXPECT_DOUBLE_EQ(circ.area(), 4. * M_PI);
@@ -80,7 +28,7 @@ TEST(GeomSurfaceTest, surface_area)
 
 TEST(GeomSurfaceTest, param_range)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     auto [u_lo, u_hi] = circ.param_range(0);
@@ -96,7 +44,7 @@ TEST(GeomSurfaceTest, param_range)
 
 TEST(GeomSurfaceTest, d1_circ)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     auto [d1u, d1v] = circ.d1(0., 0.);
@@ -112,7 +60,7 @@ TEST(GeomSurfaceTest, d1_circ)
 
 TEST(GeomSurfaceTest, op_topods_face)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     GProp_GProps props;
@@ -123,7 +71,7 @@ TEST(GeomSurfaceTest, op_topods_face)
 TEST(GeomSurfaceTest, curves)
 {
     constexpr double r = 2.;
-    auto qcirc_face = build_triangle(Point(0, 0, 0), r);
+    auto qcirc_face = testing::build_triangle(Point(0, 0, 0), r);
     GeomSurface circ(qcirc_face);
 
     auto crvs = circ.curves();
@@ -135,7 +83,7 @@ TEST(GeomSurfaceTest, curves)
 
 TEST(GeomSurfaceTest, normal)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     auto n = circ.normal(0., 0.);
@@ -147,7 +95,7 @@ TEST(GeomSurfaceTest, normal)
 TEST(GeomSurfaceTest, param_from_pt)
 {
     constexpr double r = 2.;
-    auto qcirc_face = build_triangle(Point(0, 0, 0), r);
+    auto qcirc_face = testing::build_triangle(Point(0, 0, 0), r);
     GeomSurface circ(qcirc_face);
 
     auto [u, v] = circ.parameter_from_point(Point(0.5, 1, 0));
@@ -160,7 +108,7 @@ TEST(GeomSurfaceTest, param_from_pt)
 
 TEST(GeomSurfaceTest, nearest_point)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     auto npt = circ.nearest_point(Point(1, 0.5, 0.1));
@@ -173,7 +121,7 @@ TEST(GeomSurfaceTest, nearest_point)
 
 TEST(GeomSurfaceTest, contains_point)
 {
-    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface circ(circ_face);
 
     EXPECT_TRUE(circ.contains_point(Point(0, 0, 0)));
