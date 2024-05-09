@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh_curve.h"
+#include "krado/geom_curve.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/exception.h"
 
 namespace krado {
@@ -41,7 +44,7 @@ MeshCurve::add_vertex(MeshVertex * vertex)
 }
 
 void
-MeshCurve::add_curve_vertex(MeshCurveVertex * curve_vertex)
+MeshCurve::add_vertex(MeshCurveVertex * curve_vertex)
 {
     this->curve_vtx.push_back(curve_vertex);
     this->vtxs.push_back(curve_vertex);
@@ -60,16 +63,16 @@ MeshCurve::curve_vertices()
 }
 
 void
-MeshCurve::add_curve_segment(int idx1, int idx2)
+MeshCurve::add_segment(int idx1, int idx2)
 {
     auto line2 = MeshElement::Line2(idx1, idx2);
-    this->curve_segs.emplace_back(line2);
+    this->segs.emplace_back(line2);
 }
 
 const std::vector<MeshElement> &
-MeshCurve::curve_segments() const
+MeshCurve::segments() const
 {
-    return this->curve_segs;
+    return this->segs;
 }
 
 bool

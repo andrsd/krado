@@ -3,6 +3,7 @@
 
 #include "krado/mesh.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"

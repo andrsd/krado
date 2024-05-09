@@ -85,14 +85,14 @@ create_segment_list(triangulateio & io,
     int n_segments = 0;
     auto & curves = surface.curves();
     for (auto & c : curves)
-        n_segments += (int) c->curve_segments().size();
+        n_segments += (int) c->segments().size();
     io.numberofsegments = n_segments;
     io.segmentlist = (int *) malloc(n_segments * 2 * sizeof(int));
 
     int k = 0;
     for (auto & c : curves) {
         auto verts = c->all_vertices();
-        auto & segments = c->curve_segments();
+        auto & segments = c->segments();
         for (auto & s : segments) {
             auto v1 = s.vertex_id(0);
             auto v2 = s.vertex_id(1);

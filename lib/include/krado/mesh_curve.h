@@ -3,14 +3,16 @@
 
 #pragma once
 
-#include "krado/geom_curve.h"
 #include "krado/mesh_element.h"
-#include "krado/mesh_vertex.h"
-#include "krado/mesh_curve_vertex.h"
 #include "krado/meshing_parameters.h"
 #include <vector>
 
 namespace krado {
+
+class GeomCurve;
+class MeshVertexAbstract;
+class MeshVertex;
+class MeshCurveVertex;
 
 class MeshCurve : public MeshingParameters {
 public:
@@ -29,15 +31,15 @@ public:
     ///
     const std::vector<MeshVertex *> & bounding_vertices() const;
 
-    /// Add internal vertex
+    /// Add vertex
     ///
-    /// @param curve_vertex (Internal) curve vertex to add
+    /// @param vertex Vertex to add
     void add_vertex(MeshVertex * vertex);
 
-    /// Add internal vertex
+    /// Add curve vertex
     ///
-    /// @param curve_vertex (Internal) curve vertex to add
-    void add_curve_vertex(MeshCurveVertex * curve_vertex);
+    /// @param vertex Curve vertex to add
+    void add_vertex(MeshCurveVertex * vertex);
 
     /// Get (internal) vertices on the curve
     ///
@@ -53,12 +55,12 @@ public:
     ///
     /// @param idx1 Local index of the first vertex
     /// @param idx2 Local index of the second vertex
-    void add_curve_segment(int idx1, int idx2);
+    void add_segment(int idx1, int idx2);
 
     /// Get curve segments
     ///
     /// @return Curse segments using vertex indexing local to this edge
-    const std::vector<MeshElement> & curve_segments() const;
+    const std::vector<MeshElement> & segments() const;
 
     /// Check if the curve is already meshed
     ///
@@ -77,7 +79,7 @@ private:
     /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex *> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge
-    std::vector<MeshElement> curve_segs;
+    std::vector<MeshElement> segs;
     /// Flag indicating if the curve is meshed
     bool meshed;
 };

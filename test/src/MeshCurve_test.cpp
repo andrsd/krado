@@ -72,7 +72,7 @@ TEST(MeshCurveTest, mesh)
     EXPECT_DOUBLE_EQ(vtx2->point().y, 2.0);
     EXPECT_EQ(&vtx2->geom_curve(), &gcurve);
 
-    auto segs = mcurve.curve_segments();
+    auto segs = mcurve.segments();
     EXPECT_EQ(segs.size(), 4);
     EXPECT_EQ(segs[0].type(), MeshElement::LINE2);
     EXPECT_EQ(segs[0].num_vertices(), 2);

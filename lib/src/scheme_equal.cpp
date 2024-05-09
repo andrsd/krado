@@ -29,12 +29,12 @@ SchemeEqual::mesh_curve(MeshCurve & mcurve)
     mcurve.add_vertex(bnd_verts[0]);
     for (int i = 1; i < this->n_intervals; i++) {
         auto curve_vert = new MeshCurveVertex(gcurve, u(i));
-        mcurve.add_curve_vertex(curve_vert);
+        mcurve.add_vertex(curve_vert);
     }
     mcurve.add_vertex(bnd_verts[1]);
 
     for (int i = 0; i < this->n_intervals; i++)
-        mcurve.add_curve_segment(i, i + 1);
+        mcurve.add_segment(i, i + 1);
 }
 
 Eigen::SparseMatrix<double>
