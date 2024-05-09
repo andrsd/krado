@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/vector.h"
 #include "krado/exception.h"
 

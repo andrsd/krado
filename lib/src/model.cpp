@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/model.h"
 #include "krado/exception.h"
 #include "TopExp_Explorer.hxx"

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/geom_shape.h"
 #include "BRepLib.hxx"
 #include "BRep_Tool.hxx"

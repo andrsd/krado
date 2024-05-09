@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/scheme_triangle.h"
 #include "krado/mesh.h"
 #include "krado/mesh_curve.h"

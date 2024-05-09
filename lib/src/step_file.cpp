@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/step_file.h"
 #include "krado/exception.h"
 #include "Interface_Static.hxx"

@@ -1,4 +1,5 @@
-// Gmsh - Copyright (C) 1997-2023 C. Geuzaine, J.-F. Remacle
+// SPDX-FileCopyrightText: Copyright (C) 1997-2023 C. Geuzaine, J.-F. Remacle
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
