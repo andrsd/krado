@@ -186,12 +186,6 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
 
     // map triangulation back onto our surface
 
-    for (int i = 0, k = 0; i < out.numberoftriangles; i++) {
-        for (int j = 0; j < 3; j++, k++)
-            std::cerr << " " << out.trianglelist[k];
-        std::cerr << std::endl;
-    }
-
     tri::destroy_io(in);
     // region list is shallow copied into `out`
     if (in.regionlist)
