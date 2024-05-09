@@ -7,7 +7,7 @@
 using namespace krado;
 namespace fs = std::filesystem;
 
-TEST(ModelTest, load)
+TEST(GeomModelTest, load)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
 
@@ -33,7 +33,7 @@ TEST(ModelTest, load)
     EXPECT_THROW({ model.vertex(0); }, Exception);
 }
 
-TEST(ModelTest, load_quad)
+TEST(GeomModelTest, load_quad)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
 
@@ -49,7 +49,7 @@ TEST(ModelTest, load_quad)
     EXPECT_THROW({ model.surface(1000); }, Exception);
 }
 
-TEST(ModelTest, load_box)
+TEST(GeomModelTest, load_box)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box.step";
 
