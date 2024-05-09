@@ -29,6 +29,12 @@ public:
     /// @return Vertex ID
     int vertex_id(int idx) const;
 
+    /// Call operator to access vertex index
+    ///
+    /// @param idx Vertex index
+    /// @return Vertex ID
+    int operator()(int idx) const;
+
 private:
     Type elem_type;
     std::vector<int> vtx_id;

@@ -29,6 +29,12 @@ MeshElement::vertex_id(int idx) const
     return this->vtx_id[idx];
 }
 
+int
+MeshElement::operator()(int idx) const
+{
+    return this->vtx_id[idx];
+}
+
 MeshElement
 MeshElement::Line2(int v1, int v2)
 {
