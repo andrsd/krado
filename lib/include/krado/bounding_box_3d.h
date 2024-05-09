@@ -9,7 +9,9 @@
 
 namespace krado {
 
-// A bounding box class - add points and it grows to be the bounding box of the point set
+/// Bounding box in 3D
+///
+/// As points are added it grows to be the bounding box of the point set
 class BoundingBox3D {
 public:
     BoundingBox3D();
