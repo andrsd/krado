@@ -2,6 +2,7 @@
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
+#include "builder.h"
 #include <filesystem>
 
 using namespace krado;
@@ -10,9 +11,7 @@ namespace fs = std::filesystem;
 
 TEST(MeshTest, ctor)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box.step";
-    STEPFile file(input_file.string());
-    auto shape = file.load();
+    auto shape = GeomShape(testing::build_box(Point(0, 0, 0), Point(1, 1, 1)));
     GeomModel model(shape);
     Mesh mesh(model);
     EXPECT_EQ(mesh.vertices().size(), 8);
