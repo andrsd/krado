@@ -36,6 +36,11 @@ public:
     /// @return Vertex ID
     int operator()(int idx) const;
 
+    /// Get vertex IDs
+    ///
+    /// @return Vertex IDs
+    const std::vector<int> & ids() const;
+
 private:
     Type elem_type;
     std::vector<int> vtx_id;

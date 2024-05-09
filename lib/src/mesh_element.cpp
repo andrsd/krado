@@ -36,6 +36,12 @@ MeshElement::operator()(int idx) const
     return this->vtx_id[idx];
 }
 
+const std::vector<int> &
+MeshElement::ids() const
+{
+    return this->vtx_id;
+}
+
 MeshElement
 MeshElement::Line2(const std::array<int, 2> & ids)
 {
