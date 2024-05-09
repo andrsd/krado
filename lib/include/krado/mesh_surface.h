@@ -32,6 +32,11 @@ public:
     /// @return Surface vertices
     const std::vector<MeshVertexAbstract *> & all_vertices() const;
 
+    /// Get (internal) vertices on the surface
+    ///
+    /// @return Vertices on the surface
+    const std::vector<MeshSurfaceVertex *> & surface_vertices() const;
+
     /// Get triangles on this surface
     ///
     /// @return Triangles on this surface
@@ -64,7 +69,7 @@ private:
     /// All vertices on this surface
     std::vector<MeshVertexAbstract *> vtxs;
     /// Surface vertices
-    std::vector<MeshVertexAbstract *> surf_vtxs;
+    std::vector<MeshSurfaceVertex *> surf_vtxs;
     /// Triangles
     std::vector<MeshElement> tris;
     /// Flag indicating if the surface is meshed

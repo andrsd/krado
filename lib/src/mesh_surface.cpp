@@ -40,6 +40,12 @@ MeshSurface::all_vertices() const
     return this->vtxs;
 }
 
+const std::vector<MeshSurfaceVertex *> &
+MeshSurface::surface_vertices() const
+{
+    return this->surf_vtxs;
+}
+
 const std::vector<MeshElement> &
 MeshSurface::triangles() const
 {
