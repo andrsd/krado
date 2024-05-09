@@ -7,6 +7,7 @@
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
 #include "krado/mesh_curve.h"
+#include "krado/point.h"
 
 namespace krado {
 
