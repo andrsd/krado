@@ -185,9 +185,6 @@ void
 Mesh::mesh_vertex(MeshVertex & vertex)
 {
     if (!vertex.is_meshed()) {
-        assign_gid(vertex);
-        MeshPoint mpnt(vertex.point());
-        add_mesh_point(mpnt);
         vertex.set_meshed();
     }
 }
@@ -212,11 +209,6 @@ Mesh::mesh_curve(MeshCurve & curve)
             mesh_vertex(*v);
 
         scheme->mesh_curve(curve);
-        for (auto & edge_vtx : curve.curve_vertices()) {
-            assign_gid(*edge_vtx);
-            MeshPoint mpnt(edge_vtx->point());
-            add_mesh_point(mpnt);
-        }
         curve.set_meshed();
     }
 }
