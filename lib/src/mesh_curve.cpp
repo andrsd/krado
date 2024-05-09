@@ -50,7 +50,7 @@ MeshCurve::add_vertex(MeshCurveVertex * curve_vertex)
     this->vtxs.push_back(curve_vertex);
 }
 
-const std::vector<MeshCurveVertex * > &
+const std::vector<MeshCurveVertex *> &
 MeshCurve::curve_vertices() const
 {
     return this->curve_vtx;
