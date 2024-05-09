@@ -22,3 +22,13 @@ TEST(MeshTest, ctor)
     auto box = mesh.volume(27);
     EXPECT_EQ(box.surfaces().size(), 6);
 }
+
+TEST(MeshTest, circle)
+{
+    auto shape = GeomShape(testing::build_circle(Point(0, 0, 0), 2.));
+    GeomModel model(shape);
+    Mesh mesh(model);
+    EXPECT_EQ(mesh.vertices().size(), 1);
+    EXPECT_EQ(mesh.curves().size(), 1);
+    EXPECT_EQ(mesh.surfaces().size(), 1);
+}
