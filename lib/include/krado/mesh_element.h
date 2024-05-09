@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 namespace krado {
 
@@ -40,6 +41,7 @@ private:
     std::vector<int> vtx_id;
 
 public:
+    static std::string type(Type type);
     static MeshElement Line2(const std::array<int, 2> & ids);
     static MeshElement Tri3(const std::array<int, 3> & ids);
     static MeshElement Tetra4(const std::array<int, 4> & ids);

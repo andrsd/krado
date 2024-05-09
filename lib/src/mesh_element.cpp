@@ -56,4 +56,19 @@ MeshElement::Tetra4(const std::array<int, 4> & ids)
     return tet4;
 }
 
+std::string
+MeshElement::type(Type type)
+{
+    std::string str_type;
+    if (type == krado::MeshElement::LINE2)
+        return "LINE2";
+    else if (type == krado::MeshElement::TRI3)
+        return "TRI3";
+    else if (type == krado::MeshElement::TETRA4)
+        return "TETRA4";
+    else
+        return "unknown";
+
+}
+
 } // namespace krado
