@@ -65,6 +65,8 @@ private:
     std::vector<MeshCurve *> mesh_curves;
     /// All vertices on this surface
     std::vector<MeshVertexAbstract *> vtxs;
+    /// Surface vertices
+    std::vector<MeshVertexAbstract *> surf_vtxs;
     /// Triangles
     std::vector<MeshElement> tris;
     /// Flag indicating if the surface is meshed

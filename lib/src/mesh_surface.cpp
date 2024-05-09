@@ -61,6 +61,7 @@ void
 MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
 {
     this->vtxs.push_back(vertex);
+    this->surf_vtxs.push_back(vertex);
 }
 
 void
