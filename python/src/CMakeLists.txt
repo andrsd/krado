@@ -5,9 +5,8 @@ pybind11_add_module(krado krado.cpp)
 target_include_directories(
     krado
     PRIVATE
-        ${CMAKE_BINARY_DIR}
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}/lib/include
+        ${CMAKE_SOURCE_DIR}/lib/include
 )
 
 target_link_libraries(

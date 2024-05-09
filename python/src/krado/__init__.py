@@ -4,4 +4,5 @@
 from .krado import *
 
 __all__ = [
+    STEPFile,
 ]
