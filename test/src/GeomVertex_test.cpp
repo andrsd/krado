@@ -11,4 +11,14 @@ TEST(GeomVertexTest, ctor)
     EXPECT_DOUBLE_EQ(v.x(), 1.);
     EXPECT_DOUBLE_EQ(v.y(), 2.);
     EXPECT_DOUBLE_EQ(v.z(), 3.);
+
+    EXPECT_FALSE(v.is_null());
+}
+
+TEST(GeomVertexTest, null_vertex)
+{
+    TopoDS_Vertex vtx;
+
+    GeomVertex v(vtx);
+    EXPECT_TRUE(v.is_null());
 }
