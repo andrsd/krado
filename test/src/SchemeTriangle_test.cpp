@@ -38,6 +38,9 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     mpars_qcirc.set<double>("max_area") = 0.5;
     mpars_qcirc.set<std::tuple<double, double>>("region_point") = { 0.1, 0.1 };
     mesh.mesh_surface(7);
+
+    EXPECT_EQ(qcirc.all_vertices().size(), 6);
+    EXPECT_EQ(qcirc.triangles().size(), 4);
 }
 
 #else
