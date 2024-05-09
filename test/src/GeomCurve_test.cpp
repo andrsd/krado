@@ -1,9 +1,26 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
+#include "krado/geom_surface.h"
 #include "krado/exception.h"
 #include "builder.h"
 
 using namespace krado;
+
+const double PI = std::acos(-1);
+
+TEST(GeomCurveTest, curve_type)
+{
+    GeomCurve line(testing::build_line(Point(0, 0, 0), Point(3, 4, 0)));
+    EXPECT_EQ(line.type(), GeomCurve::Line);
+
+    GeomCurve arc(testing::build_arc());
+    EXPECT_EQ(arc.type(), GeomCurve::Circle);
+
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
+    GeomSurface gsurf(circ);
+    auto curves = gsurf.curves();
+    EXPECT_EQ(curves[0].type(), GeomCurve::Circle);
+}
 
 TEST(GeomCurveTest, point)
 {
@@ -158,4 +175,15 @@ TEST(GeomCurveTest, contains_point)
     EXPECT_TRUE(curve.contains_point(Point(1.1, 2.1, 3.1)));
 
     EXPECT_FALSE(curve.contains_point(Point(1.2, 2.2, 3.1)));
+}
+
+TEST(GeomCurveTest, circle)
+{
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
+    GeomSurface gsurf(circ);
+    auto curves = gsurf.curves();
+    ASSERT_EQ(curves.size(), 1);
+    auto [lo, hi] = curves[0].param_range();
+    EXPECT_DOUBLE_EQ(lo, 0.);
+    EXPECT_DOUBLE_EQ(hi, 2. * PI);
 }

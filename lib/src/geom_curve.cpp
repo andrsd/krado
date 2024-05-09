@@ -10,6 +10,10 @@
 #include "BRepAdaptor_Curve.hxx"
 #include "GProp_GProps.hxx"
 #include "TopExp.hxx"
+#include "Geom_BSplineCurve.hxx"
+#include "Geom_BezierCurve.hxx"
+#include "Geom_Line.hxx"
+#include "Geom_Circle.hxx"
 
 namespace krado {
 
@@ -22,12 +26,29 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), umin(0), umax(0)
         this->edge = TopoDS::Edge(this->edge.Oriented(TopAbs_FORWARD));
     }
     this->curve = BRep_Tool::Curve(this->edge, this->umin, this->umax);
+    if(this->curve->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve))
+        this->crv_type = BSpline;
+    else if (this->curve->DynamicType() == STANDARD_TYPE(Geom_BezierCurve))
+        this->crv_type = Bezier;
+    else if (this->curve->DynamicType() == STANDARD_TYPE(Geom_Line))
+        this->crv_type = Line;
+    else if (this->curve->DynamicType() == STANDARD_TYPE(Geom_Circle))
+        this->crv_type = Circle;
+    else
+        this->crv_type = Unknown;
+
 
     GProp_GProps props;
     BRepGProp::LinearProperties(this->edge, props);
     this->len = props.Mass();
 
     this->proj_pt_on_curve.Init(this->curve, this->umin, this->umax);
+}
+
+GeomCurve::CurveType
+GeomCurve::type() const
+{
+    return this->crv_type;
 }
 
 bool

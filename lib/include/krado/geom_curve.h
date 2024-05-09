@@ -16,7 +16,14 @@ class GeomModel;
 
 class GeomCurve {
 public:
+    enum CurveType { Line, Circle, BSpline, Bezier, Unknown };
+
     explicit GeomCurve(const TopoDS_Edge & edge);
+
+    /// Get curve type
+    ///
+    /// @return Curve type
+    CurveType type() const;
 
     /// Check if the edge is degenerated
     ///
@@ -86,6 +93,8 @@ private:
 
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
+    /// Curve type
+    CurveType crv_type;
     /// Minimum value of the parameter
     double umin;
     /// Maximum value of the parameter
