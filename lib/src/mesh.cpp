@@ -4,9 +4,11 @@
 #include "krado/mesh.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface_vertex.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include <array>
 
 namespace krado {
 
@@ -261,27 +263,73 @@ Mesh::mesh_volume(MeshVolume & volume)
 void
 Mesh::assign_gid(MeshVertex & vertex)
 {
-    this->gid_ctr++;
+    this->pnts.emplace_back(vertex.point());
     vertex.set_global_id(this->gid_ctr);
+    this->gid_ctr++;
 }
 
 void
 Mesh::assign_gid(MeshCurveVertex & vertex)
 {
-    this->gid_ctr++;
+    this->pnts.emplace_back(vertex.point());
     vertex.set_global_id(this->gid_ctr);
+    this->gid_ctr++;
 }
 
-const std::vector<MeshPoint> &
+void
+Mesh::assign_gid(MeshSurfaceVertex & vertex)
+{
+    this->pnts.emplace_back(vertex.point());
+    vertex.set_global_id(this->gid_ctr);
+    this->gid_ctr++;
+}
+
+const std::vector<Point> &
 Mesh::points() const
 {
     return this->pnts;
 }
 
+const std::vector<MeshElement> &
+Mesh::elements() const
+{
+    return this->elems;
+}
+
 void
-Mesh::add_mesh_point(MeshPoint & mpnt)
+Mesh::add_mesh_point(Point & mpnt)
 {
     this->pnts.emplace_back(mpnt);
+}
+
+void
+Mesh::number_points()
+{
+    for (auto & [id, v] : this->vtxs)
+        assign_gid(v);
+    for (auto & [id, curve] : this->crvs)
+        for (auto & v : curve.curve_vertices())
+            assign_gid(*v);
+    for (auto & [id, surface] : this->surfs)
+        for (auto & v : surface.surface_vertices())
+            assign_gid(*v);
+}
+
+void
+Mesh::build_elements()
+{
+    for (auto & [id, surface] : this->surfs) {
+        auto verts = surface.all_vertices();
+        std::array<int, 3> tri;
+        for (auto & local_elem : surface.triangles()) {
+            for (int i = 0; i < 3; i++) {
+                auto lid = local_elem.ids()[i];
+                auto gid = verts[lid]->global_id();
+                tri[i] = gid;
+            }
+            this->elems.emplace_back(MeshElement::Tri3(tri));
+        }
+    }
 }
 
 } // namespace krado

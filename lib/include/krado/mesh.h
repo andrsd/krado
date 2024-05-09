@@ -67,7 +67,18 @@ public:
     /// Get mesh points
     ///
     /// @return Mesh points
-    const std::vector<MeshPoint> & points() const;
+    const std::vector<Point> & points() const;
+
+    /// Get elements
+    ///
+    /// @return Mesh elements
+    const std::vector<MeshElement> & elements() const;
+
+    ///
+    void number_points();
+
+    ///
+    void build_elements();
 
 protected:
     template <typename T>
@@ -88,7 +99,12 @@ protected:
     /// @param vertex Curve vertex to assign global ID to
     void assign_gid(MeshCurveVertex & vertex);
 
-    void add_mesh_point(MeshPoint & mpnt);
+    /// Assign a new global ID to a surface vertex
+    ///
+    /// @param vertex Surface vertex to assign global ID to
+    void assign_gid(MeshSurfaceVertex & vertex);
+
+    void add_mesh_point(Point & mpnt);
 
 private:
     void initialize(const GeomModel & model);
@@ -100,7 +116,8 @@ private:
 
     SchemeFactory & scheme_factory;
 
-    std::vector<MeshPoint> pnts;
+    std::vector<Point> pnts;
+    std::vector<MeshElement> elems;
 
     /// Global ID counter
     int gid_ctr;
