@@ -6,6 +6,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/exception.h"
+#include <array>
 
 namespace krado {
 
@@ -63,9 +64,9 @@ MeshCurve::curve_vertices()
 }
 
 void
-MeshCurve::add_segment(int idx1, int idx2)
+MeshCurve::add_segment(const std::array<int, 2> & seg)
 {
-    auto line2 = MeshElement::Line2(idx1, idx2);
+    auto line2 = MeshElement::Line2(seg);
     this->segs.emplace_back(line2);
 }
 

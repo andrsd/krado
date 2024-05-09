@@ -53,9 +53,8 @@ public:
 
     /// Add new curve segment
     ///
-    /// @param idx1 Local index of the first vertex
-    /// @param idx2 Local index of the second vertex
-    void add_segment(int idx1, int idx2);
+    /// @param seg Local vertex indices
+    void add_segment(const std::array<int, 2> & seg);
 
     /// Get curve segments
     ///

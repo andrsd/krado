@@ -4,6 +4,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme_equal.h"
 #include "builder.h"
+#include <array>
 
 using namespace krado;
 
@@ -33,7 +34,7 @@ TEST(MeshSurfaceTest, api)
     auto mvtx2 = new MeshSurfaceVertex(gsurf, 0., 0.1);
     msurface.add_vertex(mvtx2);
 
-    msurface.add_triangle(2, 0, 1);
+    msurface.add_triangle({ 2, 0, 1 });
     auto & triangles = msurface.triangles();
     ASSERT_EQ(triangles.size(), 1);
     auto & tri0 = triangles[0];

@@ -7,6 +7,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include <array>
 
 namespace krado {
 
@@ -65,9 +66,9 @@ MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
 }
 
 void
-MeshSurface::add_triangle(int idx1, int idx2, int idx3)
+MeshSurface::add_triangle(const std::array<int, 3> & tri)
 {
-    auto tri3 = MeshElement::Tri3(idx1, idx2, idx3);
+    auto tri3 = MeshElement::Tri3(tri);
     this->tris.emplace_back(tri3);
 }
 

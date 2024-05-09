@@ -278,7 +278,7 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
                           out.trianglelist[i * 3 + 1],
                           out.trianglelist[i * 3 + 2] };
         auto tri3 = tri::map_triangle(out.pointlist, vtx_map, tritri);
-        surface.add_triangle(tri3[0], tri3[1], tri3[2]);
+        surface.add_triangle(tri3);
     }
 
     tri::destroy_io(in);

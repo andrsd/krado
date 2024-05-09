@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh_element.h"
+#include <array>
 
 namespace krado {
 
@@ -36,23 +37,22 @@ MeshElement::operator()(int idx) const
 }
 
 MeshElement
-MeshElement::Line2(int v1, int v2)
+MeshElement::Line2(const std::array<int, 2> & ids)
 {
-    MeshElement line2(LINE2, { v1, v2 });
+    MeshElement line2(LINE2, { ids[0], ids[1] });
     return line2;
 }
 
 MeshElement
-MeshElement::Tri3(int v1, int v2, int v3)
+MeshElement::Tri3(const std::array<int, 3> & ids)
 {
-    MeshElement tri3(TRI3, { v1, v2, v3 });
-    return tri3;
+    return MeshElement(TRI3, { ids[0], ids[1], ids[2] });
 }
 
 MeshElement
-MeshElement::Tetra4(int v1, int v2, int v3, int v4)
+MeshElement::Tetra4(const std::array<int, 4> & ids)
 {
-    MeshElement tet4(TETRA4, { v1, v2, v3, v4 });
+    MeshElement tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] });
     return tet4;
 }
 

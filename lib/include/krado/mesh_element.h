@@ -40,9 +40,9 @@ private:
     std::vector<int> vtx_id;
 
 public:
-    static MeshElement Line2(int v1, int v2);
-    static MeshElement Tri3(int v1, int v2, int v3);
-    static MeshElement Tetra4(int v1, int v2, int v3, int v4);
+    static MeshElement Line2(const std::array<int, 2> & ids);
+    static MeshElement Tri3(const std::array<int, 3> & ids);
+    static MeshElement Tetra4(const std::array<int, 4> & ids);
 };
 
 } // namespace krado

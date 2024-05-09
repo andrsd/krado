@@ -34,7 +34,7 @@ SchemeEqual::mesh_curve(MeshCurve & mcurve)
     mcurve.add_vertex(bnd_verts[1]);
 
     for (int i = 0; i < this->n_intervals; i++)
-        mcurve.add_segment(i, i + 1);
+        mcurve.add_segment({ i, i + 1 });
 }
 
 Eigen::SparseMatrix<double>

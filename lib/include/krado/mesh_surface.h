@@ -46,10 +46,8 @@ public:
 
     /// Add new triangle
     ///
-    /// @param idx1 Local index of the first vertex
-    /// @param idx2 Local index of the second vertex
-    /// @param idx3 Local index of the third vertex
-    void add_triangle(int idx1, int idx2, int idx3);
+    /// @param tri Local vertex indices
+    void add_triangle(const std::array<int, 3> & tri);
 
     /// Check if the surface is already meshed
     ///
