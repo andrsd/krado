@@ -34,6 +34,7 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(src)
+add_subdirectory(python)
 
 if(KRADO_BUILD_TESTS)
     fetchcontent_declare(

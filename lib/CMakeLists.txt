@@ -1,8 +1,11 @@
-set(NAME "krado")
+set(NAME "libkrado")
 
 file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS src/*.cpp)
 
 add_library(${NAME} SHARED ${SRCS})
+if(NOT MSVC)
+    set_target_properties(${NAME} PROPERTIES OUTPUT_NAME krado)
+endif()
 
 target_code_coverage(${NAME})
 
