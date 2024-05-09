@@ -13,9 +13,9 @@
 
 namespace krado {
 
-class Model {
+class GeomModel {
 public:
-    explicit Model(const GeomShape & root_shape);
+    explicit GeomModel(const GeomShape & root_shape);
 
     /// Get model vertices
     ///

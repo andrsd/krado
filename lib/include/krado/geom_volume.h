@@ -9,7 +9,7 @@
 
 namespace krado {
 
-class Model;
+class GeomModel;
 
 class GeomVolume {
 public:

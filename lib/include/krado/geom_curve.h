@@ -12,7 +12,7 @@
 
 namespace krado {
 
-class Model;
+class GeomModel;
 
 class GeomCurve {
 public:

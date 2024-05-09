@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh.h"
-#include "krado/model.h"
+#include "krado/geom_model.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
@@ -11,7 +11,7 @@ namespace krado {
 
 Mesh::Mesh() : scheme_factory(SchemeFactory::instance()), gid_ctr(0) {}
 
-Mesh::Mesh(const Model & model) : scheme_factory(SchemeFactory::instance()), gid_ctr(0)
+Mesh::Mesh(const GeomModel & model) : scheme_factory(SchemeFactory::instance()), gid_ctr(0)
 {
     initialize(model);
 }
@@ -129,7 +129,7 @@ Mesh::volumes() const
 }
 
 void
-Mesh::initialize(const Model & model)
+Mesh::initialize(const GeomModel & model)
 {
     for (auto & [id, gvtx] : model.vertices()) {
         MeshVertex mvtx(gvtx);

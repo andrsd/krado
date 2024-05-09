@@ -13,12 +13,12 @@
 
 namespace krado {
 
-class Model;
+class GeomModel;
 
 class Mesh {
 public:
     Mesh();
-    Mesh(const Model & model);
+    Mesh(const GeomModel & model);
 
     /// Vertex
     const MeshVertex & vertex(int id) const;
@@ -91,7 +91,7 @@ protected:
     void add_mesh_point(MeshPoint & mpnt);
 
 private:
-    void initialize(const Model & model);
+    void initialize(const GeomModel & model);
 
     std::map<int, MeshVertex> vtxs;
     std::map<int, MeshCurve> crvs;

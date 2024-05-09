@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
-#include "krado/model.h"
+#include "krado/geom_model.h"
 #include "krado/exception.h"
 #include "TopExp_Explorer.hxx"
 #include "TopoDS.hxx"
@@ -12,19 +12,19 @@
 
 namespace krado {
 
-Model::Model(const GeomShape & root_shape) : root_shape(root_shape), internal_id_counter(0)
+GeomModel::GeomModel(const GeomShape & root_shape) : root_shape(root_shape), internal_id_counter(0)
 {
     bind_shape(root_shape);
 }
 
 const std::map<int, GeomVertex> &
-Model::vertices() const
+GeomModel::vertices() const
 {
     return this->vtxs;
 }
 
 const GeomVertex &
-Model::vertex(int id) const
+GeomModel::vertex(int id) const
 {
     try {
         return this->vtxs.at(id);
@@ -35,7 +35,7 @@ Model::vertex(int id) const
 }
 
 int
-Model::vertex_id(const GeomVertex & vertex) const
+GeomModel::vertex_id(const GeomVertex & vertex) const
 {
     try {
         return this->shape_id.Find(vertex);
@@ -46,13 +46,13 @@ Model::vertex_id(const GeomVertex & vertex) const
 }
 
 const std::map<int, GeomCurve> &
-Model::curves() const
+GeomModel::curves() const
 {
     return this->crvs;
 }
 
 const GeomCurve &
-Model::curve(int id) const
+GeomModel::curve(int id) const
 {
     try {
         return this->crvs.at(id);
@@ -63,7 +63,7 @@ Model::curve(int id) const
 }
 
 int
-Model::curve_id(const GeomCurve & curve) const
+GeomModel::curve_id(const GeomCurve & curve) const
 {
     try {
         return this->shape_id.Find(curve);
@@ -74,13 +74,13 @@ Model::curve_id(const GeomCurve & curve) const
 }
 
 const std::map<int, GeomSurface> &
-Model::surfaces() const
+GeomModel::surfaces() const
 {
     return this->srfs;
 }
 
 const GeomSurface &
-Model::surface(int id) const
+GeomModel::surface(int id) const
 {
     try {
         return this->srfs.at(id);
@@ -91,7 +91,7 @@ Model::surface(int id) const
 }
 
 int
-Model::surface_id(const GeomSurface & surface) const
+GeomModel::surface_id(const GeomSurface & surface) const
 {
     try {
         return this->shape_id.Find(surface);
@@ -102,13 +102,13 @@ Model::surface_id(const GeomSurface & surface) const
 }
 
 const std::map<int, GeomVolume> &
-Model::volumes() const
+GeomModel::volumes() const
 {
     return this->vols;
 }
 
 const GeomVolume &
-Model::volume(int id) const
+GeomModel::volume(int id) const
 {
     try {
         return this->vols.at(id);
@@ -119,7 +119,7 @@ Model::volume(int id) const
 }
 
 int
-Model::volume_id(const GeomVolume & volume) const
+GeomModel::volume_id(const GeomVolume & volume) const
 {
     try {
         return this->shape_id.Find(volume);
@@ -130,7 +130,7 @@ Model::volume_id(const GeomVolume & volume) const
 }
 
 void
-Model::bind_shape(const GeomShape & shape)
+GeomModel::bind_shape(const GeomShape & shape)
 {
     bind_vertices(shape);
     bind_edges(shape);
@@ -139,7 +139,7 @@ Model::bind_shape(const GeomShape & shape)
 }
 
 void
-Model::bind_solids(const GeomShape & shape)
+GeomModel::bind_solids(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
@@ -153,7 +153,7 @@ Model::bind_solids(const GeomShape & shape)
 }
 
 void
-Model::bind_faces(const GeomShape & shape)
+GeomModel::bind_faces(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
@@ -167,7 +167,7 @@ Model::bind_faces(const GeomShape & shape)
 }
 
 void
-Model::bind_edges(const GeomShape & shape)
+GeomModel::bind_edges(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
@@ -181,7 +181,7 @@ Model::bind_edges(const GeomShape & shape)
 }
 
 void
-Model::bind_vertices(const GeomShape & shape)
+GeomModel::bind_vertices(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
@@ -195,7 +195,7 @@ Model::bind_vertices(const GeomShape & shape)
 }
 
 int
-Model::get_next_id()
+GeomModel::get_next_id()
 {
     this->internal_id_counter++;
     return this->internal_id_counter;

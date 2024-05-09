@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/config.h"
 #include "krado/step_file.h"
-#include "krado/model.h"
+#include "krado/geom_model.h"
 #include "krado/mesh.h"
 #include "ExceptionTestMacros.h"
 #include <filesystem>
@@ -17,7 +17,7 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
     STEPFile file(input_file.string());
     auto shape = file.load();
-    Model model(shape);
+    GeomModel model(shape);
     Mesh mesh(model);
 
     auto & arc = mesh.curve(4);

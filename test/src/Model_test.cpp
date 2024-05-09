@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/step_file.h"
-#include "krado/model.h"
+#include "krado/geom_model.h"
 #include "krado/exception.h"
 #include <filesystem>
 
@@ -13,7 +13,7 @@ TEST(ModelTest, load)
 
     STEPFile file(input_file.string());
     auto shape = file.load();
-    Model model(shape);
+    GeomModel model(shape);
 
     auto v1 = model.vertex(1);
     EXPECT_DOUBLE_EQ(v1.x(), 0.);
@@ -39,7 +39,7 @@ TEST(ModelTest, load_quad)
 
     STEPFile file(input_file.string());
     auto shape = file.load();
-    Model model(shape);
+    GeomModel model(shape);
     EXPECT_EQ(model.vertices().size(), 4);
     EXPECT_EQ(model.curves().size(), 4);
 
@@ -55,7 +55,7 @@ TEST(ModelTest, load_box)
 
     STEPFile file(input_file.string());
     auto shape = file.load();
-    Model model(shape);
+    GeomModel model(shape);
     EXPECT_EQ(model.vertices().size(), 8);
     EXPECT_EQ(model.curves().size(), 12);
     EXPECT_EQ(model.surfaces().size(), 6);

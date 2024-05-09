@@ -7,7 +7,7 @@
 
 namespace krado {
 
-class Model;
+class GeomModel;
 
 class GeomVertex {
 public:

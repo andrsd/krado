@@ -13,7 +13,7 @@
 
 namespace krado {
 
-class Model;
+class GeomModel;
 
 class GeomSurface {
 public:
