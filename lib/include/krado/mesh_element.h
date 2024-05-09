@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 
 namespace krado {
 
@@ -53,3 +54,13 @@ public:
 };
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::MeshElement & el)
+{
+    stream << "(" << krado::MeshElement::type(el.type()) << ",";
+    for (auto & id : el.ids())
+        stream << " " << id;
+    stream << ")";
+    return stream;
+}
