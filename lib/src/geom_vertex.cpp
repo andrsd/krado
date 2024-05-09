@@ -8,10 +8,18 @@ namespace krado {
 
 GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : vertex(vertex)
 {
-    gp_Pnt pnt = BRep_Tool::Pnt(this->vertex);
-    this->x_coord = pnt.X();
-    this->y_coord = pnt.Y();
-    this->z_coord = pnt.Z();
+    if (!this->vertex.IsNull()) {
+        gp_Pnt pnt = BRep_Tool::Pnt(this->vertex);
+        this->x_coord = pnt.X();
+        this->y_coord = pnt.Y();
+        this->z_coord = pnt.Z();
+    }
+}
+
+bool
+GeomVertex::is_null() const
+{
+    return this->vertex.IsNull();
 }
 
 double
