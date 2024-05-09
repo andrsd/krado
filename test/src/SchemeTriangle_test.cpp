@@ -35,7 +35,7 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     auto & mpars_qcirc = qcirc.meshing_parameters();
     mpars_qcirc.set<std::string>("scheme") = "triangle";
     mpars_qcirc.set<int>("marker") = 10;
-    mpars_qcirc.set<double>("max_area") = 0.25;
+    mpars_qcirc.set<double>("max_area") = 0.5;
     mpars_qcirc.set<std::tuple<double, double>>("region_point") = { 0.1, 0.1 };
     mesh.mesh_surface(7);
 }

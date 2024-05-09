@@ -175,14 +175,12 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
 
     auto pt_id = tri::build_point_map(surface);
     tri::create_pslg(in, surface, pt_id);
-    tri::create_regions(in, surface);
 
     // p = triangulate planar straight line graph
-    // q = quality mesh
     // z = zero-based indexing
-    // A = output area markers
     // Q = quiet
-    triangulate((char *) "pqzAQ", &in, &out, nullptr);
+    auto switches = fmt::format("pzQ");
+    triangulate((char *) switches.c_str(), &in, &out, nullptr);
 
     // map triangulation back onto our surface
 
