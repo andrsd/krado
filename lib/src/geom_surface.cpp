@@ -8,6 +8,7 @@
 #include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
+#include "BRepClass_FaceClassifier.hxx"
 
 namespace krado {
 
@@ -147,6 +148,17 @@ GeomSurface::nearest_point(const Point & pt) const
     }
     else
         throw Exception("Projection of point failed to find parameter");
+}
+
+bool
+GeomSurface::contains_point(const Point & pt) const
+{
+    Point xyz = nearest_point(pt);
+    const Standard_Real tolerance = BRep_Tool::Tolerance(this->face);
+    if (pt.distance(xyz) <= tolerance)
+        return true;
+    else
+        return false;
 }
 
 } // namespace krado

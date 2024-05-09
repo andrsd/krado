@@ -74,7 +74,7 @@ public:
     ///
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
-    bool contains_point(const Point &pt) const;
+    bool contains_point(const Point & pt) const;
 
     operator const TopoDS_Shape &() const;
 

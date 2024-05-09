@@ -170,3 +170,13 @@ TEST(GeomSurfaceTest, nearest_point)
 
     EXPECT_THROW(circ.nearest_point(Point(5, 6, 7)), Exception);
 }
+
+TEST(GeomSurfaceTest, contains_point)
+{
+    auto circ_face = build_circle(Point(0, 0, 0), 2.);
+    GeomSurface circ(circ_face);
+
+    EXPECT_TRUE(circ.contains_point(Point(0, 0, 0)));
+    EXPECT_FALSE(circ.contains_point(Point(0, 0, -0.1)));
+    EXPECT_THROW({ circ.contains_point(Point(2.1, 0, 0)); }, Exception);
+}
