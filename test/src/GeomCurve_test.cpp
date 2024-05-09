@@ -1,20 +1,14 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
 #include "krado/exception.h"
-#include "Geom_Line.hxx"
-#include "BRepLib_MakeEdge.hxx"
-#include "BRepBuilderAPI_MakeEdge.hxx"
-#include "GC_MakeArcOfCircle.hxx"
+#include "builder.h"
 
 using namespace krado;
 
 TEST(GeomCurveTest, point)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
 
     auto pt_start = curve.point(0.);
     EXPECT_DOUBLE_EQ(pt_start.x, 0.);
@@ -34,21 +28,15 @@ TEST(GeomCurveTest, point)
 
 TEST(GeomCurveTest, length)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
     EXPECT_DOUBLE_EQ(curve.length(), 5.);
 }
 
 TEST(GeomCurveTest, param_range)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
     auto [low, hi] = curve.param_range();
     EXPECT_DOUBLE_EQ(low, 0.);
     EXPECT_DOUBLE_EQ(hi, 5.);
@@ -56,33 +44,22 @@ TEST(GeomCurveTest, param_range)
 
 TEST(GeomCurveTest, is_degenerated)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
     EXPECT_FALSE(curve.is_degenerated());
 }
 
 TEST(GeomCurveTest, curvature_line)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
     EXPECT_DOUBLE_EQ(curve.curvature(0.5), 0.);
 }
 
 TEST(GeomCurveTest, curvature_arc)
 {
-    gp_Pnt pt1(-1, 0, 0);
-    gp_Pnt pt2(0, 1, 0);
-    gp_Pnt pt3(1, 0, 0);
-    GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
-    BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto arc = testing::build_arc();
+    GeomCurve curve(arc);
     auto [lo, hi] = curve.param_range();
     EXPECT_DOUBLE_EQ(curve.curvature(lo), 1.);
     EXPECT_DOUBLE_EQ(curve.curvature((lo + hi) / 2.), 1.);
@@ -91,11 +68,8 @@ TEST(GeomCurveTest, curvature_arc)
 
 TEST(GeomCurveTest, d1_line)
 {
-    gp_Pnt pt1(0, 0, 0);
-    gp_Pnt pt2(3, 4, 0);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomCurve curve(line);
 
     auto v_0 = curve.d1(0.);
     EXPECT_DOUBLE_EQ(v_0.x, 0.6);
@@ -110,13 +84,10 @@ TEST(GeomCurveTest, d1_line)
 
 TEST(GeomCurveTest, d1_arc)
 {
-    gp_Pnt pt1(-1, 0, 0);
-    gp_Pnt pt2(0, 1, 0);
-    gp_Pnt pt3(1, 0, 0);
-    GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
-    BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto arc = testing::build_arc();
+    GeomCurve curve(arc);
+    EXPECT_EQ(curve.type(), GeomCurve::Circle);
+
     auto [lo, hi] = curve.param_range();
 
     auto v_0 = curve.d1(lo);
@@ -137,11 +108,8 @@ TEST(GeomCurveTest, d1_arc)
 
 TEST(GeomCurveTest, vertices)
 {
-    gp_Pnt pt1(1, 2, 3);
-    gp_Pnt pt2(3, 4, 5);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(1, 2, 3), Point(3, 4, 5));
+    GeomCurve curve(line);
 
     auto first = curve.first_vertex();
     EXPECT_DOUBLE_EQ(first.x(), 1.);
@@ -156,11 +124,8 @@ TEST(GeomCurveTest, vertices)
 
 TEST(GeomCurveTest, param_from_pt)
 {
-    gp_Pnt pt1(1, 2, 3);
-    gp_Pnt pt2(3, 4, 5);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(1, 2, 3), Point(3, 4, 5));
+    GeomCurve curve(line);
 
     auto [ulo, uhi] = curve.param_range();
     auto umid = (ulo + uhi) * 0.5;
@@ -173,11 +138,8 @@ TEST(GeomCurveTest, param_from_pt)
 
 TEST(GeomCurveTest, nearest_point)
 {
-    gp_Pnt pt1(1, 2, 3);
-    gp_Pnt pt2(3, 4, 5);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(1, 2, 3), Point(3, 4, 5));
+    GeomCurve curve(line);
 
     auto npt = curve.nearest_point(Point(1.2, 2.3, 3.1));
     EXPECT_DOUBLE_EQ(npt.x, 1.2);
@@ -189,11 +151,8 @@ TEST(GeomCurveTest, nearest_point)
 
 TEST(GeomCurveTest, contains_point)
 {
-    gp_Pnt pt1(1, 2, 3);
-    gp_Pnt pt2(3, 4, 5);
-    BRepLib_MakeEdge make_edge(pt1, pt2);
-    make_edge.Build();
-    GeomCurve curve(make_edge.Edge());
+    auto line = testing::build_line(Point(1, 2, 3), Point(3, 4, 5));
+    GeomCurve curve(line);
 
     EXPECT_TRUE(curve.contains_point(Point(1, 2, 3)));
     EXPECT_TRUE(curve.contains_point(Point(1.1, 2.1, 3.1)));

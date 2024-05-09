@@ -7,6 +7,9 @@
 #include "BRepPrimAPI_MakeBox.hxx"
 #include "TopoDS_Wire.hxx"
 #include "TopoDS_Face.hxx"
+#include "Geom_Line.hxx"
+#include "BRepBuilderAPI_MakeEdge.hxx"
+#include "GC_MakeArcOfCircle.hxx"
 
 namespace testing {
 
@@ -27,6 +30,19 @@ build_line(Point pt1, Point pt2)
     BRepLib_MakeEdge make_edge(pnt1, pnt2);
     make_edge.Build();
     return make_edge.Edge();
+}
+
+TopoDS_Edge
+build_arc()
+{
+    gp_Pnt pt1(-1, 0, 0);
+    gp_Pnt pt2(0, 1, 0);
+    gp_Pnt pt3(1, 0, 0);
+    GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
+    BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
+    make_edge.Build();
+    return make_edge.Edge();
+
 }
 
 TopoDS_Face
