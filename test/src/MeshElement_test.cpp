@@ -36,3 +36,10 @@ TEST(MeshElementTest, tet4)
     EXPECT_EQ(elem(2), 6);
     EXPECT_EQ(elem(3), 8);
 }
+
+TEST(MeshElementTest, str_type)
+{
+    EXPECT_EQ(MeshElement::type(MeshElement::LINE2), "LINE2");
+    EXPECT_EQ(MeshElement::type(MeshElement::TRI3), "TRI3");
+    EXPECT_EQ(MeshElement::type(MeshElement::TETRA4), "TETRA4");
+}
