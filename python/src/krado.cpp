@@ -185,12 +185,6 @@ PYBIND11_MODULE(krado, m)
     py::class_<Scheme>(m, "Scheme")
         .def(py::init<const std::string &>())
         .def("name", &Scheme::name)
-        .def("set", &Scheme::set<int>, py::return_value_policy::reference)
-        .def("set", &Scheme::set<double>, py::return_value_policy::reference)
-        .def("set", &Scheme::set<std::string>, py::return_value_policy::reference)
-        .def("get", &Scheme::get<int>)
-        .def("get", &Scheme::get<double>)
-        .def("get", &Scheme::get<std::string>)
         .def("set", [](Scheme & scheme, const py::args &args, const py::kwargs & kwargs) {
                 for (auto & [name, value] : kwargs) {
                     if (py::isinstance<py::int_>(value))
