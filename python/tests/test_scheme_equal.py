@@ -15,7 +15,8 @@ def test_scheme_equal():
     mesh.curve(3).set_scheme("equal").set(intervals=4)
 
     sch = mesh.curve(3).scheme()
-    assert sch.get("intervals") == 4
+    params = sch.get()
+    assert params["intervals"] == 4
 
     mesh.mesh_curve(3)
 

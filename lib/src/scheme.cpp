@@ -14,4 +14,10 @@ Scheme::name() const
     return this->nm;
 }
 
+const Parameters &
+Scheme::parameters() const
+{
+    return this->params;
+}
+
 } // namespace krado

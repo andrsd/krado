@@ -203,6 +203,21 @@ PYBIND11_MODULE(krado, m)
                         throw krado::Exception("Unsupported type");
                 }
             })
+        .def("get", [](Scheme & scheme) -> py::dict {
+                py::dict d;
+                auto & pars = scheme.parameters();
+                for (auto & [name, value] : pars) {
+                    if (pars.has<int>(name))
+                        d[name.c_str()] = py::cast(pars.get<int>(name), py::return_value_policy::reference);
+                    else if (pars.has<double>(name))
+                        d[name.c_str()] = py::cast(pars.get<double>(name), py::return_value_policy::reference);
+                    else if (pars.has<std::string>(name))
+                        d[name.c_str()] = py::cast(scheme.get<std::string>(name), py::return_value_policy::reference);
+                    else
+                        throw krado::Exception("Unsupported type");
+                }
+                return d;
+            })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")

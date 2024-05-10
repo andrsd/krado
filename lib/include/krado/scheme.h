@@ -43,6 +43,11 @@ public:
         return this->params.get<T>(param_name);
     }
 
+    /// Get parameters
+    ///
+    /// @return Scheme parameters
+    const Parameters & parameters() const;
+
 private:
     /// Scheme name
     std::string nm;
