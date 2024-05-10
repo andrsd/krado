@@ -13,12 +13,17 @@ class MeshElement {
 public:
     enum Type { LINE2, TRI3, TETRA4 };
 
-    MeshElement(Type type, const std::vector<int> vtx_ids);
+    MeshElement(Type type, const std::vector<int> vtx_ids, int marker = 0);
 
     /// Get element type
     ///
     /// @return Element type
     Type type() const;
+
+    /// Get the element marker
+    ///
+    /// @return The element marker
+    int marker() const;
 
     /// Get number of vertices
     ///
@@ -45,12 +50,13 @@ public:
 private:
     Type elem_type;
     std::vector<int> vtx_id;
+    int mrkr;
 
 public:
     static std::string type(Type type);
-    static MeshElement Line2(const std::array<int, 2> & ids);
-    static MeshElement Tri3(const std::array<int, 3> & ids);
-    static MeshElement Tetra4(const std::array<int, 4> & ids);
+    static MeshElement Line2(const std::array<int, 2> & ids, int marker = 0);
+    static MeshElement Tri3(const std::array<int, 3> & ids, int marker = 0);
+    static MeshElement Tetra4(const std::array<int, 4> & ids, int marker = 0);
 };
 
 } // namespace krado

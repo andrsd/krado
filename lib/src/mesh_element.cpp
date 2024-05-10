@@ -6,9 +6,10 @@
 
 namespace krado {
 
-MeshElement::MeshElement(Type type, const std::vector<int> vtx_ids) :
+MeshElement::MeshElement(Type type, const std::vector<int> vtx_ids, int marker) :
     elem_type(type),
-    vtx_id(vtx_ids)
+    vtx_id(vtx_ids),
+    mrkr(marker)
 {
 }
 
@@ -16,6 +17,12 @@ MeshElement::Type
 MeshElement::type() const
 {
     return this->elem_type;
+}
+
+int
+MeshElement::marker() const
+{
+    return this->mrkr;
 }
 
 int
@@ -43,22 +50,22 @@ MeshElement::ids() const
 }
 
 MeshElement
-MeshElement::Line2(const std::array<int, 2> & ids)
+MeshElement::Line2(const std::array<int, 2> & ids, int marker)
 {
-    MeshElement line2(LINE2, { ids[0], ids[1] });
+    MeshElement line2(LINE2, { ids[0], ids[1] }, marker);
     return line2;
 }
 
 MeshElement
-MeshElement::Tri3(const std::array<int, 3> & ids)
+MeshElement::Tri3(const std::array<int, 3> & ids, int marker)
 {
-    return MeshElement(TRI3, { ids[0], ids[1], ids[2] });
+    return MeshElement(TRI3, { ids[0], ids[1], ids[2] }, marker);
 }
 
 MeshElement
-MeshElement::Tetra4(const std::array<int, 4> & ids)
+MeshElement::Tetra4(const std::array<int, 4> & ids, int marker)
 {
-    MeshElement tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] });
+    MeshElement tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] }, marker);
     return tet4;
 }
 
