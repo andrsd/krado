@@ -6,7 +6,7 @@
 
 namespace krado {
 
-MeshElement::MeshElement(Type type, const std::vector<int> vtx_ids, int marker) :
+MeshElement::MeshElement(Type type, const std::vector<int> & vtx_ids, int marker) :
     elem_type(type),
     vtx_id(vtx_ids),
     mrkr(marker)

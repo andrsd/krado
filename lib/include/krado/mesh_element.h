@@ -13,7 +13,7 @@ class MeshElement {
 public:
     enum Type { LINE2, TRI3, TETRA4 };
 
-    MeshElement(Type type, const std::vector<int> vtx_ids, int marker = 0);
+    MeshElement(Type type, const std::vector<int> & vtx_ids, int marker = 0);
 
     /// Get element type
     ///
