@@ -10,6 +10,7 @@ namespace krado {
 class MeshVertexAbstract {
 public:
     MeshVertexAbstract();
+    virtual ~MeshVertexAbstract() = default;
 
     /// Get physical position in the 3D space
     ///
