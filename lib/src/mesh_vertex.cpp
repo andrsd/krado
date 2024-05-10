@@ -7,8 +7,7 @@ namespace krado {
 
 MeshVertex::MeshVertex(const GeomVertex & geom_vertex) : MeshVertexAbstract(), gvtx(geom_vertex)
 {
-    auto & mpars = meshing_parameters();
-    mpars.set<int>("marker") = 0;
+    set<int>("marker", 0);
 }
 
 const GeomVertex &

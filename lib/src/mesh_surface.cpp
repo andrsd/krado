@@ -17,9 +17,7 @@ MeshSurface::MeshSurface(const GeomSurface & gsurface,
     mesh_curves(mesh_curves),
     meshed(false)
 {
-    auto & mpars = meshing_parameters();
-    mpars.set<std::string>("scheme") = "auto";
-    mpars.set<int>("marker") = 0;
+    set_scheme("auto").set<int>("marker", 0);
 }
 
 const GeomSurface &

@@ -5,6 +5,19 @@
 
 namespace krado {
 
+MeshingParameters &
+MeshingParameters::set_scheme(const std::string & name)
+{
+    this->mpars.set<std::string>("scheme") = name;
+    return *this;
+}
+
+std::string
+MeshingParameters::get_scheme() const
+{
+    return this->mpars.get<std::string>("scheme");
+}
+
 Parameters &
 MeshingParameters::meshing_parameters()
 {

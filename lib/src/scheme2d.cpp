@@ -9,11 +9,10 @@ namespace krado {
 void
 Scheme2D::select_curve_scheme(MeshCurve & curve)
 {
-    auto & pars = curve.meshing_parameters();
-    auto scheme_name = pars.get<std::string>("scheme");
+    auto scheme_name = curve.get_scheme();
     if (scheme_name == "auto") {
-        pars.set<std::string>("scheme") = "equal";
-        pars.set<int>("intervals") = 1;
+        curve.set_scheme("equal")
+            .set("intervals", 1);
     }
 }
 

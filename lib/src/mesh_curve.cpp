@@ -15,9 +15,7 @@ MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2)
     bnd_vtxs({ v1, v2 }),
     meshed(false)
 {
-    auto & mpars = meshing_parameters();
-    mpars.set<std::string>("scheme") = "auto";
-    mpars.set<int>("marker") = 0;
+    set_scheme("auto").set<int>("marker", 0);
 }
 
 const GeomCurve &

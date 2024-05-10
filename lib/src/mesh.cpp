@@ -202,9 +202,8 @@ void
 Mesh::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
-        auto & mesh_pars = curve.meshing_parameters();
-        auto scheme_name = mesh_pars.get<std::string>("scheme");
-        auto scheme = get_scheme<Scheme1D>(scheme_name, *this, mesh_pars);
+        auto scheme_name = curve.get_scheme();
+        auto scheme = get_scheme<Scheme1D>(scheme_name, *this, curve.meshing_parameters());
 
         auto bnd_vtxs = curve.bounding_vertices();
         for (auto & v : bnd_vtxs)
@@ -226,9 +225,8 @@ void
 Mesh::mesh_surface(MeshSurface & surface)
 {
     if (!surface.is_meshed()) {
-        auto & mesh_pars = surface.meshing_parameters();
-        auto scheme_name = mesh_pars.get<std::string>("scheme");
-        auto scheme = get_scheme<Scheme2D>(scheme_name, *this, mesh_pars);
+        auto scheme_name = surface.get_scheme();
+        auto scheme = get_scheme<Scheme2D>(scheme_name, *this, surface.meshing_parameters());
 
         auto curves = surface.curves();
         for (auto & crv : curves)
@@ -252,9 +250,8 @@ void
 Mesh::mesh_volume(MeshVolume & volume)
 {
     if (!volume.is_meshed()) {
-        auto & mesh_pars = volume.meshing_parameters();
-        auto scheme_name = mesh_pars.get<std::string>("scheme");
-        auto scheme = get_scheme<Scheme3D>(scheme_name, *this, mesh_pars);
+        auto scheme_name = volume.get_scheme();
+        auto scheme = get_scheme<Scheme3D>(scheme_name, *this, volume.meshing_parameters());
         scheme->mesh_volume(volume);
         volume.set_meshed();
     }

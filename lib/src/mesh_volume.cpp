@@ -12,9 +12,7 @@ MeshVolume::MeshVolume(const GeomVolume & gvolume,
     mesh_surfaces(mesh_surfaces),
     meshed(false)
 {
-    auto & mpars = meshing_parameters();
-    mpars.set<std::string>("scheme") = "auto";
-    mpars.set<int>("marker") = 0;
+    set_scheme("auto").set<int>("marker", 0);
 }
 
 const GeomVolume &
