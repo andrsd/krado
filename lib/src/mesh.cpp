@@ -306,28 +306,33 @@ void
 Mesh::number_points()
 {
     for (auto & [id, v] : this->vtxs)
-        assign_gid(v);
+        if (v.is_meshed())
+            assign_gid(v);
     for (auto & [id, curve] : this->crvs)
-        for (auto & v : curve.curve_vertices())
-            assign_gid(*v);
+        if (curve.is_meshed())
+            for (auto & v : curve.curve_vertices())
+                assign_gid(*v);
     for (auto & [id, surface] : this->surfs)
-        for (auto & v : surface.surface_vertices())
-            assign_gid(*v);
+        if (surface.is_meshed())
+            for (auto & v : surface.surface_vertices())
+                assign_gid(*v);
 }
 
 void
 Mesh::build_elements()
 {
     for (auto & [id, surface] : this->surfs) {
-        auto verts = surface.all_vertices();
-        std::array<int, 3> tri;
-        for (auto & local_elem : surface.triangles()) {
-            for (int i = 0; i < 3; i++) {
-                auto lid = local_elem.ids()[i];
-                auto gid = verts[lid]->global_id();
-                tri[i] = gid;
+        if (surface.is_meshed()) {
+            auto verts = surface.all_vertices();
+            std::array<int, 3> tri;
+            for (auto & local_elem : surface.triangles()) {
+                for (int i = 0; i < 3; i++) {
+                    auto lid = local_elem.ids()[i];
+                    auto gid = verts[lid]->global_id();
+                    tri[i] = gid;
+                }
+                this->elems.emplace_back(MeshElement::Tri3(tri));
             }
-            this->elems.emplace_back(MeshElement::Tri3(tri));
         }
     }
 }
