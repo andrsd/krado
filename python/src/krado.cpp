@@ -191,6 +191,18 @@ PYBIND11_MODULE(krado, m)
         .def("get", &Scheme::get<int>)
         .def("get", &Scheme::get<double>)
         .def("get", &Scheme::get<std::string>)
+        .def("set", [](Scheme & scheme, const py::args &args, const py::kwargs & kwargs) {
+                for (auto & [name, value] : kwargs) {
+                    if (py::isinstance<py::int_>(value))
+                        scheme.set(py::str(name), value.cast<int>());
+                    else if (py::isinstance<py::float_>(value))
+                        scheme.set(py::str(name), value.cast<double>());
+                    else if (py::isinstance<py::str>(value))
+                        scheme.set(py::str(name), value.cast<std::string>());
+                    else
+                        throw krado::Exception("Unsupported type");
+                }
+            })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")

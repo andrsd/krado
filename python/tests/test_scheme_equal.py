@@ -12,9 +12,11 @@ def test_scheme_equal():
     shape = step.load()
     model = krado.GeomModel(shape)
     mesh = krado.Mesh(model)
-    mesh.curve(3) \
-        .set_scheme("equal") \
-        .set("intervals", 4)
+    mesh.curve(3).set_scheme("equal").set(intervals=4)
+
+    sch = mesh.curve(3).scheme()
+    assert sch.get("intervals") == 4
+
     mesh.mesh_curve(3)
 
     crv = mesh.curve(3)
