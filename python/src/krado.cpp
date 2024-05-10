@@ -132,8 +132,10 @@ PYBIND11_MODULE(krado, m)
         .def("scheme", &MeshVertex::scheme, py::return_value_policy::reference)
         .def("set", &MeshVertex::set<int>, py::return_value_policy::reference)
         .def("set", &MeshVertex::set<double>, py::return_value_policy::reference)
+        .def("set", &MeshVertex::set<std::string>, py::return_value_policy::reference)
         .def("get", &MeshVertex::get<int>)
         .def("get", &MeshVertex::get<double>)
+        .def("get", &MeshVertex::get<std::string>)
     ;
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
@@ -185,8 +187,10 @@ PYBIND11_MODULE(krado, m)
         .def("name", &Scheme::name)
         .def("set", &Scheme::set<int>, py::return_value_policy::reference)
         .def("set", &Scheme::set<double>, py::return_value_policy::reference)
+        .def("set", &Scheme::set<std::string>, py::return_value_policy::reference)
         .def("get", &Scheme::get<int>)
         .def("get", &Scheme::get<double>)
+        .def("get", &Scheme::get<std::string>)
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
