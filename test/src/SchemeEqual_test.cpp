@@ -41,7 +41,7 @@ TEST(SchemeEqualTest, circle)
     // clang-format on
     mesh.mesh_curve(2);
 
-    EXPECT_EQ(circ.get_scheme().name(), "equal");
+    EXPECT_EQ(circ.scheme().name(), "equal");
 
     ASSERT_EQ(circ.all_vertices().size(), 21);
     auto first_vtx = circ.all_vertices().front();

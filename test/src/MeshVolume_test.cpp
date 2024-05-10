@@ -25,7 +25,7 @@ TEST(MeshVolumeTest, api)
     MeshVolume mvol(gvol, msurfs_ptrs);
     EXPECT_EQ(&mvol.geom_volume(), &gvol);
 
-    EXPECT_EQ(mvol.get_scheme().name(), "auto");
+    EXPECT_EQ(mvol.scheme().name(), "auto");
     EXPECT_EQ(mvol.get<int>("marker"), 0);
 
     auto mss = mvol.surfaces();

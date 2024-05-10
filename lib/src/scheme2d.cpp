@@ -10,8 +10,7 @@ namespace krado {
 void
 Scheme2D::select_curve_scheme(MeshCurve & curve)
 {
-    auto scheme = curve.get_scheme();
-    if (scheme.name() == "auto") {
+    if (curve.scheme().name() == "auto") {
         curve
             .set_scheme("equal")
             .set("intervals", 1);

@@ -21,7 +21,7 @@ MeshingParameters::set_scheme(const std::string & name)
 }
 
 Scheme &
-MeshingParameters::get_scheme() const
+MeshingParameters::scheme() const
 {
     if (this->schm == nullptr)
         throw Exception("Scheme is null");

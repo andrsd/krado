@@ -85,7 +85,7 @@ protected:
     T &
     get_scheme(U entity) const
     {
-        return dynamic_cast<T &>(entity.get_scheme());
+        return dynamic_cast<T &>(entity.scheme());
     }
 
     /// Assign a new global ID to a vertex

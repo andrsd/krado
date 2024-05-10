@@ -122,7 +122,7 @@ create_pslg(triangulateio & io, const MeshSurface & surface, const std::map<Poin
 void
 create_regions(triangulateio & io, const MeshSurface & surface)
 {
-    auto & scheme = surface.get_scheme();
+    auto & scheme = surface.scheme();
     io.numberofregions = 1;
     io.regionlist = new double[io.numberofregions * 4];
     auto [x, y] = scheme.get<std::tuple<double, double>>("region_point");

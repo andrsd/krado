@@ -21,7 +21,7 @@ public:
     Scheme & set_scheme(const std::string & name);
 
     /// Get meshing scheme
-    Scheme & get_scheme() const;
+    Scheme & scheme() const;
 
     /// Set parameter value
     ///
