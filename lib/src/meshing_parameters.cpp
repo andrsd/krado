@@ -2,32 +2,30 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/meshing_parameters.h"
+#include "krado/scheme.h"
+#include "krado/scheme_factory.h"
 
 namespace krado {
 
-MeshingParameters &
+MeshingParameters::MeshingParameters() :
+    scheme_factory(SchemeFactory::instance()),
+    schm(this->scheme_factory.create("auto"))
+{
+}
+
+Scheme &
 MeshingParameters::set_scheme(const std::string & name)
 {
-    this->mpars.set<std::string>("scheme") = name;
-    return *this;
+    this->schm = this->scheme_factory.create(name);
+    return *this->schm;
 }
 
-std::string
+Scheme &
 MeshingParameters::get_scheme() const
 {
-    return this->mpars.get<std::string>("scheme");
-}
-
-Parameters &
-MeshingParameters::meshing_parameters()
-{
-    return this->mpars;
-}
-
-const Parameters &
-MeshingParameters::meshing_parameters() const
-{
-    return this->mpars;
+    if (this->schm == nullptr)
+        throw Exception("Scheme is null");
+    return *this->schm;
 }
 
 } // namespace krado

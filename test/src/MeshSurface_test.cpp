@@ -19,9 +19,8 @@ TEST(MeshSurfaceTest, api)
     MeshSurface msurface(gsurf, { &mcurve });
     EXPECT_EQ(&msurface.geom_surface(), &gsurf);
 
-    auto & mpars = msurface.meshing_parameters();
-    EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
-    EXPECT_EQ(mpars.get<int>("marker"), 0);
+    EXPECT_EQ(msurface.get_scheme().name(), "auto");
+    EXPECT_EQ(msurface.get<int>("marker"), 0);
 
     auto mcs = msurface.curves();
     EXPECT_EQ(mcs.size(), 1);

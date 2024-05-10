@@ -7,18 +7,47 @@
 
 namespace krado {
 
-class Mesh;
-
 class Scheme {
 public:
-    Scheme(Mesh & mesh, const Parameters & params);
+    Scheme(const std::string & name);
     virtual ~Scheme() = default;
 
-protected:
-    Mesh & mesh();
+    /// Get scheme name
+    ///
+    /// @return Scheme name
+    std::string name() const;
+
+    /// Set parameter value
+    ///
+    /// @tparam T C++ type
+    /// @param param_name Parameter name
+    /// @param value Parameter value
+    /// @return This scheme
+    template <typename T>
+    Scheme &
+    set(const std::string & param_name, const T & value)
+    {
+        this->params.set<T>(param_name) = value;
+        return *this;
+    }
+
+    /// Get parameter value
+    ///
+    /// @tparam T C++ type
+    /// @param param_name Parameter name
+    /// @return Value of the parameter
+    template <typename T>
+    T
+    get(const std::string & param_name) const
+    {
+        return this->params.get<T>(param_name);
+    }
 
 private:
-    Mesh & m;
+    /// Scheme name
+    std::string nm;
+    /// Parameters used by the scheme
+    Parameters params;
 };
 
 } // namespace krado

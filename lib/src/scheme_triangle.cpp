@@ -122,15 +122,14 @@ create_pslg(triangulateio & io, const MeshSurface & surface, const std::map<Poin
 void
 create_regions(triangulateio & io, const MeshSurface & surface)
 {
-    auto & pars = surface.meshing_parameters();
-
+    auto & scheme = surface.get_scheme();
     io.numberofregions = 1;
     io.regionlist = new double[io.numberofregions * 4];
-    auto [x, y] = pars.get<std::tuple<double, double>>("region_point");
+    auto [x, y] = scheme.get<std::tuple<double, double>>("region_point");
     io.regionlist[0] = x;
     io.regionlist[1] = y;
-    io.regionlist[2] = pars.get<int>("marker");
-    io.regionlist[3] = pars.get<double>("max_area");
+    io.regionlist[2] = surface.get<int>("marker");
+    io.regionlist[3] = scheme.get<double>("max_area");
 }
 
 void
@@ -246,15 +245,12 @@ copy_vertices_into_surface(MeshSurface & surface,
 
 } // namespace tri
 
-SchemeTriangle::SchemeTriangle(Mesh & mesh, const Parameters & params) : Scheme(mesh, params)
-{
-    if (params.has<std::vector<Point>>("holes"))
-        this->holes = params.get<std::vector<Point>>("holes");
-}
+#endif
 
 void
 SchemeTriangle::mesh_surface(MeshSurface & surface)
 {
+#ifdef KRADO_WITH_TRIANGLE
     triangulateio in, out;
 
     tri::init_io(in);
@@ -286,20 +282,13 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
     if (in.regionlist)
         free(in.regionlist);
     tri::destroy_io(out);
-}
-
 #else
-
-SchemeTriangle::SchemeTriangle(Mesh & mesh, const Parameters & params) : Scheme(mesh, params)
-{
     throw Exception("krado was not built with triangle support.");
+#endif
 }
 
-void
-SchemeTriangle::mesh_surface(MeshSurface & msurface)
+SchemeTriangle::SchemeTriangle() : Scheme("triangle")
 {
 }
-
-#endif
 
 } // namespace krado

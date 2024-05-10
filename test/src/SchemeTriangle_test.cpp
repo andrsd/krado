@@ -22,19 +22,20 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
 
     // clang-format off
     mesh.curve(4)
+        .set("marker", 101)
         .set_scheme("equal")
-        .set("intervals", 4)
-        .set("marker", 101);
+            .set("intervals", 4)
+            .set("marker", 101);
     mesh.mesh_curve(4);
 
     mesh.curve(5)
         .set("marker", 102);
 
     mesh.surface(7)
-        .set_scheme("triangle")
         .set("marker", 10)
-        .set("max_area", 0.5)
-        .set<std::tuple<double, double>>("region_point", { 0.1, 0.1 });
+        .set_scheme("triangle")
+            .set("max_area", 0.5)
+            .set<std::tuple<double, double>>("region_point", { 0.1, 0.1 });
     mesh.mesh_surface(7);
     // clang-format on
 
@@ -58,12 +59,11 @@ TEST(SchemeTriangleTest, mesh)
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
     STEPFile file(input_file.string());
     auto shape = file.load();
-    Model model(shape);
+    GeomModel model(shape);
     Mesh mesh(model);
 
     auto & qcirc = mesh.surface(7);
-    auto & mpars_qcirc = qcirc.meshing_parameters();
-    mpars_qcirc.set<std::string>("scheme") = "triangle";
+    qcirc.set_scheme("triangle");
     EXPECT_THROW_MSG({ mesh.mesh_surface(7); }, "krado was not built with triangle support.");
 }
 

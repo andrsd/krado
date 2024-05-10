@@ -81,12 +81,11 @@ public:
     void build_elements();
 
 protected:
-    template <typename T>
-    T *
-    get_scheme(const std::string & scheme_name, Mesh & mesh, Parameters & params) const
+    template <typename T, typename U>
+    T &
+    get_scheme(U entity) const
     {
-        auto * scheme = this->scheme_factory.create(scheme_name, mesh, params);
-        return dynamic_cast<T *>(scheme);
+        return dynamic_cast<T &>(entity.get_scheme());
     }
 
     /// Assign a new global ID to a vertex

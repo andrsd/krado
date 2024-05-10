@@ -14,8 +14,7 @@ TEST(MeshVertexTest, api) {
 
     EXPECT_EQ(&mvertex.geom_vertex(), &gvertex);
     EXPECT_EQ(mvertex.global_id(), 0);
-    auto & mpars = mvertex.meshing_parameters();
-    EXPECT_EQ(mpars.get<int>("marker"), 0);
+    EXPECT_EQ(mvertex.get<int>("marker"), 0);
 
     mvertex.set_global_id(123);
     EXPECT_EQ(mvertex.global_id(), 123);

@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme_equal.h"
-#include "krado/mesh.h"
 #include "krado/exception.h"
 #include "krado/mesh_curve_vertex.h"
 
 namespace krado {
 
-SchemeEqual::SchemeEqual(Mesh & mesh, const Parameters & params) :
-    Scheme(mesh, params),
-    n_intervals(params.get<int>("intervals"))
+SchemeEqual::SchemeEqual() :
+    Scheme("equal")
 {
 }
 
 void
 SchemeEqual::mesh_curve(MeshCurve & mcurve)
 {
+    this->n_intervals = get<int>("intervals");
+
     auto & gcurve = mcurve.geom_curve();
     auto [lo, hi] = gcurve.param_range();
     auto A = build_matrix();

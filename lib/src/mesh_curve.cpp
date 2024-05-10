@@ -6,6 +6,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/exception.h"
+#include "krado/scheme.h"
 #include <array>
 
 namespace krado {
@@ -15,7 +16,7 @@ MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2)
     bnd_vtxs({ v1, v2 }),
     meshed(false)
 {
-    set_scheme("auto").set<int>("marker", 0);
+    set<int>("marker", 0);
 }
 
 const GeomCurve &

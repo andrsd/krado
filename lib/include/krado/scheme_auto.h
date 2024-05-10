@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
 #include "krado/scheme.h"
-#include "krado/mesh.h"
 
 namespace krado {
 
-Scheme::Scheme(const std::string & name) : nm(name) {}
-
-std::string
-Scheme::name() const
-{
-    return this->nm;
-}
+class SchemeAuto : public Scheme {
+public:
+    SchemeAuto();
+};
 
 } // namespace krado

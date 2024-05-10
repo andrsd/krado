@@ -14,9 +14,10 @@ TEST(SchemeEqualTest, line)
     Mesh mesh(model);
 
     auto & line = mesh.curve(3);
-    auto & mpars = line.meshing_parameters();
-    mpars.set<std::string>("scheme") = "equal";
-    mpars.set<int>("intervals") = 4;
+    // clang-format off
+    line.set_scheme("equal")
+        .set("intervals", 4);
+    // clang-format on
     mesh.mesh_curve(3);
 
     ASSERT_EQ(line.all_vertices().size(), 5);
@@ -34,10 +35,13 @@ TEST(SchemeEqualTest, circle)
     Mesh mesh(model);
 
     auto & circ = mesh.curve(2);
-    auto & mpars = circ.meshing_parameters();
-    mpars.set<std::string>("scheme") = "equal";
-    mpars.set<int>("intervals") = 20;
+    // clang-format off
+    circ.set_scheme("equal")
+        .set("intervals", 20);
+    // clang-format on
     mesh.mesh_curve(2);
+
+    EXPECT_EQ(circ.get_scheme().name(), "equal");
 
     ASSERT_EQ(circ.all_vertices().size(), 21);
     auto first_vtx = circ.all_vertices().front();

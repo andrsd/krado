@@ -10,17 +10,16 @@
 namespace krado {
 
 class Scheme;
-class Mesh;
 
 using SchemePtr = Scheme *;
 
-using BuildPtr = SchemePtr (*)(Mesh & mesh, const Parameters & parameters);
+using BuildPtr = SchemePtr (*)();
 
 template <typename T>
 SchemePtr
-build_scheme(Mesh & mesh, const Parameters & parameters)
+build_scheme()
 {
-    return new T(mesh, parameters);
+    return new T();
 }
 
 class SchemeFactory {
@@ -36,10 +35,10 @@ public:
     }
 
     Scheme *
-    create(const std::string & scheme_name, Mesh & mesh, Parameters & parameters)
+    create(const std::string & scheme_name)
     {
         auto entry = get_entry(scheme_name);
-        auto * object = entry.build_ptr(mesh, parameters);
+        auto * object = entry.build_ptr();
         this->objects.push_back(object);
         return object;
     }

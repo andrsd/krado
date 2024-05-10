@@ -7,6 +7,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/scheme.h"
 #include <array>
 
 namespace krado {
@@ -17,7 +18,7 @@ MeshSurface::MeshSurface(const GeomSurface & gsurface,
     mesh_curves(mesh_curves),
     meshed(false)
 {
-    set_scheme("auto").set<int>("marker", 0);
+    set<int>("marker", 0);
 }
 
 const GeomSurface &

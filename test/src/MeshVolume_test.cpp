@@ -2,6 +2,7 @@
 #include "krado/geom_volume.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"
+#include "krado/scheme.h"
 #include "builder.h"
 
 using namespace krado;
@@ -24,9 +25,8 @@ TEST(MeshVolumeTest, api)
     MeshVolume mvol(gvol, msurfs_ptrs);
     EXPECT_EQ(&mvol.geom_volume(), &gvol);
 
-    auto & mpars = mvol.meshing_parameters();
-    EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
-    EXPECT_EQ(mpars.get<int>("marker"), 0);
+    EXPECT_EQ(mvol.get_scheme().name(), "auto");
+    EXPECT_EQ(mvol.get<int>("marker"), 0);
 
     auto mss = mvol.surfaces();
     ASSERT_EQ(mss.size(), 6);

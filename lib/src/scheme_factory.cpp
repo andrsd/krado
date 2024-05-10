@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme_factory.h"
+#include "krado/scheme_auto.h"
 #include "krado/scheme_equal.h"
 #include "krado/scheme_triangle.h"
 
@@ -16,6 +17,7 @@ SchemeFactory::instance()
 
 SchemeFactory::SchemeFactory()
 {
+    add<SchemeAuto>("auto");
     add<SchemeEqual>("equal");
     add<SchemeTriangle>("triangle");
 }

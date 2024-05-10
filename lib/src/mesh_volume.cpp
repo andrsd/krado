@@ -3,6 +3,7 @@
 
 #include "krado/mesh_volume.h"
 #include "krado/exception.h"
+#include "krado/scheme.h"
 
 namespace krado {
 
@@ -12,7 +13,7 @@ MeshVolume::MeshVolume(const GeomVolume & gvolume,
     mesh_surfaces(mesh_surfaces),
     meshed(false)
 {
-    set_scheme("auto").set<int>("marker", 0);
+    set<int>("marker", 0);
 }
 
 const GeomVolume &

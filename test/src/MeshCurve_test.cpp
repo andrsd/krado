@@ -20,9 +20,8 @@ TEST(MeshCurveTest, api)
 
     EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
 
-    auto & mpars = mcurve.meshing_parameters();
-    EXPECT_EQ(mpars.get<std::string>("scheme"), "auto");
-    EXPECT_EQ(mpars.get<int>("marker"), 0);
+    EXPECT_EQ(mcurve.get_scheme().name(), "auto");
+    EXPECT_EQ(mcurve.get<int>("marker"), 0);
 
     auto & vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);
@@ -41,10 +40,8 @@ TEST(MeshCurveTest, mesh)
     MeshVertex v2(gvtx2);
     MeshCurve mcurve(gcurve, &v1, &v2);
 
-    Mesh mesh;
-    Parameters pars;
-    pars.set<int>("intervals") = 4;
-    SchemeEqual equal(mesh, pars);
+    SchemeEqual equal;
+    equal.set("intervals", 4);
     equal.mesh_curve(mcurve);
 
     auto vtx = mcurve.bounding_vertices();

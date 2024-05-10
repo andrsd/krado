@@ -11,7 +11,7 @@ namespace krado {
 
 class SchemeEqual : public Scheme, public Scheme1D {
 public:
-    SchemeEqual(Mesh & mesh, const Parameters & params);
+    SchemeEqual();
 
     void mesh_curve(MeshCurve & mcurve) override;
 

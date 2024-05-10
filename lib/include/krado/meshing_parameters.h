@@ -7,24 +7,52 @@
 
 namespace krado {
 
+class Scheme;
+class SchemeFactory;
+
 class MeshingParameters {
 public:
-    Parameters & meshing_parameters();
+    MeshingParameters();
 
-    const Parameters & meshing_parameters() const;
+    /// Set meshing scheme
+    ///
+    /// @param name Name od the scheme to assign
+    /// @return Pointer to the scheme
+    Scheme & set_scheme(const std::string & name);
 
-    MeshingParameters & set_scheme(const std::string & name);
+    /// Get meshing scheme
+    Scheme & get_scheme() const;
 
-    std::string get_scheme() const;
-
-    template<typename T>
-    MeshingParameters & set(const std::string & param_name, const T & value) {
-        meshing_parameters().set<T>(param_name) = value;
+    /// Set parameter value
+    ///
+    /// @tparam T C++ type
+    /// @param param_name Parameter name
+    /// @param value Parameter value
+    /// @return This scheme
+    template <typename T>
+    MeshingParameters &
+    set(const std::string & param_name, const T & value)
+    {
+        this->mparams.set<T>(param_name) = value;
         return *this;
     }
 
+    /// Get parameter value
+    ///
+    /// @tparam T C++ type
+    /// @param param_name Parameter name
+    /// @return Value of the parameter
+    template <typename T>
+    T
+    get(const std::string & param_name) const
+    {
+        return this->mparams.get<T>(param_name);
+    }
+
 private:
-    Parameters mpars;
+    SchemeFactory & scheme_factory;
+    Scheme * schm;
+    Parameters mparams;
 };
 
 } // namespace krado
