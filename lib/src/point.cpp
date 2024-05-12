@@ -3,6 +3,8 @@
 
 #include "krado/point.h"
 #include "krado/exception.h"
+#include <iostream>
+#include <iomanip>
 
 namespace krado {
 
@@ -100,6 +102,13 @@ Point::transform(const std::vector<double> & tfo)
         (*this)(i) += tfo[idx++];
     }
     return true;
+}
+
+bool
+operator==(const krado::Point & a, const krado::Point & b)
+{
+    return (std::abs(a.x - b.x) < 1e-15) && (std::abs(a.y - b.y) < 1e-15) &&
+           (std::abs(a.z - b.z) < 1e-15);
 }
 
 } // namespace krado

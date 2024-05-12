@@ -41,8 +41,6 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), umin(0), umax(0)
     GProp_GProps props;
     BRepGProp::LinearProperties(this->edge, props);
     this->len = props.Mass();
-
-    this->proj_pt_on_curve.Init(this->curve, this->umin, this->umax);
 }
 
 GeomCurve::CurveType
@@ -118,9 +116,14 @@ GeomCurve::last_vertex() const
 double
 GeomCurve::parameter_from_point(const Point & pt) const
 {
-    auto [found, par] = project(pt);
-    if (found)
-        return par;
+    GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
+    proj_pt_on_curve.Init(this->curve, this->umin, this->umax);
+    gp_Pnt pnt(pt.x, pt.y, pt.z);
+    proj_pt_on_curve.Perform(pnt);
+    if (proj_pt_on_curve.NbPoints() > 0) {
+        auto u = proj_pt_on_curve.LowerDistanceParameter();
+        return u;
+    }
     else
         throw Exception("Projection of point failed to find parameter");
 }
@@ -128,10 +131,12 @@ GeomCurve::parameter_from_point(const Point & pt) const
 Point
 GeomCurve::nearest_point(const Point & pt) const
 {
+    GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
+    proj_pt_on_curve.Init(this->curve, this->umin, this->umax);
     gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_curve.Perform(gpnt);
-    if (this->proj_pt_on_curve.NbPoints()) {
-        gpnt = this->proj_pt_on_curve.NearestPoint();
+    proj_pt_on_curve.Perform(gpnt);
+    if (proj_pt_on_curve.NbPoints()) {
+        gpnt = proj_pt_on_curve.NearestPoint();
         return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
     }
     else
@@ -152,20 +157,6 @@ GeomCurve::contains_point(const Point & pt) const
 GeomCurve::operator const TopoDS_Shape &() const
 {
     return this->edge;
-}
-
-std::tuple<bool, double>
-GeomCurve::project(const Point & pt) const
-{
-    gp_Pnt pnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_curve.Perform(pnt);
-
-    if (this->proj_pt_on_curve.NbPoints() > 0) {
-        auto u = this->proj_pt_on_curve.LowerDistanceParameter();
-        return { true, u };
-    }
-    else
-        return { false, 0. };
 }
 
 } // namespace krado

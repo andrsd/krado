@@ -13,7 +13,7 @@ public:
     Point();
     explicit Point(double x, double y = 0, double z = 0);
 
-    double &operator()(int idx);
+    double & operator()(int idx);
     void operator+=(const Point & p);
     void operator-=(const Point & p);
     void operator*=(double alpha);
@@ -38,6 +38,8 @@ operator-(const Point & a, const Point & b)
 {
     return Point(a.x - b.x, a.y - b.y, a.z - b.z);
 }
+
+bool operator==(const Point & a, const Point & b);
 
 } // namespace krado
 

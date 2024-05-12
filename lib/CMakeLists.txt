@@ -24,6 +24,7 @@ target_include_directories(
         ${OpenCASCADE_INCLUDE_DIR}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/lib/include
+        ${CMAKE_SOURCE_DIR}/contrib
 )
 
 target_link_libraries(
@@ -32,6 +33,7 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
         fmt::fmt
         Eigen3::Eigen
+        libbamg
 )
 
 if (KRADO_WITH_TRIANGLE)

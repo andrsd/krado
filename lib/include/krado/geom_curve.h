@@ -89,8 +89,6 @@ public:
     operator const TopoDS_Shape &() const;
 
 private:
-    std::tuple<bool, double> project(const Point & pt) const;
-
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
     /// Curve type
@@ -101,8 +99,6 @@ private:
     double umax;
     /// Curve length
     double len;
-    ///
-    mutable GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
 };
 
 } // namespace krado

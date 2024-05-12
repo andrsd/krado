@@ -31,6 +31,7 @@ find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 if (KRADO_WITH_TRIANGLE)
     add_subdirectory(contrib/triangle)
 endif()
+add_subdirectory(contrib/bamg)
 
 add_subdirectory(lib)
 add_subdirectory(src)
