@@ -7,6 +7,7 @@
 #include <array>
 
 using namespace krado;
+using namespace testing;
 
 TEST(MeshSurfaceTest, api)
 {
@@ -36,8 +37,5 @@ TEST(MeshSurfaceTest, api)
     msurface.add_triangle({ 2, 0, 1 });
     auto & triangles = msurface.triangles();
     ASSERT_EQ(triangles.size(), 1);
-    auto & tri0 = triangles[0];
-    EXPECT_EQ(tri0(0), 2);
-    EXPECT_EQ(tri0(1), 0);
-    EXPECT_EQ(tri0(2), 1);
+    EXPECT_THAT(triangles[0].ids(), ElementsAre(2, 0, 1));
 }

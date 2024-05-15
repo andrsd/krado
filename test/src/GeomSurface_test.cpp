@@ -13,9 +13,7 @@ TEST(GeomSurfaceTest, point)
     GeomSurface circ(circ_face);
 
     auto pt_center = circ.point(0., 0.);
-    EXPECT_NEAR(pt_center.x, 0., 1e-15);
-    EXPECT_NEAR(pt_center.y, 0., 1e-15);
-    EXPECT_NEAR(pt_center.z, 0., 1e-15);
+    EXPECT_EQ(pt_center, Point(0., 0., 0.));
 }
 
 TEST(GeomSurfaceTest, surface_area)
@@ -112,9 +110,7 @@ TEST(GeomSurfaceTest, nearest_point)
     GeomSurface circ(circ_face);
 
     auto npt = circ.nearest_point(Point(1, 0.5, 0.1));
-    EXPECT_DOUBLE_EQ(npt.x, 1.0);
-    EXPECT_DOUBLE_EQ(npt.y, 0.5);
-    EXPECT_DOUBLE_EQ(npt.z, 0.0);
+    EXPECT_EQ(npt, Point(1.0, 0.5, 0.0));
 
     EXPECT_THROW(circ.nearest_point(Point(5, 6, 7)), Exception);
 }

@@ -17,9 +17,7 @@ TEST(MeshSurfaceVertexTest, test)
     EXPECT_EQ(&msvtx.geom_surface(), &gsurf);
 
     auto pt = msvtx.point();
-    EXPECT_DOUBLE_EQ(pt.x, 0.5);
-    EXPECT_DOUBLE_EQ(pt.y, 1.);
-    EXPECT_DOUBLE_EQ(pt.z, 0.);
+    EXPECT_EQ(pt, Point(0.5, 1., 0.));
 
     auto [vtx_u, vtx_v] = msvtx.parameter();
     EXPECT_DOUBLE_EQ(vtx_u, u);

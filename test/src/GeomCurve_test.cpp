@@ -28,19 +28,13 @@ TEST(GeomCurveTest, point)
     GeomCurve curve(line);
 
     auto pt_start = curve.point(0.);
-    EXPECT_DOUBLE_EQ(pt_start.x, 0.);
-    EXPECT_DOUBLE_EQ(pt_start.y, 0.);
-    EXPECT_DOUBLE_EQ(pt_start.z, 0.);
+    EXPECT_EQ(pt_start, Point(0., 0., 0.));
 
     auto pt_end = curve.point(5.);
-    EXPECT_DOUBLE_EQ(pt_end.x, 3.);
-    EXPECT_DOUBLE_EQ(pt_end.y, 4.);
-    EXPECT_DOUBLE_EQ(pt_end.z, 0.);
+    EXPECT_EQ(pt_end, Point(3., 4., 0.));
 
     auto pt_half = curve.point(2.5);
-    EXPECT_DOUBLE_EQ(pt_half.x, 1.5);
-    EXPECT_DOUBLE_EQ(pt_half.y, 2.);
-    EXPECT_DOUBLE_EQ(pt_half.z, 0.);
+    EXPECT_EQ(pt_half, Point(1.5, 2., 0.));
 }
 
 TEST(GeomCurveTest, length)
@@ -159,9 +153,7 @@ TEST(GeomCurveTest, nearest_point)
     GeomCurve curve(line);
 
     auto npt = curve.nearest_point(Point(1.2, 2.3, 3.1));
-    EXPECT_DOUBLE_EQ(npt.x, 1.2);
-    EXPECT_DOUBLE_EQ(npt.y, 2.2);
-    EXPECT_DOUBLE_EQ(npt.z, 3.2);
+    EXPECT_EQ(npt, Point(1.2, 2.2, 3.2));
 
     EXPECT_THROW(curve.nearest_point(Point(5, 6, 7)), Exception);
 }

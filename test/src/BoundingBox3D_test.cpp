@@ -35,14 +35,10 @@ TEST(BoundingBox3DTest, ctor_6)
     BoundingBox3D bbox(-1, -2, -3, 1, 2, 3);
 
     auto min = bbox.min();
-    EXPECT_DOUBLE_EQ(min.x, -1);
-    EXPECT_DOUBLE_EQ(min.y, -2);
-    EXPECT_DOUBLE_EQ(min.z, -3);
+    EXPECT_EQ(min, Point(-1, -2, -3));
 
     auto max = bbox.max();
-    EXPECT_DOUBLE_EQ(max.x, 1);
-    EXPECT_DOUBLE_EQ(max.y, 2);
-    EXPECT_DOUBLE_EQ(max.z, 3);
+    EXPECT_EQ(max, Point(1, 2, 3));
 }
 
 TEST(BoundingBox3DTest, empty)
@@ -62,14 +58,10 @@ TEST(BoundingBox3DTest, scale)
     bbox.scale(1, 0.5, 2);
 
     auto min = bbox.min();
-    EXPECT_DOUBLE_EQ(min.x, 0);
-    EXPECT_DOUBLE_EQ(min.y, 0.5);
-    EXPECT_DOUBLE_EQ(min.z, -1.5);
+    EXPECT_EQ(min, Point(0, 0.5, -1.5));
 
     auto max = bbox.max();
-    EXPECT_DOUBLE_EQ(max.x, 1);
-    EXPECT_DOUBLE_EQ(max.y, 1.5);
-    EXPECT_DOUBLE_EQ(max.z, 4.5);
+    EXPECT_EQ(max, Point(1, 1.5, 4.5));
 }
 
 TEST(BoundingBox3DTest, op_mult_scalar)
@@ -80,14 +72,10 @@ TEST(BoundingBox3DTest, op_mult_scalar)
     bbox *= 0.5;
 
     auto min = bbox.min();
-    EXPECT_DOUBLE_EQ(min.x, 0.25);
-    EXPECT_DOUBLE_EQ(min.y, 0.5);
-    EXPECT_DOUBLE_EQ(min.z, 0.75);
+    EXPECT_EQ(min, Point(0.25, 0.5, 0.75));
 
     auto max = bbox.max();
-    EXPECT_DOUBLE_EQ(max.x, 0.75);
-    EXPECT_DOUBLE_EQ(max.y, 1.5);
-    EXPECT_DOUBLE_EQ(max.z, 2.25);
+    EXPECT_EQ(max, Point(0.75, 1.5, 2.25));
 }
 
 TEST(BoundingBox3DTest, center)
@@ -97,9 +85,7 @@ TEST(BoundingBox3DTest, center)
     bbox += Point(1, 2, 3);
 
     auto ctr = bbox.center();
-    EXPECT_DOUBLE_EQ(ctr.x, 0.5);
-    EXPECT_DOUBLE_EQ(ctr.y, 1);
-    EXPECT_DOUBLE_EQ(ctr.z, 1.5);
+    EXPECT_EQ(ctr, Point(0.5, 1, 1.5));
 }
 
 TEST(BoundingBox3DTest, diag)
