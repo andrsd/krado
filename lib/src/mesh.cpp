@@ -202,6 +202,10 @@ void
 Mesh::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
+        auto & geom_curve = curve.geom_curve();
+        if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
+            return;
+
         auto & scheme = get_scheme<Scheme1D>(curve);
 
         auto bnd_vtxs = curve.bounding_vertices();

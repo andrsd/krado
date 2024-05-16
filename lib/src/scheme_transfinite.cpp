@@ -327,14 +327,6 @@ SchemeTransfinite::mesh_curve(MeshCurve & curve)
 {
     auto & geom_curve = curve.geom_curve();
 
-    // TODO: This is most likely common to all schemes, so move it outside this method,
-    // so every scheme gets it
-    double length = geom_curve.length();
-    if (length == 0.)
-        return;
-    if (geom_curve.is_degenerated())
-        return;
-
     auto [u_lower, u_upper] = geom_curve.param_range();
     auto subtype = get_sub_type(get<std::string>("type"));
     auto coeff = get<double>("coef");
