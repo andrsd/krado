@@ -8,9 +8,9 @@
 
 namespace krado {
 
-class SchemeEqual : public SchemeTransfinite {
+class SchemeBetaLaw : public SchemeTransfinite {
 public:
-    SchemeEqual();
+    SchemeBetaLaw();
 
 protected:
     Integral1D compute_integral(const MeshCurve & curve) override;

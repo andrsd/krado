@@ -7,7 +7,7 @@
 
 using namespace krado;
 
-TEST(SchemeEqualTest, line)
+TEST(SchemeBiasTest, line)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
@@ -15,8 +15,9 @@ TEST(SchemeEqualTest, line)
 
     auto & line = mesh.curve(3);
     // clang-format off
-    line.set_scheme("equal")
-        .set("intervals", 5);
+    line.set_scheme("bias")
+        .set("intervals", 5)
+        .set("coef", 1.2);
     // clang-format on
     mesh.mesh_curve(3);
 
@@ -27,10 +28,10 @@ TEST(SchemeEqualTest, line)
 
     ASSERT_EQ(line.curve_vertices().size(), 4);
     auto & cv = line.curve_vertices();
-    EXPECT_DOUBLE_EQ(cv[0]->point().x, 0.2);
-    EXPECT_DOUBLE_EQ(cv[1]->point().x, 0.4);
-    EXPECT_DOUBLE_EQ(cv[2]->point().x, 0.6);
-    EXPECT_DOUBLE_EQ(cv[3]->point().x, 0.8);
+    EXPECT_NEAR(cv[0]->point().x, 0.13438, 1e-6);
+    EXPECT_NEAR(cv[1]->point().x, 0.295635, 1e-6);
+    EXPECT_NEAR(cv[2]->point().x, 0.489142, 1e-6);
+    EXPECT_NEAR(cv[3]->point().x, 0.72135, 1e-6);
 
     ASSERT_EQ(line.segments().size(), 5);
 }
