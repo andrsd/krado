@@ -94,7 +94,7 @@ private:
                 connect.reserve(n);
                 for (auto & el : elems) {
                     for (int j = 0; j < el.ids().size(); j++)
-                        connect.push_back(el.vertex_id(j));
+                        connect.push_back(el.vertex_id(j) + 1);
                 }
                 this->exo.write_block(blk_id, el_type, elems.size(), connect);
             }
