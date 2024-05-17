@@ -303,17 +303,24 @@ Mesh::add_mesh_point(Point & mpnt)
 void
 Mesh::number_points()
 {
+    this->exp_bbox.reset();
     for (auto & [id, v] : this->vtxs)
-        if (v.is_meshed())
+        if (v.is_meshed()) {
             assign_gid(v);
+            this->exp_bbox += v.point();
+        }
     for (auto & [id, curve] : this->crvs)
         if (curve.is_meshed())
-            for (auto & v : curve.curve_vertices())
+            for (auto & v : curve.curve_vertices()) {
                 assign_gid(*v);
+                this->exp_bbox += v->point();
+            }
     for (auto & [id, surface] : this->surfs)
         if (surface.is_meshed())
-            for (auto & v : surface.surface_vertices())
+            for (auto & v : surface.surface_vertices()) {
                 assign_gid(*v);
+                this->exp_bbox += v->point();
+            }
 }
 
 void

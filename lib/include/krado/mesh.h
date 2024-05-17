@@ -9,6 +9,7 @@
 #include "krado/mesh_volume.h"
 #include "krado/mesh_point.h"
 #include "krado/scheme_factory.h"
+#include "krado/bounding_box_3d.h"
 #include <map>
 
 namespace krado {
@@ -120,6 +121,8 @@ private:
 
     /// Global ID counter
     int gid_ctr;
+    /// Bounding box around the mesh that is being exported
+    BoundingBox3D exp_bbox;
 };
 
 } // namespace krado
