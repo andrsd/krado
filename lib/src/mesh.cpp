@@ -375,4 +375,10 @@ Mesh::build_2d_elements()
     }
 }
 
+BoundingBox3D
+Mesh::bounding_box() const
+{
+    return this->exp_bbox;
+}
+
 } // namespace krado

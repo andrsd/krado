@@ -81,6 +81,9 @@ public:
     ///
     void build_elements();
 
+    /// Get mesh bounding box
+    BoundingBox3D bounding_box() const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();

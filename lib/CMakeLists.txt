@@ -34,6 +34,7 @@ target_link_libraries(
         fmt::fmt
         Eigen3::Eigen
         libbamg
+        exodusIIcpp::exodusIIcpp
 )
 
 if (KRADO_WITH_TRIANGLE)

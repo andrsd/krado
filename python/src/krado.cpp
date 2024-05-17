@@ -23,6 +23,7 @@
 #include "krado/scheme.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/export.h"
 
 namespace py = pybind11;
 using namespace krado;
@@ -229,5 +230,7 @@ PYBIND11_MODULE(krado, m)
         .def_readwrite("y", &Point::y)
         .def_readwrite("z", &Point::z)
     ;
+
+    m.def("write_exodusii", &write_exodusii);
     // clang-format on
 }
