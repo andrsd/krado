@@ -19,14 +19,14 @@ TEST(SchemeBamgTest, mesh_quad)
     Mesh mesh(model);
 
     // clang-format off
-    mesh.surface(9)
+    mesh.surface(1)
         .set("marker", 10)
         .set_scheme("bamg")
             .set("max_area", 0.9);
-    mesh.mesh_surface(9);
+    mesh.mesh_surface(1);
     // clang-format on
 
-    auto & quad = mesh.surface(9);
+    auto & quad = mesh.surface(1);
     EXPECT_EQ(quad.all_vertices().size(), 10);
     auto & vtx = quad.all_vertices();
     EXPECT_EQ(vtx[0]->point(), Point(0., 0., 0.));

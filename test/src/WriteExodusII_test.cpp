@@ -13,13 +13,13 @@ TEST(WriteExodusIITest, line)
     GeomModel model(shape);
     Mesh mesh(model);
 
-    auto & line = mesh.curve(3);
+    auto & line = mesh.curve(1);
     // clang-format off
     line.set_scheme("bias")
         .set("intervals", 5)
         .set("coef", 1.2);
     // clang-format on
-    mesh.mesh_curve(3);
+    mesh.mesh_curve(1);
 
     mesh.number_points();
     mesh.build_elements();

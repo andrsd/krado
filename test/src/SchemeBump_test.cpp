@@ -13,13 +13,13 @@ TEST(SchemeBumpTest, coef_above_one)
     GeomModel model(shape);
     Mesh mesh(model);
 
-    auto & line = mesh.curve(3);
+    auto & line = mesh.curve(1);
     // clang-format off
     line.set_scheme("bump")
         .set("intervals", 5)
         .set("coef", 1.2);
     // clang-format on
-    mesh.mesh_curve(3);
+    mesh.mesh_curve(1);
 
     ASSERT_EQ(line.all_vertices().size(), 6);
     auto first_vtx = line.all_vertices().front();
@@ -42,13 +42,13 @@ TEST(SchemeBumpTest, coef_below_one)
     GeomModel model(shape);
     Mesh mesh(model);
 
-    auto & line = mesh.curve(3);
+    auto & line = mesh.curve(1);
     // clang-format off
     line.set_scheme("bump")
         .set("intervals", 5)
         .set("coef", 0.8);
     // clang-format on
-    mesh.mesh_curve(3);
+    mesh.mesh_curve(1);
 
     ASSERT_EQ(line.all_vertices().size(), 6);
     auto first_vtx = line.all_vertices().front();

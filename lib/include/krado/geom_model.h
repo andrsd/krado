@@ -92,8 +92,6 @@ private:
     void bind_faces(const GeomShape & shape);
     void bind_solids(const GeomShape & shape);
 
-    int get_next_id();
-
     GeomShape root_shape;
 
     std::map<int, GeomVertex> vtxs;
@@ -101,8 +99,10 @@ private:
     std::map<int, GeomSurface> srfs;
     std::map<int, GeomVolume> vols;
 
-    TopTools_DataMapOfShapeInteger shape_id;
-    int internal_id_counter;
+    TopTools_DataMapOfShapeInteger vtx_id;
+    TopTools_DataMapOfShapeInteger crv_id;
+    TopTools_DataMapOfShapeInteger srf_id;
+    TopTools_DataMapOfShapeInteger vol_id;
 };
 
 } // namespace krado

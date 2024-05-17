@@ -25,10 +25,10 @@ TEST(GeomModelTest, load)
     EXPECT_DOUBLE_EQ(v2.y(), 0.);
     EXPECT_DOUBLE_EQ(v2.z(), 0.);
 
-    auto curve = model.curve(3);
+    auto curve = model.curve(1);
     EXPECT_EQ(model.vertex_id(curve.first_vertex()), 1);
     EXPECT_EQ(model.vertex_id(curve.last_vertex()), 2);
-    EXPECT_EQ(model.curve_id(curve), 3);
+    EXPECT_EQ(model.curve_id(curve), 1);
 
     EXPECT_THROW({ model.vertex(0); }, Exception);
 }
@@ -44,8 +44,8 @@ TEST(GeomModelTest, load_quad)
     EXPECT_EQ(model.curves().size(), 4);
 
     EXPECT_EQ(model.surfaces().size(), 1);
-    auto surface = model.surface(9);
-    EXPECT_EQ(model.surface_id(surface), 9);
+    auto surface = model.surface(1);
+    EXPECT_EQ(model.surface_id(surface), 1);
     EXPECT_THROW({ model.surface(1000); }, Exception);
 }
 
@@ -61,7 +61,7 @@ TEST(GeomModelTest, load_box)
     EXPECT_EQ(model.surfaces().size(), 6);
 
     EXPECT_EQ(model.volumes().size(), 1);
-    auto box = model.volume(27);
-    EXPECT_EQ(model.volume_id(box), 27);
+    auto box = model.volume(1);
+    EXPECT_EQ(model.volume_id(box), 1);
     EXPECT_THROW({ model.volume(1000); }, Exception);
 }

@@ -12,7 +12,7 @@
 
 namespace krado {
 
-GeomModel::GeomModel(const GeomShape & root_shape) : root_shape(root_shape), internal_id_counter(0)
+GeomModel::GeomModel(const GeomShape & root_shape) : root_shape(root_shape)
 {
     bind_shape(root_shape);
 }
@@ -38,7 +38,7 @@ int
 GeomModel::vertex_id(const GeomVertex & vertex) const
 {
     try {
-        return this->shape_id.Find(vertex);
+        return this->vtx_id.Find(vertex);
     }
     catch (...) {
         throw Exception("No ID for vertex");
@@ -66,7 +66,7 @@ int
 GeomModel::curve_id(const GeomCurve & curve) const
 {
     try {
-        return this->shape_id.Find(curve);
+        return this->crv_id.Find(curve);
     }
     catch (...) {
         throw Exception("No ID for curve");
@@ -94,7 +94,7 @@ int
 GeomModel::surface_id(const GeomSurface & surface) const
 {
     try {
-        return this->shape_id.Find(surface);
+        return this->srf_id.Find(surface);
     }
     catch (...) {
         throw Exception("No ID for surface");
@@ -122,7 +122,7 @@ int
 GeomModel::volume_id(const GeomVolume & volume) const
 {
     try {
-        return this->shape_id.Find(volume);
+        return this->vol_id.Find(volume);
     }
     catch (...) {
         throw Exception("No ID for volume");
@@ -144,10 +144,10 @@ GeomModel::bind_solids(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
-        if (!this->shape_id.IsBound(solid)) {
-            auto id = get_next_id();
+        if (!this->vol_id.IsBound(solid)) {
+            auto id = this->vols.size() + 1;
             this->vols.emplace(id, GeomVolume(solid));
-            this->shape_id.Bind(solid, id);
+            this->vol_id.Bind(solid, id);
         }
     }
 }
@@ -158,10 +158,10 @@ GeomModel::bind_faces(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
-        if (!this->shape_id.IsBound(face)) {
-            auto id = get_next_id();
+        if (!this->srf_id.IsBound(face)) {
+            auto id = this->srfs.size() + 1;
             this->srfs.emplace(id, GeomSurface(face));
-            this->shape_id.Bind(face, id);
+            this->srf_id.Bind(face, id);
         }
     }
 }
@@ -172,10 +172,10 @@ GeomModel::bind_edges(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
-        if (!this->shape_id.IsBound(edge)) {
-            auto id = get_next_id();
+        if (!this->crv_id.IsBound(edge)) {
+            auto id = this->crvs.size() + 1;
             this->crvs.emplace(id, GeomCurve(edge));
-            this->shape_id.Bind(edge, id);
+            this->crv_id.Bind(edge, id);
         }
     }
 }
@@ -186,19 +186,12 @@ GeomModel::bind_vertices(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
-        if (!this->shape_id.IsBound(vertex)) {
-            auto id = get_next_id();
+        if (!this->vtx_id.IsBound(vertex)) {
+            auto id = this->vtxs.size() + 1;
             this->vtxs.emplace(id, GeomVertex(vertex));
-            this->shape_id.Bind(vertex, id);
+            this->vtx_id.Bind(vertex, id);
         }
     }
-}
-
-int
-GeomModel::get_next_id()
-{
-    this->internal_id_counter++;
-    return this->internal_id_counter;
 }
 
 } // namespace krado

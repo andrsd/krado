@@ -21,25 +21,25 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     Mesh mesh(model);
 
     // clang-format off
-    mesh.curve(4)
+    mesh.curve(1)
         .set("marker", 101)
         .set_scheme("equal")
             .set("intervals", 4)
             .set("marker", 101);
-    mesh.mesh_curve(4);
+    mesh.mesh_curve(1);
 
-    mesh.curve(5)
+    mesh.curve(2)
         .set("marker", 102);
 
-    mesh.surface(7)
+    mesh.surface(1)
         .set("marker", 10)
         .set_scheme("triangle")
             .set("max_area", 0.5)
             .set<std::tuple<double, double>>("region_point", { 0.1, 0.1 });
-    mesh.mesh_surface(7);
+    mesh.mesh_surface(1);
     // clang-format on
 
-    auto & qcirc = mesh.surface(7);
+    auto & qcirc = mesh.surface(1);
     EXPECT_EQ(qcirc.all_vertices().size(), 6);
     EXPECT_EQ(qcirc.triangles().size(), 4);
 
@@ -62,9 +62,9 @@ TEST(SchemeTriangleTest, mesh)
     GeomModel model(shape);
     Mesh mesh(model);
 
-    auto & qcirc = mesh.surface(7);
+    auto & qcirc = mesh.surface(1);
     qcirc.set_scheme("triangle");
-    EXPECT_THROW_MSG({ mesh.mesh_surface(7); }, "krado was not built with triangle support.");
+    EXPECT_THROW_MSG({ mesh.mesh_surface(1); }, "krado was not built with triangle support.");
 }
 
 #endif

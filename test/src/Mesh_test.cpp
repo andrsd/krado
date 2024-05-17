@@ -19,7 +19,7 @@ TEST(MeshTest, ctor)
     EXPECT_EQ(mesh.surfaces().size(), 6);
     EXPECT_EQ(mesh.volumes().size(), 1);
 
-    auto box = mesh.volume(27);
+    auto box = mesh.volume(1);
     EXPECT_EQ(box.surfaces().size(), 6);
 }
 
