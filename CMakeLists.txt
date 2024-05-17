@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 include(FetchContent)
 include(CodeCoverage)
 
@@ -64,3 +66,46 @@ if(KRADO_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
 endif()
+
+# install
+
+configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/cmake/kradoConfig.cmake.in
+    kradoConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
+    NO_SET_AND_CHECK_MACRO
+)
+write_basic_package_version_file(kradoConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(
+    TARGETS libkrado
+    EXPORT kradoTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/lib/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.h"
+)
+
+install(
+    EXPORT kradoTargets
+    FILE kradoTargets.cmake
+    NAMESPACE krado::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
+)
+
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/kradoConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/kradoConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
+)
