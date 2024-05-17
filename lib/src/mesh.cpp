@@ -326,6 +326,39 @@ Mesh::number_points()
 void
 Mesh::build_elements()
 {
+    auto dims = this->exp_bbox.size();
+    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
+        build_1d_elements();
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
+        build_2d_elements();
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
+        throw Exception("3D element construction is not implemented yet");
+    else
+        throw Exception("Element construction for your setup is not implemented yet");
+}
+
+void
+Mesh::build_1d_elements()
+{
+    for (auto & [id, curve] : this->crvs) {
+        if (curve.is_meshed()) {
+            auto verts = curve.all_vertices();
+            std::array<int, 2> line;
+            for (auto & local_elem : curve.segments()) {
+                for (int i = 0; i < 2; i++) {
+                    auto lid = local_elem.ids()[i];
+                    auto gid = verts[lid]->global_id();
+                    line[i] = gid;
+                }
+                this->elems.emplace_back(MeshElement::Line2(line));
+            }
+        }
+    }
+}
+
+void
+Mesh::build_2d_elements()
+{
     for (auto & [id, surface] : this->surfs) {
         if (surface.is_meshed()) {
             auto verts = surface.all_vertices();

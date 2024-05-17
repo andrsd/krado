@@ -6,6 +6,7 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include <vector>
+#include <array>
 
 namespace krado {
 
@@ -49,6 +50,8 @@ public:
     bool contains(double x, double y, double z);
 
     bool transform(const std::vector<double> & tfo);
+
+    std::array<double, 3> size() const;
 
 private:
     Point min_pt, max_pt;

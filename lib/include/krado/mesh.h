@@ -82,6 +82,9 @@ public:
     void build_elements();
 
 protected:
+    void build_1d_elements();
+    void build_2d_elements();
+
     template <typename T, typename U>
     T &
     get_scheme(U entity) const

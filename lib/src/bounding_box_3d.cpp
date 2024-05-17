@@ -181,4 +181,13 @@ BoundingBox3D::transform(const std::vector<double> & tfo)
     return true;
 }
 
+std::array<double, 3>
+BoundingBox3D::size() const
+{
+    std::array<double, 3> sz = { std::abs(this->max_pt.x - this->min_pt.x),
+                                 std::abs(this->max_pt.y - this->min_pt.y),
+                                 std::abs(this->max_pt.z - this->min_pt.z) };
+    return sz;
+}
+
 } // namespace krado
