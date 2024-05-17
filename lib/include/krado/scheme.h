@@ -31,6 +31,18 @@ public:
         return *this;
     }
 
+    /// Has a parameter of given name
+    ///
+    /// @tparam T C++ type
+    /// @param param_name Parameter name
+    /// @return `true` if having the parameter, `false` otherwise
+    template <typename T>
+    bool
+    has(const std::string & param_name) const
+    {
+        return this->params.has<T>(param_name);
+    }
+
     /// Get parameter value
     ///
     /// @tparam T C++ type

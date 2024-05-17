@@ -6,6 +6,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/surface_index_mapper.h"
 #include <map>
 #include <array>
 #include <set>
@@ -69,21 +70,21 @@ build_point_map(const MeshSurface & surface)
 }
 
 void
-create_point_list(triangulateio & io, const std::map<Point, int> & pt_id)
+create_point_list(const std::map<Point, int> & pt_id, triangulateio & io)
 {
     io.numberofpoints = (int) pt_id.size();
     io.pointlist = (double *) malloc(io.numberofpoints * 2 * sizeof(double));
-    size_t k = 0;
     for (auto & [pt, id] : pt_id) {
-        io.pointlist[k++] = pt.x;
-        io.pointlist[k++] = pt.y;
+        int k = 2 * id;
+        io.pointlist[k + 0] = pt.x;
+        io.pointlist[k + 1] = pt.y;
     }
 }
 
 void
-create_segment_list(triangulateio & io,
-                    const MeshSurface & surface,
-                    const std::map<Point, int> & pt_id)
+create_segment_list(const MeshSurface & surface,
+                    const std::map<Point, int> & pt_id,
+                    triangulateio & io)
 {
     // segments
     int n_segments = 0;
@@ -113,14 +114,14 @@ create_segment_list(triangulateio & io,
 }
 
 void
-create_pslg(triangulateio & io, const MeshSurface & surface, const std::map<Point, int> & pt_id)
+create_pslg(const MeshSurface & surface, const std::map<Point, int> & pt_id, triangulateio & io)
 {
-    create_point_list(io, pt_id);
-    create_segment_list(io, surface, pt_id);
+    create_point_list(pt_id, io);
+    create_segment_list(surface, pt_id, io);
 }
 
 void
-create_regions(triangulateio & io, const MeshSurface & surface)
+create_regions(const MeshSurface & surface, triangulateio & io)
 {
     auto & scheme = surface.scheme();
     io.numberofregions = 1;
@@ -163,84 +164,12 @@ destroy_io(triangulateio & io)
         free(io.normlist);
 }
 
-std::map<Point, int>
-build_vertex_map(const MeshSurface & surface)
-{
-    std::map<Point, int> pt_vtx;
-    auto verts = surface.all_vertices();
-    for (int i = 0; i < verts.size(); i++) {
-        auto & vtx = verts[i];
-        auto pt = vtx->point();
-        pt_vtx.try_emplace(pt, i);
-    }
-    return pt_vtx;
-}
-
 Point
-create_point(double * pts, int idx)
+get_point(double * pts, int idx)
 {
     double x = pts[idx * 2 + 0];
     double y = pts[idx * 2 + 1];
     return Point(x, y);
-}
-
-std::array<int, 3>
-map_triangle(double * coords, const std::map<Point, int> & vtx_map, int tri[3])
-{
-    Point pts[3];
-    for (int i = 0; i < 3; i++)
-        pts[i] = create_point(coords, tri[i]);
-
-    try {
-        std::array<int, 3> vtx_idx;
-        for (int i = 0; i < 3; i++) {
-            auto idx = vtx_map.at(pts[i]);
-            vtx_idx[i] = idx;
-        }
-        return vtx_idx;
-    }
-    catch (...) {
-        throw Exception("Failed to map a triangle back onto mesh surface.");
-    }
-}
-
-void
-copy_vertices_into_surface(MeshSurface & surface,
-                           const triangulateio & io,
-                           const std::map<Point, int> & pt_id)
-{
-    // Insert vertices from curves into the surface
-    auto & curves = surface.curves();
-    std::set<MeshVertexAbstract *> vtx_set;
-    for (auto & c : curves) {
-        for (auto & v : c->bounding_vertices()) {
-            auto [it, added] = vtx_set.insert(v);
-            if (added)
-                surface.add_vertex(v);
-        }
-        for (auto & v : c->curve_vertices()) {
-            auto [it, added] = vtx_set.insert(v);
-            if (added)
-                surface.add_vertex(v);
-        }
-    }
-
-    // Create vertices for all new points. They will be MeshSurfaceVertices, because we used
-    // constrained Delaunay triangulation, i.e. no edges were split, so we don't have new
-    // MeshCurveVertices
-    for (int i = 0; i < io.numberofpoints; i++) {
-        auto pt = tri::create_point(io.pointlist, i);
-        if (pt_id.count(pt) > 0) {
-            // this is a known point, either vertex or a curve vertex
-        }
-        else {
-            // this is a new point, create a new vertex on the surface
-            auto gsurf = surface.geom_surface();
-            auto [u, v] = gsurf.parameter_from_point(pt);
-            auto * svtx = new MeshSurfaceVertex(gsurf, u, v);
-            surface.add_vertex(svtx);
-        }
-    }
 }
 
 } // namespace tri
@@ -251,30 +180,38 @@ void
 SchemeTriangle::mesh_surface(MeshSurface & surface)
 {
 #ifdef KRADO_WITH_TRIANGLE
+    bool has_region = has<std::tuple<double, double>>("region_point");
+
     triangulateio in, out;
 
     tri::init_io(in);
     tri::init_io(out);
 
     auto pt_id = tri::build_point_map(surface);
-    tri::create_pslg(in, surface, pt_id);
+    tri::create_pslg(surface, pt_id, in);
+    if (has_region)
+        tri::create_regions(surface, in);
 
     // p = triangulate planar straight line graph
     // z = zero-based indexing
     // Q = quiet
     auto switches = fmt::format("pzQ");
+    if (!has_region && has<double>("max_area"))
+        switches += fmt::format("a{}", get<double>("max_area"));
+    else
+        switches += fmt::format("a");
     triangulate((char *) switches.c_str(), &in, &out, nullptr);
 
-    tri::copy_vertices_into_surface(surface, out, pt_id);
-
-    // map triangulation back onto our surface
-    auto vtx_map = tri::build_vertex_map(surface);
+    SurfaceIndexMapper im(surface);
     for (int i = 0; i < out.numberoftriangles; i++) {
-        int tritri[3] = { out.trianglelist[i * 3 + 0],
-                          out.trianglelist[i * 3 + 1],
-                          out.trianglelist[i * 3 + 2] };
-        auto tri3 = tri::map_triangle(out.pointlist, vtx_map, tritri);
-        surface.add_triangle(tri3);
+        std::array<int, 3> tri;
+        for (int j = 0; j < 3; j++) {
+            auto vtx_id = out.trianglelist[i * 3 + j];
+            auto pt = tri::get_point(out.pointlist, vtx_id);
+            auto idx = im.surface_idx(pt.x, pt.y);
+            tri[j] = idx;
+        }
+        surface.add_triangle(tri);
     }
 
     tri::destroy_io(in);
@@ -287,8 +224,6 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
 #endif
 }
 
-SchemeTriangle::SchemeTriangle() : Scheme("triangle")
-{
-}
+SchemeTriangle::SchemeTriangle() : Scheme("triangle") {}
 
 } // namespace krado
