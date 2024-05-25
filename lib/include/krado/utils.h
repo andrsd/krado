@@ -142,4 +142,11 @@ std::string to_str(T val);
 /// @return The area of the triangle
 [[nodiscard]] double triangle_area(const Point & p1, const Point & p2, const Point & p3);
 
+/// Compute the distance between two points
+///
+/// @param p1 The first point
+/// @param p2 The second point
+/// @return The distance between the two points
+[[nodiscard]] double distance(const Point & p1, const Point & p2);
+
 } // namespace krado::utils

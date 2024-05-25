@@ -21,3 +21,10 @@ TEST(UtilsTest, triangle_area)
     auto area = utils::triangle_area(p1, p2, p3);
     EXPECT_DOUBLE_EQ(area, 0.5);
 }
+
+TEST(UtilsTest, distance)
+{
+    Point a(1., 2., 3.);
+    Point b(2., -1., 4.);
+    EXPECT_NEAR(utils::distance(a, b), std::sqrt(11), 1e-15);
+}

@@ -100,4 +100,11 @@ triangle_area(const Point & p1, const Point & p2, const Point & p3)
     return 0.5 * c.magnitude();
 }
 
+double
+distance(const Point & p1, const Point & p2)
+{
+    auto delta = p1 - p2;
+    return std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+}
+
 } // namespace krado::utils
