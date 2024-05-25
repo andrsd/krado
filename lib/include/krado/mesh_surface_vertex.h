@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/uv_param.h"
 
 namespace krado {
 
@@ -26,7 +27,7 @@ public:
     /// Get the parametrical position of the vertex on the curve
     ///
     /// @return Parametrical position of the vertex on the curve
-    [[nodiscard]] std::tuple<double, double> parameter() const;
+    [[nodiscard]] UVParam parameter() const;
 
     /// Get physical position in the 3D space
     ///

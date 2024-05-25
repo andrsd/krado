@@ -6,6 +6,7 @@
 #include "krado/geom_shape.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/uv_param.h"
 #include "krado/geom_curve.h"
 #include "TopoDS_Face.hxx"
 #include "Geom_Surface.hxx"
@@ -62,7 +63,7 @@ public:
     ///
     /// @param pt Physical location
     /// @return Parameters (u, v)
-    [[nodiscard]] std::tuple<double, double> parameter_from_point(const Point & pt) const;
+    [[nodiscard]] UVParam parameter_from_point(const Point & pt) const;
 
     /// Find nearest point
     ///

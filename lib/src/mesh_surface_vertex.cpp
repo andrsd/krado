@@ -21,7 +21,7 @@ MeshSurfaceVertex::geom_surface() const
     return this->gsurface_;
 }
 
-std::tuple<double, double>
+UVParam
 MeshSurfaceVertex::parameter() const
 {
     return { this->u_, this->v_ };

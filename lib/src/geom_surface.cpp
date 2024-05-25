@@ -125,7 +125,7 @@ GeomSurface::curves() const
     return crvs;
 }
 
-std::tuple<double, double>
+UVParam
 GeomSurface::parameter_from_point(const Point & pt) const
 {
     auto [found, u, v] = project(pt);
