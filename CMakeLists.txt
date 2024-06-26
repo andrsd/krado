@@ -70,12 +70,11 @@ endif()
 # install
 
 configure_package_config_file(
-    ${PROJECT_SOURCE_DIR}/cmake/kradoConfig.cmake.in
-    kradoConfig.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/krado-config.cmake.in krado-config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
     NO_SET_AND_CHECK_MACRO
 )
-write_basic_package_version_file(kradoConfigVersion.cmake
+write_basic_package_version_file(krado-config-version.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
@@ -98,14 +97,14 @@ install(
 
 install(
     EXPORT kradoTargets
-    FILE kradoTargets.cmake
+    FILE krado-targets.cmake
     NAMESPACE krado::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
 )
 
 install(
     FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/kradoConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/kradoConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/krado-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/krado-config-version.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
 )
