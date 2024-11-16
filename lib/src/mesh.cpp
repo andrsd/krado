@@ -19,6 +19,14 @@ Mesh::Mesh(const GeomModel & model) : scheme_factory(SchemeFactory::instance()),
     initialize(model);
 }
 
+Mesh::Mesh(std::vector<Point> points, std::vector<MeshElement> elements) :
+    pnts(points),
+    elems(elements),
+    scheme_factory(SchemeFactory::instance()),
+    gid_ctr(0)
+{
+}
+
 const MeshVertex &
 Mesh::vertex(int id) const
 {

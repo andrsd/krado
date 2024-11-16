@@ -8,6 +8,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"
 #include "krado/mesh_point.h"
+#include "krado/point.h"
 #include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
 #include <map>
@@ -18,8 +19,19 @@ class GeomModel;
 
 class Mesh {
 public:
+    /// Construct empty mesh
     Mesh();
+
+    /// Construct mesh from geometric model
+    ///
+    /// @param model Geometric model
     Mesh(const GeomModel & model);
+
+    /// Construct mesh from set of points and elements (useful for reading meshes from files)
+    ///
+    /// @param points Points
+    /// @param elements Elements
+    Mesh(std::vector<Point> points, std::vector<MeshElement> elements);
 
     /// Vertex
     const MeshVertex & vertex(int id) const;
@@ -122,7 +134,9 @@ private:
 
     SchemeFactory & scheme_factory;
 
+    /// Mesh points
     std::vector<Point> pnts;
+    /// Mesh elements. This is indexing the `pnts` vector
     std::vector<MeshElement> elems;
 
     /// Global ID counter
