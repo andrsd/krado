@@ -389,4 +389,35 @@ Mesh::bounding_box() const
     return this->exp_bbox;
 }
 
+Mesh
+Mesh::scaled(double factor) const
+{
+    auto tr = Trsf::scale(factor);
+    return transformed(tr);
+}
+
+Mesh
+Mesh::scaled(double factor_x, double factor_y, double factor_z) const
+{
+    auto tr = Trsf::scale(factor_x, factor_y, factor_z);
+    return transformed(tr);
+}
+
+Mesh
+Mesh::translated(double tx, double ty, double tz) const
+{
+    auto tr = Trsf::translate(tx, ty, tz);
+    return transformed(tr);
+}
+
+Mesh
+Mesh::transformed(const Trsf & tr) const
+{
+    auto pts = points();
+    for (auto & p : pts)
+        p = tr * p;
+    auto elems = elements();
+    return Mesh(pts, elems);
+}
+
 } // namespace krado

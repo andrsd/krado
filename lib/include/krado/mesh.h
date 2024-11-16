@@ -11,6 +11,7 @@
 #include "krado/point.h"
 #include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/transform.h"
 #include <map>
 
 namespace krado {
@@ -95,6 +96,34 @@ public:
 
     /// Get mesh bounding box
     BoundingBox3D bounding_box() const;
+
+    /// Scale mesh by a factor (isotropic)
+    ///
+    /// @param factor Scaling factor
+    /// @return Scaled mesh
+    Mesh scaled(double factor) const;
+
+    /// Scale mesh by a factor (unisotropic)
+    ///
+    /// @param factor_x Scaling factor in x-direction
+    /// @param factor_y Scaling factor in y-direction
+    /// @param factor_z Scaling factor in z-direction
+    /// @return Scaled mesh
+    Mesh scaled(double factor_x, double factor_y, double factor_z = 1.) const;
+
+    /// Translate mesh
+    ///
+    /// @param tx Translation in x-direction
+    /// @param ty Translation in y-direction
+    /// @param tz Translation in z-direction
+    /// @return Translated mesh
+    Mesh translated(double tx, double ty = 0., double tz = 0.) const;
+
+    /// Transform mesh
+    ///
+    /// @param tr Transformation
+    /// @return Transformed mesh
+    Mesh transformed(const Trsf & tr) const;
 
 protected:
     void build_1d_elements();

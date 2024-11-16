@@ -2,6 +2,7 @@
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
+#include "krado/exodusii_file.h"
 #include "builder.h"
 #include <filesystem>
 
@@ -31,4 +32,28 @@ TEST(MeshTest, circle)
     EXPECT_EQ(mesh.vertices().size(), 1);
     EXPECT_EQ(mesh.curves().size(), 1);
     EXPECT_EQ(mesh.surfaces().size(), 1);
+}
+
+TEST(MeshTest, scaled)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read().scaled(0.25);
+    auto & pnts = mesh.points();
+    EXPECT_EQ(pnts.size(), 4);
+    EXPECT_EQ(pnts[0], Point(0, 0));
+    EXPECT_EQ(pnts[1], Point(0.5, 0));
+    EXPECT_EQ(pnts[2], Point(0, 0.5));
+    EXPECT_EQ(pnts[3], Point(0.5, 0.5));
+}
+
+TEST(MeshTest, translated)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read().translated(2, 3);
+    auto & pnts = mesh.points();
+    EXPECT_EQ(pnts.size(), 4);
+    EXPECT_EQ(pnts[0], Point(2, 3));
+    EXPECT_EQ(pnts[1], Point(4, 3));
+    EXPECT_EQ(pnts[2], Point(2, 5));
+    EXPECT_EQ(pnts[3], Point(4, 5));
 }
