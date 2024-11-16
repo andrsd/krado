@@ -7,6 +7,7 @@
 #include "krado/scheme_bias.h"
 #include "krado/scheme_bump.h"
 #include "krado/scheme_betalaw.h"
+#include "krado/scheme_sizemap.h"
 #include "krado/scheme_bamg.h"
 #include "krado/scheme_triangle.h"
 
@@ -26,6 +27,7 @@ SchemeFactory::SchemeFactory()
     add<SchemeBias>("bias");
     add<SchemeBump>("bump");
     add<SchemeBetaLaw>("beta-law");
+    add<SchemeSizeMap>("sizemap");
     add<SchemeBAMG>("bamg");
     add<SchemeTriangle>("triangle");
 }

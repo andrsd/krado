@@ -16,9 +16,9 @@ namespace krado {
 namespace {
 
 // Geometric progression ar^i; Sum of n terms = length = a (r^n-1)/(r-1)
-class FTransfiniteBias {
+class FTransfiniteSizeMap {
 public:
-    FTransfiniteBias(double coef, int n_pts, int ori) : coef(coef), n_points(n_pts), ori(ori)
+    FTransfiniteSizeMap(double coef, int n_pts, int ori) : coef(coef), n_points(n_pts), ori(ori)
     {
     }
 
@@ -64,7 +64,7 @@ SchemeBias::compute_integral(const MeshCurve & curve)
     auto [u_lower, u_upper] = geom_curve.param_range();
 
     Integral1D integral;
-    integral.integrate(geom_curve, u_lower, u_upper, FTransfiniteBias(coeff, n_pts, 1));
+    integral.integrate(geom_curve, u_lower, u_upper, FTransfiniteSizeMap(coeff, n_pts, 1));
     return integral;
 }
 
