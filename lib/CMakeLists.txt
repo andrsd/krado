@@ -31,9 +31,10 @@ target_link_libraries(
     ${NAME}
     PRIVATE
         ${OpenCASCADE_DataExchange_LIBRARIES}
-        fmt::fmt
         Eigen3::Eigen
         libbamg
+    PUBLIC
+        fmt::fmt
         exodusIIcpp::exodusIIcpp
 )
 

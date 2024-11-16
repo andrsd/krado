@@ -28,6 +28,7 @@ target_link_libraries(
         gtest_main
         gmock_main
         fmt::fmt
+        exodusIIcpp::exodusIIcpp
 )
 
 add_test(
