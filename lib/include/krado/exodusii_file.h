@@ -21,6 +21,11 @@ public:
     /// @return Mesh object read from file
     Mesh read();
 
+    /// Write mesh to ExodusII file
+    ///
+    /// @param mesh Mesh object to write
+    void write(const Mesh & mesh);
+
 private:
     /// Read nodes
     ///
@@ -32,10 +37,28 @@ private:
     /// @return Vector of elements
     std::vector<Element> read_elements();
 
+    /// Write info
+    void write_info();
+
+    /// Write coordinates
+    void write_coords();
+
+    /// Write elements
+    void write_elements();
+
+    /// Preprocess mesh for output
+    void preprocess_mesh(const Mesh & mesh);
+
     /// File name
     std::string fn;
     /// ExodusII file object
     exodusIIcpp::File exo;
+    /// Spatial dimension
+    int dim;
+    /// coordinates
+    std::vector<double> x, y, z;
+    /// Element blocks
+    std::map<int, std::vector<Element>> elem_blks;
 };
 
 } // namespace krado
