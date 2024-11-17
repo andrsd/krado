@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include "krado/meshing_parameters.h"
 
 namespace krado {
@@ -40,7 +40,7 @@ public:
     /// Get triangles on this surface
     ///
     /// @return Triangles on this surface
-    const std::vector<MeshElement> & triangles() const;
+    const std::vector<Element> & triangles() const;
 
     /// Add vertex
     ///
@@ -71,7 +71,7 @@ private:
     /// Surface vertices
     std::vector<MeshSurfaceVertex *> surf_vtxs;
     /// Triangles
-    std::vector<MeshElement> tris;
+    std::vector<Element> tris;
     /// Flag indicating if the surface is meshed
     bool meshed;
 };

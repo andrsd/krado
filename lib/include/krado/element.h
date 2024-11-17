@@ -9,11 +9,11 @@
 
 namespace krado {
 
-class MeshElement {
+class Element {
 public:
     enum Type { LINE2, TRI3, TETRA4 };
 
-    MeshElement(Type type, const std::vector<int> & vtx_ids, int marker = 0);
+    Element(Type type, const std::vector<int> & vtx_ids, int marker = 0);
 
     /// Get element type
     ///
@@ -54,17 +54,17 @@ private:
 
 public:
     static std::string type(Type type);
-    static MeshElement Line2(const std::array<int, 2> & ids, int marker = 0);
-    static MeshElement Tri3(const std::array<int, 3> & ids, int marker = 0);
-    static MeshElement Tetra4(const std::array<int, 4> & ids, int marker = 0);
+    static Element Line2(const std::array<int, 2> & ids, int marker = 0);
+    static Element Tri3(const std::array<int, 3> & ids, int marker = 0);
+    static Element Tetra4(const std::array<int, 4> & ids, int marker = 0);
 };
 
 } // namespace krado
 
 inline std::ostream &
-operator<<(std::ostream & stream, const krado::MeshElement & el)
+operator<<(std::ostream & stream, const krado::Element & el)
 {
-    stream << "(" << krado::MeshElement::type(el.type()) << ",";
+    stream << "(" << krado::Element::type(el.type()) << ",";
     for (auto & id : el.ids())
         stream << " " << id;
     stream << ")";

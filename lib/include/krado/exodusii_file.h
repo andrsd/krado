@@ -30,7 +30,7 @@ private:
     /// Read elements
     ///
     /// @return Vector of elements
-    std::vector<MeshElement> read_elements();
+    std::vector<Element> read_elements();
 
     /// File name
     std::string fn;

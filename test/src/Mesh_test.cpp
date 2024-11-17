@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
@@ -82,12 +82,12 @@ TEST(MeshTest, add_mesh)
 
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
-    EXPECT_EQ(elems[0].type(), MeshElement::TRI3);
+    EXPECT_EQ(elems[0].type(), Element::TRI3);
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
-    EXPECT_EQ(elems[1].type(), MeshElement::TRI3);
+    EXPECT_EQ(elems[1].type(), Element::TRI3);
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
-    EXPECT_EQ(elems[2].type(), MeshElement::TRI3);
+    EXPECT_EQ(elems[2].type(), Element::TRI3);
     EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
-    EXPECT_EQ(elems[3].type(), MeshElement::TRI3);
+    EXPECT_EQ(elems[3].type(), Element::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
 }

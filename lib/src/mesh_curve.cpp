@@ -65,11 +65,11 @@ MeshCurve::curve_vertices()
 void
 MeshCurve::add_segment(const std::array<int, 2> & seg)
 {
-    auto line2 = MeshElement::Line2(seg);
+    auto line2 = Element::Line2(seg);
     this->segs.emplace_back(line2);
 }
 
-const std::vector<MeshElement> &
+const std::vector<Element> &
 MeshCurve::segments() const
 {
     return this->segs;

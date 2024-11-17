@@ -14,14 +14,14 @@ namespace krado {
 namespace {
 
 const char *
-get_exodusii_name(MeshElement::Type t)
+get_exodusii_name(Element::Type t)
 {
     switch (t) {
-    case MeshElement::LINE2:
+    case Element::LINE2:
         return "BAR2";
-    case MeshElement::TRI3:
+    case Element::TRI3:
         return "TRI3";
-    case MeshElement::TETRA4:
+    case Element::TETRA4:
         return "TET4";
     }
     throw Exception("Unsupported element type {}.", t);
@@ -123,7 +123,7 @@ private:
     exodusIIcpp::File exo;
     int dim;
     std::vector<double> x, y, z;
-    std::map<int, std::vector<MeshElement>> elem_blks;
+    std::map<int, std::vector<Element>> elem_blks;
 };
 
 } // namespace

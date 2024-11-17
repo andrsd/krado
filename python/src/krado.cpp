@@ -21,7 +21,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include "krado/scheme.h"
 #include "krado/point.h"
 #include "krado/transform.h"
@@ -99,13 +99,13 @@ PYBIND11_MODULE(krado, m)
         .def("size", &BoundingBox3D::size)
     ;
 
-    py::class_<MeshElement>(m, "MeshElement")
-        .def(py::init<MeshElement::Type, const std::vector<int> &, int>())
-        .def("type", py::overload_cast<>(&MeshElement::type, py::const_))
-        .def("marker", &MeshElement::marker)
-        .def("num_vertices", &MeshElement::num_vertices)
-        .def("vertex_id", &MeshElement::vertex_id)
-        .def("ids", &MeshElement::ids)
+    py::class_<Element>(m, "Element")
+        .def(py::init<Element::Type, const std::vector<int> &, int>())
+        .def("type", py::overload_cast<>(&Element::type, py::const_))
+        .def("marker", &Element::marker)
+        .def("num_vertices", &Element::num_vertices)
+        .def("vertex_id", &Element::vertex_id)
+        .def("ids", &Element::ids)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")

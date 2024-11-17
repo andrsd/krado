@@ -19,7 +19,7 @@ Mesh::Mesh(const GeomModel & model) : scheme_factory(SchemeFactory::instance()),
     initialize(model);
 }
 
-Mesh::Mesh(std::vector<Point> points, std::vector<MeshElement> elements) :
+Mesh::Mesh(std::vector<Point> points, std::vector<Element> elements) :
     pnts(points),
     elems(elements),
     scheme_factory(SchemeFactory::instance()),
@@ -296,7 +296,7 @@ Mesh::points() const
     return this->pnts;
 }
 
-const std::vector<MeshElement> &
+const std::vector<Element> &
 Mesh::elements() const
 {
     return this->elems;
@@ -358,7 +358,7 @@ Mesh::build_1d_elements()
                     auto gid = verts[lid]->global_id();
                     line[i] = gid;
                 }
-                this->elems.emplace_back(MeshElement::Line2(line));
+                this->elems.emplace_back(Element::Line2(line));
             }
         }
     }
@@ -377,7 +377,7 @@ Mesh::build_2d_elements()
                     auto gid = verts[lid]->global_id();
                     tri[i] = gid;
                 }
-                this->elems.emplace_back(MeshElement::Tri3(tri));
+                this->elems.emplace_back(Element::Tri3(tri));
             }
         }
     }
@@ -429,7 +429,7 @@ Mesh::add(const Mesh & other)
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
-        auto new_elem = MeshElement(elem.type(), ids);
+        auto new_elem = Element(elem.type(), ids);
         this->elems.emplace_back(new_elem);
     }
 }

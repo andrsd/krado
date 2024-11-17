@@ -32,7 +32,7 @@ public:
     ///
     /// @param points Points
     /// @param elements Elements
-    Mesh(std::vector<Point> points, std::vector<MeshElement> elements);
+    Mesh(std::vector<Point> points, std::vector<Element> elements);
 
     /// Vertex
     const MeshVertex & vertex(int id) const;
@@ -86,7 +86,7 @@ public:
     /// Get elements
     ///
     /// @return Mesh elements
-    const std::vector<MeshElement> & elements() const;
+    const std::vector<Element> & elements() const;
 
     ///
     void number_points();
@@ -171,7 +171,7 @@ private:
     /// Mesh points
     std::vector<Point> pnts;
     /// Mesh elements. This is indexing the `pnts` vector
-    std::vector<MeshElement> elems;
+    std::vector<Element> elems;
 
     /// Global ID counter
     int gid_ctr;

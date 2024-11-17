@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include "krado/meshing_parameters.h"
 #include <vector>
 
@@ -59,7 +59,7 @@ public:
     /// Get curve segments
     ///
     /// @return Curse segments using vertex indexing local to this edge
-    const std::vector<MeshElement> & segments() const;
+    const std::vector<Element> & segments() const;
 
     /// Check if the curve is already meshed
     ///
@@ -78,7 +78,7 @@ private:
     /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex *> curve_vtx;
     /// Segments of this curve, using vertex indexing local to this edge
-    std::vector<MeshElement> segs;
+    std::vector<Element> segs;
     /// Flag indicating if the curve is meshed
     bool meshed;
 };

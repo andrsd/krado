@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/exodusii_file.h"
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include <filesystem>
 
 using namespace krado;
@@ -21,8 +21,8 @@ TEST(ExodusIIFileTest, read_2d)
 
     auto & elems = mesh.elements();
     EXPECT_EQ(elems.size(), 2);
-    EXPECT_THAT(elems[0].type(), Eq(MeshElement::TRI3));
+    EXPECT_THAT(elems[0].type(), Eq(Element::TRI3));
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
-    EXPECT_THAT(elems[1].type(), Eq(MeshElement::TRI3));
+    EXPECT_THAT(elems[1].type(), Eq(Element::TRI3));
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
 }

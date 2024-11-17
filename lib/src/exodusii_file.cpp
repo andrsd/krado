@@ -1,21 +1,21 @@
 #include "krado/exodusii_file.h"
 #include "krado/mesh.h"
-#include "krado/mesh_element.h"
+#include "krado/element.h"
 #include "exodusIIcpp/exception.h"
 #include "krado/utils.h"
 
 namespace krado {
 
-MeshElement::Type
+Element::Type
 element_type(const std::string elem_type_name)
 {
     auto ellc = utils::to_lower(elem_type_name);
     if (utils::in(ellc, { "bar", "bar2" }))
-        return MeshElement::LINE2;
+        return Element::LINE2;
     else if (utils::in(ellc, { "tri3", "tri" }))
-        return MeshElement::TRI3;
+        return Element::TRI3;
     else if (utils::in(ellc, { "tet", "tet4", "tetra", "tetra4" }))
-        return MeshElement::TETRA4;
+        return Element::TETRA4;
     else
         throw std::runtime_error("Unsupported element type: " + elem_type_name);
 }
@@ -72,10 +72,10 @@ ExodusIIFile::read_points()
     return points;
 }
 
-std::vector<MeshElement>
+std::vector<Element>
 ExodusIIFile::read_elements()
 {
-    std::vector<MeshElement> elems;
+    std::vector<Element> elems;
 
     this->exo.read_blocks();
     for (auto & eb : this->exo.get_element_blocks()) {
@@ -85,19 +85,19 @@ ExodusIIFile::read_elements()
         auto blk_id = eb.get_id();
         for (int i = 0; i < eb.get_num_elements(); i++) {
             auto idx = i * n_elem_nodes;
-            if (et == MeshElement::LINE2) {
+            if (et == Element::LINE2) {
                 auto elem_connect = build_element_connect<2>(connect, idx);
-                auto el = MeshElement::Line2(elem_connect, blk_id);
+                auto el = Element::Line2(elem_connect, blk_id);
                 elems.emplace_back(el);
             }
-            else if (et == MeshElement::TRI3) {
+            else if (et == Element::TRI3) {
                 auto elem_connect = build_element_connect<3>(connect, idx);
-                auto el = MeshElement::Tri3(elem_connect, blk_id);
+                auto el = Element::Tri3(elem_connect, blk_id);
                 elems.emplace_back(el);
             }
-            else if (et == MeshElement::TETRA4) {
+            else if (et == Element::TETRA4) {
                 auto elem_connect = build_element_connect<4>(connect, idx);
-                auto el = MeshElement::Tetra4(elem_connect, blk_id);
+                auto el = Element::Tetra4(elem_connect, blk_id);
                 elems.emplace_back(el);
             }
             else

@@ -45,7 +45,7 @@ MeshSurface::surface_vertices() const
     return this->surf_vtxs;
 }
 
-const std::vector<MeshElement> &
+const std::vector<Element> &
 MeshSurface::triangles() const
 {
     return this->tris;
@@ -73,7 +73,7 @@ MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
 void
 MeshSurface::add_triangle(const std::array<int, 3> & tri)
 {
-    auto tri3 = MeshElement::Tri3(tri);
+    auto tri3 = Element::Tri3(tri);
     this->tris.emplace_back(tri3);
 }
 
