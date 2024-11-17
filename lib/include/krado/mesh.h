@@ -7,7 +7,6 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"
-#include "krado/mesh_point.h"
 #include "krado/point.h"
 #include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
