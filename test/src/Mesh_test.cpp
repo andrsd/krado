@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "krado/mesh_element.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
@@ -56,4 +57,37 @@ TEST(MeshTest, translated)
     EXPECT_EQ(pnts[1], Point(4, 3));
     EXPECT_EQ(pnts[2], Point(2, 5));
     EXPECT_EQ(pnts[3], Point(4, 5));
+}
+
+TEST(MeshTest, add_mesh)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto square = f.read();
+
+    Mesh m;
+    m.add(square);
+    auto sq2 = square.translated(2, 0);
+    m.add(sq2);
+
+    auto & pnts = m.points();
+    EXPECT_EQ(pnts.size(), 8);
+    EXPECT_EQ(pnts[0], Point(0, 0));
+    EXPECT_EQ(pnts[1], Point(2, 0));
+    EXPECT_EQ(pnts[2], Point(0, 2));
+    EXPECT_EQ(pnts[3], Point(2, 2));
+    EXPECT_EQ(pnts[4], Point(2, 0));
+    EXPECT_EQ(pnts[5], Point(4, 0));
+    EXPECT_EQ(pnts[6], Point(2, 2));
+    EXPECT_EQ(pnts[7], Point(4, 2));
+
+    auto & elems = m.elements();
+    EXPECT_EQ(elems.size(), 4);
+    EXPECT_EQ(elems[0].type(), MeshElement::TRI3);
+    EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
+    EXPECT_EQ(elems[1].type(), MeshElement::TRI3);
+    EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+    EXPECT_EQ(elems[2].type(), MeshElement::TRI3);
+    EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
+    EXPECT_EQ(elems[3].type(), MeshElement::TRI3);
+    EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
 }

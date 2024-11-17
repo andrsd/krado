@@ -420,4 +420,18 @@ Mesh::transformed(const Trsf & tr) const
     return Mesh(pts, elems);
 }
 
+void
+Mesh::add(const Mesh & other)
+{
+    auto n_pt_ofst = this->pnts.size();
+    this->pnts.insert(this->pnts.end(), other.pnts.begin(), other.pnts.end());
+    for (auto & elem : other.elements()) {
+        auto ids = elem.ids();
+        for (auto & id : ids)
+            id += n_pt_ofst;
+        auto new_elem = MeshElement(elem.type(), ids);
+        this->elems.emplace_back(new_elem);
+    }
+}
+
 } // namespace krado

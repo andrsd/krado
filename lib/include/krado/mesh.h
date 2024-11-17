@@ -125,6 +125,11 @@ public:
     /// @return Transformed mesh
     Mesh transformed(const Trsf & tr) const;
 
+    /// Add another mesh to this mesh
+    ///
+    /// @param other Mesh to add
+    void add(const Mesh & other);
+
 protected:
     void build_1d_elements();
     void build_2d_elements();
