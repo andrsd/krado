@@ -37,6 +37,12 @@ private:
     /// @return Vector of elements
     std::vector<Element> read_elements();
 
+    /// Determine mesh spatial dimension
+    ///
+    /// @param mesh Mesh object
+    /// @return Spatial dimension
+    int determine_spatial_dim(const Mesh & mesh);
+
     /// Write info
     void write_info();
 

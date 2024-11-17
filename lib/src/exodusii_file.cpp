@@ -133,15 +133,7 @@ void
 ExodusIIFile::write(const Mesh & mesh)
 {
     this->exo.create(this->fn);
-    auto sz = mesh.bounding_box().size();
-    if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
-        this->dim = 1;
-    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))
-        this->dim = 2;
-    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
-        this->dim = 3;
-    else
-        throw Exception("Unusual mesh, unable to write.");
+    this->dim = determine_spatial_dim(mesh);
     preprocess_mesh(mesh);
 
     int n_nodes = (int) mesh.points().size();
@@ -155,6 +147,20 @@ ExodusIIFile::write(const Mesh & mesh)
     write_elements();
 
     this->exo.close();
+}
+
+int
+ExodusIIFile::determine_spatial_dim(const Mesh & mesh)
+{
+    auto sz = mesh.bounding_box().size();
+    if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
+        return 1;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))
+        return 2;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
+        return 3;
+    else
+        throw Exception("Unusual mesh, unable to write.");
 }
 
 void
