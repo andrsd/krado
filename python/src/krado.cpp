@@ -3,7 +3,9 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "krado/bounding_box_3d.h"
 #include "krado/config.h"
+#include "krado/exodusii_file.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/geom_shape.h"
@@ -22,6 +24,7 @@
 #include "krado/mesh_element.h"
 #include "krado/scheme.h"
 #include "krado/point.h"
+#include "krado/transform.h"
 #include "krado/vector.h"
 #include "krado/export.h"
 
@@ -32,7 +35,9 @@ class PyMeshVertexAbstract : public MeshVertexAbstract {
 public:
     using MeshVertexAbstract::MeshVertexAbstract;
 
-    Point point() const override {
+    Point
+    point() const override
+    {
         PYBIND11_OVERRIDE_PURE(Point, MeshVertexAbstract, point);
     }
 };
@@ -46,6 +51,61 @@ PYBIND11_MODULE(krado, m)
     py::class_<STEPFile>(m, "STEPFile")
         .def(py::init<const std::string &>())
         .def("load", &STEPFile::load, py::return_value_policy::move)
+    ;
+
+    py::class_<Point>(m, "Point")
+        .def(py::init<double, double, double>())
+        .def_readwrite("x", &Point::x)
+        .def_readwrite("y", &Point::y)
+        .def_readwrite("z", &Point::z)
+    ;
+
+    py::class_<Vector>(m, "Vector")
+        .def(py::init<double, double, double>())
+        .def_readwrite("x", &Vector::x)
+        .def_readwrite("y", &Vector::y)
+        .def_readwrite("z", &Vector::z)
+        .def("norm", &Vector::norm)
+        .def("normalize", &Vector::normalize)
+    ;
+
+    py::class_<Trsf>(m, "Trsf")
+        .def(py::init<>())
+        .def_static("scale", static_cast<Trsf (*)(double)>(&Trsf::scale))
+        .def_static("scale", static_cast<Trsf (*)(double, double, double)>(&Trsf::scale))
+        .def_static("translate", &Trsf::translate)
+        .def_static("rotate_x", &Trsf::rotate_x)
+        .def_static("rotate_y", &Trsf::rotate_y)
+        .def_static("rotate_z", &Trsf::rotate_z)
+        .def_static("identity", &Trsf::identity)
+    ;
+
+    py::class_<BoundingBox3D>(m, "BoundingBox3D")
+        .def(py::init<>())
+        .def(py::init<const Point &>())
+        .def(py::init<double, double, double, double, double, double>())
+        .def("empty", &BoundingBox3D::empty)
+        .def("reset", &BoundingBox3D::reset)
+        .def("scale", &BoundingBox3D::scale)
+        .def("min", &BoundingBox3D::min)
+        .def("max", &BoundingBox3D::max)
+        .def("diag", &BoundingBox3D::diag)
+        .def("make_cube", &BoundingBox3D::make_cube)
+        .def("thicken", &BoundingBox3D::thicken)
+        .def("contains", static_cast<bool (BoundingBox3D::*)(const BoundingBox3D &)>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(const Point &)>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(double, double, double)>(&BoundingBox3D::contains))
+        .def("transform", &BoundingBox3D::transform)
+        .def("size", &BoundingBox3D::size)
+    ;
+
+    py::class_<MeshElement>(m, "MeshElement")
+        .def(py::init<MeshElement::Type, const std::vector<int> &, int>())
+        .def("type", py::overload_cast<>(&MeshElement::type, py::const_))
+        .def("marker", &MeshElement::marker)
+        .def("num_vertices", &MeshElement::num_vertices)
+        .def("vertex_id", &MeshElement::vertex_id)
+        .def("ids", &MeshElement::ids)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
@@ -125,6 +185,12 @@ PYBIND11_MODULE(krado, m)
         .def("elements", &Mesh::elements, py::return_value_policy::reference)
         .def("number_points", &Mesh::number_points)
         .def("build_elements", &Mesh::build_elements)
+        .def("bounding_box", &Mesh::bounding_box)
+        .def("scaled", static_cast<Mesh (Mesh::*)(double) const>(&Mesh::scaled))
+        .def("scaled", static_cast<Mesh (Mesh::*)(double, double, double) const>(&Mesh::scaled))
+        .def("translated", &Mesh::translated)
+        .def("transformed", &Mesh::transformed)
+        .def("add", &Mesh::add)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")
@@ -215,20 +281,9 @@ PYBIND11_MODULE(krado, m)
             })
     ;
 
-    py::class_<MeshElement>(m, "MeshElement")
-        .def(py::init<MeshElement::Type, const std::vector<int> &, int>())
-        .def("type", py::overload_cast<>(&MeshElement::type, py::const_))
-        .def("marker", &MeshElement::marker)
-        .def("num_vertices", &MeshElement::num_vertices)
-        .def("vertex_id", &MeshElement::vertex_id)
-        .def("ids", &MeshElement::ids)
-    ;
-
-    py::class_<Point>(m, "Point")
-        .def(py::init<double, double, double>())
-        .def_readwrite("x", &Point::x)
-        .def_readwrite("y", &Point::y)
-        .def_readwrite("z", &Point::z)
+    py::class_<ExodusIIFile>(m, "ExodusIIFile")
+        .def(py::init<const std::string &>())
+        .def("read", &ExodusIIFile::read)
     ;
 
     m.def("write_exodusii", &write_exodusii);
