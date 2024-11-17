@@ -82,6 +82,12 @@ public:
     /// @return Mesh points
     const std::vector<Point> & points() const;
 
+    /// Get a point by index
+    ///
+    /// @param idx Index of the point
+    /// @return Point
+    const Point & point(std::size_t idx) const;
+
     /// Get elements
     ///
     /// @return Mesh elements
@@ -128,6 +134,11 @@ public:
     ///
     /// @param other Mesh to add
     void add(const Mesh & other);
+
+    /// Remove duplicate points
+    ///
+    /// @param tolerance Tolerance for point comparison
+    void remove_duplicate_points(double tolerance = 1e-12);
 
 protected:
     void build_1d_elements();

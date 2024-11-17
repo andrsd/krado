@@ -8,9 +8,99 @@
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include "nanoflann/nanoflann.hpp"
 #include <array>
 
 namespace krado {
+
+namespace {
+
+struct PointCloud {
+    PointCloud(const Mesh & mesh) : points(mesh.points()) {}
+
+    const std::vector<Point> & points;
+
+    inline std::size_t
+    kdtree_get_point_count() const
+    {
+        return this->points.size();
+    }
+
+    // Returns the distance between the vector "p1[0:size-1]" and the mesh point with index "idx_p2"
+    inline double
+    kdtree_distance(const double * p1, const std::size_t idx_p2, std::size_t /*size*/) const
+    {
+        const double d0 = p1[0] - this->points[idx_p2].x;
+        const double d1 = p1[1] - this->points[idx_p2].y;
+        const double d2 = p1[2] - this->points[idx_p2].z;
+        return d0 * d0 + d1 * d1 + d2 * d2;
+    }
+
+    // Returns the dim'th component of the idx'th point in the class
+    inline double
+    kdtree_get_pt(const std::size_t idx, int dim) const
+    {
+        return this->points[idx](dim);
+    }
+
+    // Optional bounding-box computation
+    template <class BBOX>
+    bool
+    kdtree_get_bbox(BBOX & /*bb*/) const
+    {
+        return false;
+    }
+};
+
+/// Find dupllicate points (i.e. points that are closer than a threshold distance)
+///
+/// @return Tuple where the first element is a vector of unique points and the second element is a
+///         map that maps the index of the original point to the index of the unique point.
+std::tuple<std::vector<Point>, std::map<std::size_t, std::size_t>>
+remove_duplicates(const PointCloud & cloud, double threshold)
+{
+    constexpr int32_t DIM3 = 3;
+    using namespace nanoflann;
+    typedef KDTreeSingleIndexAdaptor<L2_Simple_Adaptor<double, PointCloud>,
+                                     PointCloud,
+                                     DIM3,
+                                     std::size_t>
+        KDTree;
+
+    // Construct a kd-tree index
+    // 30 is the maxium number of neighboring nodes we can have per any node
+    KDTree tree(DIM3, cloud, KDTreeSingleIndexAdaptorParams(30));
+    tree.buildIndex();
+
+    std::vector<Point> unique_points;
+    std::map<std::size_t, std::size_t> point_remap;
+    std::vector<bool> processed(cloud.points.size(), false);
+    nanoflann::SearchParameters params;
+
+    for (std::size_t i = 0; i < cloud.points.size(); ++i) {
+        if (!processed[i]) {
+            processed[i] = true;
+
+            const double query_point[DIM3] = { cloud.points[i].x,
+                                               cloud.points[i].y,
+                                               cloud.points[i].z };
+            std::vector<ResultItem<std::size_t, double>> matches;
+            const auto search_radius = threshold * threshold;
+            // Search for points within the threshold distance
+            tree.radiusSearch(query_point, search_radius, matches, params);
+
+            for (const auto & match : matches) {
+                processed[match.first] = true;
+                point_remap[match.first] = unique_points.size();
+            }
+            unique_points.push_back(cloud.points[i]);
+        }
+    }
+
+    return { unique_points, point_remap };
+}
+
+} // namespace
 
 Mesh::Mesh() : scheme_factory(SchemeFactory::instance()), gid_ctr(0) {}
 
@@ -296,6 +386,12 @@ Mesh::points() const
     return this->pnts;
 }
 
+const Point &
+Mesh::point(std::size_t idx) const
+{
+    return this->pnts.at(idx);
+}
+
 const std::vector<Element> &
 Mesh::elements() const
 {
@@ -431,6 +527,20 @@ Mesh::add(const Mesh & other)
             id += n_pt_ofst;
         auto new_elem = Element(elem.type(), ids);
         this->elems.emplace_back(new_elem);
+    }
+}
+
+void
+Mesh::remove_duplicate_points(double tolerance)
+{
+    PointCloud cloud(*this);
+    auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
+    this->pnts = unique_points;
+    for (auto & elem : this->elems) {
+        auto ids = elem.ids();
+        for (auto & id : ids)
+            id = point_map[id];
+        elem.set_ids(ids);
     }
 }
 

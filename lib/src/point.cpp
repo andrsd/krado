@@ -12,6 +12,19 @@ Point::Point() : x(0.), y(0.), z(0.) {}
 
 Point::Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
+double
+Point::operator()(int idx) const
+{
+    if (idx == 0)
+        return this->x;
+    else if (idx == 1)
+        return this->y;
+    else if (idx == 2)
+        return this->z;
+    else
+        throw Exception("Incorrect index");
+}
+
 double &
 Point::operator()(int idx)
 {

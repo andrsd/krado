@@ -47,6 +47,12 @@ public:
     /// @return Vertex IDs
     const std::vector<int> & ids() const;
 
+    /// Set element connectivity. This is good for element renumbering. This cannot be used for
+    /// changing element type.
+    ///
+    /// @param ids Vertex IDs
+    void set_ids(const std::vector<int> & ids);
+
 private:
     Type elem_type;
     std::vector<int> vtx_id;

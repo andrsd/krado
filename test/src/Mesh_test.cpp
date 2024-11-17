@@ -35,6 +35,16 @@ TEST(MeshTest, circle)
     EXPECT_EQ(mesh.surfaces().size(), 1);
 }
 
+TEST(MeshTest, point)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read();
+    EXPECT_THAT(mesh.point(0), Point(0, 0));
+    EXPECT_THAT(mesh.point(1), Point(2, 0));
+    EXPECT_THAT(mesh.point(2), Point(0, 2));
+    EXPECT_THAT(mesh.point(3), Point(2, 2));
+}
+
 TEST(MeshTest, scaled)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
@@ -90,4 +100,37 @@ TEST(MeshTest, add_mesh)
     EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
     EXPECT_EQ(elems[3].type(), Element::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
+}
+
+TEST(MeshTest, remove_duplicate_points)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto square = f.read();
+
+    Mesh m;
+    m.add(square);
+    auto sq2 = square.translated(2, 0);
+    m.add(sq2);
+
+    m.remove_duplicate_points();
+    auto & pnts = m.points();
+
+    EXPECT_EQ(pnts.size(), 6);
+    EXPECT_EQ(pnts[0], Point(0, 0));
+    EXPECT_EQ(pnts[1], Point(2, 0));
+    EXPECT_EQ(pnts[2], Point(0, 2));
+    EXPECT_EQ(pnts[3], Point(2, 2));
+    EXPECT_EQ(pnts[4], Point(4, 0));
+    EXPECT_EQ(pnts[5], Point(4, 2));
+
+    auto & elems = m.elements();
+    EXPECT_EQ(elems.size(), 4);
+    EXPECT_EQ(elems[0].type(), Element::TRI3);
+    EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
+    EXPECT_EQ(elems[1].type(), Element::TRI3);
+    EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+    EXPECT_EQ(elems[2].type(), Element::TRI3);
+    EXPECT_THAT(elems[2].ids(), ElementsAre(1, 4, 3));
+    EXPECT_EQ(elems[3].type(), Element::TRI3);
+    EXPECT_THAT(elems[3].ids(), ElementsAre(3, 4, 5));
 }

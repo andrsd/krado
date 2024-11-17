@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/element.h"
+#include "krado/exception.h"
 #include <array>
 
 namespace krado {
@@ -47,6 +48,15 @@ const std::vector<int> &
 Element::ids() const
 {
     return this->vtx_id;
+}
+
+void
+Element::set_ids(const std::vector<int> & ids)
+{
+    if (this->vtx_id.size() == ids.size())
+        this->vtx_id = ids;
+    else
+        throw Exception("Element::set_ids: size mismatch");
 }
 
 Element

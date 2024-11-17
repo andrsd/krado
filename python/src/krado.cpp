@@ -106,6 +106,7 @@ PYBIND11_MODULE(krado, m)
         .def("num_vertices", &Element::num_vertices)
         .def("vertex_id", &Element::vertex_id)
         .def("ids", &Element::ids)
+        .def("set_ids", &Element::set_ids)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
@@ -182,6 +183,7 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_surface", py::overload_cast<int>(&Mesh::mesh_surface))
         .def("mesh_volume", py::overload_cast<int>(&Mesh::mesh_volume))
         .def("points", &Mesh::points, py::return_value_policy::reference)
+        .def("point", &Mesh::point, py::return_value_policy::reference)
         .def("elements", &Mesh::elements, py::return_value_policy::reference)
         .def("number_points", &Mesh::number_points)
         .def("build_elements", &Mesh::build_elements)
@@ -191,6 +193,7 @@ PYBIND11_MODULE(krado, m)
         .def("translated", &Mesh::translated)
         .def("transformed", &Mesh::transformed)
         .def("add", &Mesh::add)
+        .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")

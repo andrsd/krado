@@ -13,6 +13,7 @@ public:
     Point();
     explicit Point(double x, double y = 0, double z = 0);
 
+    double operator()(int idx) const;
     double & operator()(int idx);
     void operator+=(const Point & p);
     void operator-=(const Point & p);
