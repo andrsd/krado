@@ -291,6 +291,7 @@ PYBIND11_MODULE(krado, m)
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
+        .def("write", &ExodusIIFile::write)
     ;
 
     m.def("write_exodusii", &write_exodusii);
