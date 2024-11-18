@@ -25,6 +25,11 @@ public:
     /// @return The element marker
     int marker() const;
 
+    /// Set the element marker
+    ///
+    /// @param marker The element marker
+    void set_marker(int marker);
+
     /// Get number of vertices
     ///
     /// @return Number of vertices

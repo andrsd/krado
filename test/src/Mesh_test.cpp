@@ -148,3 +148,14 @@ TEST(MeshTest, duplicate)
     EXPECT_THAT(square.points(), Eq(dup.points()));
     EXPECT_THAT(square.elements(), Eq(dup.elements()));
 }
+
+TEST(MeshTest, remap_block_ids)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto square = f.read();
+    square.remap_block_ids({ { 0, 1000 } });
+
+    auto & elems = square.elements();
+    EXPECT_THAT(elems[0].marker(), 1000);
+    EXPECT_THAT(elems[1].marker(), 1000);
+}

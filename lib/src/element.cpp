@@ -26,6 +26,12 @@ Element::marker() const
     return this->mrkr;
 }
 
+void
+Element::set_marker(int marker)
+{
+    this->mrkr = marker;
+}
+
 int
 Element::num_vertices() const
 {

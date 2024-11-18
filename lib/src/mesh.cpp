@@ -560,4 +560,14 @@ Mesh::duplicate() const
     return Mesh(this->pnts, this->elems);
 }
 
+void
+Mesh::remap_block_ids(const std::map<int, int> & block_map)
+{
+    for (auto & elem : this->elems) {
+        auto block_id = elem.marker();
+        if (block_map.find(block_id) != block_map.end())
+            elem.set_marker(block_map.at(block_id));
+    }
+}
+
 } // namespace krado

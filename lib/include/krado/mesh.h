@@ -150,6 +150,11 @@ public:
     /// @return Duplicated mesh
     Mesh duplicate() const;
 
+    /// Remap block IDs
+    ///
+    /// @param block_map Map of old block IDs to new block IDs
+    void remap_block_ids(const std::map<int, int> & block_map);
+
 protected:
     void build_1d_elements();
     void build_2d_elements();
