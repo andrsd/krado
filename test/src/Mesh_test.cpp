@@ -138,3 +138,13 @@ TEST(MeshTest, remove_duplicate_points)
     EXPECT_NEAR(bbox.size(0), 4., 1e-15);
     EXPECT_NEAR(bbox.size(1), 2., 1e-15);
 }
+
+TEST(MeshTest, duplicate)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto square = f.read();
+
+    auto dup = square.duplicate();
+    EXPECT_THAT(square.points(), Eq(dup.points()));
+    EXPECT_THAT(square.elements(), Eq(dup.elements()));
+}

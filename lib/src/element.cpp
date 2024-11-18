@@ -93,4 +93,19 @@ Element::type(Type type)
         return "unknown";
 }
 
+bool
+operator==(const Element & a, const Element & b)
+{
+    if (a.type() != b.type())
+        return false;
+    if (a.marker() != b.marker())
+        return false;
+    if (a.num_vertices() != b.num_vertices())
+        return false;
+    for (int i = 0; i < a.num_vertices(); ++i)
+        if (a.vertex_id(i) != b.vertex_id(i))
+            return false;
+    return true;
+}
+
 } // namespace krado

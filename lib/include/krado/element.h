@@ -65,6 +65,8 @@ public:
     static Element Tetra4(const std::array<int, 4> & ids, int marker = 0);
 };
 
+bool operator==(const Element & a, const Element & b);
+
 } // namespace krado
 
 inline std::ostream &

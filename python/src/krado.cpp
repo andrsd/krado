@@ -196,6 +196,7 @@ PYBIND11_MODULE(krado, m)
         .def("add", &Mesh::add)
         .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
         .def("compute_bounding_box", &Mesh::compute_bounding_box)
+        .def("duplicate", &Mesh::duplicate)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")

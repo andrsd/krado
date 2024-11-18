@@ -111,9 +111,9 @@ Mesh::Mesh(const GeomModel & model) : scheme_factory(SchemeFactory::instance()),
 }
 
 Mesh::Mesh(std::vector<Point> points, std::vector<Element> elements) :
+    scheme_factory(SchemeFactory::instance()),
     pnts(points),
     elems(elements),
-    scheme_factory(SchemeFactory::instance()),
     gid_ctr(0)
 {
 }
@@ -552,6 +552,12 @@ Mesh::compute_bounding_box() const
     for (const auto & pt : this->pnts)
         bbox += pt;
     return bbox;
+}
+
+Mesh
+Mesh::duplicate() const
+{
+    return Mesh(this->pnts, this->elems);
 }
 
 } // namespace krado

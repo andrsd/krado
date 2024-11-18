@@ -145,6 +145,11 @@ public:
     /// @return Bounding box
     BoundingBox3D compute_bounding_box() const;
 
+    /// Duplicate mesh
+    ///
+    /// @return Duplicated mesh
+    Mesh duplicate() const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();
