@@ -53,6 +53,12 @@ public:
 
     std::array<double, 3> size() const;
 
+    /// Return n-th dimension of the bounding box
+    ///
+    /// @param n dimension index (0, 1, 2)
+    /// @return size of the n-th dimension
+    double size(int n) const;
+
 private:
     Point min_pt, max_pt;
 };

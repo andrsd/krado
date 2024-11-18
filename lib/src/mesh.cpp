@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh.h"
+#include "krado/bounding_box_3d.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
@@ -542,6 +543,15 @@ Mesh::remove_duplicate_points(double tolerance)
             id = point_map[id];
         elem.set_ids(ids);
     }
+}
+
+BoundingBox3D
+Mesh::compute_bounding_box() const
+{
+    BoundingBox3D bbox;
+    for (const auto & pt : this->pnts)
+        bbox += pt;
+    return bbox;
 }
 
 } // namespace krado

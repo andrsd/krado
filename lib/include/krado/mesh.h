@@ -140,6 +140,11 @@ public:
     /// @param tolerance Tolerance for point comparison
     void remove_duplicate_points(double tolerance = 1e-12);
 
+    /// Compute bounding box around the mesh
+    ///
+    /// @return Bounding box
+    BoundingBox3D compute_bounding_box() const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();

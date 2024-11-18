@@ -152,7 +152,7 @@ ExodusIIFile::write(const Mesh & mesh)
 int
 ExodusIIFile::determine_spatial_dim(const Mesh & mesh)
 {
-    auto sz = mesh.bounding_box().size();
+    auto sz = mesh.compute_bounding_box().size();
     if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
         return 1;
     else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))

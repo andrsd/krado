@@ -190,4 +190,17 @@ BoundingBox3D::size() const
     return sz;
 }
 
+double
+BoundingBox3D::size(int n) const
+{
+    if (n == 0)
+        return std::abs(this->max_pt.x - this->min_pt.x);
+    else if (n == 1)
+        return std::abs(this->max_pt.y - this->min_pt.y);
+    else if (n == 2)
+        return std::abs(this->max_pt.z - this->min_pt.z);
+    else
+        return std::numeric_limits<double>::infinity();
+}
+
 } // namespace krado

@@ -96,7 +96,8 @@ PYBIND11_MODULE(krado, m)
         .def("contains", static_cast<bool (BoundingBox3D::*)(const Point &)>(&BoundingBox3D::contains))
         .def("contains", static_cast<bool (BoundingBox3D::*)(double, double, double)>(&BoundingBox3D::contains))
         .def("transform", &BoundingBox3D::transform)
-        .def("size", &BoundingBox3D::size)
+        .def("size", static_cast<std::array<double, 3> (BoundingBox3D::*)() const>(&BoundingBox3D::size))
+        .def("size", static_cast<double (BoundingBox3D::*)(int) const>(&BoundingBox3D::size))
     ;
 
     py::class_<Element>(m, "Element")
@@ -194,6 +195,7 @@ PYBIND11_MODULE(krado, m)
         .def("transformed", &Mesh::transformed)
         .def("add", &Mesh::add)
         .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
+        .def("compute_bounding_box", &Mesh::compute_bounding_box)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")
