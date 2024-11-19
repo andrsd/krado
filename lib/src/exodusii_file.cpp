@@ -19,8 +19,16 @@ get_exodusii_name(Element::Type t)
         return "BAR2";
     case Element::TRI3:
         return "TRI3";
+    case Element::QUAD4:
+        return "QUAD4";
     case Element::TETRA4:
         return "TET4";
+    case Element::PYRAMID5:
+        return "PYRAMID5";
+    case Element::PRISM6:
+        return "WEDGE6";
+    case Element::HEX8:
+        return "HEX8";
     }
     throw Exception("Unsupported element type {}.", t);
 }
@@ -40,10 +48,10 @@ element_type(const std::string elem_type_name)
 }
 
 template <int N>
-std::array<int, N>
+std::array<std::size_t, N>
 build_element_connect(const std::vector<int> & connect, int idx)
 {
-    std::array<int, N> elem_connect;
+    std::array<std::size_t, N> elem_connect;
     for (int i = 0; i < N; i++)
         elem_connect[i] = connect[idx + i] - 1;
     return elem_connect;

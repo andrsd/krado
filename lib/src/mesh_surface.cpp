@@ -71,7 +71,7 @@ MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
 }
 
 void
-MeshSurface::add_triangle(const std::array<int, 3> & tri)
+MeshSurface::add_triangle(const std::array<std::size_t, 3> & tri)
 {
     auto tri3 = Element::Tri3(tri);
     this->tris.emplace_back(tri3);

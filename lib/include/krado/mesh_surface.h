@@ -52,7 +52,7 @@ public:
     /// Add new triangle
     ///
     /// @param tri Local vertex indices
-    void add_triangle(const std::array<int, 3> & tri);
+    void add_triangle(const std::array<std::size_t, 3> & tri);
 
     /// Check if the surface is already meshed
     ///

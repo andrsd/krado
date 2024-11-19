@@ -159,3 +159,24 @@ TEST(MeshTest, remap_block_ids)
     EXPECT_THAT(elems[0].marker(), 1000);
     EXPECT_THAT(elems[1].marker(), 1000);
 }
+
+TEST(MeshTest, h_edges)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto m = f.read();
+
+    auto eidx = m.h_edges();
+    EXPECT_THAT(eidx, ElementsAre(1, 2, 3, 8, 9));
+
+    EXPECT_THAT(m.support(1), ElementsAre(0));
+    EXPECT_THAT(m.support(2), ElementsAre(0, 7));
+    EXPECT_THAT(m.support(3), ElementsAre(0));
+    EXPECT_THAT(m.support(8), ElementsAre(7));
+    EXPECT_THAT(m.support(9), ElementsAre(7));
+
+    EXPECT_THAT(m.connectivity(1), ElementsAre(4, 5));
+    EXPECT_THAT(m.connectivity(2), ElementsAre(5, 6));
+    EXPECT_THAT(m.connectivity(3), ElementsAre(6, 4));
+    EXPECT_THAT(m.connectivity(8), ElementsAre(5, 10));
+    EXPECT_THAT(m.connectivity(9), ElementsAre(10, 6));
+}

@@ -53,9 +53,7 @@ build_curve_vertices(const GeomCurve & curve, const Integral1D & integral, int n
 
 } // namespace
 
-SchemeTransfinite::SchemeTransfinite(const std::string & name) : Scheme(name)
-{
-}
+SchemeTransfinite::SchemeTransfinite(const std::string & name) : Scheme(name) {}
 
 void
 SchemeTransfinite::mesh_curve(MeshCurve & curve)
@@ -68,10 +66,10 @@ SchemeTransfinite::mesh_curve(MeshCurve & curve)
     std::vector<MeshCurveVertex *> curve_vtxs = build_curve_vertices(geom_curve, integral, n_pts);
     auto & bnd_verts = curve.bounding_vertices();
     curve.add_vertex(bnd_verts[0]);
-    for (auto & cv: curve_vtxs)
+    for (auto & cv : curve_vtxs)
         curve.add_vertex(cv);
     curve.add_vertex(bnd_verts[1]);
-    for (int i = 0; i < n_intervals; i++)
+    for (std::size_t i = 0; i < n_intervals; i++)
         curve.add_segment({ i, i + 1 });
 }
 

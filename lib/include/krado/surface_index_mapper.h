@@ -64,7 +64,7 @@ public:
             return it->second;
     }
 
-    int
+    std::size_t
     curve_idx(int curve_idx, double x, double y)
     {
         auto & curv_map = this->curv_surf_idx[curve_idx];

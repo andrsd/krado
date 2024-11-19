@@ -53,4 +53,18 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
     });
 }
 
+/// Get sub-connectivity from the supplied connectivity and indices
+///
+/// @param element_connect The connectivity of the element
+/// @param idxs The indices to extract
+/// @return The sub-connectivity
+std::vector<std::int64_t> sub_connect(const std::vector<std::size_t> & element_connect,
+                                      const std::vector<int> & idxs);
+
+/// Create a key from the supplied indices. Use this to construct keys for edges and faces
+///
+/// @param idxs The indices to create a key from
+/// @return The key
+std::vector<std::int64_t> key(const std::vector<std::int64_t> & idxs);
+
 } // namespace krado::utils

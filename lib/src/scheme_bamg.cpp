@@ -253,7 +253,7 @@ SchemeBAMG::mesh_surface(MeshSurface & surface)
 
     for (int i = 0; i < mg.num_of_triangles(); i++) {
         if (mg.is_triangle_active(i)) {
-            std::array<int, 3> tri;
+            std::array<std::size_t, 3> tri;
             for (int j = 0; j < 3; j++) {
                 auto vtx = mg.triangle(i)[j];
                 auto idx = im.surface_idx(vtx.r.x, vtx.r.y);

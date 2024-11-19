@@ -11,6 +11,9 @@
 #include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/transform.h"
+#include "krado/hasse_diagram.h"
+#include "krado/utils.h"
+#include <cstdint>
 #include <map>
 
 namespace krado {
@@ -191,6 +194,21 @@ public:
     /// @param block_map Map of old block IDs to new block IDs
     void remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
+    /// Get mesh edge nodes
+    ///
+    /// @return Mesh edge nodes
+    std::vector<uint64_t> h_edges() const;
+
+    /// Get support of a mesh node
+    ///
+    /// @param index Index of the node
+    const std::vector<int64_t> & support(int64_t index) const;
+
+    /// Get connectivity of a mesh node
+    ///
+    /// @param index Index of the node
+    const std::vector<int64_t> & connectivity(int64_t index) const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();
@@ -222,6 +240,53 @@ protected:
 private:
     void initialize(const GeomModel & model);
 
+    void build_hasse_diagram(const std::vector<Point> & points,
+                             const std::vector<Element> & elements);
+
+    template <class ELEMENT_TYPE>
+    void
+    hasse_add_edges(std::size_t id, const Element & elem)
+    {
+        int64_t elem_node_id = -(id + 1);
+        elem_node_id = this->key_map[{ elem_node_id }];
+
+        const auto & elem_connect = elem.ids();
+        for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
+            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto k = utils::key(edge_connect);
+            if (this->key_map.find(k) == this->key_map.end()) {
+                auto edge_id = this->hasse.nodes.size();
+                this->key_map[k] = edge_id;
+                this->hasse.add_node(edge_id, HasseDiagram::Node::Edge);
+                this->hasse.add_edge(elem_node_id, edge_id);
+            }
+            else {
+                auto edge_id = this->key_map[k];
+                this->hasse.add_edge(elem_node_id, edge_id);
+            }
+        }
+    }
+
+    template <class ELEMENT_TYPE>
+    void
+    hasse_add_edge_vertices(std::size_t id, const Element & elem)
+    {
+        const auto & elem_connect = elem.ids();
+        for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
+            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto k = utils::key(edge_connect);
+            auto edge_id = key_map[k];
+            for (auto & vtx_id : edge_connect) {
+                if (this->key_map.find({ vtx_id }) != this->key_map.end()) {
+                    auto vtx_node_id = this->key_map[{ vtx_id }];
+                    this->hasse.add_edge(edge_id, vtx_node_id);
+                }
+                else
+                    throw Exception("Vertex not found in key map");
+            }
+        }
+    }
+
     std::map<int, MeshVertex> vtxs;
     std::map<int, MeshCurve> crvs;
     std::map<int, MeshSurface> surfs;
@@ -244,6 +309,10 @@ private:
     int gid_ctr;
     /// Bounding box around the mesh that is being exported
     BoundingBox3D exp_bbox;
+    /// Hasse diagram representing the mesh
+    HasseDiagram hasse;
+    /// Map of keys to node IDs
+    std::map<std::vector<std::int64_t>, std::size_t> key_map;
 };
 
 } // namespace krado

@@ -54,7 +54,7 @@ public:
     /// Add new curve segment
     ///
     /// @param seg Local vertex indices
-    void add_segment(const std::array<int, 2> & seg);
+    void add_segment(const std::array<std::size_t, 2> & seg);
 
     /// Get curve segments
     ///

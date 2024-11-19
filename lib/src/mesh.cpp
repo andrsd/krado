@@ -3,7 +3,9 @@
 
 #include "krado/mesh.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/element.h"
 #include "krado/geom_model.h"
+#include "krado/hasse_diagram.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme1d.h"
@@ -116,6 +118,7 @@ Mesh::Mesh(std::vector<Point> points, std::vector<Element> elements) :
     elems(elements),
     gid_ctr(0)
 {
+    build_hasse_diagram(pnts, elements);
 }
 
 const MeshVertex &
@@ -448,7 +451,7 @@ Mesh::build_1d_elements()
     for (auto & [id, curve] : this->crvs) {
         if (curve.is_meshed()) {
             auto verts = curve.all_vertices();
-            std::array<int, 2> line;
+            std::array<std::size_t, 2> line;
             for (auto & local_elem : curve.segments()) {
                 for (int i = 0; i < 2; i++) {
                     auto lid = local_elem.ids()[i];
@@ -467,7 +470,7 @@ Mesh::build_2d_elements()
     for (auto & [id, surface] : this->surfs) {
         if (surface.is_meshed()) {
             auto verts = surface.all_vertices();
-            std::array<int, 3> tri;
+            std::array<std::size_t, 3> tri;
             for (auto & local_elem : surface.triangles()) {
                 for (int i = 0; i < 3; i++) {
                     auto lid = local_elem.ids()[i];
@@ -529,6 +532,7 @@ Mesh::add(const Mesh & other)
         auto new_elem = Element(elem.type(), ids, elem.marker());
         this->elems.emplace_back(new_elem);
     }
+    build_hasse_diagram(this->pnts, this->elems);
 }
 
 void
@@ -543,6 +547,10 @@ Mesh::remove_duplicate_points(double tolerance)
             id = point_map[id];
         elem.set_ids(ids);
     }
+
+    this->key_map.clear();
+    this->hasse.clear();
+    build_hasse_diagram(this->pnts, this->elems);
 }
 
 BoundingBox3D
@@ -618,6 +626,63 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
         auto block_id = elem.marker();
         if (block_map.find(block_id) != block_map.end())
             elem.set_marker(block_map.at(block_id));
+    }
+}
+
+std::vector<uint64_t>
+Mesh::h_edges() const
+{
+    std::vector<uint64_t> edgs(this->hasse.edges.begin(), this->hasse.edges.end());
+    return edgs;
+}
+
+const std::vector<int64_t> &
+Mesh::support(int64_t index) const
+{
+    return this->hasse.nodes.at(index).support;
+}
+
+const std::vector<int64_t> &
+Mesh::connectivity(int64_t index) const
+{
+    return this->hasse.nodes.at(index).children;
+}
+
+void
+Mesh::build_hasse_diagram(const std::vector<Point> & points, const std::vector<Element> & elements)
+{
+    for (std::size_t i = 0; i < elements.size(); ++i) {
+        // Add element
+        int64_t id = -(i + 1);
+        if (this->key_map.find({ id }) == this->key_map.end()) {
+            auto elem_node_id = this->hasse.nodes.size();
+            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell);
+            this->key_map[{ id }] = elem_node_id;
+        }
+
+        // Add edges
+        const auto & elem = elements[i];
+        if (elem.type() == Element::TRI3)
+            hasse_add_edges<Tri3>(i, elem);
+        else if (elem.type() == Element::QUAD4)
+            hasse_add_edges<Quad4>(i, elem);
+
+        // Add vertices
+        const auto & elem_connect = elem.ids();
+        for (auto & vtx : elem_connect) {
+            int64_t vtx_id = vtx;
+            if (this->key_map.find({ vtx_id }) == this->key_map.end()) {
+                auto vtx_node_id = this->hasse.nodes.size();
+                this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex);
+                this->key_map[{ vtx_id }] = vtx_node_id;
+            }
+        }
+
+        // Connect edges to vertices
+        if (elem.type() == Element::TRI3)
+            hasse_add_edge_vertices<Tri3>(i, elem);
+        else if (elem.type() == Element::QUAD4)
+            hasse_add_edge_vertices<Quad4>(i, elem);
     }
 }
 
