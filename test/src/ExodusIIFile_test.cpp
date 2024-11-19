@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/exodusii_file.h"
 #include "krado/element.h"
+#include "krado/point.h"
 #include <filesystem>
 
 using namespace krado;
@@ -25,4 +26,24 @@ TEST(ExodusIIFileTest, read_2d)
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
     EXPECT_THAT(elems[1].type(), Eq(Element::TRI3));
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+}
+
+TEST(ExodusIIFileTest, write_2d)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.),
+        Point(1., 0.),
+        Point(0., 1.),
+        Point(1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 2 }, 1),
+        Element::Tri3({ 2, 1, 3 }, 2)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    ExodusIIFile f("sq-2d.exo");
+    f.write(mesh);
 }
