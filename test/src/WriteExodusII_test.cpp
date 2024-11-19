@@ -2,7 +2,7 @@
 #include "krado/geom_shape.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
-#include "krado/export.h"
+#include "krado/io.h"
 #include "builder.h"
 
 using namespace krado;
@@ -24,5 +24,5 @@ TEST(WriteExodusIITest, line)
     mesh.number_points();
     mesh.build_elements();
 
-    write_exodusii(mesh, "line.exo");
+    IO::export_mesh("line.exo", mesh);
 }

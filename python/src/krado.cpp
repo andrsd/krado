@@ -26,7 +26,7 @@
 #include "krado/point.h"
 #include "krado/transform.h"
 #include "krado/vector.h"
-#include "krado/export.h"
+#include "krado/io.h"
 
 namespace py = pybind11;
 using namespace krado;
@@ -295,6 +295,8 @@ PYBIND11_MODULE(krado, m)
         .def("write", &ExodusIIFile::write)
     ;
 
-    m.def("write_exodusii", &write_exodusii);
+    m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
+    m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
+
     // clang-format on
 }
