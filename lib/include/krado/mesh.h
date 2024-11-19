@@ -153,7 +153,7 @@ public:
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
-    void remap_block_ids(const std::map<int, int> & block_map);
+    void remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
 protected:
     void build_1d_elements();

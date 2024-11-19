@@ -7,7 +7,7 @@
 
 namespace krado {
 
-Element::Element(Type type, const std::vector<int> & vtx_ids, int marker) :
+Element::Element(Type type, const std::vector<int> & vtx_ids, marker_t marker) :
     elem_type(type),
     vtx_id(vtx_ids),
     mrkr(marker)
@@ -20,14 +20,14 @@ Element::type() const
     return this->elem_type;
 }
 
-int
+marker_t
 Element::marker() const
 {
     return this->mrkr;
 }
 
 void
-Element::set_marker(int marker)
+Element::set_marker(marker_t marker)
 {
     this->mrkr = marker;
 }
@@ -66,20 +66,20 @@ Element::set_ids(const std::vector<int> & ids)
 }
 
 Element
-Element::Line2(const std::array<int, 2> & ids, int marker)
+Element::Line2(const std::array<int, 2> & ids, marker_t marker)
 {
     Element line2(LINE2, { ids[0], ids[1] }, marker);
     return line2;
 }
 
 Element
-Element::Tri3(const std::array<int, 3> & ids, int marker)
+Element::Tri3(const std::array<int, 3> & ids, marker_t marker)
 {
     return Element(TRI3, { ids[0], ids[1], ids[2] }, marker);
 }
 
 Element
-Element::Tetra4(const std::array<int, 4> & ids, int marker)
+Element::Tetra4(const std::array<int, 4> & ids, marker_t marker)
 {
     Element tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] }, marker);
     return tet4;

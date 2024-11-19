@@ -561,7 +561,7 @@ Mesh::duplicate() const
 }
 
 void
-Mesh::remap_block_ids(const std::map<int, int> & block_map)
+Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     for (auto & elem : this->elems) {
         auto block_id = elem.marker();

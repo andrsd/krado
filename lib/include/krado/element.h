@@ -9,6 +9,8 @@
 
 namespace krado {
 
+using marker_t = int;
+
 class Element {
 public:
     enum Type { LINE2, TRI3, TETRA4 };
@@ -18,7 +20,7 @@ public:
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
     /// @param marker Element marker
-    Element(Type type, const std::vector<int> & vtx_ids, int marker = 0);
+    Element(Type type, const std::vector<int> & vtx_ids, marker_t marker = 0);
 
     /// Get element type
     ///
@@ -28,12 +30,12 @@ public:
     /// Get the element marker
     ///
     /// @return The element marker
-    int marker() const;
+    marker_t marker() const;
 
     /// Set the element marker
     ///
     /// @param marker The element marker
-    void set_marker(int marker);
+    void set_marker(marker_t marker);
 
     /// Get number of vertices
     ///
@@ -66,13 +68,13 @@ public:
 private:
     Type elem_type;
     std::vector<int> vtx_id;
-    int mrkr;
+    marker_t mrkr;
 
 public:
     static std::string type(Type type);
-    static Element Line2(const std::array<int, 2> & ids, int marker = 0);
-    static Element Tri3(const std::array<int, 3> & ids, int marker = 0);
-    static Element Tetra4(const std::array<int, 4> & ids, int marker = 0);
+    static Element Line2(const std::array<int, 2> & ids, marker_t marker = 0);
+    static Element Tri3(const std::array<int, 3> & ids, marker_t marker = 0);
+    static Element Tetra4(const std::array<int, 4> & ids, marker_t marker = 0);
 };
 
 bool operator==(const Element & a, const Element & b);
