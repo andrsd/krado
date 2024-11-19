@@ -595,6 +595,23 @@ Mesh::face_set_name(marker_t face_set_id) const
 }
 
 void
+Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
+{
+    this->edge_set_names[edge_set_id] = name;
+}
+
+std::string
+Mesh::edge_set_name(marker_t edge_set_id) const
+{
+    try {
+        return this->edge_set_names.at(edge_set_id);
+    }
+    catch (const std::out_of_range & e) {
+        return std::string("");
+    }
+}
+
+void
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     for (auto & elem : this->elems) {

@@ -174,6 +174,18 @@ public:
     /// @return Face set name
     std::string face_set_name(marker_t cell_set_id) const;
 
+    /// Set edge set name
+    ///
+    /// @param edge_set_id Edge set ID (marker)
+    /// @param name Edge set name
+    void set_edge_set_name(marker_t edge_set_id, const std::string & name);
+
+    /// Get edge set name
+    ///
+    /// @param edge_set_id Edge set ID (marker)
+    /// @return Edge set name
+    std::string edge_set_name(marker_t edge_set_id) const;
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
@@ -225,6 +237,8 @@ private:
     std::map<marker_t, std::string> cell_set_names;
     /// Face set names
     std::map<marker_t, std::string> face_set_names;
+    /// Edge set names
+    std::map<marker_t, std::string> edge_set_names;
 
     /// Global ID counter
     int gid_ctr;
