@@ -200,6 +200,8 @@ PYBIND11_MODULE(krado, m)
         .def("duplicate", &Mesh::duplicate)
         .def("set_cell_set_name", &Mesh::set_cell_set_name)
         .def("cell_set_name", &Mesh::cell_set_name)
+        .def("set_face_set_name", &Mesh::set_face_set_name)
+        .def("face_set_name", &Mesh::face_set_name)
         .def("remap_block_ids", &Mesh::remap_block_ids)
     ;
 

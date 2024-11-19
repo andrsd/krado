@@ -162,6 +162,18 @@ public:
     /// @return Cell set name
     std::string cell_set_name(marker_t cell_set_id) const;
 
+    /// Set face set name
+    ///
+    /// @param face_set_id Face set ID (marker)
+    /// @param name Face set name
+    void set_face_set_name(marker_t face_set_id, const std::string & name);
+
+    /// Get face set name
+    ///
+    /// @param face_set_id Face set ID (marker)
+    /// @return Face set name
+    std::string face_set_name(marker_t cell_set_id) const;
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
@@ -211,6 +223,8 @@ private:
     std::vector<Element> elems;
     /// Cell set names
     std::map<marker_t, std::string> cell_set_names;
+    /// Face set names
+    std::map<marker_t, std::string> face_set_names;
 
     /// Global ID counter
     int gid_ctr;
