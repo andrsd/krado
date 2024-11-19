@@ -526,7 +526,7 @@ Mesh::add(const Mesh & other)
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
-        auto new_elem = Element(elem.type(), ids);
+        auto new_elem = Element(elem.type(), ids, elem.marker());
         this->elems.emplace_back(new_elem);
     }
 }

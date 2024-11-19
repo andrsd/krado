@@ -13,6 +13,11 @@ class Element {
 public:
     enum Type { LINE2, TRI3, TETRA4 };
 
+    /// Build an element
+    ///
+    /// @param type Element type
+    /// @param vtx_ids Vertex IDs composing the element
+    /// @param marker Element marker
     Element(Type type, const std::vector<int> & vtx_ids, int marker = 0);
 
     /// Get element type
