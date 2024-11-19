@@ -150,6 +150,18 @@ public:
     /// @return Duplicated mesh
     Mesh duplicate() const;
 
+    /// Set cell set name
+    ///
+    /// @param cell_set_id Cell set ID (marker)
+    /// @param name Cell set name
+    void set_cell_set_name(marker_t cell_set_id, const std::string & name);
+
+    /// Get cell set name
+    ///
+    /// @param cell_set_id Cell set ID (marker)
+    /// @return Cell set name
+    std::string cell_set_name(marker_t cell_set_id) const;
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
@@ -197,6 +209,8 @@ private:
     std::vector<Point> pnts;
     /// Mesh elements. This is indexing the `pnts` vector
     std::vector<Element> elems;
+    /// Cell set names
+    std::map<marker_t, std::string> cell_set_names;
 
     /// Global ID counter
     int gid_ctr;

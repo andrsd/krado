@@ -189,6 +189,7 @@ ExodusIIFile::write_coords()
 void
 ExodusIIFile::write_elements()
 {
+    std::vector<std::string> blk_names;
     for (auto & [blk_id, elems] : this->elem_blks) {
         if (!elems.empty()) {
             auto el_type = get_exodusii_name(elems[0].type());
@@ -200,8 +201,12 @@ ExodusIIFile::write_elements()
                     connect.push_back(el.vertex_id(j) + 1);
             }
             this->exo.write_block(blk_id, el_type, elems.size(), connect);
+            blk_names.push_back(this->elem_blk_names[blk_id]);
         }
     }
+
+    if (!blk_names.empty())
+        this->exo.write_block_names(blk_names);
 }
 
 void
@@ -219,6 +224,10 @@ ExodusIIFile::preprocess_mesh(const Mesh & mesh)
     for (auto & el : mesh.elements()) {
         auto marker = el.marker();
         this->elem_blks[marker].push_back(el);
+        if (this->elem_blk_names.find(marker) == this->elem_blk_names.end()) {
+            auto blk_name = mesh.cell_set_name(marker);
+            this->elem_blk_names[marker] = blk_name;
+        }
     }
 }
 

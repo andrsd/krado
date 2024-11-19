@@ -561,6 +561,23 @@ Mesh::duplicate() const
 }
 
 void
+Mesh::set_cell_set_name(marker_t cell_set_id, const std::string & name)
+{
+    this->cell_set_names[cell_set_id] = name;
+}
+
+std::string
+Mesh::cell_set_name(marker_t cell_set_id) const
+{
+    try {
+        return this->cell_set_names.at(cell_set_id);
+    }
+    catch (const std::out_of_range & e) {
+        return std::string("");
+    }
+}
+
+void
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     for (auto & elem : this->elems) {

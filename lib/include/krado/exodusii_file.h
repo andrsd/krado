@@ -65,6 +65,8 @@ private:
     std::vector<double> x, y, z;
     /// Element blocks
     std::map<int, std::vector<Element>> elem_blks;
+    /// Element block names
+    std::map<int, std::string> elem_blk_names;
 };
 
 } // namespace krado
