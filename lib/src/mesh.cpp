@@ -12,6 +12,7 @@
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
 #include "nanoflann/nanoflann.hpp"
+#include <Extrema_ElementType.hxx>
 #include <array>
 
 namespace krado {
@@ -112,13 +113,12 @@ Mesh::Mesh(const GeomModel & model) : scheme_factory(SchemeFactory::instance()),
     initialize(model);
 }
 
-Mesh::Mesh(std::vector<Point> points, std::vector<Element> elements) :
+Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) :
     scheme_factory(SchemeFactory::instance()),
     pnts(points),
-    elems(elements),
+    elems(elems),
     gid_ctr(0)
 {
-    build_hasse_diagram(pnts, elements);
 }
 
 const MeshVertex &
@@ -402,6 +402,18 @@ Mesh::elements() const
     return this->elems;
 }
 
+const Element &
+Mesh::element(std::size_t idx) const
+{
+    return this->elems.at(idx);
+}
+
+const Element &
+Mesh::el(std::size_t idx) const
+{
+    return this->all.at(idx);
+}
+
 void
 Mesh::add_mesh_point(Point & mpnt)
 {
@@ -532,7 +544,6 @@ Mesh::add(const Mesh & other)
         auto new_elem = Element(elem.type(), ids, elem.marker());
         this->elems.emplace_back(new_elem);
     }
-    build_hasse_diagram(this->pnts, this->elems);
 }
 
 void
@@ -547,10 +558,6 @@ Mesh::remove_duplicate_points(double tolerance)
             id = point_map[id];
         elem.set_ids(ids);
     }
-
-    this->key_map.clear();
-    this->hasse.clear();
-    build_hasse_diagram(this->pnts, this->elems);
 }
 
 BoundingBox3D
@@ -689,6 +696,58 @@ Mesh::set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids)
 }
 
 void
+Mesh::set_side_set_name(marker_t id, const std::string & name)
+{
+    this->side_set_names[id] = name;
+}
+
+std::string
+Mesh::side_set_name(marker_t id) const
+{
+    try {
+        return this->side_set_names.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        return std::string("");
+    }
+}
+
+std::vector<marker_t>
+Mesh::side_set_ids() const
+{
+    return utils::map_keys(this->side_sets);
+}
+
+const std::vector<side_set_entry_t>
+Mesh::side_set(marker_t id) const
+{
+    try {
+        return this->side_sets.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        throw Exception("Side set ID {} does not exist", id);
+    }
+}
+
+void
+Mesh::set_side_set(marker_t id, const std::vector<std::size_t> elem_ids)
+{
+    std::vector<side_set_entry_t> side_set;
+    for (auto & eid : elem_ids) {
+        auto & supp = support(eid);
+        if (supp.size() == 2)
+            throw Exception("Internal side sets are not supported, yet");
+        if (supp.size() == 0)
+            throw Exception("Edge {} has no support", eid);
+        auto cell = supp[0];
+        auto & cell_connect = connectivity(cell);
+        auto side = utils::index_of(cell_connect, eid);
+        side_set.emplace_back(cell, side);
+    }
+    this->side_sets[id] = side_set;
+}
+
+void
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     for (auto & elem : this->elems) {
@@ -698,60 +757,92 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
     }
 }
 
-std::vector<uint64_t>
-Mesh::h_edges() const
+const std::set<std::size_t> &
+Mesh::edges() const
 {
-    std::vector<uint64_t> edgs(this->hasse.edges.begin(), this->hasse.edges.end());
-    return edgs;
+    return this->hasse.edges;
 }
 
-const std::vector<int64_t> &
+const std::set<std::size_t> &
+Mesh::faces() const
+{
+    return this->hasse.faces;
+}
+
+const std::set<std::size_t> &
+Mesh::cells() const
+{
+    return this->hasse.cells;
+}
+
+const std::vector<std::size_t> &
 Mesh::support(int64_t index) const
 {
     return this->hasse.nodes.at(index).support;
 }
 
-const std::vector<int64_t> &
+const std::vector<std::size_t> &
 Mesh::connectivity(int64_t index) const
 {
     return this->hasse.nodes.at(index).children;
 }
 
-void
-Mesh::build_hasse_diagram(const std::vector<Point> & points, const std::vector<Element> & elements)
+Element::Type
+Mesh::element_type(int64_t index) const
 {
-    for (std::size_t i = 0; i < elements.size(); ++i) {
-        // Add element
+    auto & node = this->hasse.nodes.at(index);
+    auto i = node.index;
+    return this->all.at(i).type();
+}
+
+void
+Mesh::set_up()
+{
+    build_hasse_diagram(this->pnts, this->elems);
+}
+
+void
+Mesh::build_hasse_diagram(const std::vector<Point> & points, const std::vector<Element> & cells)
+{
+    for (std::size_t i = 0; i < cells.size(); ++i) {
+        const auto & cell = cells[i];
+
+        // Add cell
         int64_t id = -(i + 1);
         if (this->key_map.find({ id }) == this->key_map.end()) {
             auto elem_node_id = this->hasse.nodes.size();
-            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell);
             this->key_map[{ id }] = elem_node_id;
+            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell, this->all.size());
+            this->all.push_back(cell);
+
+            auto marker = cell.marker();
+            if (marker != 0)
+                this->cell_sets[marker].push_back(elem_node_id);
         }
 
         // Add edges
-        const auto & elem = elements[i];
-        if (elem.type() == Element::TRI3)
-            hasse_add_edges<Tri3>(i, elem);
-        else if (elem.type() == Element::QUAD4)
-            hasse_add_edges<Quad4>(i, elem);
+        if (cell.type() == Element::TRI3)
+            hasse_add_edges<Tri3>(i, cell);
+        else if (cell.type() == Element::QUAD4)
+            hasse_add_edges<Quad4>(i, cell);
 
         // Add vertices
-        const auto & elem_connect = elem.ids();
+        const auto & elem_connect = cell.ids();
         for (auto & vtx : elem_connect) {
             int64_t vtx_id = vtx;
             if (this->key_map.find({ vtx_id }) == this->key_map.end()) {
                 auto vtx_node_id = this->hasse.nodes.size();
-                this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex);
                 this->key_map[{ vtx_id }] = vtx_node_id;
+                this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex, this->all.size());
+                this->all.push_back(Element::Point(vtx));
             }
         }
 
         // Connect edges to vertices
-        if (elem.type() == Element::TRI3)
-            hasse_add_edge_vertices<Tri3>(i, elem);
-        else if (elem.type() == Element::QUAD4)
-            hasse_add_edge_vertices<Quad4>(i, elem);
+        if (cell.type() == Element::TRI3)
+            hasse_add_edge_vertices<Tri3>(i, cell);
+        else if (cell.type() == Element::QUAD4)
+            hasse_add_edge_vertices<Quad4>(i, cell);
     }
 }
 

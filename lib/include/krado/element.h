@@ -13,7 +13,7 @@ using marker_t = int;
 
 class Element {
 public:
-    enum Type { LINE2, TRI3, QUAD4, TETRA4, PYRAMID5, PRISM6, HEX8 };
+    enum Type { POINT, LINE2, TRI3, QUAD4, TETRA4, PYRAMID5, PRISM6, HEX8 };
 
     /// Build an element
     ///
@@ -72,9 +72,14 @@ private:
 
 public:
     static std::string type(Type type);
+    static Element Point(std::size_t id, marker_t marker = 0);
     static Element Line2(const std::array<std::size_t, 2> & ids, marker_t marker = 0);
     static Element Tri3(const std::array<std::size_t, 3> & ids, marker_t marker = 0);
+    static Element Quad4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
     static Element Tetra4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
+    static Element Pyramid5(const std::array<std::size_t, 5> & ids, marker_t marker = 0);
+    static Element Wedge6(const std::array<std::size_t, 6> & ids, marker_t marker = 0);
+    static Element Hex8(const std::array<std::size_t, 8> & ids, marker_t marker = 0);
 };
 
 class Line2 {

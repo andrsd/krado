@@ -30,9 +30,9 @@ const std::vector<int> Tetra4::EDGES = { 0, 1, 2, 3, 4, 5 };
 const std::vector<std::vector<int>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
                                                               { 0, 3 }, { 1, 3 }, { 2, 3 } };
 const std::vector<std::vector<int>> Tetra4::FACE_EDGES = { { 0, 1, 2 },
-                                                           { 0, 3, 4 },
-                                                           { 1, 3, 5 },
-                                                           { 2, 4, 5 } };
+                                                           { 0, 4, 3 },
+                                                           { 1, 5, 4 },
+                                                           { 2, 3, 5 } };
 const std::vector<std::vector<int>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
                                                               { 0, 1, 3 },
                                                               { 1, 2, 3 },
@@ -99,6 +99,13 @@ Element::set_ids(const std::vector<std::size_t> & ids)
 }
 
 Element
+Element::Point(std::size_t id, marker_t marker)
+{
+    Element pt(POINT, { id }, marker);
+    return pt;
+}
+
+Element
 Element::Line2(const std::array<std::size_t, 2> & ids, marker_t marker)
 {
     Element line2(LINE2, { ids[0], ids[1] }, marker);
@@ -112,22 +119,59 @@ Element::Tri3(const std::array<std::size_t, 3> & ids, marker_t marker)
 }
 
 Element
+Element::Quad4(const std::array<std::size_t, 4> & ids, marker_t marker)
+{
+    return Element(QUAD4, { ids[0], ids[1], ids[2], ids[3] }, marker);
+}
+
+Element
 Element::Tetra4(const std::array<std::size_t, 4> & ids, marker_t marker)
 {
     Element tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] }, marker);
     return tet4;
 }
 
+Element
+Element::Pyramid5(const std::array<std::size_t, 5> & ids, marker_t marker)
+{
+    Element pyr5(PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] }, marker);
+    return pyr5;
+}
+
+Element
+Element::Wedge6(const std::array<std::size_t, 6> & ids, marker_t marker)
+{
+    Element wed6(PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] }, marker);
+    return wed6;
+}
+
+Element
+Element::Hex8(const std::array<std::size_t, 8> & ids, marker_t marker)
+{
+    Element hex8(HEX8, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] }, marker);
+    return hex8;
+}
+
 std::string
 Element::type(Type type)
 {
     std::string str_type;
-    if (type == krado::Element::LINE2)
+    if (type == krado::Element::POINT)
+        return "POINT";
+    else if (type == krado::Element::LINE2)
         return "LINE2";
     else if (type == krado::Element::TRI3)
         return "TRI3";
+    else if (type == krado::Element::QUAD4)
+        return "QUAD4";
     else if (type == krado::Element::TETRA4)
         return "TETRA4";
+    else if (type == krado::Element::PYRAMID5)
+        return "PYRAMID5";
+    else if (type == krado::Element::PRISM6)
+        return "PRISM6";
+    else if (type == krado::Element::HEX8)
+        return "HEX8";
     else
         return "unknown";
 }

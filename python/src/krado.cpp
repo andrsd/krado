@@ -205,6 +205,7 @@ PYBIND11_MODULE(krado, m)
         .def("set_edge_set_name", &Mesh::set_edge_set_name)
         .def("edge_set_name", &Mesh::edge_set_name)
         .def("remap_block_ids", &Mesh::remap_block_ids)
+        .def("set_up", &Mesh::set_up)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")

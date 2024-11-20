@@ -47,13 +47,13 @@ private:
     void write_info();
 
     /// Write coordinates
-    void write_coords();
+    void write_coords(const Mesh & mesh);
 
     /// Write elements
-    void write_elements();
+    void write_elements(const Mesh & mesh);
 
-    /// Preprocess mesh for output
-    void preprocess_mesh(const Mesh & mesh);
+    /// Write side sets
+    void write_side_sets(const Mesh & mesh);
 
     /// File name
     std::string fn;
@@ -61,12 +61,8 @@ private:
     exodusIIcpp::File exo;
     /// Spatial dimension
     int dim;
-    /// coordinates
-    std::vector<double> x, y, z;
-    /// Element blocks
-    std::map<int, std::vector<Element>> elem_blks;
-    /// Element block names
-    std::map<int, std::string> elem_blk_names;
+    /// Maaping from krado indexing into exodusii indexing
+    std::map<std::size_t, int> exii_elem_ids;
 };
 
 } // namespace krado

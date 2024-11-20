@@ -22,19 +22,19 @@ to_lower(const std::string & text)
     return lower;
 }
 
-std::vector<std::int64_t>
+std::vector<std::size_t>
 sub_connect(const std::vector<std::size_t> & element_connect, const std::vector<int> & idxs)
 {
-    std::vector<std::int64_t> connect;
+    std::vector<std::size_t> connect;
     for (auto i : idxs)
         connect.emplace_back(element_connect[i]);
     return connect;
 }
 
 std::vector<std::int64_t>
-key(const std::vector<std::int64_t> & idxs)
+key(const std::vector<std::size_t> & idxs)
 {
-    auto k = idxs;
+    std::vector<std::int64_t> k(idxs.begin(), idxs.end());
     std::sort(k.begin(), k.end());
     return k;
 }

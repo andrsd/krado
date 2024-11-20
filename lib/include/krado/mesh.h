@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
@@ -17,6 +18,13 @@
 #include <map>
 
 namespace krado {
+
+struct side_set_entry_t {
+    std::size_t elem;
+    std::size_t side;
+
+    side_set_entry_t(std::size_t elem, std::size_t side) : elem(elem), side(side) {}
+};
 
 class GeomModel;
 
@@ -95,6 +103,14 @@ public:
     ///
     /// @return Mesh elements
     const std::vector<Element> & elements() const;
+
+    /// Get element of the mesh
+    ///
+    /// @param idx Index of the element
+    /// @return Element
+    const Element & element(std::size_t idx) const;
+
+    const Element & el(std::size_t idx) const;
 
     ///
     void number_points();
@@ -234,25 +250,71 @@ public:
     /// @param edge_ids Edge IDs
     void set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids);
 
+    /// Set side set name
+    ///
+    /// @param id Side set ID
+    /// @param name Side set name
+    void set_side_set_name(marker_t id, const std::string & name);
+
+    /// Get side set name
+    ///
+    /// @param id Side set ID
+    /// @return Side set name
+    std::string side_set_name(marker_t id) const;
+
+    /// Get side set IDs
+    std::vector<marker_t> side_set_ids() const;
+
+    /// Get side set
+    ///
+    /// @param id Side set ID
+    /// @return Side set
+    const std::vector<side_set_entry_t> side_set(marker_t id) const;
+
+    /// Set side set
+    ///
+    /// @param id Side set ID
+    /// @param elem_ids Element IDs
+    void set_side_set(marker_t id, const std::vector<std::size_t> elem_ids);
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
     void remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
-    /// Get mesh edge nodes
+    /// Get mesh edges
     ///
-    /// @return Mesh edge nodes
-    std::vector<uint64_t> h_edges() const;
+    /// @return Mesh edges
+    const std::set<std::size_t> & edges() const;
+
+    /// Get mesh faces
+    ///
+    /// @return Mesh faces
+    const std::set<std::size_t> & faces() const;
+
+    /// Get mesh cells
+    ///
+    /// @return Mesh cells
+    const std::set<std::size_t> & cells() const;
 
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    const std::vector<int64_t> & support(int64_t index) const;
+    const std::vector<std::size_t> & support(int64_t index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    const std::vector<int64_t> & connectivity(int64_t index) const;
+    const std::vector<std::size_t> & connectivity(int64_t index) const;
+
+    /// Get element type
+    ///
+    /// @param index Index of the element
+    /// @return Element type
+    Element::Type element_type(int64_t index) const;
+
+    /// Prepare mesh
+    void set_up();
 
 protected:
     void build_1d_elements();
@@ -302,8 +364,9 @@ private:
             if (this->key_map.find(k) == this->key_map.end()) {
                 auto edge_id = this->hasse.nodes.size();
                 this->key_map[k] = edge_id;
-                this->hasse.add_node(edge_id, HasseDiagram::Node::Edge);
+                this->hasse.add_node(edge_id, HasseDiagram::Node::Edge, this->all.size());
                 this->hasse.add_edge(elem_node_id, edge_id);
+                this->all.push_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
             }
             else {
                 auto edge_id = this->key_map[k];
@@ -322,8 +385,9 @@ private:
             auto k = utils::key(edge_connect);
             auto edge_id = key_map[k];
             for (auto & vtx_id : edge_connect) {
-                if (this->key_map.find({ vtx_id }) != this->key_map.end()) {
-                    auto vtx_node_id = this->key_map[{ vtx_id }];
+                std::vector<int64_t> vtx_key = { (int64_t) vtx_id };
+                if (this->key_map.find(vtx_key) != this->key_map.end()) {
+                    auto vtx_node_id = this->key_map[vtx_key];
                     this->hasse.add_edge(edge_id, vtx_node_id);
                 }
                 else
@@ -341,7 +405,9 @@ private:
 
     /// Mesh points
     std::vector<Point> pnts;
-    /// Mesh elements. This is indexing the `pnts` vector
+    /// Mesh cells
+    std::vector<Element> all;
+    /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
     std::vector<Element> elems;
     /// Cell set names
     std::map<marker_t, std::string> cell_set_names;
@@ -355,6 +421,11 @@ private:
     std::map<marker_t, std::string> edge_set_names;
     /// Edge sets
     std::map<marker_t, std::vector<std::size_t>> edge_sets;
+
+    /// Side set names
+    std::map<marker_t, std::string> side_set_names;
+    /// Side sets
+    std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
 
     /// Global ID counter
     int gid_ctr;

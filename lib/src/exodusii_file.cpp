@@ -1,4 +1,5 @@
 #include "krado/exodusii_file.h"
+#include "krado/exception.h"
 #include "krado/mesh.h"
 #include "krado/element.h"
 #include "krado/config.h"
@@ -9,10 +10,10 @@
 
 namespace krado {
 
-namespace {
+namespace exII {
 
 const char *
-get_exodusii_name(Element::Type t)
+element_name(Element::Type t)
 {
     switch (t) {
     case Element::LINE2:
@@ -29,6 +30,8 @@ get_exodusii_name(Element::Type t)
         return "WEDGE6";
     case Element::HEX8:
         return "HEX8";
+    default:
+        break;
     }
     throw Exception("Unsupported element type {}.", t);
 }
@@ -37,12 +40,22 @@ Element::Type
 element_type(const std::string elem_type_name)
 {
     auto ellc = utils::to_lower(elem_type_name);
-    if (utils::in(ellc, { "bar", "bar2" }))
+    if (utils::in(ellc, { "circle", "sphere" }))
+        return Element::POINT;
+    else if (utils::in(ellc, { "bar", "bar2" }))
         return Element::LINE2;
     else if (utils::in(ellc, { "tri3", "tri" }))
         return Element::TRI3;
+    else if (utils::in(ellc, { "quad", "quad4" }))
+        return Element::QUAD4;
     else if (utils::in(ellc, { "tet", "tet4", "tetra", "tetra4" }))
         return Element::TETRA4;
+    else if (utils::in(ellc, { "pyramid", "pyramid5", "pyr5" }))
+        return Element::PYRAMID5;
+    else if (utils::in(ellc, { "wedge", "wedge6" }))
+        return Element::PRISM6;
+    else if (utils::in(ellc, { "hex", "hex8" }))
+        return Element::HEX8;
     else
         throw std::runtime_error("Unsupported element type: " + elem_type_name);
 }
@@ -57,7 +70,59 @@ build_element_connect(const std::vector<int> & connect, int idx)
     return elem_connect;
 }
 
-} // namespace
+/// Remap krado side index to exodusII side index
+int
+local_side_index(Element::Type et, int idx)
+{
+    if (utils::in(et, { Element::Type::LINE2, Element::Type::TRI3, Element::Type::QUAD4 }))
+        return idx + 1;
+    else if (et == Element::Type::TETRA4) {
+        std::array<int, 4> tetra_sides = { 4, 1, 2, 3 };
+        return tetra_sides[idx];
+    }
+    else {
+        throw Exception("Unsupported element type {}", Element::type(et));
+    }
+}
+
+} // namespace exII
+
+template <typename ET>
+Element build_element(const std::vector<int> & connect, int idx, int blk_id);
+
+template <>
+Element
+build_element<Line2>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<2>(connect, idx);
+    return Element::Line2(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Tri3>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<3>(connect, idx);
+    return Element::Tri3(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Quad4>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<4>(connect, idx);
+    return Element::Quad4(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Tetra4>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<4>(connect, idx);
+    return Element::Tetra4(elem_connect, blk_id);
+}
+
+//
 
 ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn(file_name) {}
 
@@ -108,27 +173,20 @@ ExodusIIFile::read_elements()
 
     this->exo.read_blocks();
     for (auto & eb : this->exo.get_element_blocks()) {
-        auto et = element_type(eb.get_element_type());
+        auto et = exII::element_type(eb.get_element_type());
         auto connect = eb.get_connectivity();
         auto n_elem_nodes = eb.get_num_nodes_per_element();
         auto blk_id = eb.get_id();
         for (int i = 0; i < eb.get_num_elements(); i++) {
             auto idx = i * n_elem_nodes;
-            if (et == Element::LINE2) {
-                auto elem_connect = build_element_connect<2>(connect, idx);
-                auto el = Element::Line2(elem_connect, blk_id);
-                elems.emplace_back(el);
-            }
-            else if (et == Element::TRI3) {
-                auto elem_connect = build_element_connect<3>(connect, idx);
-                auto el = Element::Tri3(elem_connect, blk_id);
-                elems.emplace_back(el);
-            }
-            else if (et == Element::TETRA4) {
-                auto elem_connect = build_element_connect<4>(connect, idx);
-                auto el = Element::Tetra4(elem_connect, blk_id);
-                elems.emplace_back(el);
-            }
+            if (et == Element::LINE2)
+                elems.emplace_back(build_element<Line2>(connect, idx, blk_id));
+            else if (et == Element::TRI3)
+                elems.emplace_back(build_element<Tri3>(connect, idx, blk_id));
+            else if (et == Element::QUAD4)
+                elems.emplace_back(build_element<Quad4>(connect, idx, blk_id));
+            else if (et == Element::TETRA4)
+                elems.emplace_back(build_element<Tetra4>(connect, idx, blk_id));
             else
                 throw std::runtime_error("Unsupported element type: " + eb.get_element_type());
         }
@@ -142,17 +200,18 @@ ExodusIIFile::write(const Mesh & mesh)
 {
     this->exo.create(this->fn);
     this->dim = determine_spatial_dim(mesh);
-    preprocess_mesh(mesh);
 
     int n_nodes = (int) mesh.points().size();
-    int n_elems = (int) mesh.elements().size();
-    int n_elem_blks = this->elem_blks.size();
-    int n_node_sets = 0, n_side_sets = 0;
+    int n_elems = (int) mesh.cells().size();
+    int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
+    int n_node_sets = 0;
+    int n_side_sets = mesh.side_set_ids().size();
     this->exo.init("", this->dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
     write_info();
-    write_coords();
-    write_elements();
+    write_coords(mesh);
+    write_elements(mesh);
+    write_side_sets(mesh);
 
     this->exo.close();
 }
@@ -183,60 +242,120 @@ ExodusIIFile::write_info()
 }
 
 void
-ExodusIIFile::write_coords()
+ExodusIIFile::write_coords(const Mesh & mesh)
 {
+    std::vector<double> x, y, z;
+    for (auto & pt : mesh.points()) {
+        if (this->dim >= 1)
+            x.push_back(pt.x);
+        if (this->dim >= 2)
+            y.push_back(pt.y);
+        if (this->dim >= 3)
+            z.push_back(pt.z);
+    }
+
     if (this->dim == 1)
-        this->exo.write_coords(this->x);
+        this->exo.write_coords(x);
     else if (this->dim == 2)
-        this->exo.write_coords(this->x, this->y);
+        this->exo.write_coords(x, y);
     else if (this->dim == 3)
-        this->exo.write_coords(this->x, this->y, this->z);
+        this->exo.write_coords(x, y, z);
     this->exo.write_coord_names();
 }
 
 void
-ExodusIIFile::write_elements()
+ExodusIIFile::write_elements(const Mesh & mesh)
 {
-    std::vector<std::string> blk_names;
-    for (auto & [blk_id, elems] : this->elem_blks) {
-        if (!elems.empty()) {
-            auto el_type = get_exodusii_name(elems[0].type());
-            auto n = elems[0].num_vertices() * elems.size();
-            std::vector<int> connect;
-            connect.reserve(n);
-            for (auto & el : elems) {
-                for (int j = 0; j < el.ids().size(); j++)
-                    connect.push_back(el.vertex_id(j) + 1);
+    if (mesh.cell_set_ids().empty()) {
+        std::map<Element::Type, std::vector<std::size_t>> elem_blks;
+        int exii_idx = 1;
+        for (auto & cell_id : mesh.cells()) {
+            this->exii_elem_ids[cell_id] = exii_idx++;
+            auto & cell = mesh.el(cell_id);
+            auto et = cell.type();
+            elem_blks[et].push_back(cell_id);
+        }
+
+        int blk_id = 1;
+        for (auto & [blk_type, elems] : elem_blks) {
+            if (!elems.empty()) {
+                auto cell_id = elems[0];
+                auto & cell = mesh.el(cell_id);
+
+                auto el_type = exII::element_name(cell.type());
+                auto n = cell.num_vertices() * elems.size();
+                std::vector<int> connect;
+                connect.reserve(n);
+                for (auto & cell_id : elems) {
+                    auto & el = mesh.el(cell_id);
+                    for (int j = 0; j < el.ids().size(); j++)
+                        connect.push_back(el.vertex_id(j) + 1);
+                }
+                this->exo.write_block(blk_id, el_type, elems.size(), connect);
+                blk_id++;
             }
-            this->exo.write_block(blk_id, el_type, elems.size(), connect);
-            blk_names.push_back(this->elem_blk_names[blk_id]);
         }
     }
+    else {
+        // NOTE: krado allows to have different cell types in a single side set, but not exodusII.
+        // So, we need to filter on both cell set id and cell type, i.e. put all cells of the same
+        // type in the same block.
+        // Currently, we just assume cell sets are homogeneous in terms of cell type.
 
-    if (!blk_names.empty())
-        this->exo.write_block_names(blk_names);
+        std::map<int, std::vector<Element>> elem_blks;
+        std::map<int, std::string> elem_blk_names;
+        int exii_idx = 1;
+        for (auto & cell_id : mesh.cells()) {
+            this->exii_elem_ids[cell_id] = exii_idx++;
+            auto & cell = mesh.el(cell_id);
+            auto marker = cell.marker();
+            elem_blks[marker].push_back(cell);
+            if (elem_blk_names.find(marker) == elem_blk_names.end()) {
+                auto blk_name = mesh.cell_set_name(marker);
+                elem_blk_names[marker] = blk_name;
+            }
+        }
+
+        std::vector<std::string> blk_names;
+        for (auto & [blk_id, elems] : elem_blks) {
+            if (!elems.empty()) {
+                auto el_type = exII::element_name(elems[0].type());
+                auto n = elems[0].num_vertices() * elems.size();
+                std::vector<int> connect;
+                connect.reserve(n);
+                for (auto & el : elems) {
+                    for (int j = 0; j < el.ids().size(); j++)
+                        connect.push_back(el.vertex_id(j) + 1);
+                }
+                this->exo.write_block(blk_id, el_type, elems.size(), connect);
+                blk_names.push_back(elem_blk_names[blk_id]);
+            }
+        }
+
+        if (!blk_names.empty())
+            this->exo.write_block_names(blk_names);
+    }
 }
 
 void
-ExodusIIFile::preprocess_mesh(const Mesh & mesh)
+ExodusIIFile::write_side_sets(const Mesh & mesh)
 {
-    for (auto & pt : mesh.points()) {
-        if (this->dim >= 1)
-            this->x.push_back(pt.x);
-        if (this->dim >= 2)
-            this->y.push_back(pt.y);
-        if (this->dim >= 3)
-            this->z.push_back(pt.z);
+    std::vector<std::string> side_sets_names;
+    auto set_ids = mesh.side_set_ids();
+    for (auto & sid : set_ids) {
+        std::vector<int> elems;
+        std::vector<int> sides;
+        auto & entries = mesh.side_set(sid);
+        for (auto & en : entries) {
+            elems.push_back(this->exii_elem_ids.at(en.elem));
+            auto et = mesh.element_type(en.elem);
+            sides.push_back(exII::local_side_index(et, en.side));
+        }
+        this->exo.write_side_set(sid, elems, sides);
+        side_sets_names.push_back(mesh.side_set_name(sid));
     }
 
-    for (auto & el : mesh.elements()) {
-        auto marker = el.marker();
-        this->elem_blks[marker].push_back(el);
-        if (this->elem_blk_names.find(marker) == this->elem_blk_names.end()) {
-            auto blk_name = mesh.cell_set_name(marker);
-            this->elem_blk_names[marker] = blk_name;
-        }
-    }
+    this->exo.write_side_set_names(side_sets_names);
 }
 
 } // namespace krado

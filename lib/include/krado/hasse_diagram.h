@@ -10,26 +10,27 @@ class HasseDiagram {
 public:
     struct Node {
         enum Type { Vertex, Edge, Face, Cell } type;
-        int64_t id;
-        std::vector<int64_t> children;
-        std::vector<int64_t> support;
+        std::size_t id;
+        std::size_t index;
+        std::vector<std::size_t> children;
+        std::vector<std::size_t> support;
     };
 
     /// Nodes
-    std::map<uint64_t, Node> nodes;
+    std::map<std::size_t, Node> nodes;
     /// Vertices: idices into nodes
-    std::set<uint64_t> vertices;
+    std::set<std::size_t> vertices;
     /// Edges: idices into nodes
-    std::set<uint64_t> edges;
+    std::set<std::size_t> edges;
     /// Faces: idices into nodes
-    std::set<uint64_t> faces;
+    std::set<std::size_t> faces;
     /// Cells: indices into nodes
-    std::set<uint64_t> cells;
+    std::set<std::size_t> cells;
 
     void
-    add_node(int64_t id, Node::Type type)
+    add_node(std::size_t id, Node::Type type, std::size_t index = 0)
     {
-        this->nodes[id] = { type, id, {} };
+        this->nodes[id] = { type, id, index, {}, {} };
         if (type == Node::Vertex)
             this->vertices.insert(id);
         else if (type == Node::Edge)
@@ -41,7 +42,7 @@ public:
     }
 
     void
-    add_edge(int64_t parent_id, int64_t child_id)
+    add_edge(std::size_t parent_id, std::size_t child_id)
     {
         insert(this->nodes[parent_id].children, child_id);
         insert(this->nodes[child_id].support, parent_id);
@@ -79,7 +80,7 @@ public:
 
 private:
     void
-    insert(std::vector<int64_t> & vec, int64_t v)
+    insert(std::vector<std::size_t> & vec, std::size_t v)
     {
         if (std::find(vec.begin(), vec.end(), v) == vec.end())
             vec.push_back(v);
