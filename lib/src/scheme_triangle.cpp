@@ -204,7 +204,7 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
 
     SurfaceIndexMapper im(surface);
     for (int i = 0; i < out.numberoftriangles; i++) {
-        std::array<int, 3> tri;
+        std::array<std::size_t, 3> tri;
         for (int j = 0; j < 3; j++) {
             auto vtx_id = out.trianglelist[i * 3 + j];
             auto pt = tri::get_point(out.pointlist, vtx_id);

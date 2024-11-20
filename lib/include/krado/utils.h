@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <map>
 
 namespace krado::utils {
 
@@ -66,5 +67,17 @@ std::vector<std::int64_t> sub_connect(const std::vector<std::size_t> & element_c
 /// @param idxs The indices to create a key from
 /// @return The key
 std::vector<std::int64_t> key(const std::vector<std::int64_t> & idxs);
+
+/// Get map keys
+template <typename K, typename V>
+std::vector<K>
+map_keys(const std::map<K, V> & in_map)
+{
+    std::vector<K> keys;
+    for (const auto & pair : in_map) {
+        keys.push_back(pair.first);
+    }
+    return keys;
+}
 
 } // namespace krado::utils

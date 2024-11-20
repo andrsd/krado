@@ -165,6 +165,21 @@ public:
     /// @return Cell set name
     std::string cell_set_name(marker_t cell_set_id) const;
 
+    /// Get cell set IDs
+    std::vector<marker_t> cell_set_ids() const;
+
+    /// Get cell set
+    ///
+    /// @param id Cell set ID
+    /// @return Cell set
+    const std::vector<std::size_t> cell_set(marker_t id) const;
+
+    /// Set cell set
+    ///
+    /// @param id Cell set ID
+    /// @param cell_ids Cell IDs
+    void set_cell_set(marker_t id, const std::vector<std::size_t> cell_ids);
+
     /// Set face set name
     ///
     /// @param face_set_id Face set ID (marker)
@@ -177,6 +192,21 @@ public:
     /// @return Face set name
     std::string face_set_name(marker_t cell_set_id) const;
 
+    /// Get face set IDs
+    std::vector<marker_t> face_set_ids() const;
+
+    /// Get face set
+    ///
+    /// @param id Face set ID
+    /// @return Face set
+    const std::vector<std::size_t> face_set(marker_t id) const;
+
+    /// Set face set
+    ///
+    /// @param id Face set ID
+    /// @param face_ids Face IDs
+    void set_face_set(marker_t id, const std::vector<std::size_t> face_ids);
+
     /// Set edge set name
     ///
     /// @param edge_set_id Edge set ID (marker)
@@ -188,6 +218,21 @@ public:
     /// @param edge_set_id Edge set ID (marker)
     /// @return Edge set name
     std::string edge_set_name(marker_t edge_set_id) const;
+
+    /// Get edge set IDs
+    std::vector<marker_t> edge_set_ids() const;
+
+    /// Get edge set
+    ///
+    /// @param id Edge set ID
+    /// @return Edge set
+    const std::vector<std::size_t> edge_set(marker_t id) const;
+
+    /// Set edge set
+    ///
+    /// @param id Edge set ID
+    /// @param edge_ids Edge IDs
+    void set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids);
 
     /// Remap block IDs
     ///
@@ -300,10 +345,16 @@ private:
     std::vector<Element> elems;
     /// Cell set names
     std::map<marker_t, std::string> cell_set_names;
+    /// Cell sets
+    std::map<marker_t, std::vector<std::size_t>> cell_sets;
     /// Face set names
     std::map<marker_t, std::string> face_set_names;
+    /// Face sets
+    std::map<marker_t, std::vector<std::size_t>> face_sets;
     /// Edge set names
     std::map<marker_t, std::string> edge_set_names;
+    /// Edge sets
+    std::map<marker_t, std::vector<std::size_t>> edge_sets;
 
     /// Global ID counter
     int gid_ctr;

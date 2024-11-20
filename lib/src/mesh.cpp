@@ -585,6 +585,29 @@ Mesh::cell_set_name(marker_t cell_set_id) const
     }
 }
 
+std::vector<marker_t>
+Mesh::cell_set_ids() const
+{
+    return utils::map_keys(this->cell_sets);
+}
+
+const std::vector<std::size_t>
+Mesh::cell_set(marker_t id) const
+{
+    try {
+        return this->cell_sets.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        throw Exception("Cell set ID {} does not exist", id);
+    }
+}
+
+void
+Mesh::set_cell_set(marker_t id, const std::vector<std::size_t> cell_ids)
+{
+    this->cell_sets[id] = cell_ids;
+}
+
 void
 Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
 {
@@ -602,6 +625,29 @@ Mesh::face_set_name(marker_t face_set_id) const
     }
 }
 
+std::vector<marker_t>
+Mesh::face_set_ids() const
+{
+    return utils::map_keys(this->face_sets);
+}
+
+const std::vector<std::size_t>
+Mesh::face_set(marker_t id) const
+{
+    try {
+        return this->face_sets.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        throw Exception("Face set ID {} does not exist", id);
+    }
+}
+
+void
+Mesh::set_face_set(marker_t id, const std::vector<std::size_t> face_ids)
+{
+    this->face_sets[id] = face_ids;
+}
+
 void
 Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
 {
@@ -617,6 +663,29 @@ Mesh::edge_set_name(marker_t edge_set_id) const
     catch (const std::out_of_range & e) {
         return std::string("");
     }
+}
+
+std::vector<marker_t>
+Mesh::edge_set_ids() const
+{
+    return utils::map_keys(this->edge_sets);
+}
+
+const std::vector<std::size_t>
+Mesh::edge_set(marker_t id) const
+{
+    try {
+        return this->edge_sets.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        throw Exception("Edge set ID {} does not exist", id);
+    }
+}
+
+void
+Mesh::set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids)
+{
+    this->edge_sets[id] = edge_ids;
 }
 
 void
