@@ -45,10 +45,10 @@ TEST(ExodusIIFileTest, write_2d)
 
     Mesh mesh(pts, elems);
     mesh.set_up();
-    std::vector<std::size_t> edges_left = { 3 };
+    std::vector<std::size_t> edges_left = { 8 };
     mesh.set_side_set(100, edges_left);
     mesh.set_side_set_name(100, "left");
-    std::vector<std::size_t> edges_right = { 8 };
+    std::vector<std::size_t> edges_right = { 9 };
     mesh.set_side_set(101, edges_right);
 
     ExodusIIFile f("sq-2d.exo");

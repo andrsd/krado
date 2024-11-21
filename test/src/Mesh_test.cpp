@@ -1,6 +1,5 @@
 #include "gmock/gmock.h"
 #include "krado/element.h"
-#include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
@@ -160,23 +159,61 @@ TEST(MeshTest, remap_block_ids)
     EXPECT_THAT(elems[1].marker(), 1000);
 }
 
-TEST(MeshTest, edges)
+TEST(MeshTest, element_ids)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.),
+        Point(1., 0.),
+        Point(0., 1.),
+        Point(1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 2 }, 1),
+        Element::Tri3({ 2, 1, 3 }, 2)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+    EXPECT_THAT(mesh.cell_ids(), ElementsAre(0, 1));
+    EXPECT_THAT(mesh.edge_ids(), ElementsAre(6, 7, 8, 9, 10));
+    EXPECT_THAT(mesh.face_ids(), ElementsAre());
+    EXPECT_THAT(mesh.point_ids(), ElementsAre(2, 3, 4, 5));
+}
+
+TEST(MeshTest, element_ids_from_file)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
     auto m = f.read();
+    m.set_up();
 
-    auto eidx = m.edges();
-    EXPECT_THAT(eidx, ElementsAre(1, 2, 3, 8, 9));
+    EXPECT_THAT(m.cell_ids(), ElementsAre(0, 1));
+    EXPECT_THAT(m.edge_ids(), ElementsAre(6, 7, 8, 9, 10));
+    EXPECT_THAT(m.face_ids(), ElementsAre());
+    EXPECT_THAT(m.point_ids(), ElementsAre(2, 3, 4, 5));
 
-    EXPECT_THAT(m.support(1), ElementsAre(0));
-    EXPECT_THAT(m.support(2), ElementsAre(0, 7));
-    EXPECT_THAT(m.support(3), ElementsAre(0));
-    EXPECT_THAT(m.support(8), ElementsAre(7));
-    EXPECT_THAT(m.support(9), ElementsAre(7));
+    EXPECT_THAT(m.support(0), ElementsAre());
+    EXPECT_THAT(m.support(1), ElementsAre());
+    EXPECT_THAT(m.support(2), ElementsAre(6, 8));
+    EXPECT_THAT(m.support(3), ElementsAre(6, 7, 9));
+    EXPECT_THAT(m.support(4), ElementsAre(7, 8, 10));
+    EXPECT_THAT(m.support(5), ElementsAre(9, 10));
+    EXPECT_THAT(m.support(6), ElementsAre(0));
+    EXPECT_THAT(m.support(7), ElementsAre(0, 1));
+    EXPECT_THAT(m.support(8), ElementsAre(0));
+    EXPECT_THAT(m.support(9), ElementsAre(1));
+    EXPECT_THAT(m.support(10), ElementsAre(1));
 
-    EXPECT_THAT(m.connectivity(1), ElementsAre(4, 5));
-    EXPECT_THAT(m.connectivity(2), ElementsAre(5, 6));
-    EXPECT_THAT(m.connectivity(3), ElementsAre(6, 4));
-    EXPECT_THAT(m.connectivity(8), ElementsAre(5, 10));
-    EXPECT_THAT(m.connectivity(9), ElementsAre(10, 6));
+    EXPECT_THAT(m.connectivity(0), ElementsAre(6, 7, 8));
+    EXPECT_THAT(m.connectivity(1), ElementsAre(7, 9, 10));
+    EXPECT_THAT(m.connectivity(2), ElementsAre());
+    EXPECT_THAT(m.connectivity(3), ElementsAre());
+    EXPECT_THAT(m.connectivity(4), ElementsAre());
+    EXPECT_THAT(m.connectivity(5), ElementsAre());
+    EXPECT_THAT(m.connectivity(6), ElementsAre(2, 3));
+    EXPECT_THAT(m.connectivity(7), ElementsAre(3, 4));
+    EXPECT_THAT(m.connectivity(8), ElementsAre(4, 2));
+    EXPECT_THAT(m.connectivity(9), ElementsAre(3, 5));
+    EXPECT_THAT(m.connectivity(10), ElementsAre(5, 4));
 }

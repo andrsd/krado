@@ -110,8 +110,6 @@ public:
     /// @return Element
     const Element & element(std::size_t idx) const;
 
-    const Element & el(std::size_t idx) const;
-
     ///
     void number_points();
 
@@ -282,20 +280,25 @@ public:
     /// @param block_map Map of old block IDs to new block IDs
     void remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
-    /// Get mesh edges
+    /// Get mesh point IDs
     ///
-    /// @return Mesh edges
-    const std::set<std::size_t> & edges() const;
+    /// @return Mesh point IDs
+    const std::set<std::size_t> & point_ids() const;
 
-    /// Get mesh faces
+    /// Get mesh edge IDs
     ///
-    /// @return Mesh faces
-    const std::set<std::size_t> & faces() const;
+    /// @return Mesh edge IDs
+    const std::set<std::size_t> & edge_ids() const;
 
-    /// Get mesh cells
+    /// Get mesh face IDs
     ///
-    /// @return Mesh cells
-    const std::set<std::size_t> & cells() const;
+    /// @return Mesh face IDs
+    const std::set<std::size_t> & face_ids() const;
+
+    /// Get mesh cell IDs
+    ///
+    /// @return Mesh cell IDs
+    const std::set<std::size_t> & cell_ids() const;
 
     /// Get support of a mesh node
     ///
@@ -347,30 +350,29 @@ protected:
 private:
     void initialize(const GeomModel & model);
 
-    void build_hasse_diagram(const std::vector<Point> & points,
-                             const std::vector<Element> & elements);
+    void build_hasse_diagram();
 
     template <class ELEMENT_TYPE>
     void
     hasse_add_edges(std::size_t id, const Element & elem)
     {
-        int64_t elem_node_id = -(id + 1);
-        elem_node_id = this->key_map[{ elem_node_id }];
+        auto iid = utils::key(-(id + 1));
+        auto elem_node_id = this->key_map[iid];
 
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
             auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             auto k = utils::key(edge_connect);
             if (this->key_map.find(k) == this->key_map.end()) {
-                auto edge_id = this->hasse.nodes.size();
-                this->key_map[k] = edge_id;
-                this->hasse.add_node(edge_id, HasseDiagram::Node::Edge, this->all.size());
-                this->hasse.add_edge(elem_node_id, edge_id);
-                this->all.push_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
+                auto edge_node_id = this->hasse.nodes.size();
+                this->key_map[k] = edge_node_id;
+                this->hasse.add_node(edge_node_id, HasseDiagram::Node::Edge);
+                this->hasse.add_edge(elem_node_id, edge_node_id);
+                this->elems.emplace_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
             }
             else {
-                auto edge_id = this->key_map[k];
-                this->hasse.add_edge(elem_node_id, edge_id);
+                auto edge_node_id = this->key_map[k];
+                this->hasse.add_edge(elem_node_id, edge_node_id);
             }
         }
     }
@@ -383,12 +385,12 @@ private:
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
             auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             auto k = utils::key(edge_connect);
-            auto edge_id = key_map[k];
-            for (auto & vtx_id : edge_connect) {
-                std::vector<int64_t> vtx_key = { (int64_t) vtx_id };
-                if (this->key_map.find(vtx_key) != this->key_map.end()) {
-                    auto vtx_node_id = this->key_map[vtx_key];
-                    this->hasse.add_edge(edge_id, vtx_node_id);
+            auto edge_node_id = this->key_map[k];
+            for (auto & vtx : edge_connect) {
+                auto vtx_id = utils::key(vtx);
+                if (this->key_map.find(vtx_id) != this->key_map.end()) {
+                    auto vtx_node_id = this->key_map[vtx_id];
+                    this->hasse.add_edge(edge_node_id, vtx_node_id);
                 }
                 else
                     throw Exception("Vertex not found in key map");
@@ -405,8 +407,6 @@ private:
 
     /// Mesh points
     std::vector<Point> pnts;
-    /// Mesh cells
-    std::vector<Element> all;
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
     std::vector<Element> elems;
     /// Cell set names
@@ -434,7 +434,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse;
     /// Map of keys to node IDs
-    std::map<std::vector<std::int64_t>, std::size_t> key_map;
+    std::unordered_map<std::int64_t, std::size_t> key_map;
 };
 
 } // namespace krado

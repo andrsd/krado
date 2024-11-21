@@ -408,12 +408,6 @@ Mesh::element(std::size_t idx) const
     return this->elems.at(idx);
 }
 
-const Element &
-Mesh::el(std::size_t idx) const
-{
-    return this->all.at(idx);
-}
-
 void
 Mesh::add_mesh_point(Point & mpnt)
 {
@@ -528,7 +522,7 @@ Mesh::transformed(const Trsf & tr) const
     auto pts = points();
     for (auto & p : pts)
         p = tr * p;
-    auto elems = elements();
+    auto elems = this->elems;
     return Mesh(pts, elems);
 }
 
@@ -537,7 +531,7 @@ Mesh::add(const Mesh & other)
 {
     auto n_pt_ofst = this->pnts.size();
     this->pnts.insert(this->pnts.end(), other.pnts.begin(), other.pnts.end());
-    for (auto & elem : other.elements()) {
+    for (auto & elem : other.elems) {
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
@@ -758,19 +752,25 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 }
 
 const std::set<std::size_t> &
-Mesh::edges() const
+Mesh::point_ids() const
+{
+    return this->hasse.vertices;
+}
+
+const std::set<std::size_t> &
+Mesh::edge_ids() const
 {
     return this->hasse.edges;
 }
 
 const std::set<std::size_t> &
-Mesh::faces() const
+Mesh::face_ids() const
 {
     return this->hasse.faces;
 }
 
 const std::set<std::size_t> &
-Mesh::cells() const
+Mesh::cell_ids() const
 {
     return this->hasse.cells;
 }
@@ -790,59 +790,60 @@ Mesh::connectivity(int64_t index) const
 Element::Type
 Mesh::element_type(int64_t index) const
 {
-    auto & node = this->hasse.nodes.at(index);
-    auto i = node.index;
-    return this->all.at(i).type();
+    // auto & node = this->hasse.nodes.at(index);
+    // auto i = node.index;
+    return this->elems.at(index).type();
 }
 
 void
 Mesh::set_up()
 {
-    build_hasse_diagram(this->pnts, this->elems);
+    build_hasse_diagram();
 }
 
 void
-Mesh::build_hasse_diagram(const std::vector<Point> & points, const std::vector<Element> & cells)
+Mesh::build_hasse_diagram()
 {
-    for (std::size_t i = 0; i < cells.size(); ++i) {
-        const auto & cell = cells[i];
-
-        // Add cell
-        int64_t id = -(i + 1);
-        if (this->key_map.find({ id }) == this->key_map.end()) {
-            auto elem_node_id = this->hasse.nodes.size();
-            this->key_map[{ id }] = elem_node_id;
-            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell, this->all.size());
-            this->all.push_back(cell);
+    auto n_cells = this->elems.size();
+    // Add Hasse nodes for cells
+    for (std::size_t i = 0; i < n_cells; ++i) {
+        const auto & cell = this->elems[i];
+        auto id = utils::key(-(i + 1));
+        if (this->key_map.find(id) == this->key_map.end()) {
+            auto elem_node_id = i;
+            this->key_map[id] = elem_node_id;
+            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell);
 
             auto marker = cell.marker();
             if (marker != 0)
                 this->cell_sets[marker].push_back(elem_node_id);
         }
+    }
 
-        // Add edges
-        if (cell.type() == Element::TRI3)
-            hasse_add_edges<Tri3>(i, cell);
-        else if (cell.type() == Element::QUAD4)
-            hasse_add_edges<Quad4>(i, cell);
-
-        // Add vertices
-        const auto & elem_connect = cell.ids();
-        for (auto & vtx : elem_connect) {
-            int64_t vtx_id = vtx;
-            if (this->key_map.find({ vtx_id }) == this->key_map.end()) {
-                auto vtx_node_id = this->hasse.nodes.size();
-                this->key_map[{ vtx_id }] = vtx_node_id;
-                this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex, this->all.size());
-                this->all.push_back(Element::Point(vtx));
-            }
+    // Add Hasse nodes for points
+    for (std::size_t i = 0; i < this->pnts.size(); ++i) {
+        auto vtx_id = utils::key(i);
+        if (this->key_map.find(vtx_id) == this->key_map.end()) {
+            auto vtx_node_id = this->hasse.nodes.size();
+            this->key_map[vtx_id] = vtx_node_id;
+            this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex);
+            this->elems.emplace_back(Element::Point(i));
         }
+    }
 
-        // Connect edges to vertices
-        if (cell.type() == Element::TRI3)
+    // TODO: add faces
+
+    // Add edges
+    for (std::size_t i = 0; i < n_cells; ++i) {
+        const auto cell = this->elems[i];
+        if (cell.type() == Element::TRI3) {
+            hasse_add_edges<Tri3>(i, cell);
             hasse_add_edge_vertices<Tri3>(i, cell);
-        else if (cell.type() == Element::QUAD4)
+        }
+        else if (cell.type() == Element::QUAD4) {
+            hasse_add_edges<Quad4>(i, cell);
             hasse_add_edge_vertices<Quad4>(i, cell);
+        }
     }
 }
 

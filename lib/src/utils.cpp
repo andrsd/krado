@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/utils.h"
+#include <boost/functional/hash.hpp>
 #include <cstdint>
 
 namespace krado::utils {
@@ -31,12 +32,22 @@ sub_connect(const std::vector<std::size_t> & element_connect, const std::vector<
     return connect;
 }
 
-std::vector<std::int64_t>
+std::int64_t
+key(const std::size_t id)
+{
+    std::size_t h = 0;
+    boost::hash_combine(h, id);
+    return h;
+}
+
+std::int64_t
 key(const std::vector<std::size_t> & idxs)
 {
     std::vector<std::int64_t> k(idxs.begin(), idxs.end());
     std::sort(k.begin(), k.end());
-    return k;
+    std::size_t h = 0;
+    boost::hash_combine(h, k);
+    return h;
 }
 
 } // namespace krado::utils

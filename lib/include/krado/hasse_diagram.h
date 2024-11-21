@@ -3,6 +3,7 @@
 #include <set>
 #include <map>
 #include <iostream>
+#include <unordered_map>
 
 namespace krado {
 
@@ -11,13 +12,12 @@ public:
     struct Node {
         enum Type { Vertex, Edge, Face, Cell } type;
         std::size_t id;
-        std::size_t index;
         std::vector<std::size_t> children;
         std::vector<std::size_t> support;
     };
 
     /// Nodes
-    std::map<std::size_t, Node> nodes;
+    std::unordered_map<std::size_t, Node> nodes;
     /// Vertices: idices into nodes
     std::set<std::size_t> vertices;
     /// Edges: idices into nodes
@@ -28,9 +28,9 @@ public:
     std::set<std::size_t> cells;
 
     void
-    add_node(std::size_t id, Node::Type type, std::size_t index = 0)
+    add_node(std::size_t id, Node::Type type)
     {
-        this->nodes[id] = { type, id, index, {}, {} };
+        this->nodes[id] = { type, id, {}, {} };
         if (type == Node::Vertex)
             this->vertices.insert(id);
         else if (type == Node::Edge)

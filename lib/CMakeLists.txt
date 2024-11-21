@@ -25,6 +25,7 @@ target_include_directories(
     PRIVATE
         ${CMAKE_SOURCE_DIR}/lib/include
         ${CMAKE_SOURCE_DIR}/contrib
+        ${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -36,6 +37,7 @@ target_link_libraries(
     PUBLIC
         fmt::fmt
         exodusIIcpp::exodusIIcpp
+        ${Boost_LIBRARIES}
 )
 
 if (KRADO_WITH_TRIANGLE)

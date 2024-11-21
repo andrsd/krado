@@ -29,6 +29,7 @@ if(OpenCASCADE_FOUND)
     endif()
 endif()
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
+find_package(Boost 1.70 REQUIRED)
 
 if (KRADO_WITH_TRIANGLE)
     add_subdirectory(contrib/triangle)

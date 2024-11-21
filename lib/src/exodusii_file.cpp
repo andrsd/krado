@@ -202,7 +202,7 @@ ExodusIIFile::write(const Mesh & mesh)
     this->dim = determine_spatial_dim(mesh);
 
     int n_nodes = (int) mesh.points().size();
-    int n_elems = (int) mesh.cells().size();
+    int n_elems = (int) mesh.cell_ids().size();
     int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
     int n_node_sets = 0;
     int n_side_sets = mesh.side_set_ids().size();
@@ -269,9 +269,9 @@ ExodusIIFile::write_elements(const Mesh & mesh)
     if (mesh.cell_set_ids().empty()) {
         std::map<Element::Type, std::vector<std::size_t>> elem_blks;
         int exii_idx = 1;
-        for (auto & cell_id : mesh.cells()) {
+        for (auto & cell_id : mesh.cell_ids()) {
             this->exii_elem_ids[cell_id] = exii_idx++;
-            auto & cell = mesh.el(cell_id);
+            auto & cell = mesh.element(cell_id);
             auto et = cell.type();
             elem_blks[et].push_back(cell_id);
         }
@@ -280,14 +280,14 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         for (auto & [blk_type, elems] : elem_blks) {
             if (!elems.empty()) {
                 auto cell_id = elems[0];
-                auto & cell = mesh.el(cell_id);
+                auto & cell = mesh.element(cell_id);
 
                 auto el_type = exII::element_name(cell.type());
                 auto n = cell.num_vertices() * elems.size();
                 std::vector<int> connect;
                 connect.reserve(n);
                 for (auto & cell_id : elems) {
-                    auto & el = mesh.el(cell_id);
+                    auto & el = mesh.element(cell_id);
                     for (int j = 0; j < el.ids().size(); j++)
                         connect.push_back(el.vertex_id(j) + 1);
                 }
@@ -305,9 +305,9 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         std::map<int, std::vector<Element>> elem_blks;
         std::map<int, std::string> elem_blk_names;
         int exii_idx = 1;
-        for (auto & cell_id : mesh.cells()) {
+        for (auto & cell_id : mesh.cell_ids()) {
             this->exii_elem_ids[cell_id] = exii_idx++;
-            auto & cell = mesh.el(cell_id);
+            auto & cell = mesh.element(cell_id);
             auto marker = cell.marker();
             elem_blks[marker].push_back(cell);
             if (elem_blk_names.find(marker) == elem_blk_names.end()) {
