@@ -218,6 +218,8 @@ PYBIND11_MODULE(krado, m)
         .def("element_type", &Mesh::element_type)
         .def("set_up", &Mesh::set_up)
         .def("boundary_edges", &Mesh::boundary_edges)
+        .def("compute_centroid", &Mesh::compute_centroid)
+        .def("outward_normal", &Mesh::outward_normal)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")

@@ -239,3 +239,54 @@ TEST(MeshTest, boundary_edges)
     auto bnd_edges = mesh.boundary_edges();
     EXPECT_THAT(bnd_edges, UnorderedElementsAre(6, 8, 9, 10));
 }
+
+TEST(MeshTest, centroid)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.),
+        Point(1., 0.),
+        Point(0., 1.),
+        Point(1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 2 }, 1),
+        Element::Tri3({ 2, 1, 3 }, 2)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    EXPECT_EQ(mesh.compute_centroid(0), Point(1. / 3., 1. / 3., 0));
+    EXPECT_EQ(mesh.compute_centroid(1), Point(2. / 3., 2. / 3., 0));
+    EXPECT_EQ(mesh.compute_centroid(6), Point(0.5, 0., 0));
+    EXPECT_EQ(mesh.compute_centroid(7), Point(0.5, 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(8), Point(0., 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(9), Point(1., 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0));
+}
+
+TEST(MeshTest, outward_normal)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.),
+        Point(1., 0.),
+        Point(0., 1.),
+        Point(1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 2 }, 1),
+        Element::Tri3({ 2, 1, 3 }, 2)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    EXPECT_EQ(mesh.outward_normal(6), Vector(0, -1, 0));
+    EXPECT_EQ(mesh.outward_normal(9), Vector(1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(10), Vector(0, 1, 0));
+    EXPECT_EQ(mesh.outward_normal(8), Vector(-1, 0, 0));
+}

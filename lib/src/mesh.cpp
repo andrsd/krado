@@ -11,6 +11,7 @@
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include "krado/vector.h"
 #include "nanoflann/nanoflann.hpp"
 #include <Extrema_ElementType.hxx>
 #include <array>
@@ -857,6 +858,57 @@ Mesh::boundary_edges() const
             bnd_edges.push_back(edge);
     }
     return bnd_edges;
+}
+
+Point
+Mesh::compute_centroid(std::size_t index) const
+{
+    auto & elem = this->elems[index];
+    Point ctr(0, 0, 0);
+    for (auto & pt_id : elem.ids()) {
+        auto & pt = this->pnts[pt_id];
+        ctr += pt;
+    }
+    ctr *= 1. / elem.ids().size();
+    return ctr;
+}
+
+Vector
+Mesh::outward_normal(std::size_t index) const
+{
+    auto & supp = support(index);
+    if (supp.size() != 1)
+        throw Exception("Normals are supported only for sides on boundaries");
+
+    auto cell_id = supp[0];
+    auto cell_ctr = compute_centroid(cell_id);
+
+    auto & side = this->elems[index];
+    if (side.type() == Element::Type::POINT) {
+        throw Exception("Normals are not supported for points, yet");
+    }
+    else if (side.type() == Element::Type::LINE2) {
+        auto v1 = Vector(this->pnts[side.ids()[1]] - this->pnts[side.ids()[0]]);
+        auto n = Vector(-v1.y, v1.x, 0);
+        n.normalize();
+        auto c_v1 = Vector(this->pnts[side.ids()[0]] - cell_ctr);
+        auto dot = dot_product(n, c_v1);
+        if (dot <= 0)
+            n = -n;
+        return n;
+    }
+    else {
+        auto side_ctr = compute_centroid(index);
+        auto v1 = Vector(this->pnts[side.ids()[0]] - side_ctr);
+        auto v2 = Vector(this->pnts[side.ids()[1]] - side_ctr);
+        auto c_v1 = Vector(this->pnts[side.ids()[0]] - cell_ctr);
+        auto n = cross_product(v1, v2);
+        n.normalize();
+        auto dot = dot_product(n, c_v1);
+        if (dot <= 0)
+            n = -n;
+        return n;
+    }
 }
 
 } // namespace krado

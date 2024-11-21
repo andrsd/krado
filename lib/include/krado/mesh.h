@@ -324,6 +324,18 @@ public:
     /// @return Boundary edge IDs
     std::vector<std::size_t> boundary_edges() const;
 
+    /// Compute centroid
+    ///
+    /// @param index Index of the element
+    /// @return Centroid
+    Point compute_centroid(std::size_t index) const;
+
+    /// Compute outward normal
+    ///
+    /// @param index Index of the edge/face
+    /// @return Outward normal
+    Vector outward_normal(std::size_t index) const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/vector.h"
+#include "krado/point.h"
 #include "krado/exception.h"
 
 namespace krado {
@@ -9,6 +10,8 @@ namespace krado {
 Vector::Vector() : x(0.), y(0.), z(0.) {}
 
 Vector::Vector(double x, double y, double z) : x(x), y(y), z(z) {}
+
+Vector::Vector(const Point & pt) : x(pt.x), y(pt.y), z(pt.z) {}
 
 double
 Vector::operator()(int idx) const
@@ -47,6 +50,13 @@ Vector::operator+=(const Vector & a)
     this->y += a.y;
     this->z += a.z;
     return *this;
+}
+
+bool
+operator==(const Vector & a, const Vector & b)
+{
+    return (std::abs(a.x - b.x) < 1e-15) && (std::abs(a.y - b.y) < 1e-15) &&
+           (std::abs(a.z - b.z) < 1e-15);
 }
 
 } // namespace krado

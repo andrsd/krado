@@ -7,10 +7,13 @@
 
 namespace krado {
 
+class Point;
+
 class Vector {
 public:
     Vector();
     explicit Vector(double x, double y = 0., double z = 0.);
+    explicit Vector(const Point & pt);
 
     double operator()(int idx) const;
 
@@ -68,6 +71,8 @@ dot_product(const Vector & v1, const Vector & v2)
 {
     return v1(0) * v2(0) + v1(1) * v2(1) + v1(2) * v2(2);
 }
+
+bool operator==(const Vector & a, const Vector & b);
 
 } // namespace krado
 
