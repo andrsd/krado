@@ -43,12 +43,48 @@ Vector::normalize()
     }
 }
 
+Vector
+Vector::operator+(const Vector & other) const
+{
+    return Vector(this->x + other.x, this->y + other.y, this->z + other.z);
+}
+
+Vector
+Vector::operator-(const Vector & other) const
+{
+    return Vector(this->x - other.x, this->y - other.y, this->z - other.z);
+}
+
+Vector
+Vector::operator*(double alpha) const
+{
+    return Vector(this->x * alpha, this->y * alpha, this->z * alpha);
+}
+
 Vector &
 Vector::operator+=(const Vector & a)
 {
     this->x += a.x;
     this->y += a.y;
     this->z += a.z;
+    return *this;
+}
+
+Vector &
+Vector::operator-=(const Vector & a)
+{
+    this->x -= a.x;
+    this->y -= a.y;
+    this->z -= a.z;
+    return *this;
+}
+
+Vector &
+Vector::operator*=(double alpha)
+{
+    this->x *= alpha;
+    this->y *= alpha;
+    this->z *= alpha;
     return *this;
 }
 

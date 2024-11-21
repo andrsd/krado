@@ -40,7 +40,7 @@ TEST(VectorTest, normalize)
 {
     Vector a(3, 4, 5);
     a.normalize();
-    double l = std::sqrt(3*3 + 4*4 + 5*5);
+    double l = std::sqrt(3 * 3 + 4 * 4 + 5 * 5);
     EXPECT_DOUBLE_EQ(a(0), 3. / l);
     EXPECT_DOUBLE_EQ(a(1), 4. / l);
     EXPECT_DOUBLE_EQ(a(2), 5. / l);
@@ -76,6 +76,16 @@ TEST(VectorTest, op_sub)
     EXPECT_DOUBLE_EQ(c(2), 7.);
 }
 
+TEST(VectorTest, op_sub2)
+{
+    Vector a(1, 2, 3);
+    Vector b(4, 1, -4);
+    a -= b;
+    EXPECT_DOUBLE_EQ(a(0), -3);
+    EXPECT_DOUBLE_EQ(a(1), 1.);
+    EXPECT_DOUBLE_EQ(a(2), 7.);
+}
+
 TEST(VectorTest, op_mult_scalar)
 {
     Vector a(1, 2, 3);
@@ -88,6 +98,12 @@ TEST(VectorTest, op_mult_scalar)
     EXPECT_DOUBLE_EQ(d(0), 3.);
     EXPECT_DOUBLE_EQ(d(1), 6.);
     EXPECT_DOUBLE_EQ(d(2), 9.);
+
+    auto e = a;
+    e *= 4.;
+    EXPECT_DOUBLE_EQ(e(0), 4.);
+    EXPECT_DOUBLE_EQ(e(1), 8.);
+    EXPECT_DOUBLE_EQ(e(2), 12.);
 }
 
 TEST(VectorTest, cross_product)

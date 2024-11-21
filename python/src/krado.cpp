@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <pybind11/pybind11.h>
+#include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
@@ -67,6 +68,13 @@ PYBIND11_MODULE(krado, m)
         .def_readwrite("z", &Vector::z)
         .def("norm", &Vector::norm)
         .def("normalize", &Vector::normalize)
+        .def(py::self + py::self)
+        .def(py::self - py::self)
+        .def(py::self += py::self)
+        .def(py::self -= py::self)
+        .def(float() * py::self)
+        .def(py::self * float())
+        .def(-py::self)
     ;
 
     py::class_<Trsf>(m, "Trsf")

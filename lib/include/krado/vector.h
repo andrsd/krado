@@ -17,7 +17,17 @@ public:
 
     double operator()(int idx) const;
 
+    Vector operator+(const Vector & other) const;
+
+    Vector operator-(const Vector & other) const;
+
+    Vector operator*(double alpha) const;
+
     Vector & operator+=(const Vector & a);
+
+    Vector & operator-=(const Vector & a);
+
+    Vector & operator*=(double alpha);
 
     /// Compute L2 norm of the vector
     ///
@@ -34,24 +44,6 @@ inline Vector
 operator*(double alpha, const Vector & v)
 {
     return Vector(v(0) * alpha, v(1) * alpha, v(2) * alpha);
-}
-
-inline Vector
-operator*(const Vector & v, double alpha)
-{
-    return Vector(v(0) * alpha, v(1) * alpha, v(2) * alpha);
-}
-
-inline Vector
-operator+(const Vector & a, const Vector & b)
-{
-    return Vector(a(0) + b(0), a(1) + b(1), a(2) + b(2));
-}
-
-inline Vector
-operator-(const Vector & a, const Vector & b)
-{
-    return Vector(a(0) - b(0), a(1) - b(1), a(2) - b(2));
 }
 
 inline Vector
