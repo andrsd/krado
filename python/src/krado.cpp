@@ -217,6 +217,7 @@ PYBIND11_MODULE(krado, m)
         .def("connectivity", &Mesh::connectivity)
         .def("element_type", &Mesh::element_type)
         .def("set_up", &Mesh::set_up)
+        .def("boundary_edges", &Mesh::boundary_edges)
     ;
 
     py::class_<MeshingParameters>(m, "MeshingParameters")

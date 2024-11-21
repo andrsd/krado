@@ -319,6 +319,11 @@ public:
     /// Prepare mesh
     void set_up();
 
+    /// Get all boundary edge IDs
+    ///
+    /// @return Boundary edge IDs
+    std::vector<std::size_t> boundary_edges() const;
+
 protected:
     void build_1d_elements();
     void build_2d_elements();

@@ -847,4 +847,16 @@ Mesh::build_hasse_diagram()
     }
 }
 
+std::vector<std::size_t>
+Mesh::boundary_edges() const
+{
+    std::vector<std::size_t> bnd_edges;
+    for (auto & edge : edge_ids()) {
+        auto & supp = support(edge);
+        if (supp.size() == 1)
+            bnd_edges.push_back(edge);
+    }
+    return bnd_edges;
+}
+
 } // namespace krado
