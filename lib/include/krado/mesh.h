@@ -439,7 +439,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse;
     /// Map of keys to node IDs
-    std::unordered_map<std::int64_t, std::size_t> key_map;
+    std::map<std::vector<std::int64_t>, std::size_t> key_map;
 };
 
 } // namespace krado

@@ -67,13 +67,13 @@ std::vector<std::size_t> sub_connect(const std::vector<std::size_t> & element_co
 ///
 /// @param id The index to create a key from
 /// @return The key
-std::int64_t key(const std::size_t id);
+std::vector<std::int64_t> key(const std::size_t id);
 
 /// Create a key from the supplied indices. Use this to construct keys for edges and faces
 ///
 /// @param idxs The indices to create a key from
 /// @return The key
-std::int64_t key(const std::vector<std::size_t> & idxs);
+std::vector<std::int64_t> key(const std::vector<std::size_t> & idxs);
 
 /// Get map keys
 template <typename K, typename V>
