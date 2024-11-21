@@ -6,7 +6,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/krado-targets.cmake")
 include(FindPackageHandleStandardArgs)
 
 find_library(KRADO_LIBRARY NAMES krado HINTS ${PACKAGE_PREFIX_DIR}/lib NO_DEFAULT_PATH)
-find_path(KRADO_INCLUDE_DIR shape.h HINTS ${PACKAGE_PREFIX_DIR}/include/krado)
+find_path(KRADO_INCLUDE_DIR mesh.h HINTS ${PACKAGE_PREFIX_DIR}/include/krado)
 
 find_package_handle_standard_args(
     krado
