@@ -115,6 +115,17 @@ public:
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };
 
+class Pyramid5 {
+public:
+    static const int N_VERTICES;
+    static const int N_EDGES;
+    static const int N_FACES;
+    static const std::vector<int> EDGES;
+    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::vector<int>> FACE_EDGES;
+    static const std::vector<std::vector<int>> FACE_VERTICES;
+};
+
 bool operator==(const Element & a, const Element & b);
 
 } // namespace krado

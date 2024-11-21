@@ -38,6 +38,24 @@ const std::vector<std::vector<int>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
                                                               { 1, 2, 3 },
                                                               { 2, 0, 3 } };
 
+const int Pyramid5::N_VERTICES = 5;
+const int Pyramid5::N_EDGES = 8;
+const int Pyramid5::N_FACES = 5;
+const std::vector<int> Pyramid5::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7 };
+const std::vector<std::vector<int>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
+                                                                { 3, 0 }, { 0, 4 }, { 1, 4 },
+                                                                { 2, 4 }, { 3, 4 } };
+const std::vector<std::vector<int>> Pyramid5::FACE_EDGES = { { 0, 1, 2, 3 },
+                                                             { 0, 3, 4 },
+                                                             { 1, 6, 5 },
+                                                             { 2, 7, 6 },
+                                                             { 3, 4, 7 } };
+const std::vector<std::vector<int>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
+                                                                { 0, 1, 4 },
+                                                                { 1, 2, 4 },
+                                                                { 2, 3, 4 },
+                                                                { 3, 0, 4 } };
+
 //
 
 Element::Element(Type type, const std::vector<std::size_t> & vtx_ids, marker_t marker) :
