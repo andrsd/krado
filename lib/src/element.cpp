@@ -56,6 +56,24 @@ const std::vector<std::vector<int>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
                                                                 { 2, 3, 4 },
                                                                 { 3, 0, 4 } };
 
+const int Prism6::N_VERTICES = 6;
+const int Prism6::N_EDGES = 9;
+const int Prism6::N_FACES = 5;
+const std::vector<int> Prism6::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+const std::vector<std::vector<int>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
+                                                              { 0, 3 }, { 1, 4 }, { 2, 5 },
+                                                              { 3, 4 }, { 4, 5 }, { 5, 3 } };
+const std::vector<std::vector<int>> Prism6::FACE_EDGES = { { 2, 1, 0 },
+                                                           { 0, 4, 6, 3 },
+                                                           { 1, 5, 7, 4 },
+                                                           { 2, 3, 8, 6 },
+                                                           { 6, 7, 8 } };
+const std::vector<std::vector<int>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
+                                                              { 0, 1, 4, 3 },
+                                                              { 1, 2, 5, 4 },
+                                                              { 2, 0, 3, 5 },
+                                                              { 3, 4, 5 } };
+
 //
 
 Element::Element(Type type, const std::vector<std::size_t> & vtx_ids, marker_t marker) :
