@@ -302,32 +302,34 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         // type in the same block.
         // Currently, we just assume cell sets are homogeneous in terms of cell type.
 
-        std::map<int, std::vector<Element>> elem_blks;
+        std::map<int, std::vector<std::size_t>> elem_blks;
         std::map<int, std::string> elem_blk_names;
-        int exii_idx = 1;
         for (auto & cell_id : mesh.cell_ids()) {
-            this->exii_elem_ids[cell_id] = exii_idx++;
             auto & cell = mesh.element(cell_id);
             auto marker = cell.marker();
-            elem_blks[marker].push_back(cell);
+            elem_blks[marker].push_back(cell_id);
             if (elem_blk_names.find(marker) == elem_blk_names.end()) {
                 auto blk_name = mesh.cell_set_name(marker);
                 elem_blk_names[marker] = blk_name;
             }
         }
 
+        int exii_idx = 1;
         std::vector<std::string> blk_names;
-        for (auto & [blk_id, elems] : elem_blks) {
-            if (!elems.empty()) {
-                auto el_type = exII::element_name(elems[0].type());
-                auto n = elems[0].num_vertices() * elems.size();
+        for (auto & [blk_id, elem_ids] : elem_blks) {
+            if (!elem_ids.empty()) {
+                const auto & elem = mesh.element(elem_ids[0]);
+                auto el_type = exII::element_name(elem.type());
+                auto n = elem.num_vertices() * elem_ids.size();
                 std::vector<int> connect;
                 connect.reserve(n);
-                for (auto & el : elems) {
+                for (auto & cell_id : elem_ids) {
+                    this->exii_elem_ids[cell_id] = exii_idx++;
+                    const auto & el = mesh.element(cell_id);
                     for (int j = 0; j < el.ids().size(); j++)
                         connect.push_back(el.vertex_id(j) + 1);
                 }
-                this->exo.write_block(blk_id, el_type, elems.size(), connect);
+                this->exo.write_block(blk_id, el_type, elem_ids.size(), connect);
                 blk_names.push_back(elem_blk_names[blk_id]);
             }
         }
