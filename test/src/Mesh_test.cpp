@@ -266,7 +266,7 @@ TEST(MeshTest, boundary_edges)
     EXPECT_THAT(bnd_edges, UnorderedElementsAre(6, 8, 9, 10));
 }
 
-TEST(MeshTest, centroid)
+TEST(MeshTest, centroid_2d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -291,6 +291,36 @@ TEST(MeshTest, centroid)
     EXPECT_EQ(mesh.compute_centroid(8), Point(0., 0.5, 0));
     EXPECT_EQ(mesh.compute_centroid(9), Point(1., 0.5, 0));
     EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0));
+}
+
+TEST(MeshTest, centroid_3d)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0., 0.),
+        Point(1., 0., 0.),
+        Point(1., 1., 0.),
+        Point(0., 1., 0.),
+        Point(0., 0., 1.),
+        Point(1., 0., 1.),
+        Point(1., 1., 1.),
+        Point(0., 1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    EXPECT_EQ(mesh.compute_centroid(0), Point(0.5, 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(9), Point(0.5, 0., 0.5));
+    EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0.5));
+    EXPECT_EQ(mesh.compute_centroid(11), Point(0., 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(12), Point(1., 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(13), Point(0.5, 0.5, 0.));
+    EXPECT_EQ(mesh.compute_centroid(14), Point(0.5, 0.5, 1.));
 }
 
 TEST(MeshTest, outward_normal)
