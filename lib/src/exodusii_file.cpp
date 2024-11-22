@@ -77,8 +77,20 @@ local_side_index(Element::Type et, int idx)
     if (utils::in(et, { Element::Type::LINE2, Element::Type::TRI3, Element::Type::QUAD4 }))
         return idx + 1;
     else if (et == Element::Type::TETRA4) {
-        std::array<int, 4> tetra_sides = { 4, 1, 2, 3 };
-        return tetra_sides[idx];
+        std::array<int, 4> sides = { 4, 1, 2, 3 };
+        return sides[idx];
+    }
+    else if (et == Element::Type::PYRAMID5) {
+        std::array<int, 5> sides = { 4, 1, 2, 3, 5 };
+        return sides[idx];
+    }
+    else if (et == Element::Type::PRISM6) {
+        std::array<int, 5> sides = { 4, 1, 2, 3, 5 };
+        return sides[idx];
+    }
+    else if (et == Element::Type::HEX8) {
+        std::array<int, 6> sides = { 1, 3, 4, 2, 5, 6 };
+        return sides[idx];
     }
     else {
         throw Exception("Unsupported element type {}", Element::type(et));
@@ -120,6 +132,30 @@ build_element<Tetra4>(const std::vector<int> & connect, int idx, int blk_id)
 {
     auto elem_connect = exII::build_element_connect<4>(connect, idx);
     return Element::Tetra4(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Pyramid5>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<5>(connect, idx);
+    return Element::Pyramid5(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Prism6>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<6>(connect, idx);
+    return Element::Prism6(elem_connect, blk_id);
+}
+
+template <>
+Element
+build_element<Hex8>(const std::vector<int> & connect, int idx, int blk_id)
+{
+    auto elem_connect = exII::build_element_connect<8>(connect, idx);
+    return Element::Hex8(elem_connect, blk_id);
 }
 
 //
@@ -187,6 +223,12 @@ ExodusIIFile::read_elements()
                 elems.emplace_back(build_element<Quad4>(connect, idx, blk_id));
             else if (et == Element::TETRA4)
                 elems.emplace_back(build_element<Tetra4>(connect, idx, blk_id));
+            else if (et == Element::PYRAMID5)
+                elems.emplace_back(build_element<Pyramid5>(connect, idx, blk_id));
+            else if (et == Element::PRISM6)
+                elems.emplace_back(build_element<Prism6>(connect, idx, blk_id));
+            else if (et == Element::HEX8)
+                elems.emplace_back(build_element<Hex8>(connect, idx, blk_id));
             else
                 throw std::runtime_error("Unsupported element type: " + eb.get_element_type());
         }
