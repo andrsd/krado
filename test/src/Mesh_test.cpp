@@ -208,7 +208,7 @@ TEST(MeshTest, element_ids_3d)
     EXPECT_THAT(mesh.point_ids(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
 }
 
-TEST(MeshTest, element_ids_from_file)
+TEST(MeshTest, element_ids_from_file_2d)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
     auto m = f.read();
@@ -242,6 +242,25 @@ TEST(MeshTest, element_ids_from_file)
     EXPECT_THAT(m.connectivity(8), ElementsAre(4, 2));
     EXPECT_THAT(m.connectivity(9), ElementsAre(3, 5));
     EXPECT_THAT(m.connectivity(10), ElementsAre(5, 4));
+}
+
+TEST(MeshTest, element_ids_from_file_3d)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "cube-tet.e");
+    auto m = f.read();
+    m.set_up();
+
+    EXPECT_THAT(m.cell_ids(), ElementsAre(0, 1, 2, 3, 4, 5));
+    EXPECT_THAT(
+        m.face_ids(),
+        ElementsAre(14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
+    EXPECT_THAT(
+        m.edge_ids(),
+        ElementsAre(32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50));
+    EXPECT_THAT(m.point_ids(), ElementsAre(6, 7, 8, 9, 10, 11, 12, 13));
+
+    ExodusIIFile out("a.e");
+    out.write(m);
 }
 
 TEST(MeshTest, boundary_edges)
