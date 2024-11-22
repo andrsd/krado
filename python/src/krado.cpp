@@ -63,6 +63,7 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<Vector>(m, "Vector")
         .def(py::init<double, double, double>())
+        .def(py::init<const Point &>())
         .def_readwrite("x", &Vector::x)
         .def_readwrite("y", &Vector::y)
         .def_readwrite("z", &Vector::z)
