@@ -7,25 +7,17 @@
 
 namespace krado {
 
-const int Line2::N_VERTICES = 2;
 const std::vector<int> Line2::EDGE_VERTICES = { 0, 1 };
 
-const int Tri3::N_VERTICES = 3;
-const int Tri3::N_EDGES = 3;
 const std::vector<int> Tri3::EDGES = { 0, 1, 2 };
 const std::vector<std::vector<int>> Tri3::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
 
-const int Quad4::N_VERTICES = 4;
-const int Quad4::N_EDGES = 4;
 const std::vector<int> Quad4::EDGES = { 0, 1, 2, 3 };
 const std::vector<std::vector<int>> Quad4::EDGE_VERTICES = { { 0, 1 },
                                                              { 1, 2 },
                                                              { 2, 3 },
                                                              { 3, 0 } };
 
-const int Tetra4::N_VERTICES = 4;
-const int Tetra4::N_EDGES = 6;
-const int Tetra4::N_FACES = 4;
 const std::vector<int> Tetra4::EDGES = { 0, 1, 2, 3, 4, 5 };
 const std::vector<std::vector<int>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
                                                               { 0, 3 }, { 1, 3 }, { 2, 3 } };
@@ -38,9 +30,6 @@ const std::vector<std::vector<int>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
                                                               { 1, 2, 3 },
                                                               { 2, 0, 3 } };
 
-const int Pyramid5::N_VERTICES = 5;
-const int Pyramid5::N_EDGES = 8;
-const int Pyramid5::N_FACES = 5;
 const std::vector<int> Pyramid5::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7 };
 const std::vector<std::vector<int>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
                                                                 { 3, 0 }, { 0, 4 }, { 1, 4 },
@@ -56,9 +45,6 @@ const std::vector<std::vector<int>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
                                                                 { 2, 3, 4 },
                                                                 { 3, 0, 4 } };
 
-const int Prism6::N_VERTICES = 6;
-const int Prism6::N_EDGES = 9;
-const int Prism6::N_FACES = 5;
 const std::vector<int> Prism6::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 const std::vector<std::vector<int>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
                                                               { 0, 3 }, { 1, 4 }, { 2, 5 },
@@ -74,9 +60,6 @@ const std::vector<std::vector<int>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
                                                               { 2, 0, 3, 5 },
                                                               { 3, 4, 5 } };
 
-const int Hex8::N_VERTICES = 8;
-const int Hex8::N_EDGES = 12;
-const int Hex8::N_FACES = 6;
 const std::vector<int> Hex8::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 const std::vector<std::vector<int>> Hex8::EDGE_VERTICES = {
     { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 0, 4 }, { 1, 5 },

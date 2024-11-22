@@ -84,31 +84,35 @@ public:
 
 class Line2 {
 public:
-    static const int N_VERTICES;
+    static constexpr Element::Type TYPE = Element::LINE2;
+    static constexpr int N_VERTICES = 2;
     static const std::vector<int> EDGE_VERTICES;
 };
 
 class Tri3 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
+    static constexpr Element::Type TYPE = Element::TRI3;
+    static constexpr int N_VERTICES = 3;
+    static constexpr int N_EDGES = 3;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
 };
 
 class Quad4 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
+    static constexpr Element::Type TYPE = Element::QUAD4;
+    static constexpr int N_VERTICES = 4;
+    static constexpr int N_EDGES = 4;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
 };
 
 class Tetra4 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
-    static const int N_FACES;
+    static constexpr Element::Type TYPE = Element::TETRA4;
+    static constexpr int N_VERTICES = 4;
+    static constexpr int N_EDGES = 6;
+    static constexpr int N_FACES = 4;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
@@ -117,9 +121,10 @@ public:
 
 class Pyramid5 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
-    static const int N_FACES;
+    static constexpr Element::Type TYPE = Element::PYRAMID5;
+    static constexpr int N_VERTICES = 5;
+    static constexpr int N_EDGES = 8;
+    static constexpr int N_FACES = 5;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
@@ -128,9 +133,10 @@ public:
 
 class Prism6 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
-    static const int N_FACES;
+    static constexpr Element::Type TYPE = Element::PRISM6;
+    static constexpr int N_VERTICES = 6;
+    static constexpr int N_EDGES = 9;
+    static constexpr int N_FACES = 5;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
@@ -139,9 +145,10 @@ public:
 
 class Hex8 {
 public:
-    static const int N_VERTICES;
-    static const int N_EDGES;
-    static const int N_FACES;
+    static constexpr Element::Type TYPE = Element::HEX8;
+    static constexpr int N_VERTICES = 8;
+    static constexpr int N_EDGES = 12;
+    static constexpr int N_FACES = 6;
     static const std::vector<int> EDGES;
     static const std::vector<std::vector<int>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;

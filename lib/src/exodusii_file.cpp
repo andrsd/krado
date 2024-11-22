@@ -61,10 +61,10 @@ element_type(const std::string elem_type_name)
 }
 
 template <int N>
-std::array<std::size_t, N>
+std::vector<std::size_t>
 build_element_connect(const std::vector<int> & connect, int idx)
 {
-    std::array<std::size_t, N> elem_connect;
+    std::vector<std::size_t> elem_connect(N);
     for (int i = 0; i < N; i++)
         elem_connect[i] = connect[idx + i] - 1;
     return elem_connect;
@@ -100,62 +100,11 @@ local_side_index(Element::Type et, int idx)
 } // namespace exII
 
 template <typename ET>
-Element build_element(const std::vector<int> & connect, int idx, int blk_id);
-
-template <>
 Element
-build_element<Line2>(const std::vector<int> & connect, int idx, int blk_id)
+build_element(const std::vector<int> & connect, int idx, int blk_id)
 {
-    auto elem_connect = exII::build_element_connect<2>(connect, idx);
-    return Element::Line2(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Tri3>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<3>(connect, idx);
-    return Element::Tri3(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Quad4>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<4>(connect, idx);
-    return Element::Quad4(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Tetra4>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<4>(connect, idx);
-    return Element::Tetra4(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Pyramid5>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<5>(connect, idx);
-    return Element::Pyramid5(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Prism6>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<6>(connect, idx);
-    return Element::Prism6(elem_connect, blk_id);
-}
-
-template <>
-Element
-build_element<Hex8>(const std::vector<int> & connect, int idx, int blk_id)
-{
-    auto elem_connect = exII::build_element_connect<8>(connect, idx);
-    return Element::Hex8(elem_connect, blk_id);
+    auto elem_connect = exII::build_element_connect<ET::N_VERTICES>(connect, idx);
+    return Element(ET::TYPE, elem_connect, blk_id);
 }
 
 //
