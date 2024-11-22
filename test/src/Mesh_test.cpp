@@ -159,7 +159,7 @@ TEST(MeshTest, remap_block_ids)
     EXPECT_THAT(elems[1].marker(), 1000);
 }
 
-TEST(MeshTest, element_ids)
+TEST(MeshTest, element_ids_2d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -180,6 +180,32 @@ TEST(MeshTest, element_ids)
     EXPECT_THAT(mesh.edge_ids(), ElementsAre(6, 7, 8, 9, 10));
     EXPECT_THAT(mesh.face_ids(), ElementsAre());
     EXPECT_THAT(mesh.point_ids(), ElementsAre(2, 3, 4, 5));
+}
+
+TEST(MeshTest, element_ids_3d)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0., 0.),
+        Point(1., 0., 0.),
+        Point(1., 1., 0.),
+        Point(0., 1., 0.),
+        Point(0., 0., 1.),
+        Point(1., 0., 1.),
+        Point(1., 1., 1.),
+        Point(0., 1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+    EXPECT_THAT(mesh.cell_ids(), ElementsAre(0));
+    EXPECT_THAT(mesh.face_ids(), ElementsAre(9, 10, 11, 12, 13, 14));
+    EXPECT_THAT(mesh.edge_ids(), ElementsAre(15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26));
+    EXPECT_THAT(mesh.point_ids(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
 }
 
 TEST(MeshTest, element_ids_from_file)

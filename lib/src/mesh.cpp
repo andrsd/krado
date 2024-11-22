@@ -832,7 +832,18 @@ Mesh::build_hasse_diagram()
         }
     }
 
-    // TODO: add faces
+    // Add faces
+    for (std::size_t i = 0; i < n_cells; ++i) {
+        const auto cell = this->elems[i];
+        if (cell.type() == Element::TETRA4)
+            hasse_add_faces<Tetra4>(i, cell);
+        else if (cell.type() == Element::PYRAMID5)
+            hasse_add_faces<Pyramid5>(i, cell);
+        else if (cell.type() == Element::PRISM6)
+            hasse_add_faces<Prism6>(i, cell);
+        else if (cell.type() == Element::HEX8)
+            hasse_add_faces<Hex8>(i, cell);
+    }
 
     // Add edges
     for (std::size_t i = 0; i < n_cells; ++i) {
@@ -844,6 +855,22 @@ Mesh::build_hasse_diagram()
         else if (cell.type() == Element::QUAD4) {
             hasse_add_edges<Quad4>(i, cell);
             hasse_add_edge_vertices<Quad4>(i, cell);
+        }
+        else if (cell.type() == Element::TETRA4) {
+            hasse_add_face_edges<Tetra4>(i, cell);
+            hasse_add_edge_vertices<Tetra4>(i, cell);
+        }
+        else if (cell.type() == Element::PYRAMID5) {
+            hasse_add_face_edges<Pyramid5>(i, cell);
+            hasse_add_edge_vertices<Pyramid5>(i, cell);
+        }
+        else if (cell.type() == Element::PRISM6) {
+            hasse_add_face_edges<Prism6>(i, cell);
+            hasse_add_edge_vertices<Prism6>(i, cell);
+        }
+        else if (cell.type() == Element::HEX8) {
+            hasse_add_face_edges<Hex8>(i, cell);
+            hasse_add_edge_vertices<Hex8>(i, cell);
         }
     }
 }

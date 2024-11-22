@@ -190,7 +190,7 @@ Element::Pyramid5(const std::array<std::size_t, 5> & ids, marker_t marker)
 }
 
 Element
-Element::Wedge6(const std::array<std::size_t, 6> & ids, marker_t marker)
+Element::Prism6(const std::array<std::size_t, 6> & ids, marker_t marker)
 {
     Element wed6(PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] }, marker);
     return wed6;

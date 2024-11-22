@@ -78,7 +78,7 @@ public:
     static Element Quad4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
     static Element Tetra4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
     static Element Pyramid5(const std::array<std::size_t, 5> & ids, marker_t marker = 0);
-    static Element Wedge6(const std::array<std::size_t, 6> & ids, marker_t marker = 0);
+    static Element Prism6(const std::array<std::size_t, 6> & ids, marker_t marker = 0);
     static Element Hex8(const std::array<std::size_t, 8> & ids, marker_t marker = 0);
 };
 

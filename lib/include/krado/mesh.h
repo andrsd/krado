@@ -369,6 +369,74 @@ private:
 
     void build_hasse_diagram();
 
+    void
+    hasse_add_edge(std::size_t parent_node_id, const std::vector<std::size_t> & edge_connect)
+    {
+        auto k = utils::key(edge_connect);
+        if (this->key_map.find(k) == this->key_map.end()) {
+            auto edge_node_id = this->hasse.nodes.size();
+            this->key_map[k] = edge_node_id;
+            this->hasse.add_node(edge_node_id, HasseDiagram::Node::Edge);
+            this->hasse.add_edge(parent_node_id, edge_node_id);
+            this->elems.emplace_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
+        }
+        else {
+            auto edge_node_id = this->key_map[k];
+            this->hasse.add_edge(parent_node_id, edge_node_id);
+        }
+    }
+
+    template <class ELEMENT_TYPE>
+    void
+    hasse_add_faces(std::size_t id, const Element & elem)
+    {
+        auto iid = utils::key(-(id + 1));
+        auto elem_node_id = this->key_map[iid];
+
+        const auto & elem_connect = elem.ids();
+        for (std::size_t j = 0; j < ELEMENT_TYPE::N_FACES; ++j) {
+            auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[j]);
+            auto k = utils::key(face_connect);
+            if (this->key_map.find(k) == this->key_map.end()) {
+                auto face_node_id = this->hasse.nodes.size();
+                this->key_map[k] = face_node_id;
+                this->hasse.add_node(face_node_id, HasseDiagram::Node::Face);
+                this->hasse.add_edge(elem_node_id, face_node_id);
+                if (face_connect.size() == 3)
+                    this->elems.emplace_back(
+                        Element::Tri3({ face_connect[0], face_connect[1], face_connect[2] }));
+                else if (face_connect.size() == 4)
+                    this->elems.emplace_back(Element::Quad4(
+                        { face_connect[0], face_connect[1], face_connect[2], face_connect[3] }));
+            }
+            else {
+                auto face_node_id = this->key_map[k];
+                this->hasse.add_edge(elem_node_id, face_node_id);
+            }
+        }
+    }
+
+    template <class ELEMENT_TYPE>
+    void
+    hasse_add_face_edges(std::size_t id, const Element & elem)
+    {
+        auto iid = utils::key(-(id + 1));
+        auto elem_node_id = this->key_map[iid];
+
+        const auto & elem_connect = elem.ids();
+        for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
+            auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[i]);
+            auto face_node_id = this->key_map[utils::key(face_connect)];
+
+            for (std::size_t j = 0; j < ELEMENT_TYPE::FACE_EDGES[i].size(); ++j) {
+                auto edge = ELEMENT_TYPE::FACE_EDGES[i][j];
+                auto edge_connect =
+                    utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
+                hasse_add_edge(face_node_id, edge_connect);
+            }
+        }
+    }
+
     template <class ELEMENT_TYPE>
     void
     hasse_add_edges(std::size_t id, const Element & elem)
@@ -379,18 +447,7 @@ private:
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
             auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
-            auto k = utils::key(edge_connect);
-            if (this->key_map.find(k) == this->key_map.end()) {
-                auto edge_node_id = this->hasse.nodes.size();
-                this->key_map[k] = edge_node_id;
-                this->hasse.add_node(edge_node_id, HasseDiagram::Node::Edge);
-                this->hasse.add_edge(elem_node_id, edge_node_id);
-                this->elems.emplace_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
-            }
-            else {
-                auto edge_node_id = this->key_map[k];
-                this->hasse.add_edge(elem_node_id, edge_node_id);
-            }
+            hasse_add_edge(elem_node_id, edge_connect);
         }
     }
 
@@ -401,8 +458,7 @@ private:
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
             auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
-            auto k = utils::key(edge_connect);
-            auto edge_node_id = this->key_map[k];
+            auto edge_node_id = this->key_map[utils::key(edge_connect)];
             for (auto & vtx : edge_connect) {
                 auto vtx_id = utils::key(vtx);
                 if (this->key_map.find(vtx_id) != this->key_map.end()) {
