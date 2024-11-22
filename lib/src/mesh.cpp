@@ -887,6 +887,18 @@ Mesh::boundary_edges() const
     return bnd_edges;
 }
 
+std::vector<std::size_t>
+Mesh::boundary_faces() const
+{
+    std::vector<std::size_t> bnd_faces;
+    for (auto & face : face_ids()) {
+        auto & supp = support(face);
+        if (supp.size() == 1)
+            bnd_faces.push_back(face);
+    }
+    return bnd_faces;
+}
+
 Point
 Mesh::compute_centroid(std::size_t index) const
 {

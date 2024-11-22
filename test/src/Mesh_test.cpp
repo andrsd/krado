@@ -266,6 +266,31 @@ TEST(MeshTest, boundary_edges)
     EXPECT_THAT(bnd_edges, UnorderedElementsAre(6, 8, 9, 10));
 }
 
+TEST(MeshTest, boundary_faces)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0., 0.),
+        Point(1., 0., 0.),
+        Point(1., 1., 0.),
+        Point(0., 1., 0.),
+        Point(0., 0., 1.),
+        Point(1., 0., 1.),
+        Point(1., 1., 1.),
+        Point(0., 1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    auto bnd_faces = mesh.boundary_faces();
+    EXPECT_THAT(bnd_faces, UnorderedElementsAre(9, 10, 11, 12, 13, 14));
+}
+
 TEST(MeshTest, centroid_2d)
 {
     // clang-format off

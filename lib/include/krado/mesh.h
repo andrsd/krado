@@ -324,6 +324,11 @@ public:
     /// @return Boundary edge IDs
     std::vector<std::size_t> boundary_edges() const;
 
+    /// Get all boundary face IDs
+    ///
+    /// @return Boundary face IDs
+    std::vector<std::size_t> boundary_faces() const;
+
     /// Compute centroid
     ///
     /// @param index Index of the element

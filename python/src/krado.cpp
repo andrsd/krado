@@ -226,6 +226,7 @@ PYBIND11_MODULE(krado, m)
         .def("element_type", &Mesh::element_type)
         .def("set_up", &Mesh::set_up)
         .def("boundary_edges", &Mesh::boundary_edges)
+        .def("boundary_faces", &Mesh::boundary_faces)
         .def("compute_centroid", &Mesh::compute_centroid)
         .def("outward_normal", &Mesh::outward_normal)
     ;
