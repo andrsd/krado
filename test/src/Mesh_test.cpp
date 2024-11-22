@@ -323,7 +323,7 @@ TEST(MeshTest, centroid_3d)
     EXPECT_EQ(mesh.compute_centroid(14), Point(0.5, 0.5, 1.));
 }
 
-TEST(MeshTest, outward_normal)
+TEST(MeshTest, outward_normal_2d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -345,4 +345,33 @@ TEST(MeshTest, outward_normal)
     EXPECT_EQ(mesh.outward_normal(9), Vector(1, 0, 0));
     EXPECT_EQ(mesh.outward_normal(10), Vector(0, 1, 0));
     EXPECT_EQ(mesh.outward_normal(8), Vector(-1, 0, 0));
+}
+
+TEST(MeshTest, outward_normal_3d)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0., 0.),
+        Point(1., 0., 0.),
+        Point(1., 1., 0.),
+        Point(0., 1., 0.),
+        Point(0., 0., 1.),
+        Point(1., 0., 1.),
+        Point(1., 1., 1.),
+        Point(0., 1., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    EXPECT_EQ(mesh.outward_normal(9), Vector(0, -1, 0));
+    EXPECT_EQ(mesh.outward_normal(10), Vector(0, 1, 0));
+    EXPECT_EQ(mesh.outward_normal(11), Vector(-1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(12), Vector(1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(13), Vector(0, 0, -1));
+    EXPECT_EQ(mesh.outward_normal(14), Vector(0, 0, 1));
 }
