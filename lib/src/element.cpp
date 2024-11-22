@@ -74,6 +74,21 @@ const std::vector<std::vector<int>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
                                                               { 2, 0, 3, 5 },
                                                               { 3, 4, 5 } };
 
+const int Hex8::N_VERTICES = 8;
+const int Hex8::N_EDGES = 12;
+const int Hex8::N_FACES = 6;
+const std::vector<int> Hex8::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+const std::vector<std::vector<int>> Hex8::EDGE_VERTICES = {
+    { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 0, 4 }, { 1, 5 },
+    { 2, 6 }, { 3, 7 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }
+};
+const std::vector<std::vector<int>> Hex8::FACE_EDGES = { { 0, 5, 8, 4 },  { 2, 7, 10, 6 },
+                                                         { 3, 4, 11, 7 }, { 1, 6, 9, 5 },
+                                                         { 3, 2, 1, 0 },  { 8, 9, 10, 11 } };
+const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2, 3, 7, 6 },
+                                                            { 3, 0, 4, 7 }, { 1, 2, 6, 5 },
+                                                            { 0, 3, 2, 1 }, { 4, 5, 6, 7 } };
+
 //
 
 Element::Element(Type type, const std::vector<std::size_t> & vtx_ids, marker_t marker) :
