@@ -4,6 +4,7 @@
 #include <map>
 #include <iostream>
 #include <unordered_map>
+#include <algorithm>
 
 namespace krado {
 

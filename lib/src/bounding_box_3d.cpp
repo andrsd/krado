@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "krado/bounding_box_3d.h"
+#include <limits>
 
 namespace krado {
 

@@ -1,6 +1,7 @@
 #include "krado/transform.h"
 #include "krado/point.h"
 #include <iostream>
+#include <cmath>
 
 namespace krado {
 
