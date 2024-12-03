@@ -46,6 +46,16 @@ TEST(VectorTest, normalize)
     EXPECT_DOUBLE_EQ(a(2), 5. / l);
 }
 
+TEST(VectorTest, normalized)
+{
+    Vector a(3, 4, 5);
+    auto b = a.normalized();
+    double l = std::sqrt(3 * 3 + 4 * 4 + 5 * 5);
+    EXPECT_DOUBLE_EQ(b(0), 3. / l);
+    EXPECT_DOUBLE_EQ(b(1), 4. / l);
+    EXPECT_DOUBLE_EQ(b(2), 5. / l);
+}
+
 TEST(VectorTest, op_add)
 {
     Vector a(1, 2, 3);

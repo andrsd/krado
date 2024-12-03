@@ -37,6 +37,11 @@ public:
     /// Normalize the vector
     void normalize();
 
+    /// Return normalized vector
+    ///
+    /// @return Normalized vector
+    Vector normalized() const;
+
     double x, y, z;
 };
 

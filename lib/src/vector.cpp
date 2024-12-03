@@ -44,6 +44,14 @@ Vector::normalize()
 }
 
 Vector
+Vector::normalized() const
+{
+    Vector v = *this;
+    v.normalize();
+    return v;
+}
+
+Vector
 Vector::operator+(const Vector & other) const
 {
     return Vector(this->x + other.x, this->y + other.y, this->z + other.z);
