@@ -426,7 +426,6 @@ private:
     hasse_add_face_edges(std::size_t id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
-        auto elem_node_id = this->key_map[iid];
 
         const auto & elem_connect = elem.ids();
         for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
