@@ -166,6 +166,7 @@ operator<<(std::ostream & stream, const krado::Element & el)
     stream << "(" << krado::Element::type(el.type()) << ",";
     for (auto & id : el.ids())
         stream << " " << id;
+    stream << ", marker = " << el.marker();
     stream << ")";
     return stream;
 }
