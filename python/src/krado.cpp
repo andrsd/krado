@@ -6,6 +6,7 @@
 #include <pybind11/stl.h>
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
+#include "krado/extrude.h"
 #include "krado/exodusii_file.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
@@ -326,6 +327,9 @@ PYBIND11_MODULE(krado, m)
         .def("read", &ExodusIIFile::read)
         .def("write", &ExodusIIFile::write)
     ;
+
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
 
     m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
