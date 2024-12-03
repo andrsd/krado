@@ -3,6 +3,7 @@
 
 #include "krado/point.h"
 #include "krado/exception.h"
+#include "krado/vector.h"
 #include <iostream>
 #include <iomanip>
 
@@ -38,6 +39,22 @@ Point::operator()(int idx)
         throw Exception("Incorrect index");
 }
 
+Point
+Point::operator+(const Vector & v) const
+{
+    Point p = *this;
+    p += v;
+    return p;
+}
+
+Point
+Point::operator-(const Vector & v) const
+{
+    Point p = *this;
+    p -= v;
+    return p;
+}
+
 void
 Point::operator+=(const Point & p)
 {
@@ -47,11 +64,27 @@ Point::operator+=(const Point & p)
 }
 
 void
+Point::operator+=(const Vector & v)
+{
+    x += v.x;
+    y += v.y;
+    z += v.z;
+}
+
+void
 Point::operator-=(const Point & p)
 {
     x -= p.x;
     y -= p.y;
     z -= p.z;
+}
+
+void
+Point::operator-=(const Vector & v)
+{
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
 }
 
 void

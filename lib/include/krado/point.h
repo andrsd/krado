@@ -8,6 +8,8 @@
 
 namespace krado {
 
+class Vector;
+
 class Point {
 public:
     Point();
@@ -15,8 +17,12 @@ public:
 
     double operator()(int idx) const;
     double & operator()(int idx);
+    Point operator+(const Vector & v) const;
+    Point operator-(const Vector & v) const;
     void operator+=(const Point & p);
+    void operator+=(const Vector & v);
     void operator-=(const Point & p);
+    void operator-=(const Vector & v);
     void operator*=(double alpha);
     void operator/=(double mult);
     Point operator*(double alpha);

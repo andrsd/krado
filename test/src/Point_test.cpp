@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/point.h"
+#include "krado/vector.h"
 #include "krado/exception.h"
 
 using namespace krado;
@@ -103,4 +104,44 @@ TEST(PointTest, distance)
     Point b(2., -1., 6.);
     auto d = a.distance(b);
     EXPECT_DOUBLE_EQ(d, std::sqrt(11));
+}
+
+TEST(PointTest, oper_vec_plus)
+{
+    Point a(1., 2., 3.);
+    Vector b(2., -1., 4.);
+    auto c = a + b;
+    EXPECT_DOUBLE_EQ(c.x, 3.);
+    EXPECT_DOUBLE_EQ(c.y, 1.);
+    EXPECT_DOUBLE_EQ(c.z, 7.);
+}
+
+TEST(PointTest, oper_vec_minus)
+{
+    Point a(1., 2., 3.);
+    Vector b(2., -1., 4.);
+    auto c = a - b;
+    EXPECT_DOUBLE_EQ(c.x, -1.);
+    EXPECT_DOUBLE_EQ(c.y, 3.);
+    EXPECT_DOUBLE_EQ(c.z, -1.);
+}
+
+TEST(PointTest, oper_vec_add)
+{
+    Point a(1., 2., 3.);
+    Vector b(2., -1., 4.);
+    a += b;
+    EXPECT_DOUBLE_EQ(a.x, 3.);
+    EXPECT_DOUBLE_EQ(a.y, 1.);
+    EXPECT_DOUBLE_EQ(a.z, 7.);
+}
+
+TEST(PointTest, oper_vec_sub)
+{
+    Point a(1., 2., 3.);
+    Vector b(2., -1., 4.);
+    a -= b;
+    EXPECT_DOUBLE_EQ(a.x, -1.);
+    EXPECT_DOUBLE_EQ(a.y, 3.);
+    EXPECT_DOUBLE_EQ(a.z, -1.);
 }
