@@ -26,6 +26,7 @@
 #include "krado/element.h"
 #include "krado/scheme.h"
 #include "krado/point.h"
+#include "krado/tetrahedralize.h"
 #include "krado/transform.h"
 #include "krado/vector.h"
 #include "krado/io.h"
@@ -330,6 +331,8 @@ PYBIND11_MODULE(krado, m)
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
+
+    m.def("tetrahedralize", &tetrahedralize);
 
     m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));

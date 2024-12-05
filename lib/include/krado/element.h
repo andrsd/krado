@@ -156,6 +156,29 @@ public:
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };
 
+//
+
+template <Element::Type ET>
+struct ElementSelector;
+
+template <>
+struct ElementSelector<Element::Type::HEX8> {
+    static constexpr int N_VERTICES = Hex8::N_VERTICES;
+    static constexpr int N_FACES = Hex8::N_FACES;
+};
+
+template <>
+struct ElementSelector<Element::Type::PRISM6> {
+    static constexpr int N_VERTICES = Prism6::N_VERTICES;
+    static constexpr int N_FACES = Prism6::N_FACES;
+};
+
+template <>
+struct ElementSelector<Element::Type::PYRAMID5> {
+    static constexpr int N_VERTICES = Pyramid5::N_VERTICES;
+    static constexpr int N_FACES = Pyramid5::N_FACES;
+};
+
 bool operator==(const Element & a, const Element & b);
 
 } // namespace krado

@@ -98,4 +98,24 @@ index_of(const std::vector<T> & vec, const T & value)
         return -1; // Value not found
 }
 
+// Conversion from `std::vector` to `std::array`
+//
+// Taken from: https://stackoverflow.com/a/40931342/6122323
+
+template <typename T, typename Iter, std::size_t... Is>
+constexpr auto
+to_array(Iter & iter, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)>
+{
+    return { { ((void) Is, *iter++)... } };
+}
+
+template <std::size_t N,
+          typename Iter,
+          typename T = typename std::iterator_traits<Iter>::value_type>
+constexpr auto
+to_array(Iter iter) -> std::array<T, N>
+{
+    return to_array<T>(iter, std::make_index_sequence<N> {});
+}
+
 } // namespace krado::utils
