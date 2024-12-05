@@ -57,7 +57,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Point>(m, "Point")
-        .def(py::init<double, double, double>())
+        .def(py::init<double, double, double>(), py::arg("x"), py::arg("y") = 0., py::arg("z") = 0.)
         .def_readwrite("x", &Point::x)
         .def_readwrite("y", &Point::y)
         .def_readwrite("z", &Point::z)
