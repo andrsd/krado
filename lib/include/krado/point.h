@@ -10,9 +10,13 @@ namespace krado {
 
 class Vector;
 
+/// Point in 3D space
 class Point {
 public:
+    /// Construct point at origin
     Point();
+
+    /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);
 
     double operator()(int idx) const;
@@ -31,7 +35,12 @@ public:
     bool operator<(const Point & p) const;
     bool transform(const std::vector<double> & tfo);
 
-    double x, y, z;
+    /// X-component
+    double x;
+    /// Y-component
+    double y;
+    /// Z-component
+    double z;
 };
 
 inline Point

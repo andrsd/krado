@@ -9,10 +9,14 @@ namespace krado {
 
 class Point;
 
+/// Vector in 3D space
 class Vector {
 public:
+    /// Construct zero vector
     Vector();
+    /// Construct vector with given coordinates
     explicit Vector(double x, double y = 0., double z = 0.);
+    /// Construct vector from point
     explicit Vector(const Point & pt);
 
     double operator()(int idx) const;
@@ -42,7 +46,12 @@ public:
     /// @return Normalized vector
     Vector normalized() const;
 
-    double x, y, z;
+    /// X-component
+    double x;
+    /// Y-component
+    double y;
+    /// Z-component
+    double z;
 };
 
 inline Vector

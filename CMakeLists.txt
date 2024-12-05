@@ -109,3 +109,5 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/krado-config-version.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
 )
+
+add_subdirectory(docs)
