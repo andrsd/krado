@@ -75,7 +75,8 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
 
     std::vector<Point> points;
     points.reserve(layer_stride * (thicknesses.size() + 1));
-    points = mesh.points();
+    for (auto & pt : mesh.points())
+        points.emplace_back(pt);
     for (std::size_t i = 0; i < thicknesses.size(); ++i) {
         auto delta = thicknesses[i];
         for (auto & pt : mesh.points()) {
