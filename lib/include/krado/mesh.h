@@ -187,13 +187,13 @@ public:
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    const std::vector<gidx_t> cell_set(marker_t id) const;
+    const std::vector<gidx_t> & cell_set(marker_t id) const;
 
     /// Set cell set
     ///
     /// @param id Cell set ID
     /// @param cell_ids Cell IDs
-    void set_cell_set(marker_t id, const std::vector<gidx_t> cell_ids);
+    void set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
 
     /// Set face set name
     ///
@@ -214,13 +214,13 @@ public:
     ///
     /// @param id Face set ID
     /// @return Face set
-    const std::vector<gidx_t> face_set(marker_t id) const;
+    const std::vector<gidx_t> & face_set(marker_t id) const;
 
     /// Set face set
     ///
     /// @param id Face set ID
     /// @param face_ids Face IDs
-    void set_face_set(marker_t id, const std::vector<gidx_t> face_ids);
+    void set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
 
     /// Set edge set name
     ///
@@ -241,13 +241,13 @@ public:
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    const std::vector<gidx_t> edge_set(marker_t id) const;
+    const std::vector<gidx_t> & edge_set(marker_t id) const;
 
     /// Set edge set
     ///
     /// @param id Edge set ID
     /// @param edge_ids Edge IDs
-    void set_edge_set(marker_t id, const std::vector<gidx_t> edge_ids);
+    void set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
 
     /// Set side set name
     ///
@@ -268,13 +268,19 @@ public:
     ///
     /// @param id Side set ID
     /// @return Side set
-    const std::vector<side_set_entry_t> side_set(marker_t id) const;
+    const std::vector<side_set_entry_t> & side_set(marker_t id) const;
 
     /// Set side set
     ///
     /// @param id Side set ID
     /// @param elem_ids Element IDs
-    void set_side_set(marker_t id, const std::vector<gidx_t> elem_ids);
+    void set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids);
+
+    /// Set side set
+    ///
+    /// @param id Side set ID
+    /// @param side_set_entries Side set entries
+    void set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
 
     /// Remap block IDs
     ///

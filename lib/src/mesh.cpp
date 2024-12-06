@@ -594,7 +594,7 @@ Mesh::cell_set_ids() const
     return utils::map_keys(this->cell_sets);
 }
 
-const std::vector<gidx_t>
+const std::vector<gidx_t> &
 Mesh::cell_set(marker_t id) const
 {
     try {
@@ -606,7 +606,7 @@ Mesh::cell_set(marker_t id) const
 }
 
 void
-Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> cell_ids)
+Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
 {
     this->cell_sets[id] = cell_ids;
 }
@@ -634,7 +634,7 @@ Mesh::face_set_ids() const
     return utils::map_keys(this->face_sets);
 }
 
-const std::vector<gidx_t>
+const std::vector<gidx_t> &
 Mesh::face_set(marker_t id) const
 {
     try {
@@ -646,7 +646,7 @@ Mesh::face_set(marker_t id) const
 }
 
 void
-Mesh::set_face_set(marker_t id, const std::vector<gidx_t> face_ids)
+Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
 {
     this->face_sets[id] = face_ids;
 }
@@ -674,7 +674,7 @@ Mesh::edge_set_ids() const
     return utils::map_keys(this->edge_sets);
 }
 
-const std::vector<gidx_t>
+const std::vector<gidx_t> &
 Mesh::edge_set(marker_t id) const
 {
     try {
@@ -686,7 +686,7 @@ Mesh::edge_set(marker_t id) const
 }
 
 void
-Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> edge_ids)
+Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids)
 {
     this->edge_sets[id] = edge_ids;
 }
@@ -714,7 +714,7 @@ Mesh::side_set_ids() const
     return utils::map_keys(this->side_sets);
 }
 
-const std::vector<side_set_entry_t>
+const std::vector<side_set_entry_t> &
 Mesh::side_set(marker_t id) const
 {
     try {
@@ -726,7 +726,7 @@ Mesh::side_set(marker_t id) const
 }
 
 void
-Mesh::set_side_set(marker_t id, const std::vector<gidx_t> elem_ids)
+Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
 {
     std::vector<side_set_entry_t> side_set;
     for (auto & eid : elem_ids) {
@@ -741,6 +741,12 @@ Mesh::set_side_set(marker_t id, const std::vector<gidx_t> elem_ids)
         side_set.emplace_back(cell, side);
     }
     this->side_sets[id] = side_set;
+}
+
+void
+Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
+{
+    this->side_sets[id] = side_set_entries;
 }
 
 void

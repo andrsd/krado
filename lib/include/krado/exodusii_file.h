@@ -37,6 +37,11 @@ private:
     /// @return Vector of elements
     std::vector<Element> read_elements();
 
+    /// Read side sets
+    ///
+    /// @return Vector of side set entries
+    std::map<int, std::vector<side_set_entry_t>> read_side_sets();
+
     /// Determine mesh spatial dimension
     ///
     /// @param mesh Mesh object

@@ -118,8 +118,14 @@ ExodusIIFile::read()
     this->exo.init();
     auto pnts = read_points();
     auto elems = read_elements();
+    auto side_sets = read_side_sets();
     this->exo.close();
-    return { pnts, elems };
+
+    Mesh mesh(pnts, elems);
+    for (auto & [id, ss] : side_sets)
+        mesh.set_side_set(id, ss);
+
+    return mesh;
 }
 
 std::vector<Point>
@@ -184,6 +190,21 @@ ExodusIIFile::read_elements()
     }
 
     return elems;
+}
+
+std::map<int, std::vector<side_set_entry_t>>
+ExodusIIFile::read_side_sets()
+{
+    std::map<int, std::vector<side_set_entry_t>> side_sets;
+    this->exo.read_side_sets();
+    for (auto & ss : this->exo.get_side_sets()) {
+        auto id = ss.get_id();
+        auto & elem_ids = ss.get_element_ids();
+        auto & sides = ss.get_side_ids();
+        for (auto i = 0; i < ss.get_size(); ++i)
+            side_sets[id].emplace_back(elem_ids[i] - 1, sides[i] - 1);
+    }
+    return side_sets;
 }
 
 void

@@ -26,6 +26,17 @@ TEST(ExodusIIFileTest, read_2d)
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
     EXPECT_THAT(elems[1].type(), Eq(Element::TRI3));
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+
+    auto side_set_ids = mesh.side_set_ids();
+    EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
+
+    auto & ss0 = mesh.side_set(10);
+    EXPECT_EQ(ss0[0].elem, 1);
+    EXPECT_EQ(ss0[0].side, 1);
+
+    auto & ss1 = mesh.side_set(11);
+    EXPECT_EQ(ss1[0].elem, 0);
+    EXPECT_EQ(ss1[0].side, 2);
 }
 
 TEST(ExodusIIFileTest, write_2d)
