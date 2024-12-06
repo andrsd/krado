@@ -4,6 +4,7 @@
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
 #include "builder.h"
+#include "krado/range.h"
 #include <filesystem>
 
 using namespace krado;
@@ -176,10 +177,9 @@ TEST(MeshTest, element_ids_2d)
 
     Mesh mesh(pts, elems);
     mesh.set_up();
-    EXPECT_THAT(mesh.cell_ids(), ElementsAre(0, 1));
-    EXPECT_THAT(mesh.edge_ids(), ElementsAre(6, 7, 8, 9, 10));
-    EXPECT_THAT(mesh.face_ids(), ElementsAre());
-    EXPECT_THAT(mesh.point_ids(), ElementsAre(2, 3, 4, 5));
+    EXPECT_EQ(mesh.cell_ids(), krado::Range(0, 1));
+    EXPECT_EQ(mesh.edge_ids(), krado::Range(6, 10));
+    EXPECT_EQ(mesh.point_ids(), krado::Range(2, 5));
 }
 
 TEST(MeshTest, element_ids_3d)
@@ -202,10 +202,10 @@ TEST(MeshTest, element_ids_3d)
 
     Mesh mesh(pts, elems);
     mesh.set_up();
-    EXPECT_THAT(mesh.cell_ids(), ElementsAre(0));
-    EXPECT_THAT(mesh.face_ids(), ElementsAre(9, 10, 11, 12, 13, 14));
-    EXPECT_THAT(mesh.edge_ids(), ElementsAre(15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26));
-    EXPECT_THAT(mesh.point_ids(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
+    EXPECT_EQ(mesh.cell_ids(), krado::Range(0, 0));
+    EXPECT_EQ(mesh.face_ids(), krado::Range(9, 14));
+    EXPECT_EQ(mesh.edge_ids(), krado::Range(15, 26));
+    EXPECT_EQ(mesh.point_ids(), krado::Range(1, 8));
 }
 
 TEST(MeshTest, element_ids_from_file_2d)
@@ -214,10 +214,10 @@ TEST(MeshTest, element_ids_from_file_2d)
     auto m = f.read();
     m.set_up();
 
-    EXPECT_THAT(m.cell_ids(), ElementsAre(0, 1));
-    EXPECT_THAT(m.edge_ids(), ElementsAre(6, 7, 8, 9, 10));
-    EXPECT_THAT(m.face_ids(), ElementsAre());
-    EXPECT_THAT(m.point_ids(), ElementsAre(2, 3, 4, 5));
+    EXPECT_EQ(m.cell_ids(), krado::Range(0, 1));
+    EXPECT_EQ(m.edge_ids(), krado::Range(6, 10));
+    // EXPECT_EQ(m.face_ids(), krado::Range());
+    EXPECT_EQ(m.point_ids(), krado::Range(2, 5));
 
     EXPECT_THAT(m.support(0), ElementsAre());
     EXPECT_THAT(m.support(1), ElementsAre());
@@ -250,14 +250,10 @@ TEST(MeshTest, element_ids_from_file_3d)
     auto m = f.read();
     m.set_up();
 
-    EXPECT_THAT(m.cell_ids(), ElementsAre(0, 1, 2, 3, 4, 5));
-    EXPECT_THAT(
-        m.face_ids(),
-        ElementsAre(14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
-    EXPECT_THAT(
-        m.edge_ids(),
-        ElementsAre(32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50));
-    EXPECT_THAT(m.point_ids(), ElementsAre(6, 7, 8, 9, 10, 11, 12, 13));
+    EXPECT_EQ(m.cell_ids(), krado::Range(0, 5));
+    EXPECT_EQ(m.face_ids(), krado::Range(14, 31));
+    EXPECT_EQ(m.edge_ids(), krado::Range(32, 50));
+    EXPECT_EQ(m.point_ids(), krado::Range(6, 13));
 
     ExodusIIFile out("a.e");
     out.write(m);

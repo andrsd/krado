@@ -17,4 +17,6 @@ target_include_directories(${NAME}
 target_link_libraries(${NAME}
     PRIVATE
         libkrado
+    PUBLIC
+        ${Boost_LIBRARIES}
 )

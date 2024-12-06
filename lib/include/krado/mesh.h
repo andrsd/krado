@@ -12,6 +12,7 @@
 #include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/transform.h"
+#include "krado/range.h"
 #include "krado/hasse_diagram.h"
 #include "krado/utils.h"
 #include <cstdint>
@@ -283,32 +284,32 @@ public:
     /// Get mesh point IDs
     ///
     /// @return Mesh point IDs
-    const std::set<std::size_t> & point_ids() const;
+    const Range & point_ids() const;
 
     /// Get mesh edge IDs
     ///
     /// @return Mesh edge IDs
-    const std::set<std::size_t> & edge_ids() const;
+    const Range & edge_ids() const;
 
     /// Get mesh face IDs
     ///
     /// @return Mesh face IDs
-    const std::set<std::size_t> & face_ids() const;
+    const Range & face_ids() const;
 
     /// Get mesh cell IDs
     ///
     /// @return Mesh cell IDs
-    const std::set<std::size_t> & cell_ids() const;
+    const Range & cell_ids() const;
 
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    const std::vector<std::size_t> & support(int64_t index) const;
+    std::vector<std::size_t> support(int64_t index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    const std::vector<std::size_t> & connectivity(int64_t index) const;
+    std::vector<std::size_t> connectivity(int64_t index) const;
 
     /// Get element type
     ///
@@ -379,9 +380,9 @@ private:
     {
         auto k = utils::key(edge_connect);
         if (this->key_map.find(k) == this->key_map.end()) {
-            auto edge_node_id = this->hasse.nodes.size();
+            auto edge_node_id = this->hasse.size();
             this->key_map[k] = edge_node_id;
-            this->hasse.add_node(edge_node_id, HasseDiagram::Node::Edge);
+            this->hasse.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
             this->hasse.add_edge(parent_node_id, edge_node_id);
             this->elems.emplace_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
         }
@@ -403,9 +404,9 @@ private:
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[j]);
             auto k = utils::key(face_connect);
             if (this->key_map.find(k) == this->key_map.end()) {
-                auto face_node_id = this->hasse.nodes.size();
+                auto face_node_id = this->hasse.size();
                 this->key_map[k] = face_node_id;
-                this->hasse.add_node(face_node_id, HasseDiagram::Node::Face);
+                this->hasse.add_node(face_node_id, HasseDiagram::NodeType::Face);
                 this->hasse.add_edge(elem_node_id, face_node_id);
                 if (face_connect.size() == 3)
                     this->elems.emplace_back(
@@ -425,8 +426,6 @@ private:
     void
     hasse_add_face_edges(std::size_t id, const Element & elem)
     {
-        auto iid = utils::key(-(id + 1));
-
         const auto & elem_connect = elem.ids();
         for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[i]);
@@ -511,7 +510,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse;
     /// Map of keys to node IDs
-    std::map<std::vector<std::int64_t>, std::size_t> key_map;
+    std::map<std::size_t, std::size_t> key_map;
 };
 
 } // namespace krado

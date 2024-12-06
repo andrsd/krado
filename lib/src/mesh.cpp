@@ -729,13 +729,13 @@ Mesh::set_side_set(marker_t id, const std::vector<std::size_t> elem_ids)
 {
     std::vector<side_set_entry_t> side_set;
     for (auto & eid : elem_ids) {
-        auto & supp = support(eid);
+        auto supp = support(eid);
         if (supp.size() == 2)
             throw Exception("Internal side sets are not supported, yet");
         if (supp.size() == 0)
             throw Exception("Edge {} has no support", eid);
         auto cell = supp[0];
-        auto & cell_connect = connectivity(cell);
+        auto cell_connect = connectivity(cell);
         auto side = utils::index_of(cell_connect, eid);
         side_set.emplace_back(cell, side);
     }
@@ -752,47 +752,45 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
     }
 }
 
-const std::set<std::size_t> &
+const Range &
 Mesh::point_ids() const
 {
-    return this->hasse.vertices;
+    return this->hasse.vertices();
 }
 
-const std::set<std::size_t> &
+const Range &
 Mesh::edge_ids() const
 {
-    return this->hasse.edges;
+    return this->hasse.edges();
 }
 
-const std::set<std::size_t> &
+const Range &
 Mesh::face_ids() const
 {
-    return this->hasse.faces;
+    return this->hasse.faces();
 }
 
-const std::set<std::size_t> &
+const Range &
 Mesh::cell_ids() const
 {
-    return this->hasse.cells;
+    return this->hasse.cells();
 }
 
-const std::vector<std::size_t> &
+std::vector<std::size_t>
 Mesh::support(int64_t index) const
 {
-    return this->hasse.nodes.at(index).support;
+    return this->hasse.get_in_vertices(index);
 }
 
-const std::vector<std::size_t> &
+std::vector<std::size_t>
 Mesh::connectivity(int64_t index) const
 {
-    return this->hasse.nodes.at(index).children;
+    return this->hasse.get_out_vertices(index);
 }
 
 Element::Type
 Mesh::element_type(int64_t index) const
 {
-    // auto & node = this->hasse.nodes.at(index);
-    // auto i = node.index;
     return this->elems.at(index).type();
 }
 
@@ -813,7 +811,7 @@ Mesh::build_hasse_diagram()
         if (this->key_map.find(id) == this->key_map.end()) {
             auto elem_node_id = i;
             this->key_map[id] = elem_node_id;
-            this->hasse.add_node(elem_node_id, HasseDiagram::Node::Cell);
+            this->hasse.add_node(elem_node_id, HasseDiagram::NodeType::Cell);
 
             auto marker = cell.marker();
             if (marker != 0)
@@ -825,9 +823,9 @@ Mesh::build_hasse_diagram()
     for (std::size_t i = 0; i < this->pnts.size(); ++i) {
         auto vtx_id = utils::key(i);
         if (this->key_map.find(vtx_id) == this->key_map.end()) {
-            auto vtx_node_id = this->hasse.nodes.size();
+            auto vtx_node_id = this->hasse.size();
             this->key_map[vtx_id] = vtx_node_id;
-            this->hasse.add_node(vtx_node_id, HasseDiagram::Node::Vertex);
+            this->hasse.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
             this->elems.emplace_back(Element::Point(i));
         }
     }
@@ -880,7 +878,7 @@ Mesh::boundary_edges() const
 {
     std::vector<std::size_t> bnd_edges;
     for (auto & edge : edge_ids()) {
-        auto & supp = support(edge);
+        auto supp = support(edge);
         if (supp.size() == 1)
             bnd_edges.push_back(edge);
     }
@@ -892,7 +890,7 @@ Mesh::boundary_faces() const
 {
     std::vector<std::size_t> bnd_faces;
     for (auto & face : face_ids()) {
-        auto & supp = support(face);
+        auto supp = support(face);
         if (supp.size() == 1)
             bnd_faces.push_back(face);
     }
@@ -915,7 +913,7 @@ Mesh::compute_centroid(std::size_t index) const
 Vector
 Mesh::outward_normal(std::size_t index) const
 {
-    auto & supp = support(index);
+    auto supp = support(index);
     if (supp.size() != 1)
         throw Exception("Normals are supported only for sides on boundaries");
 
