@@ -21,10 +21,10 @@
 namespace krado {
 
 struct side_set_entry_t {
-    std::size_t elem;
+    gidx_t elem;
     std::size_t side;
 
-    side_set_entry_t(std::size_t elem, std::size_t side) : elem(elem), side(side) {}
+    side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
 };
 
 class GeomModel;
@@ -98,7 +98,7 @@ public:
     ///
     /// @param idx Index of the point
     /// @return Point
-    const Point & point(std::size_t idx) const;
+    const Point & point(gidx_t idx) const;
 
     /// Get elements
     ///
@@ -109,7 +109,7 @@ public:
     ///
     /// @param idx Index of the element
     /// @return Element
-    const Element & element(std::size_t idx) const;
+    const Element & element(gidx_t idx) const;
 
     ///
     void number_points();
@@ -187,13 +187,13 @@ public:
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    const std::vector<std::size_t> cell_set(marker_t id) const;
+    const std::vector<gidx_t> cell_set(marker_t id) const;
 
     /// Set cell set
     ///
     /// @param id Cell set ID
     /// @param cell_ids Cell IDs
-    void set_cell_set(marker_t id, const std::vector<std::size_t> cell_ids);
+    void set_cell_set(marker_t id, const std::vector<gidx_t> cell_ids);
 
     /// Set face set name
     ///
@@ -214,13 +214,13 @@ public:
     ///
     /// @param id Face set ID
     /// @return Face set
-    const std::vector<std::size_t> face_set(marker_t id) const;
+    const std::vector<gidx_t> face_set(marker_t id) const;
 
     /// Set face set
     ///
     /// @param id Face set ID
     /// @param face_ids Face IDs
-    void set_face_set(marker_t id, const std::vector<std::size_t> face_ids);
+    void set_face_set(marker_t id, const std::vector<gidx_t> face_ids);
 
     /// Set edge set name
     ///
@@ -241,13 +241,13 @@ public:
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    const std::vector<std::size_t> edge_set(marker_t id) const;
+    const std::vector<gidx_t> edge_set(marker_t id) const;
 
     /// Set edge set
     ///
     /// @param id Edge set ID
     /// @param edge_ids Edge IDs
-    void set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids);
+    void set_edge_set(marker_t id, const std::vector<gidx_t> edge_ids);
 
     /// Set side set name
     ///
@@ -274,7 +274,7 @@ public:
     ///
     /// @param id Side set ID
     /// @param elem_ids Element IDs
-    void set_side_set(marker_t id, const std::vector<std::size_t> elem_ids);
+    void set_side_set(marker_t id, const std::vector<gidx_t> elem_ids);
 
     /// Remap block IDs
     ///
@@ -304,24 +304,24 @@ public:
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    std::vector<std::size_t> support(int64_t index) const;
+    std::vector<gidx_t> support(gidx_t index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    std::vector<std::size_t> cone(int64_t index) const;
+    std::vector<gidx_t> cone(gidx_t index) const;
 
     /// Get cone vertices of a mesh node
     ///
     /// @param index Index of the node
     /// @return Cone vertices
-    std::set<std::size_t> cone_vertices(int64_t index) const;
+    std::set<gidx_t> cone_vertices(gidx_t index) const;
 
     /// Get element type
     ///
     /// @param index Index of the element
     /// @return Element type
-    Element::Type element_type(int64_t index) const;
+    Element::Type element_type(gidx_t index) const;
 
     /// Prepare mesh
     void set_up();
@@ -329,24 +329,24 @@ public:
     /// Get all boundary edge IDs
     ///
     /// @return Boundary edge IDs
-    std::vector<std::size_t> boundary_edges() const;
+    std::vector<gidx_t> boundary_edges() const;
 
     /// Get all boundary face IDs
     ///
     /// @return Boundary face IDs
-    std::vector<std::size_t> boundary_faces() const;
+    std::vector<gidx_t> boundary_faces() const;
 
     /// Compute centroid
     ///
     /// @param index Index of the element
     /// @return Centroid
-    Point compute_centroid(std::size_t index) const;
+    Point compute_centroid(gidx_t index) const;
 
     /// Compute outward normal
     ///
     /// @param index Index of the edge/face
     /// @return Outward normal
-    Vector outward_normal(std::size_t index) const;
+    Vector outward_normal(gidx_t index) const;
 
 protected:
     void build_1d_elements();
@@ -382,11 +382,11 @@ private:
     void build_hasse_diagram();
 
     void
-    hasse_add_edge(std::size_t parent_node_id, const std::vector<std::size_t> & edge_connect)
+    hasse_add_edge(gidx_t parent_node_id, const std::vector<gidx_t> & edge_connect)
     {
         auto k = utils::key(edge_connect);
         if (this->key_map.find(k) == this->key_map.end()) {
-            auto edge_node_id = this->hasse.size();
+            gidx_t edge_node_id = this->hasse.size();
             this->key_map[k] = edge_node_id;
             this->hasse.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
             this->hasse.add_edge(parent_node_id, edge_node_id);
@@ -399,7 +399,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_faces(std::size_t id, const Element & elem)
+    hasse_add_faces(gidx_t id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
         auto elem_node_id = this->key_map[iid];
@@ -423,7 +423,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_face_edges(std::size_t id, const Element & elem)
+    hasse_add_face_edges(gidx_t id, const Element & elem)
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
@@ -441,7 +441,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_edges(std::size_t id, const Element & elem)
+    hasse_add_edges(gidx_t id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
         auto elem_node_id = this->key_map[iid];
@@ -455,7 +455,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_edge_vertices(std::size_t id, const Element & elem)
+    hasse_add_edge_vertices(gidx_t id, const Element & elem)
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
@@ -487,15 +487,15 @@ private:
     /// Cell set names
     std::map<marker_t, std::string> cell_set_names;
     /// Cell sets
-    std::map<marker_t, std::vector<std::size_t>> cell_sets;
+    std::map<marker_t, std::vector<gidx_t>> cell_sets;
     /// Face set names
     std::map<marker_t, std::string> face_set_names;
     /// Face sets
-    std::map<marker_t, std::vector<std::size_t>> face_sets;
+    std::map<marker_t, std::vector<gidx_t>> face_sets;
     /// Edge set names
     std::map<marker_t, std::string> edge_set_names;
     /// Edge sets
-    std::map<marker_t, std::vector<std::size_t>> edge_sets;
+    std::map<marker_t, std::vector<gidx_t>> edge_sets;
 
     /// Side set names
     std::map<marker_t, std::string> side_set_names;
@@ -509,7 +509,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse;
     /// Map of keys to node IDs
-    std::map<std::size_t, std::size_t> key_map;
+    std::map<std::size_t, gidx_t> key_map;
 };
 
 } // namespace krado

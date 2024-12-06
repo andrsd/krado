@@ -23,10 +23,10 @@ to_lower(const std::string & text)
     return lower;
 }
 
-std::vector<std::size_t>
-sub_connect(const std::vector<std::size_t> & element_connect, const std::vector<int> & idxs)
+std::vector<gidx_t>
+sub_connect(const std::vector<gidx_t> & element_connect, const std::vector<int> & idxs)
 {
-    std::vector<std::size_t> connect;
+    std::vector<gidx_t> connect;
     for (auto i : idxs)
         connect.emplace_back(element_connect[i]);
     return connect;
@@ -41,9 +41,9 @@ key(const std::size_t id)
 }
 
 std::size_t
-key(const std::vector<std::size_t> & idxs)
+key(const std::vector<gidx_t> & idxs)
 {
-    std::vector<std::int64_t> vertices(idxs.begin(), idxs.end());
+    std::vector<gidx_t> vertices(idxs.begin(), idxs.end());
     std::sort(vertices.begin(), vertices.end());
 
     std::size_t hash_value = 0;

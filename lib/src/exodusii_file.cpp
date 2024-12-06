@@ -61,10 +61,10 @@ element_type(const std::string elem_type_name)
 }
 
 template <int N>
-std::vector<std::size_t>
+std::vector<gidx_t>
 build_element_connect(const std::vector<int> & connect, int idx)
 {
-    std::vector<std::size_t> elem_connect(N);
+    std::vector<gidx_t> elem_connect(N);
     for (int i = 0; i < N; i++)
         elem_connect[i] = connect[idx + i] - 1;
     return elem_connect;
@@ -258,7 +258,7 @@ void
 ExodusIIFile::write_elements(const Mesh & mesh)
 {
     if (mesh.cell_set_ids().empty()) {
-        std::map<Element::Type, std::vector<std::size_t>> elem_blks;
+        std::map<Element::Type, std::vector<gidx_t>> elem_blks;
         int exii_idx = 1;
         for (auto & cell_id : mesh.cell_ids()) {
             this->exii_elem_ids[cell_id] = exii_idx++;
@@ -293,7 +293,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         // type in the same block.
         // Currently, we just assume cell sets are homogeneous in terms of cell type.
 
-        std::map<int, std::vector<std::size_t>> elem_blks;
+        std::map<int, std::vector<gidx_t>> elem_blks;
         std::map<int, std::string> elem_blk_names;
         for (auto & cell_id : mesh.cell_ids()) {
             auto & cell = mesh.element(cell_id);

@@ -57,7 +57,7 @@ public:
     }
 
     void
-    add_node(std::size_t id, NodeType type)
+    add_node(gidx_t id, NodeType type)
     {
         auto nd = boost::add_vertex(this->grph);
         this->grph[nd].type = type;
@@ -73,7 +73,7 @@ public:
     }
 
     void
-    add_edge(std::size_t parent_id, std::size_t child_id)
+    add_edge(gidx_t parent_id, gidx_t child_id)
     {
         auto edge_result = boost::edge(parent_id, child_id, this->grph);
         if (!edge_result.second)
@@ -81,7 +81,7 @@ public:
     }
 
     NodeType
-    node_type(std::size_t id) const
+    node_type(gidx_t id) const
     {
         return this->grph[id].type;
     }
@@ -90,31 +90,28 @@ public:
     clear()
     {
         this->grph = Graph();
-        this->vertex_rng = { std::numeric_limits<std::size_t>::max(),
-                             std::numeric_limits<std::size_t>::min() };
-        this->edge_rng = { std::numeric_limits<std::size_t>::max(),
-                           std::numeric_limits<std::size_t>::min() };
-        this->face_rng = { std::numeric_limits<std::size_t>::max(),
-                           std::numeric_limits<std::size_t>::min() };
-        this->cell_rng = { std::numeric_limits<std::size_t>::max(),
-                           std::numeric_limits<std::size_t>::min() };
+        this->vertex_rng = { std::numeric_limits<gidx_t>::max(),
+                             std::numeric_limits<gidx_t>::min() };
+        this->edge_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+        this->face_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+        this->cell_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
     }
 
-    std::vector<std::size_t>
+    std::vector<gidx_t>
     get_out_vertices(Node v1) const
     {
         auto range = boost::adjacent_vertices(v1, this->grph);
-        std::vector<std::size_t> vtxs;
+        std::vector<gidx_t> vtxs;
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(*it);
         return vtxs;
     }
 
-    std::vector<std::size_t>
+    std::vector<gidx_t>
     get_in_vertices(Node v1) const
     {
         auto range = boost::in_edges(v1, this->grph);
-        std::vector<std::size_t> vtxs;
+        std::vector<gidx_t> vtxs;
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(boost::source(*it, this->grph));
         return vtxs;
@@ -139,14 +136,10 @@ public:
     }
 
 private:
-    Range vertex_rng = { std::numeric_limits<std::size_t>::max(),
-                         std::numeric_limits<std::size_t>::min() };
-    Range edge_rng = { std::numeric_limits<std::size_t>::max(),
-                       std::numeric_limits<std::size_t>::min() };
-    Range face_rng = { std::numeric_limits<std::size_t>::max(),
-                       std::numeric_limits<std::size_t>::min() };
-    Range cell_rng = { std::numeric_limits<std::size_t>::max(),
-                       std::numeric_limits<std::size_t>::min() };
+    Range vertex_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+    Range edge_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+    Range face_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+    Range cell_rng = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
 
     Graph grph;
 };

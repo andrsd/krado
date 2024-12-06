@@ -393,7 +393,7 @@ Mesh::points() const
 }
 
 const Point &
-Mesh::point(std::size_t idx) const
+Mesh::point(gidx_t idx) const
 {
     return this->pnts.at(idx);
 }
@@ -405,7 +405,7 @@ Mesh::elements() const
 }
 
 const Element &
-Mesh::element(std::size_t idx) const
+Mesh::element(gidx_t idx) const
 {
     return this->elems.at(idx);
 }
@@ -459,7 +459,7 @@ Mesh::build_1d_elements()
     for (auto & [id, curve] : this->crvs) {
         if (curve.is_meshed()) {
             auto verts = curve.all_vertices();
-            std::array<std::size_t, 2> line;
+            std::array<gidx_t, 2> line;
             for (auto & local_elem : curve.segments()) {
                 for (int i = 0; i < 2; i++) {
                     auto lid = local_elem.ids()[i];
@@ -478,7 +478,7 @@ Mesh::build_2d_elements()
     for (auto & [id, surface] : this->surfs) {
         if (surface.is_meshed()) {
             auto verts = surface.all_vertices();
-            std::array<std::size_t, 3> tri;
+            std::array<gidx_t, 3> tri;
             for (auto & local_elem : surface.triangles()) {
                 for (int i = 0; i < 3; i++) {
                     auto lid = local_elem.ids()[i];
@@ -594,7 +594,7 @@ Mesh::cell_set_ids() const
     return utils::map_keys(this->cell_sets);
 }
 
-const std::vector<std::size_t>
+const std::vector<gidx_t>
 Mesh::cell_set(marker_t id) const
 {
     try {
@@ -606,7 +606,7 @@ Mesh::cell_set(marker_t id) const
 }
 
 void
-Mesh::set_cell_set(marker_t id, const std::vector<std::size_t> cell_ids)
+Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> cell_ids)
 {
     this->cell_sets[id] = cell_ids;
 }
@@ -634,7 +634,7 @@ Mesh::face_set_ids() const
     return utils::map_keys(this->face_sets);
 }
 
-const std::vector<std::size_t>
+const std::vector<gidx_t>
 Mesh::face_set(marker_t id) const
 {
     try {
@@ -646,7 +646,7 @@ Mesh::face_set(marker_t id) const
 }
 
 void
-Mesh::set_face_set(marker_t id, const std::vector<std::size_t> face_ids)
+Mesh::set_face_set(marker_t id, const std::vector<gidx_t> face_ids)
 {
     this->face_sets[id] = face_ids;
 }
@@ -674,7 +674,7 @@ Mesh::edge_set_ids() const
     return utils::map_keys(this->edge_sets);
 }
 
-const std::vector<std::size_t>
+const std::vector<gidx_t>
 Mesh::edge_set(marker_t id) const
 {
     try {
@@ -686,7 +686,7 @@ Mesh::edge_set(marker_t id) const
 }
 
 void
-Mesh::set_edge_set(marker_t id, const std::vector<std::size_t> edge_ids)
+Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> edge_ids)
 {
     this->edge_sets[id] = edge_ids;
 }
@@ -726,7 +726,7 @@ Mesh::side_set(marker_t id) const
 }
 
 void
-Mesh::set_side_set(marker_t id, const std::vector<std::size_t> elem_ids)
+Mesh::set_side_set(marker_t id, const std::vector<gidx_t> elem_ids)
 {
     std::vector<side_set_entry_t> side_set;
     for (auto & eid : elem_ids) {
@@ -777,26 +777,26 @@ Mesh::cell_ids() const
     return this->hasse.cells();
 }
 
-std::vector<std::size_t>
-Mesh::support(int64_t index) const
+std::vector<gidx_t>
+Mesh::support(gidx_t index) const
 {
     return this->hasse.get_in_vertices(index);
 }
 
-std::vector<std::size_t>
-Mesh::cone(int64_t index) const
+std::vector<gidx_t>
+Mesh::cone(gidx_t index) const
 {
     return this->hasse.get_out_vertices(index);
 }
 
-std::set<std::size_t>
-Mesh::cone_vertices(int64_t index) const
+std::set<gidx_t>
+Mesh::cone_vertices(gidx_t index) const
 {
-    std::list<std::size_t> pts_to_process;
+    std::list<gidx_t> pts_to_process;
     for (auto & v : cone(index))
         pts_to_process.push_back(v);
 
-    std::set<std::size_t> verts;
+    std::set<gidx_t> verts;
     for (auto & v : pts_to_process) {
         auto cn = cone(v);
         if (cn.size() == 0)
@@ -811,7 +811,7 @@ Mesh::cone_vertices(int64_t index) const
 }
 
 Element::Type
-Mesh::element_type(int64_t index) const
+Mesh::element_type(gidx_t index) const
 {
     return this->elems.at(index).type();
 }
@@ -845,7 +845,7 @@ Mesh::build_hasse_diagram()
     for (std::size_t i = 0; i < this->pnts.size(); ++i) {
         auto vtx_id = utils::key(i);
         if (this->key_map.find(vtx_id) == this->key_map.end()) {
-            auto vtx_node_id = this->hasse.size();
+            gidx_t vtx_node_id = this->hasse.size();
             this->key_map[vtx_id] = vtx_node_id;
             this->hasse.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
         }
@@ -853,7 +853,7 @@ Mesh::build_hasse_diagram()
 
     // Add faces
     for (std::size_t i = 0; i < n_cells; ++i) {
-        const auto cell = this->elems[i];
+        const auto & cell = this->elems[i];
         if (cell.type() == Element::TETRA4)
             hasse_add_faces<Tetra4>(i, cell);
         else if (cell.type() == Element::PYRAMID5)
@@ -866,7 +866,7 @@ Mesh::build_hasse_diagram()
 
     // Add edges
     for (std::size_t i = 0; i < n_cells; ++i) {
-        const auto cell = this->elems[i];
+        const auto & cell = this->elems[i];
         if (cell.type() == Element::TRI3) {
             hasse_add_edges<Tri3>(i, cell);
             hasse_add_edge_vertices<Tri3>(i, cell);
@@ -894,10 +894,10 @@ Mesh::build_hasse_diagram()
     }
 }
 
-std::vector<std::size_t>
+std::vector<gidx_t>
 Mesh::boundary_edges() const
 {
-    std::vector<std::size_t> bnd_edges;
+    std::vector<gidx_t> bnd_edges;
     for (auto & edge : edge_ids()) {
         auto supp = support(edge);
         if (supp.size() == 1)
@@ -906,10 +906,10 @@ Mesh::boundary_edges() const
     return bnd_edges;
 }
 
-std::vector<std::size_t>
+std::vector<gidx_t>
 Mesh::boundary_faces() const
 {
-    std::vector<std::size_t> bnd_faces;
+    std::vector<gidx_t> bnd_faces;
     for (auto & face : face_ids()) {
         auto supp = support(face);
         if (supp.size() == 1)
@@ -919,7 +919,7 @@ Mesh::boundary_faces() const
 }
 
 Point
-Mesh::compute_centroid(std::size_t index) const
+Mesh::compute_centroid(gidx_t index) const
 {
     auto connect = cone_vertices(index);
     auto pnts_ofst = this->elems.size();
@@ -933,7 +933,7 @@ Mesh::compute_centroid(std::size_t index) const
 }
 
 Vector
-Mesh::outward_normal(std::size_t index) const
+Mesh::outward_normal(gidx_t index) const
 {
     auto supp = support(index);
     if (supp.size() != 1)
@@ -948,7 +948,7 @@ Mesh::outward_normal(std::size_t index) const
     }
     else if (side_type == HasseDiagram::NodeType::Edge) {
         auto connect_verts = cone_vertices(index);
-        std::vector<int> verts(connect_verts.begin(), connect_verts.end());
+        std::vector<gidx_t> verts(connect_verts.begin(), connect_verts.end());
         auto pnts_ofst = this->elems.size();
 
         auto v1 = Vector(this->pnts[verts[1] - pnts_ofst] - this->pnts[verts[0] - pnts_ofst]);
@@ -964,7 +964,7 @@ Mesh::outward_normal(std::size_t index) const
         auto side_ctr = compute_centroid(index);
 
         auto connect_verts = cone_vertices(index);
-        std::vector<int> verts(connect_verts.begin(), connect_verts.end());
+        std::vector<gidx_t> verts(connect_verts.begin(), connect_verts.end());
         auto pnts_ofst = this->elems.size();
 
         auto v1 = Vector(this->pnts[verts[0] - pnts_ofst] - side_ctr);

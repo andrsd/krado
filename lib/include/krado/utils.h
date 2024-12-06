@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include <cstdint>
 #include <string>
 #include <algorithm>
@@ -60,8 +61,8 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param element_connect The connectivity of the element
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
-std::vector<std::size_t> sub_connect(const std::vector<std::size_t> & element_connect,
-                                     const std::vector<int> & idxs);
+std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
+                                const std::vector<int> & idxs);
 
 /// Create a key from the supplied index. Use this to construct keys for cells
 ///
@@ -73,7 +74,7 @@ std::size_t key(const std::size_t id);
 ///
 /// @param idxs The indices to create a key from
 /// @return The key
-std::size_t key(const std::vector<std::size_t> & idxs);
+std::size_t key(const std::vector<gidx_t> & idxs);
 
 /// Get map keys
 template <typename K, typename V>

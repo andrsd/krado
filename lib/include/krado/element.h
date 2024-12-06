@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include <vector>
 #include <array>
 #include <string>
@@ -21,7 +22,7 @@ public:
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
     /// @param marker Element marker
-    Element(Type type, const std::vector<std::size_t> & vtx_ids, marker_t marker = 0);
+    Element(Type type, const std::vector<gidx_t> & vtx_ids, marker_t marker = 0);
 
     /// Get element type
     ///
@@ -47,40 +48,40 @@ public:
     ///
     /// @param idx Local vertex index
     /// @return Vertex ID
-    std::size_t vertex_id(int idx) const;
+    gidx_t vertex_id(int idx) const;
 
     /// Call operator to access vertex index
     ///
     /// @param idx Vertex index
     /// @return Vertex ID
-    std::size_t operator()(int idx) const;
+    gidx_t operator()(int idx) const;
 
     /// Get vertex IDs
     ///
     /// @return Vertex IDs
-    const std::vector<std::size_t> & ids() const;
+    const std::vector<gidx_t> & ids() const;
 
     /// Set element connectivity. This is good for element renumbering. This cannot be used for
     /// changing element type.
     ///
     /// @param ids Vertex IDs
-    void set_ids(const std::vector<std::size_t> & ids);
+    void set_ids(const std::vector<gidx_t> & ids);
 
 private:
     Type elem_type;
-    std::vector<std::size_t> vtx_id;
+    std::vector<gidx_t> vtx_id;
     marker_t mrkr;
 
 public:
     static std::string type(Type type);
-    static Element Point(std::size_t id, marker_t marker = 0);
-    static Element Line2(const std::array<std::size_t, 2> & ids, marker_t marker = 0);
-    static Element Tri3(const std::array<std::size_t, 3> & ids, marker_t marker = 0);
-    static Element Quad4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
-    static Element Tetra4(const std::array<std::size_t, 4> & ids, marker_t marker = 0);
-    static Element Pyramid5(const std::array<std::size_t, 5> & ids, marker_t marker = 0);
-    static Element Prism6(const std::array<std::size_t, 6> & ids, marker_t marker = 0);
-    static Element Hex8(const std::array<std::size_t, 8> & ids, marker_t marker = 0);
+    static Element Point(gidx_t id, marker_t marker = 0);
+    static Element Line2(const std::array<gidx_t, 2> & ids, marker_t marker = 0);
+    static Element Tri3(const std::array<gidx_t, 3> & ids, marker_t marker = 0);
+    static Element Quad4(const std::array<gidx_t, 4> & ids, marker_t marker = 0);
+    static Element Tetra4(const std::array<gidx_t, 4> & ids, marker_t marker = 0);
+    static Element Pyramid5(const std::array<gidx_t, 5> & ids, marker_t marker = 0);
+    static Element Prism6(const std::array<gidx_t, 6> & ids, marker_t marker = 0);
+    static Element Hex8(const std::array<gidx_t, 8> & ids, marker_t marker = 0);
 };
 
 class Line2 {
