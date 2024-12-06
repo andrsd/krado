@@ -13,10 +13,17 @@
 namespace krado {
 
 class HasseDiagram {
-    using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS>;
-
 public:
     enum NodeType { Vertex, Edge, Face, Cell };
+
+    struct NodeProps {
+        NodeType type;
+    };
+
+private:
+    using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, NodeProps>;
+
+public:
     using Node = boost::graph_traits<Graph>::vertex_descriptor;
 
     const Range &
@@ -52,7 +59,8 @@ public:
     void
     add_node(std::size_t id, NodeType type)
     {
-        boost::add_vertex(this->grph);
+        auto nd = boost::add_vertex(this->grph);
+        this->grph[nd].type = type;
 
         if (type == NodeType::Vertex)
             this->vertex_rng.expand(id);
@@ -70,6 +78,12 @@ public:
         auto edge_result = boost::edge(parent_id, child_id, this->grph);
         if (!edge_result.second)
             boost::add_edge(parent_id, child_id, this->grph);
+    }
+
+    NodeType
+    node_type(std::size_t id) const
+    {
+        return this->grph[id].type;
     }
 
     void

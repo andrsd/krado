@@ -231,17 +231,17 @@ TEST(MeshTest, element_ids_from_file_2d)
     EXPECT_THAT(m.support(9), ElementsAre(1));
     EXPECT_THAT(m.support(10), ElementsAre(1));
 
-    EXPECT_THAT(m.connectivity(0), ElementsAre(6, 7, 8));
-    EXPECT_THAT(m.connectivity(1), ElementsAre(7, 9, 10));
-    EXPECT_THAT(m.connectivity(2), ElementsAre());
-    EXPECT_THAT(m.connectivity(3), ElementsAre());
-    EXPECT_THAT(m.connectivity(4), ElementsAre());
-    EXPECT_THAT(m.connectivity(5), ElementsAre());
-    EXPECT_THAT(m.connectivity(6), ElementsAre(2, 3));
-    EXPECT_THAT(m.connectivity(7), ElementsAre(3, 4));
-    EXPECT_THAT(m.connectivity(8), ElementsAre(4, 2));
-    EXPECT_THAT(m.connectivity(9), ElementsAre(3, 5));
-    EXPECT_THAT(m.connectivity(10), ElementsAre(5, 4));
+    EXPECT_THAT(m.cone(0), ElementsAre(6, 7, 8));
+    EXPECT_THAT(m.cone(1), ElementsAre(7, 9, 10));
+    EXPECT_THAT(m.cone(2), ElementsAre());
+    EXPECT_THAT(m.cone(3), ElementsAre());
+    EXPECT_THAT(m.cone(4), ElementsAre());
+    EXPECT_THAT(m.cone(5), ElementsAre());
+    EXPECT_THAT(m.cone(6), ElementsAre(2, 3));
+    EXPECT_THAT(m.cone(7), ElementsAre(3, 4));
+    EXPECT_THAT(m.cone(8), ElementsAre(4, 2));
+    EXPECT_THAT(m.cone(9), ElementsAre(3, 5));
+    EXPECT_THAT(m.cone(10), ElementsAre(5, 4));
 }
 
 TEST(MeshTest, element_ids_from_file_3d)
@@ -354,6 +354,7 @@ TEST(MeshTest, centroid_3d)
     Mesh mesh(pts, elems);
     mesh.set_up();
 
+    std::cerr << "ctr = " << mesh.compute_centroid(0) << std::endl;
     EXPECT_EQ(mesh.compute_centroid(0), Point(0.5, 0.5, 0.5));
     EXPECT_EQ(mesh.compute_centroid(9), Point(0.5, 0., 0.5));
     EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0.5));

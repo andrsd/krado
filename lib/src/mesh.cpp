@@ -15,6 +15,7 @@
 #include "nanoflann/nanoflann.hpp"
 #include <Extrema_ElementType.hxx>
 #include <array>
+#include <iostream>
 
 namespace krado {
 
@@ -735,7 +736,7 @@ Mesh::set_side_set(marker_t id, const std::vector<std::size_t> elem_ids)
         if (supp.size() == 0)
             throw Exception("Edge {} has no support", eid);
         auto cell = supp[0];
-        auto cell_connect = connectivity(cell);
+        auto cell_connect = cone(cell);
         auto side = utils::index_of(cell_connect, eid);
         side_set.emplace_back(cell, side);
     }
@@ -783,9 +784,30 @@ Mesh::support(int64_t index) const
 }
 
 std::vector<std::size_t>
-Mesh::connectivity(int64_t index) const
+Mesh::cone(int64_t index) const
 {
     return this->hasse.get_out_vertices(index);
+}
+
+std::set<std::size_t>
+Mesh::cone_vertices(int64_t index) const
+{
+    std::list<std::size_t> pts_to_process;
+    for (auto & v : cone(index))
+        pts_to_process.push_back(v);
+
+    std::set<std::size_t> verts;
+    for (auto & v : pts_to_process) {
+        auto cn = cone(v);
+        if (cn.size() == 0)
+            verts.insert(v);
+        else {
+            for (auto & c : cn)
+                pts_to_process.push_back(c);
+        }
+    }
+
+    return verts;
 }
 
 Element::Type
@@ -826,7 +848,6 @@ Mesh::build_hasse_diagram()
             auto vtx_node_id = this->hasse.size();
             this->key_map[vtx_id] = vtx_node_id;
             this->hasse.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
-            this->elems.emplace_back(Element::Point(i));
         }
     }
 
@@ -900,13 +921,14 @@ Mesh::boundary_faces() const
 Point
 Mesh::compute_centroid(std::size_t index) const
 {
-    auto & elem = this->elems[index];
+    auto connect = cone_vertices(index);
+    auto pnts_ofst = this->elems.size();
     Point ctr(0, 0, 0);
-    for (auto & pt_id : elem.ids()) {
-        auto & pt = this->pnts[pt_id];
+    for (auto & pt_id : connect) {
+        auto & pt = this->pnts[pt_id - pnts_ofst];
         ctr += pt;
     }
-    ctr *= 1. / elem.ids().size();
+    ctr *= 1. / connect.size();
     return ctr;
 }
 
@@ -920,15 +942,19 @@ Mesh::outward_normal(std::size_t index) const
     auto cell_id = supp[0];
     auto cell_ctr = compute_centroid(cell_id);
 
-    auto & side = this->elems[index];
-    if (side.type() == Element::Type::POINT) {
+    auto side_type = this->hasse.node_type(index);
+    if (side_type == HasseDiagram::NodeType::Vertex) {
         throw Exception("Normals are not supported for points, yet");
     }
-    else if (side.type() == Element::Type::LINE2) {
-        auto v1 = Vector(this->pnts[side.ids()[1]] - this->pnts[side.ids()[0]]);
+    else if (side_type == HasseDiagram::NodeType::Edge) {
+        auto connect_verts = cone_vertices(index);
+        std::vector<int> verts(connect_verts.begin(), connect_verts.end());
+        auto pnts_ofst = this->elems.size();
+
+        auto v1 = Vector(this->pnts[verts[1] - pnts_ofst] - this->pnts[verts[0] - pnts_ofst]);
         auto n = Vector(-v1.y, v1.x, 0);
         n.normalize();
-        auto c_v1 = Vector(this->pnts[side.ids()[0]] - cell_ctr);
+        auto c_v1 = Vector(this->pnts[verts[0] - pnts_ofst] - cell_ctr);
         auto dot = dot_product(n, c_v1);
         if (dot <= 0)
             n = -n;
@@ -936,9 +962,14 @@ Mesh::outward_normal(std::size_t index) const
     }
     else {
         auto side_ctr = compute_centroid(index);
-        auto v1 = Vector(this->pnts[side.ids()[0]] - side_ctr);
-        auto v2 = Vector(this->pnts[side.ids()[1]] - side_ctr);
-        auto c_v1 = Vector(this->pnts[side.ids()[0]] - cell_ctr);
+
+        auto connect_verts = cone_vertices(index);
+        std::vector<int> verts(connect_verts.begin(), connect_verts.end());
+        auto pnts_ofst = this->elems.size();
+
+        auto v1 = Vector(this->pnts[verts[0] - pnts_ofst] - side_ctr);
+        auto v2 = Vector(this->pnts[verts[1] - pnts_ofst] - side_ctr);
+        auto c_v1 = Vector(this->pnts[verts[0] - pnts_ofst] - cell_ctr);
         auto n = cross_product(v1, v2);
         n.normalize();
         auto dot = dot_product(n, c_v1);

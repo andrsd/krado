@@ -309,7 +309,13 @@ public:
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    std::vector<std::size_t> connectivity(int64_t index) const;
+    std::vector<std::size_t> cone(int64_t index) const;
+
+    /// Get cone vertices of a mesh node
+    ///
+    /// @param index Index of the node
+    /// @return Cone vertices
+    std::set<std::size_t> cone_vertices(int64_t index) const;
 
     /// Get element type
     ///
@@ -384,7 +390,6 @@ private:
             this->key_map[k] = edge_node_id;
             this->hasse.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
             this->hasse.add_edge(parent_node_id, edge_node_id);
-            this->elems.emplace_back(Element::Line2({ edge_connect[0], edge_connect[1] }));
         }
         else {
             auto edge_node_id = this->key_map[k];
@@ -408,12 +413,6 @@ private:
                 this->key_map[k] = face_node_id;
                 this->hasse.add_node(face_node_id, HasseDiagram::NodeType::Face);
                 this->hasse.add_edge(elem_node_id, face_node_id);
-                if (face_connect.size() == 3)
-                    this->elems.emplace_back(
-                        Element::Tri3({ face_connect[0], face_connect[1], face_connect[2] }));
-                else if (face_connect.size() == 4)
-                    this->elems.emplace_back(Element::Quad4(
-                        { face_connect[0], face_connect[1], face_connect[2], face_connect[3] }));
             }
             else {
                 auto face_node_id = this->key_map[k];
