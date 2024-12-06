@@ -817,8 +817,20 @@ Mesh::element_type(gidx_t index) const
 }
 
 void
+Mesh::build_cell_sets()
+{
+    this->cell_sets.clear();
+    for (std::size_t i = 0; i < this->elems.size(); ++i) {
+        const auto & cell = this->elems[i];
+        auto marker = cell.marker();
+        this->cell_sets[marker].push_back(i);
+    }
+}
+
+void
 Mesh::set_up()
 {
+    build_cell_sets();
     build_hasse_diagram();
 }
 
@@ -828,16 +840,11 @@ Mesh::build_hasse_diagram()
     auto n_cells = this->elems.size();
     // Add Hasse nodes for cells
     for (std::size_t i = 0; i < n_cells; ++i) {
-        const auto & cell = this->elems[i];
         auto id = utils::key(-(i + 1));
         if (this->key_map.find(id) == this->key_map.end()) {
             auto elem_node_id = i;
             this->key_map[id] = elem_node_id;
             this->hasse.add_node(elem_node_id, HasseDiagram::NodeType::Cell);
-
-            auto marker = cell.marker();
-            if (marker != 0)
-                this->cell_sets[marker].push_back(elem_node_id);
         }
     }
 
