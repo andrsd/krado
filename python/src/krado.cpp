@@ -16,6 +16,7 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "krado/mesh.h"
+#include "krado/mesh_model.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_curve.h"
@@ -184,22 +185,25 @@ PYBIND11_MODULE(krado, m)
         .def("surfaces", &GeomVolume::surfaces)
     ;
 
+    py::class_<MeshModel>(m, "MeshModel")
+        .def(py::init<const GeomModel &>())
+        .def("vertex", py::overload_cast<int>(&MeshModel::vertex), py::return_value_policy::reference)
+        .def("curve", py::overload_cast<int>(&MeshModel::curve), py::return_value_policy::reference)
+        .def("surface", py::overload_cast<int>(&MeshModel::surface), py::return_value_policy::reference)
+        .def("volume", py::overload_cast<int>(&MeshModel::volume), py::return_value_policy::reference)
+        .def("mesh_vertex", py::overload_cast<int>(&MeshModel::mesh_vertex))
+        .def("mesh_curve", py::overload_cast<int>(&MeshModel::mesh_curve))
+        .def("mesh_surface", py::overload_cast<int>(&MeshModel::mesh_surface))
+        .def("mesh_volume", py::overload_cast<int>(&MeshModel::mesh_volume))
+        .def("number_points", &MeshModel::number_points)
+        .def("build_elements", &MeshModel::build_elements)
+        .def("bounding_box", &MeshModel::bounding_box)
+    ;
+
     py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
-        .def(py::init<const GeomModel &>())
-        .def("vertex", py::overload_cast<int>(&Mesh::vertex), py::return_value_policy::reference)
-        .def("curve", py::overload_cast<int>(&Mesh::curve), py::return_value_policy::reference)
-        .def("surface", py::overload_cast<int>(&Mesh::surface), py::return_value_policy::reference)
-        .def("volume", py::overload_cast<int>(&Mesh::volume), py::return_value_policy::reference)
-        .def("mesh_vertex", py::overload_cast<int>(&Mesh::mesh_vertex))
-        .def("mesh_curve", py::overload_cast<int>(&Mesh::mesh_curve))
-        .def("mesh_surface", py::overload_cast<int>(&Mesh::mesh_surface))
-        .def("mesh_volume", py::overload_cast<int>(&Mesh::mesh_volume))
         .def("points", &Mesh::points, py::return_value_policy::reference)
         .def("point", &Mesh::point, py::return_value_policy::reference)
-        .def("number_points", &Mesh::number_points)
-        .def("build_elements", &Mesh::build_elements)
-        .def("bounding_box", &Mesh::bounding_box)
         .def("scaled", static_cast<Mesh (Mesh::*)(double) const>(&Mesh::scaled))
         .def("scaled", static_cast<Mesh (Mesh::*)(double, double, double) const>(&Mesh::scaled),
             py::arg("factor_x"), py::arg("factor_y"), py::arg("factor_z") = 1.)

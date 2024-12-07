@@ -1,0 +1,128 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_volume.h"
+#include "krado/scheme_factory.h"
+#include "krado/bounding_box_3d.h"
+
+namespace krado {
+
+class MeshModel {
+public:
+    /// Construct mesh from geometric model
+    ///
+    /// @param model Geometric model
+    MeshModel(const GeomModel & model);
+
+    /// Vertex
+    const MeshVertex & vertex(int id) const;
+    MeshVertex & vertex(int id);
+
+    /// Vertices
+    const std::map<int, MeshVertex> & vertices() const;
+
+    /// Curve
+    const MeshCurve & curve(int id) const;
+    MeshCurve & curve(int id);
+
+    /// Curves
+    const std::map<int, MeshCurve> & curves() const;
+
+    /// Surface
+    const MeshSurface & surface(int id) const;
+    MeshSurface & surface(int id);
+
+    /// Surfaces
+    const std::map<int, MeshSurface> & surfaces() const;
+
+    /// Volume
+    const MeshVolume & volume(int id) const;
+    MeshVolume & volume(int id);
+
+    /// Volumes
+    const std::map<int, MeshVolume> & volumes() const;
+
+    /// Create vertex mesh
+    void mesh_vertex(int id);
+    void mesh_vertex(MeshVertex & vertex);
+
+    /// Create curve mesh
+    void mesh_curve(int id);
+    void mesh_curve(MeshCurve & curve);
+
+    /// Create surface mesh
+    void mesh_surface(int id);
+    void mesh_surface(MeshSurface & surface);
+
+    /// Create volume mesh
+    void mesh_volume(int id);
+    void mesh_volume(MeshVolume & volume);
+
+    ///
+    void number_points();
+
+    ///
+    void build_elements();
+
+    /// Get mesh bounding box
+    BoundingBox3D bounding_box() const;
+
+    /// Compute bounding box around the mesh
+    ///
+    /// @return Bounding box
+    BoundingBox3D compute_bounding_box() const;
+
+protected:
+    void build_1d_elements();
+    void build_2d_elements();
+
+    template <typename T, typename U>
+    T &
+    get_scheme(U entity) const
+    {
+        return dynamic_cast<T &>(entity.scheme());
+    }
+
+    /// Assign a new global ID to a vertex
+    ///
+    /// @param vertex Vertex to assign global ID to
+    void assign_gid(MeshVertex & vertex);
+
+    /// Assign a new global ID to a curve vertex
+    ///
+    /// @param vertex Curve vertex to assign global ID to
+    void assign_gid(MeshCurveVertex & vertex);
+
+    /// Assign a new global ID to a surface vertex
+    ///
+    /// @param vertex Surface vertex to assign global ID to
+    void assign_gid(MeshSurfaceVertex & vertex);
+
+    void add_mesh_point(Point & mpnt);
+
+private:
+    void initialize(const GeomModel & model);
+
+    std::map<int, MeshVertex> vtxs;
+    std::map<int, MeshCurve> crvs;
+    std::map<int, MeshSurface> surfs;
+    std::map<int, MeshVolume> vols;
+
+    SchemeFactory & scheme_factory;
+
+    /// Global ID counter
+    int gid_ctr;
+    /// Bounding box around the mesh that is being exported
+    BoundingBox3D exp_bbox;
+    /// Mesh points
+    std::vector<Point> pnts;
+    /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
+    std::vector<Element> elems;
+};
+
+} // namespace krado

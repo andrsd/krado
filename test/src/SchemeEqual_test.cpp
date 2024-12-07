@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_model.h"
-#include "krado/mesh.h"
+#include "krado/mesh_model.h"
 #include "krado/mesh_curve_vertex.h"
 #include "builder.h"
 
@@ -11,7 +11,7 @@ TEST(SchemeEqualTest, line)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
-    Mesh mesh(model);
+    MeshModel mesh(model);
 
     auto & line = mesh.curve(1);
     // clang-format off

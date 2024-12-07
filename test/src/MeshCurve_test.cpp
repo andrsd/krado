@@ -1,9 +1,8 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
-#include "krado/mesh.h"
+#include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
-#include "krado/exception.h"
 #include "krado/scheme_equal.h"
 #include "builder.h"
 

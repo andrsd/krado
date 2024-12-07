@@ -3,14 +3,10 @@
 
 #pragma once
 
-#include "krado/element.h"
-#include "krado/mesh_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_volume.h"
-#include "krado/point.h"
-#include "krado/scheme_factory.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/element.h"
+#include "krado/exception.h"
+#include "krado/point.h"
 #include "krado/transform.h"
 #include "krado/range.h"
 #include "krado/hasse_diagram.h"
@@ -27,8 +23,8 @@ struct side_set_entry_t {
     side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
 };
 
-inline
-bool operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
+inline bool
+operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
 {
     return lhs.elem == rhs.elem && lhs.side == rhs.side;
 }
@@ -40,60 +36,11 @@ public:
     /// Construct empty mesh
     Mesh();
 
-    /// Construct mesh from geometric model
-    ///
-    /// @param model Geometric model
-    Mesh(const GeomModel & model);
-
     /// Construct mesh from set of points and elements (useful for reading meshes from files)
     ///
     /// @param points Points
     /// @param elements Elements
     Mesh(std::vector<Point> points, std::vector<Element> elements);
-
-    /// Vertex
-    const MeshVertex & vertex(int id) const;
-    MeshVertex & vertex(int id);
-
-    /// Vertices
-    const std::map<int, MeshVertex> & vertices() const;
-
-    /// Curve
-    const MeshCurve & curve(int id) const;
-    MeshCurve & curve(int id);
-
-    /// Curves
-    const std::map<int, MeshCurve> & curves() const;
-
-    /// Surface
-    const MeshSurface & surface(int id) const;
-    MeshSurface & surface(int id);
-
-    /// Surfaces
-    const std::map<int, MeshSurface> & surfaces() const;
-
-    /// Volume
-    const MeshVolume & volume(int id) const;
-    MeshVolume & volume(int id);
-
-    /// Volumes
-    const std::map<int, MeshVolume> & volumes() const;
-
-    /// Create vertex mesh
-    void mesh_vertex(int id);
-    void mesh_vertex(MeshVertex & vertex);
-
-    /// Create curve mesh
-    void mesh_curve(int id);
-    void mesh_curve(MeshCurve & curve);
-
-    /// Create surface mesh
-    void mesh_surface(int id);
-    void mesh_surface(MeshSurface & surface);
-
-    /// Create volume mesh
-    void mesh_volume(int id);
-    void mesh_volume(MeshVolume & volume);
 
     /// Get mesh points
     ///
@@ -116,15 +63,6 @@ public:
     /// @param idx Index of the element
     /// @return Element
     const Element & element(gidx_t idx) const;
-
-    ///
-    void number_points();
-
-    ///
-    void build_elements();
-
-    /// Get mesh bounding box
-    BoundingBox3D bounding_box() const;
 
     /// Scale mesh by a factor (isotropic)
     ///
@@ -363,37 +301,7 @@ public:
     /// @return Outward normal
     Vector outward_normal(gidx_t index) const;
 
-protected:
-    void build_1d_elements();
-    void build_2d_elements();
-
-    template <typename T, typename U>
-    T &
-    get_scheme(U entity) const
-    {
-        return dynamic_cast<T &>(entity.scheme());
-    }
-
-    /// Assign a new global ID to a vertex
-    ///
-    /// @param vertex Vertex to assign global ID to
-    void assign_gid(MeshVertex & vertex);
-
-    /// Assign a new global ID to a curve vertex
-    ///
-    /// @param vertex Curve vertex to assign global ID to
-    void assign_gid(MeshCurveVertex & vertex);
-
-    /// Assign a new global ID to a surface vertex
-    ///
-    /// @param vertex Surface vertex to assign global ID to
-    void assign_gid(MeshSurfaceVertex & vertex);
-
-    void add_mesh_point(Point & mpnt);
-
 private:
-    void initialize(const GeomModel & model);
-
     void build_hasse_diagram();
 
     void
@@ -488,13 +396,6 @@ private:
         }
     }
 
-    std::map<int, MeshVertex> vtxs;
-    std::map<int, MeshCurve> crvs;
-    std::map<int, MeshSurface> surfs;
-    std::map<int, MeshVolume> vols;
-
-    SchemeFactory & scheme_factory;
-
     /// Mesh points
     std::vector<Point> pnts;
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
@@ -517,10 +418,6 @@ private:
     /// Side sets
     std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
 
-    /// Global ID counter
-    int gid_ctr;
-    /// Bounding box around the mesh that is being exported
-    BoundingBox3D exp_bbox;
     /// Hasse diagram representing the mesh
     HasseDiagram hasse;
     /// Map of keys to node IDs

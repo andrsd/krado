@@ -11,7 +11,7 @@ def test_scheme_equal():
     step = krado.STEPFile(file_name)
     shape = step.load()
     model = krado.GeomModel(shape)
-    mesh = krado.Mesh(model)
+    mesh = krado.MeshModel(model)
     mesh.curve(1).set_scheme("equal").set(intervals=4)
 
     sch = mesh.curve(1).scheme()

@@ -2,7 +2,7 @@
 #include "krado/config.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
-#include "krado/mesh.h"
+#include "krado/mesh_model.h"
 #include "ExceptionTestMacros.h"
 #include <filesystem>
 
@@ -18,7 +18,7 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     STEPFile file(input_file.string());
     auto shape = file.load();
     GeomModel model(shape);
-    Mesh mesh(model);
+    MeshModel mesh(model);
 
     // clang-format off
     mesh.curve(1)
@@ -60,7 +60,7 @@ TEST(SchemeTriangleTest, mesh)
     STEPFile file(input_file.string());
     auto shape = file.load();
     GeomModel model(shape);
-    Mesh mesh(model);
+    MeshModel mesh(model);
 
     auto & qcirc = mesh.surface(1);
     qcirc.set_scheme("triangle");
