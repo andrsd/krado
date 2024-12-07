@@ -582,7 +582,9 @@ Mesh::compute_bounding_box() const
 Mesh
 Mesh::duplicate() const
 {
-    return Mesh(this->pnts, this->elems);
+    Mesh dup(this->pnts, this->elems);
+    dup.side_sets = this->side_sets;
+    return dup;
 }
 
 void
