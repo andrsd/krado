@@ -129,7 +129,7 @@ TEST(MeshTest, add_mesh)
 
     auto & ss1 = m.side_set(11);
     EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
-    EXPECT_EQ(ss1[0], side_set_entry_t(2, 2));
+    EXPECT_EQ(ss1[1], side_set_entry_t(2, 2));
 }
 
 TEST(MeshTest, remove_duplicate_points)
