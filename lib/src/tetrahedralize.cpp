@@ -368,30 +368,50 @@ tetrahedralize(const Mesh & mesh)
     for (auto & el : mesh.elements())
         n_tets += num_of_tets(el.type());
 
+    std::map<gidx_t, std::vector<gidx_t>> elem_map;
     std::vector<Element> elems;
     elems.reserve(n_tets);
-    for (auto & el : mesh.elements()) {
+    for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
+        auto & el = mesh.element(cell_id);
         if (el.type() == Element::HEX8) {
             auto tet4s = split_elem<Element::HEX8>(el);
-            for (auto & tet : tet4s)
-                elems.emplace_back(Element::Tetra4(tet, el.marker()));
+            for (auto & tet : tet4s) {
+                elem_map[cell_id].push_back(elems.size());
+                elems.emplace_back(Element::Tetra4(tet));
+            }
         }
         else if (el.type() == Element::PYRAMID5) {
             auto tet4s = split_elem<Element::PYRAMID5>(el);
-            for (auto & tet : tet4s)
-                elems.emplace_back(Element::Tetra4(tet, el.marker()));
+            for (auto & tet : tet4s) {
+                elem_map[cell_id].push_back(elems.size());
+                elems.emplace_back(Element::Tetra4(tet));
+            }
         }
         else if (el.type() == Element::PRISM6) {
             auto tet4s = split_elem<Element::PRISM6>(el);
-            for (auto & tet : tet4s)
-                elems.emplace_back(Element::Tetra4(tet, el.marker()));
+            for (auto & tet : tet4s) {
+                elem_map[cell_id].push_back(elems.size());
+                elems.emplace_back(Element::Tetra4(tet));
+            }
         }
         else {
+            elem_map[cell_id].push_back(elems.size());
             elems.push_back(el);
         }
     }
 
-    return Mesh(points, elems);
+    Mesh tet_mesh(points, elems);
+    for (auto id : mesh.cell_set_ids()) {
+        auto & cells = mesh.cell_set(id);
+        std::vector<gidx_t> new_cell_set;
+        for (auto & cell_id : cells) {
+            auto & tet_elems = elem_map[cell_id];
+            new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());
+        }
+        tet_mesh.set_cell_set(id, new_cell_set);
+        tet_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
+    }
+    return tet_mesh;
 }
 
 } // namespace krado

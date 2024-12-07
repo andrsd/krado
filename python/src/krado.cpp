@@ -114,9 +114,8 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Element>(m, "Element")
-        .def(py::init<Element::Type, const std::vector<std::size_t> &, int>())
+        .def(py::init<Element::Type, const std::vector<std::size_t> &>())
         .def("type", py::overload_cast<>(&Element::type, py::const_))
-        .def("marker", &Element::marker)
         .def("num_vertices", &Element::num_vertices)
         .def("vertex_id", &Element::vertex_id)
         .def("ids", &Element::ids)

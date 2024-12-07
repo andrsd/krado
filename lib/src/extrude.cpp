@@ -26,7 +26,7 @@ extrude_element<Element::LINE2>(const Element & el, std::size_t layer, std::size
     ids[1] = el(1) + layer * layer_stride;
     ids[2] = el(1) + (layer + 1) * layer_stride;
     ids[3] = el(0) + (layer + 1) * layer_stride;
-    return Element::Quad4(ids, el.marker());
+    return Element::Quad4(ids);
 }
 
 template <>
@@ -40,7 +40,7 @@ extrude_element<Element::TRI3>(const Element & el, std::size_t layer, std::size_
     ids[3] = el(0) + (layer + 1) * layer_stride;
     ids[4] = el(1) + (layer + 1) * layer_stride;
     ids[5] = el(2) + (layer + 1) * layer_stride;
-    return Element::Prism6(ids, el.marker());
+    return Element::Prism6(ids);
 }
 
 template <>
@@ -56,7 +56,7 @@ extrude_element<Element::QUAD4>(const Element & el, std::size_t layer, std::size
     ids[5] = el(1) + (layer + 1) * layer_stride;
     ids[6] = el(2) + (layer + 1) * layer_stride;
     ids[7] = el(3) + (layer + 1) * layer_stride;
-    return Element::Hex8(ids, el.marker());
+    return Element::Hex8(ids);
 }
 
 //
@@ -137,11 +137,25 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         }
     }
 
+    Mesh extruded_mesh(points, elems);
+    // extrude cell sets
+    for (auto & id : mesh.cell_set_ids()) {
+        auto & cells = mesh.cell_set(id);
+        std::vector<gidx_t> cell_set;
+        cell_set.reserve(cells.size() * thicknesses.size());
+        for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+            for (auto & cell : cells)
+                cell_set.push_back(cell + elem_stride * i);
+        }
+        extruded_mesh.set_cell_set(id, cell_set);
+        extruded_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
+    }
     // extrude side sets
     std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
     for (auto & id : mesh.side_set_ids()) {
         auto & ss = mesh.side_set(id);
         std::vector<side_set_entry_t> side_set;
+        side_set.reserve(ss.size() * thicknesses.size());
         for (std::size_t i = 0; i < thicknesses.size(); ++i) {
             for (auto & entry : ss) {
                 auto cell_id = entry.elem + elem_stride * i;
@@ -160,14 +174,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
                                     Element::type(cell.type()));
             }
         }
-        side_sets[id] = side_set;
-    }
-
-    Mesh extruded_mesh(points, elems);
-    for (auto & id : mesh.cell_set_ids())
-        extruded_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
-    for (auto & [id, entries] : side_sets) {
-        extruded_mesh.set_side_set(id, entries);
+        extruded_mesh.set_side_set(id, side_set);
         extruded_mesh.set_side_set_name(id, mesh.side_set_name(id));
     }
     return extruded_mesh;

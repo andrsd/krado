@@ -273,9 +273,6 @@ public:
     /// @return Element type
     Element::Type element_type(gidx_t index) const;
 
-    /// Build cell sets
-    void build_cell_sets();
-
     /// Prepare mesh
     void set_up();
 

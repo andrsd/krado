@@ -23,7 +23,6 @@ TEST(WriteExodusIITest, line)
 
     mesh.number_points();
     mesh.build_elements();
-    // mesh.set_up();
 
     // IO::export_mesh("line.exo", mesh);
 }

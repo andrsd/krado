@@ -11,8 +11,6 @@
 
 namespace krado {
 
-using marker_t = int;
-
 class Element {
 public:
     enum Type { POINT, LINE2, TRI3, QUAD4, TETRA4, PYRAMID5, PRISM6, HEX8 };
@@ -22,22 +20,12 @@ public:
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
     /// @param marker Element marker
-    Element(Type type, const std::vector<gidx_t> & vtx_ids, marker_t marker = 0);
+    Element(Type type, const std::vector<gidx_t> & vtx_ids);
 
     /// Get element type
     ///
     /// @return Element type
     Type type() const;
-
-    /// Get the element marker
-    ///
-    /// @return The element marker
-    marker_t marker() const;
-
-    /// Set the element marker
-    ///
-    /// @param marker The element marker
-    void set_marker(marker_t marker);
 
     /// Get number of vertices
     ///
@@ -70,18 +58,17 @@ public:
 private:
     Type elem_type;
     std::vector<gidx_t> vtx_id;
-    marker_t mrkr;
 
 public:
     static std::string type(Type type);
-    static Element Point(gidx_t id, marker_t marker = 0);
-    static Element Line2(const std::array<gidx_t, 2> & ids, marker_t marker = 0);
-    static Element Tri3(const std::array<gidx_t, 3> & ids, marker_t marker = 0);
-    static Element Quad4(const std::array<gidx_t, 4> & ids, marker_t marker = 0);
-    static Element Tetra4(const std::array<gidx_t, 4> & ids, marker_t marker = 0);
-    static Element Pyramid5(const std::array<gidx_t, 5> & ids, marker_t marker = 0);
-    static Element Prism6(const std::array<gidx_t, 6> & ids, marker_t marker = 0);
-    static Element Hex8(const std::array<gidx_t, 8> & ids, marker_t marker = 0);
+    static Element Point(gidx_t id);
+    static Element Line2(const std::array<gidx_t, 2> & ids);
+    static Element Tri3(const std::array<gidx_t, 3> & ids);
+    static Element Quad4(const std::array<gidx_t, 4> & ids);
+    static Element Tetra4(const std::array<gidx_t, 4> & ids);
+    static Element Pyramid5(const std::array<gidx_t, 5> & ids);
+    static Element Prism6(const std::array<gidx_t, 6> & ids);
+    static Element Hex8(const std::array<gidx_t, 8> & ids);
 };
 
 class Line2 {
@@ -190,7 +177,6 @@ operator<<(std::ostream & stream, const krado::Element & el)
     stream << "(" << krado::Element::type(el.type()) << ",";
     for (auto & id : el.ids())
         stream << " " << id;
-    stream << ", marker = " << el.marker();
     stream << ")";
     return stream;
 }

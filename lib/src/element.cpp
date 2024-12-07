@@ -74,10 +74,9 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(Type type, const std::vector<gidx_t> & vtx_ids, marker_t marker) :
+Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) :
     elem_type(type),
-    vtx_id(vtx_ids),
-    mrkr(marker)
+    vtx_id(vtx_ids)
 {
 }
 
@@ -85,18 +84,6 @@ Element::Type
 Element::type() const
 {
     return this->elem_type;
-}
-
-marker_t
-Element::marker() const
-{
-    return this->mrkr;
-}
-
-void
-Element::set_marker(marker_t marker)
-{
-    this->mrkr = marker;
 }
 
 int
@@ -133,56 +120,56 @@ Element::set_ids(const std::vector<gidx_t> & ids)
 }
 
 Element
-Element::Point(gidx_t id, marker_t marker)
+Element::Point(gidx_t id)
 {
-    Element pt(POINT, { id }, marker);
+    Element pt(POINT, { id });
     return pt;
 }
 
 Element
-Element::Line2(const std::array<gidx_t, 2> & ids, marker_t marker)
+Element::Line2(const std::array<gidx_t, 2> & ids)
 {
-    Element line2(LINE2, { ids[0], ids[1] }, marker);
+    Element line2(LINE2, { ids[0], ids[1] });
     return line2;
 }
 
 Element
-Element::Tri3(const std::array<gidx_t, 3> & ids, marker_t marker)
+Element::Tri3(const std::array<gidx_t, 3> & ids)
 {
-    return Element(TRI3, { ids[0], ids[1], ids[2] }, marker);
+    return Element(TRI3, { ids[0], ids[1], ids[2] });
 }
 
 Element
-Element::Quad4(const std::array<gidx_t, 4> & ids, marker_t marker)
+Element::Quad4(const std::array<gidx_t, 4> & ids)
 {
-    return Element(QUAD4, { ids[0], ids[1], ids[2], ids[3] }, marker);
+    return Element(QUAD4, { ids[0], ids[1], ids[2], ids[3] });
 }
 
 Element
-Element::Tetra4(const std::array<gidx_t, 4> & ids, marker_t marker)
+Element::Tetra4(const std::array<gidx_t, 4> & ids)
 {
-    Element tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] }, marker);
+    Element tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] });
     return tet4;
 }
 
 Element
-Element::Pyramid5(const std::array<gidx_t, 5> & ids, marker_t marker)
+Element::Pyramid5(const std::array<gidx_t, 5> & ids)
 {
-    Element pyr5(PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] }, marker);
+    Element pyr5(PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
     return pyr5;
 }
 
 Element
-Element::Prism6(const std::array<gidx_t, 6> & ids, marker_t marker)
+Element::Prism6(const std::array<gidx_t, 6> & ids)
 {
-    Element wed6(PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] }, marker);
+    Element wed6(PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
     return wed6;
 }
 
 Element
-Element::Hex8(const std::array<gidx_t, 8> & ids, marker_t marker)
+Element::Hex8(const std::array<gidx_t, 8> & ids)
 {
-    Element hex8(HEX8, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] }, marker);
+    Element hex8(HEX8, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });
     return hex8;
 }
 
@@ -214,8 +201,6 @@ bool
 operator==(const Element & a, const Element & b)
 {
     if (a.type() != b.type())
-        return false;
-    if (a.marker() != b.marker())
         return false;
     if (a.num_vertices() != b.num_vertices())
         return false;

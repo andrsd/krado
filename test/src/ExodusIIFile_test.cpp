@@ -48,13 +48,15 @@ TEST(ExodusIIFileTest, write_2d)
         Point(1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Tri3({ 0, 1, 2 }, 1),
-        Element::Tri3({ 2, 1, 3 }, 2)
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 2, 1, 3 })
     };
     // clang-format on
 
     Mesh mesh(pts, elems);
     mesh.set_up();
+    mesh.set_cell_set(1, { 0 });
+    mesh.set_cell_set(2, { 1 });
     std::vector<std::size_t> edges_left = { 8 };
     mesh.set_side_set(100, edges_left);
     mesh.set_side_set_name(100, "left");

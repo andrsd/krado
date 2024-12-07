@@ -174,12 +174,19 @@ Mesh::add(const Mesh & other)
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
-        auto new_elem = Element(elem.type(), ids, elem.marker());
+        auto new_elem = Element(elem.type(), ids);
         this->elems.emplace_back(new_elem);
     }
+
+    // merge cell sets
+    for (auto & id : other.cell_set_ids()) {
+        auto & cs = other.cell_set(id);
+        for (auto & cell_id : cs)
+            this->cell_sets[id].emplace_back(cell_id + n_elem_ofst);
+    }
+
     // merge side sets
-    auto ss_ids = other.side_set_ids();
-    for (auto & id : ss_ids) {
+    for (auto & id : other.side_set_ids()) {
         auto & ss = other.side_set(id);
         for (auto & entry : ss) {
             auto cell_id = entry.elem + n_elem_ofst;
@@ -400,11 +407,15 @@ Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_e
 void
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
-    for (auto & elem : this->elems) {
-        auto block_id = elem.marker();
-        if (block_map.find(block_id) != block_map.end())
-            elem.set_marker(block_map.at(block_id));
+    std::map<marker_t, std::string> new_cell_set_names;
+    std::map<marker_t, std::vector<gidx_t>> new_cell_sets;
+    for (auto & [block_id, cells] : this->cell_sets) {
+        auto new_block_id = block_map.at(block_id);
+        new_cell_sets[new_block_id] = cells;
+        new_cell_set_names[new_block_id] = cell_set_name(block_id);
     }
+    this->cell_sets = new_cell_sets;
+    this->cell_set_names = new_cell_set_names;
 }
 
 const Range &
@@ -471,20 +482,8 @@ Mesh::element_type(gidx_t index) const
 }
 
 void
-Mesh::build_cell_sets()
-{
-    this->cell_sets.clear();
-    for (std::size_t i = 0; i < this->elems.size(); ++i) {
-        const auto & cell = this->elems[i];
-        auto marker = cell.marker();
-        this->cell_sets[marker].push_back(i);
-    }
-}
-
-void
 Mesh::set_up()
 {
-    build_cell_sets();
     build_hasse_diagram();
 }
 

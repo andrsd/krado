@@ -165,11 +165,11 @@ TEST(MeshTest, remap_block_ids)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
     auto square = f.read();
+    square.set_cell_set(0, { 0, 1 });
     square.remap_block_ids({ { 0, 1000 } });
 
-    auto & elems = square.elements();
-    EXPECT_THAT(elems[0].marker(), 1000);
-    EXPECT_THAT(elems[1].marker(), 1000);
+    EXPECT_THAT(square.cell_set_ids(), ElementsAre(1000));
+    EXPECT_THAT(square.cell_set(1000), ElementsAre(0, 1));
 }
 
 TEST(MeshTest, element_ids_2d)
@@ -182,8 +182,8 @@ TEST(MeshTest, element_ids_2d)
         Point(1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Tri3({ 0, 1, 2 }, 1),
-        Element::Tri3({ 2, 1, 3 }, 2)
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 2, 1, 3 })
     };
     // clang-format on
 
@@ -208,7 +208,7 @@ TEST(MeshTest, element_ids_3d)
         Point(0., 1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 })
     };
     // clang-format on
 
@@ -281,8 +281,8 @@ TEST(MeshTest, boundary_edges)
         Point(1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Tri3({ 0, 1, 2 }, 1),
-        Element::Tri3({ 2, 1, 3 }, 2)
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 2, 1, 3 })
     };
     // clang-format on
 
@@ -307,7 +307,7 @@ TEST(MeshTest, boundary_faces)
         Point(0., 1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 })
     };
     // clang-format on
 
@@ -328,8 +328,8 @@ TEST(MeshTest, centroid_2d)
         Point(1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Tri3({ 0, 1, 2 }, 1),
-        Element::Tri3({ 2, 1, 3 }, 2)
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 2, 1, 3 })
     };
     // clang-format on
 
@@ -359,14 +359,13 @@ TEST(MeshTest, centroid_3d)
         Point(0., 1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 })
     };
     // clang-format on
 
     Mesh mesh(pts, elems);
     mesh.set_up();
 
-    std::cerr << "ctr = " << mesh.compute_centroid(0) << std::endl;
     EXPECT_EQ(mesh.compute_centroid(0), Point(0.5, 0.5, 0.5));
     EXPECT_EQ(mesh.compute_centroid(9), Point(0.5, 0., 0.5));
     EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0.5));
@@ -386,8 +385,8 @@ TEST(MeshTest, outward_normal_2d)
         Point(1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Tri3({ 0, 1, 2 }, 1),
-        Element::Tri3({ 2, 1, 3 }, 2)
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 2, 1, 3 })
     };
     // clang-format on
 
@@ -414,7 +413,7 @@ TEST(MeshTest, outward_normal_3d)
         Point(0., 1., 1.)
     };
     std::vector<Element> elems = {
-        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }, 1)
+        Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 })
     };
     // clang-format on
 

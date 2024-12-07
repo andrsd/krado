@@ -101,10 +101,10 @@ local_side_index(Element::Type et, int idx)
 
 template <typename ET>
 Element
-build_element(const std::vector<int> & connect, int idx, int blk_id)
+build_element(const std::vector<int> & connect, int idx)
 {
     auto elem_connect = exII::build_element_connect<ET::N_VERTICES>(connect, idx);
-    return Element(ET::TYPE, elem_connect, blk_id);
+    return Element(ET::TYPE, elem_connect);
 }
 
 //
@@ -171,19 +171,19 @@ ExodusIIFile::read_elements()
         for (int i = 0; i < eb.get_num_elements(); i++) {
             auto idx = i * n_elem_nodes;
             if (et == Element::LINE2)
-                elems.emplace_back(build_element<Line2>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Line2>(connect, idx));
             else if (et == Element::TRI3)
-                elems.emplace_back(build_element<Tri3>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Tri3>(connect, idx));
             else if (et == Element::QUAD4)
-                elems.emplace_back(build_element<Quad4>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Quad4>(connect, idx));
             else if (et == Element::TETRA4)
-                elems.emplace_back(build_element<Tetra4>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Tetra4>(connect, idx));
             else if (et == Element::PYRAMID5)
-                elems.emplace_back(build_element<Pyramid5>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Pyramid5>(connect, idx));
             else if (et == Element::PRISM6)
-                elems.emplace_back(build_element<Prism6>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Prism6>(connect, idx));
             else if (et == Element::HEX8)
-                elems.emplace_back(build_element<Hex8>(connect, idx, blk_id));
+                elems.emplace_back(build_element<Hex8>(connect, idx));
             else
                 throw std::runtime_error("Unsupported element type: " + eb.get_element_type());
         }
@@ -309,26 +309,16 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         }
     }
     else {
-        // NOTE: krado allows to have different cell types in a single side set, but not exodusII.
+        // NOTE: krado allows to have different cell types in a single cell set, but not exodusII.
         // So, we need to filter on both cell set id and cell type, i.e. put all cells of the same
         // type in the same block.
         // Currently, we just assume cell sets are homogeneous in terms of cell type.
 
-        std::map<int, std::vector<gidx_t>> elem_blks;
-        std::map<int, std::string> elem_blk_names;
-        for (auto & cell_id : mesh.cell_ids()) {
-            auto & cell = mesh.element(cell_id);
-            auto marker = cell.marker();
-            elem_blks[marker].push_back(cell_id);
-            if (elem_blk_names.find(marker) == elem_blk_names.end()) {
-                auto blk_name = mesh.cell_set_name(marker);
-                elem_blk_names[marker] = blk_name;
-            }
-        }
-
         int exii_idx = 1;
         std::vector<std::string> blk_names;
-        for (auto & [blk_id, elem_ids] : elem_blks) {
+        auto cell_set_ids = mesh.cell_set_ids();
+        for (auto & blk_id : cell_set_ids) {
+            auto & elem_ids = mesh.cell_set(blk_id);
             if (!elem_ids.empty()) {
                 const auto & elem = mesh.element(elem_ids[0]);
                 auto el_type = exII::element_name(elem.type());
@@ -342,7 +332,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
                         connect.push_back(el.vertex_id(j) + 1);
                 }
                 this->exo.write_block(blk_id, el_type, elem_ids.size(), connect);
-                blk_names.push_back(elem_blk_names[blk_id]);
+                blk_names.push_back(mesh.cell_set_name(blk_id));
             }
         }
 
