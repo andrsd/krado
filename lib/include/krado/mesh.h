@@ -27,6 +27,12 @@ struct side_set_entry_t {
     side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
 };
 
+inline
+bool operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
+{
+    return lhs.elem == rhs.elem && lhs.side == rhs.side;
+}
+
 class GeomModel;
 
 class Mesh {

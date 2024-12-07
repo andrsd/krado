@@ -1,7 +1,9 @@
 #include "gmock/gmock.h"
 #include "krado/extrude.h"
+#include "krado/mesh.h"
 
 using namespace krado;
+using namespace testing;
 
 TEST(ExtrudeTest, line_1d)
 {
@@ -12,6 +14,8 @@ TEST(ExtrudeTest, line_1d)
         Element::Line2({ 2, 3 }, 1),
     };
     Mesh line(pts1d, elems1d);
+    line.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
+    line.set_side_set(11, std::vector<side_set_entry_t> { { 2, 1 } });
 
     Mesh rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
@@ -38,6 +42,17 @@ TEST(ExtrudeTest, line_1d)
     EXPECT_EQ(elems[3], Element::Quad4({ 4, 5, 9, 8 }, 0));
     EXPECT_EQ(elems[4], Element::Quad4({ 5, 6, 10, 9 }, 0));
     EXPECT_EQ(elems[5], Element::Quad4({ 6, 7, 11, 10 }, 1));
+
+    auto ss_ids = rectangle.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = rectangle.side_set(10);
+    EXPECT_EQ(ss0[0], side_set_entry_t(0, 3));
+    EXPECT_EQ(ss0[1], side_set_entry_t(3, 3));
+
+    auto & ss1 = rectangle.side_set(11);
+    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
+    EXPECT_EQ(ss1[1], side_set_entry_t(5, 1));
 }
 
 TEST(ExtrudeTest, tri_2d)
@@ -54,6 +69,8 @@ TEST(ExtrudeTest, tri_2d)
         Element::Tri3({ 3, 0, 4 }, 0),
     };
     Mesh square(pts2d, elems2d);
+    square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
+    square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 0 } });
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -85,6 +102,17 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_EQ(elems[5], Element::Prism6({ 6, 7, 9, 11, 12, 14 }, 0));
     EXPECT_EQ(elems[6], Element::Prism6({ 7, 8, 9, 12, 13, 14 }, 1));
     EXPECT_EQ(elems[7], Element::Prism6({ 8, 5, 9, 13, 10, 14 }, 0));
+
+    auto ss_ids = box.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = box.side_set(10);
+    EXPECT_EQ(ss0[0], side_set_entry_t(0, 1));
+    EXPECT_EQ(ss0[1], side_set_entry_t(4, 1));
+
+    auto & ss1 = box.side_set(11);
+    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
+    EXPECT_EQ(ss1[1], side_set_entry_t(6, 1));
 }
 
 TEST(ExtrudeTest, quad_2d)
@@ -100,6 +128,10 @@ TEST(ExtrudeTest, quad_2d)
     };
 
     Mesh square(pts2d, elems2d);
+    square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 }, { 1, 0 } });
+    square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 2 }, { 3, 2 } });
+    square.set_side_set(12, std::vector<side_set_entry_t> { { 1, 1 }, { 3, 1 } });
+    square.set_side_set(13, std::vector<side_set_entry_t> { { 0, 3 }, { 2, 3 } });
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -143,4 +175,31 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_EQ(elems[5], Element::Hex8({ 10, 11, 14, 13, 19, 20, 23, 22 }, 1));
     EXPECT_EQ(elems[6], Element::Hex8({ 12, 13, 16, 15, 21, 22, 25, 24 }, 0));
     EXPECT_EQ(elems[7], Element::Hex8({ 13, 14, 17, 16, 22, 23, 26, 25 }, 0));
+
+    auto ss_ids = box.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11, 12, 13));
+
+    auto & ss0 = box.side_set(10);
+    EXPECT_EQ(ss0[0], side_set_entry_t(0, 0));
+    EXPECT_EQ(ss0[1], side_set_entry_t(1, 0));
+    EXPECT_EQ(ss0[2], side_set_entry_t(4, 0));
+    EXPECT_EQ(ss0[3], side_set_entry_t(5, 0));
+
+    auto & ss1 = box.side_set(11);
+    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
+    EXPECT_EQ(ss1[1], side_set_entry_t(3, 1));
+    EXPECT_EQ(ss1[2], side_set_entry_t(6, 1));
+    EXPECT_EQ(ss1[3], side_set_entry_t(7, 1));
+
+    auto & ss2 = box.side_set(12);
+    EXPECT_EQ(ss2[0], side_set_entry_t(1, 3));
+    EXPECT_EQ(ss2[1], side_set_entry_t(3, 3));
+    EXPECT_EQ(ss2[2], side_set_entry_t(5, 3));
+    EXPECT_EQ(ss2[3], side_set_entry_t(7, 3));
+
+    auto & ss3 = box.side_set(13);
+    EXPECT_EQ(ss3[0], side_set_entry_t(0, 2));
+    EXPECT_EQ(ss3[1], side_set_entry_t(2, 2));
+    EXPECT_EQ(ss3[2], side_set_entry_t(4, 2));
+    EXPECT_EQ(ss3[3], side_set_entry_t(6, 2));
 }

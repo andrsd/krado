@@ -3,6 +3,7 @@
 
 #include "krado/extrude.h"
 #include "krado/element.h"
+#include "krado/mesh.h"
 #include "krado/point.h"
 
 namespace krado {
@@ -58,6 +59,41 @@ extrude_element<Element::QUAD4>(const Element & el, std::size_t layer, std::size
     return Element::Hex8(ids, el.marker());
 }
 
+//
+
+template <Element::Type T>
+int
+extrude_element_side(const Element & el, int side)
+{
+    throw Exception("Extrusion of element side for '{}' not supported", Element::type(T));
+}
+
+template <>
+int
+extrude_element_side<Element::LINE2>(const Element & el, int side)
+{
+    // this maps edge side to quad side
+    std::array<int, 2> quad_side = { 3, 1 };
+    return quad_side[side];
+}
+
+template <>
+int
+extrude_element_side<Element::TRI3>(const Element & el, int side)
+{
+    // this maps triangle side to prism side
+    return side + 1;
+}
+
+template <>
+int
+extrude_element_side<Element::QUAD4>(const Element & el, int side)
+{
+    // this maps quad side to hex side
+    std::array<int, 4> hex_side = { 0, 3, 1, 2 };
+    return hex_side[side];
+}
+
 } // namespace
 
 Mesh
@@ -71,10 +107,12 @@ Mesh
 extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> & thicknesses)
 {
     auto n = direction.normalized();
-    auto layer_stride = mesh.points().size();
+    auto point_stride = mesh.points().size();
+    auto elem_stride = mesh.elements().size();
 
+    // extrude elements
     std::vector<Point> points;
-    points.reserve(layer_stride * (thicknesses.size() + 1));
+    points.reserve(point_stride * (thicknesses.size() + 1));
     for (auto & pt : mesh.points())
         points.emplace_back(pt);
     for (std::size_t i = 0; i < thicknesses.size(); ++i) {
@@ -84,32 +122,54 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
             points.emplace_back(p);
         }
     }
-
     std::vector<Element> elems;
     for (std::size_t i = 0; i < thicknesses.size(); ++i) {
         for (auto & el : mesh.elements()) {
             if (el.type() == Element::LINE2)
-                elems.emplace_back(extrude_element<Element::LINE2>(el, i, layer_stride));
+                elems.emplace_back(extrude_element<Element::LINE2>(el, i, point_stride));
             else if (el.type() == Element::TRI3)
-                elems.emplace_back(extrude_element<Element::TRI3>(el, i, layer_stride));
+                elems.emplace_back(extrude_element<Element::TRI3>(el, i, point_stride));
             else if (el.type() == Element::QUAD4)
-                elems.emplace_back(extrude_element<Element::QUAD4>(el, i, layer_stride));
+                elems.emplace_back(extrude_element<Element::QUAD4>(el, i, point_stride));
             else
                 throw Exception("Extrusion of element type '{}' not supported",
                                 Element::type(el.type()));
         }
     }
 
-    std::map<marker_t, std::vector<std::size_t>> set_cell_sets;
-    for (std::size_t id = 0; id < elems.size(); ++id) {
-        auto & el = elems[id];
-        auto marker = el.marker();
-        set_cell_sets[marker].push_back(id);
+    // extrude side sets
+    std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
+    for (auto & id : mesh.side_set_ids()) {
+        auto & ss = mesh.side_set(id);
+        std::vector<side_set_entry_t> side_set;
+        for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+            for (auto & entry : ss) {
+                auto cell_id = entry.elem + elem_stride * i;
+                auto & cell = mesh.element(entry.elem);
+                if (cell.type() == Element::LINE2)
+                    side_set.emplace_back(cell_id,
+                                          extrude_element_side<Element::LINE2>(cell, entry.side));
+                else if (cell.type() == Element::TRI3)
+                    side_set.emplace_back(cell_id,
+                                          extrude_element_side<Element::TRI3>(cell, entry.side));
+                else if (cell.type() == Element::QUAD4)
+                    side_set.emplace_back(cell_id,
+                                          extrude_element_side<Element::QUAD4>(cell, entry.side));
+                else
+                    throw Exception("Extrusion of element type '{}' not supported",
+                                    Element::type(cell.type()));
+            }
+        }
+        side_sets[id] = side_set;
     }
 
     Mesh extruded_mesh(points, elems);
     for (auto & id : mesh.cell_set_ids())
         extruded_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
+    for (auto & [id, entries] : side_sets) {
+        extruded_mesh.set_side_set(id, entries);
+        extruded_mesh.set_side_set_name(id, mesh.side_set_name(id));
+    }
     return extruded_mesh;
 }
 
