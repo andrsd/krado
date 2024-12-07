@@ -3,8 +3,9 @@
 #include "krado/geom_model.h"
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
-#include "builder.h"
 #include "krado/range.h"
+#include "krado/io.h"
+#include "builder.h"
 #include <filesystem>
 
 using namespace krado;
@@ -55,6 +56,17 @@ TEST(MeshTest, scaled)
     EXPECT_EQ(pnts[1], Point(0.5, 0));
     EXPECT_EQ(pnts[2], Point(0, 0.5));
     EXPECT_EQ(pnts[3], Point(0.5, 0.5));
+
+    auto ss_ids = mesh.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = mesh.side_set(10);
+    EXPECT_EQ(ss0[0].elem, 1);
+    EXPECT_EQ(ss0[0].side, 1);
+
+    auto & ss1 = mesh.side_set(11);
+    EXPECT_EQ(ss1[0].elem, 0);
+    EXPECT_EQ(ss1[0].side, 2);
 }
 
 TEST(MeshTest, translated)
@@ -67,6 +79,17 @@ TEST(MeshTest, translated)
     EXPECT_EQ(pnts[1], Point(4, 3));
     EXPECT_EQ(pnts[2], Point(2, 5));
     EXPECT_EQ(pnts[3], Point(4, 5));
+
+    auto ss_ids = mesh.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = mesh.side_set(10);
+    EXPECT_EQ(ss0[0].elem, 1);
+    EXPECT_EQ(ss0[0].side, 1);
+
+    auto & ss1 = mesh.side_set(11);
+    EXPECT_EQ(ss1[0].elem, 0);
+    EXPECT_EQ(ss1[0].side, 2);
 }
 
 TEST(MeshTest, add_mesh)
@@ -76,7 +99,7 @@ TEST(MeshTest, add_mesh)
 
     Mesh m;
     m.add(square);
-    auto sq2 = square.translated(2, 0);
+    auto sq2 = square.translated(0, 2);
     m.add(sq2);
 
     auto & pnts = m.points();
@@ -85,10 +108,10 @@ TEST(MeshTest, add_mesh)
     EXPECT_EQ(pnts[1], Point(2, 0));
     EXPECT_EQ(pnts[2], Point(0, 2));
     EXPECT_EQ(pnts[3], Point(2, 2));
-    EXPECT_EQ(pnts[4], Point(2, 0));
-    EXPECT_EQ(pnts[5], Point(4, 0));
-    EXPECT_EQ(pnts[6], Point(2, 2));
-    EXPECT_EQ(pnts[7], Point(4, 2));
+    EXPECT_EQ(pnts[4], Point(0, 2));
+    EXPECT_EQ(pnts[5], Point(2, 2));
+    EXPECT_EQ(pnts[6], Point(0, 4));
+    EXPECT_EQ(pnts[7], Point(2, 4));
 
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
@@ -100,6 +123,21 @@ TEST(MeshTest, add_mesh)
     EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
     EXPECT_EQ(elems[3].type(), Element::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
+
+    auto ss_ids = m.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = m.side_set(10);
+    EXPECT_EQ(ss0[0].elem, 1);
+    EXPECT_EQ(ss0[0].side, 1);
+    EXPECT_EQ(ss0[1].elem, 3);
+    EXPECT_EQ(ss0[1].side, 1);
+
+    auto & ss1 = m.side_set(11);
+    EXPECT_EQ(ss1[0].elem, 0);
+    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0].elem, 2);
+    EXPECT_EQ(ss1[0].side, 2);
 }
 
 TEST(MeshTest, remove_duplicate_points)

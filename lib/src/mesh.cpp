@@ -524,21 +524,35 @@ Mesh::transformed(const Trsf & tr) const
     auto pts = points();
     for (auto & p : pts)
         p = tr * p;
-    auto elems = this->elems;
-    return Mesh(pts, elems);
+
+    Mesh mesh(pts, this->elems);
+    mesh.side_sets = this->side_sets;
+    return mesh;
 }
 
 void
 Mesh::add(const Mesh & other)
 {
+    auto n_elem_ofst = this->elems.size();
     auto n_pt_ofst = this->pnts.size();
+    // merge points
     this->pnts.insert(this->pnts.end(), other.pnts.begin(), other.pnts.end());
+    // merge elements
     for (auto & elem : other.elems) {
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
         auto new_elem = Element(elem.type(), ids, elem.marker());
         this->elems.emplace_back(new_elem);
+    }
+    // merge side sets
+    auto ss_ids = other.side_set_ids();
+    for (auto & id : ss_ids) {
+        auto & ss = other.side_set(id);
+        for (auto & entry : ss) {
+            auto cell_id = entry.elem + n_elem_ofst;
+            this->side_sets[id].emplace_back(cell_id, entry.side);
+        }
     }
 }
 
