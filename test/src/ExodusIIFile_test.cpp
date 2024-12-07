@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/exodusii_file.h"
 #include "krado/element.h"
+#include "krado/mesh.h"
 #include "krado/point.h"
 #include <filesystem>
 
@@ -31,12 +32,10 @@ TEST(ExodusIIFileTest, read_2d)
     EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
 
     auto & ss0 = mesh.side_set(10);
-    EXPECT_EQ(ss0[0].elem, 1);
-    EXPECT_EQ(ss0[0].side, 1);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
 
     auto & ss1 = mesh.side_set(11);
-    EXPECT_EQ(ss1[0].elem, 0);
-    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
 }
 
 TEST(ExodusIIFileTest, write_2d)

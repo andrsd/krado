@@ -61,12 +61,10 @@ TEST(MeshTest, scaled)
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
     auto & ss0 = mesh.side_set(10);
-    EXPECT_EQ(ss0[0].elem, 1);
-    EXPECT_EQ(ss0[0].side, 1);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
 
     auto & ss1 = mesh.side_set(11);
-    EXPECT_EQ(ss1[0].elem, 0);
-    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
 }
 
 TEST(MeshTest, translated)
@@ -84,12 +82,10 @@ TEST(MeshTest, translated)
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
     auto & ss0 = mesh.side_set(10);
-    EXPECT_EQ(ss0[0].elem, 1);
-    EXPECT_EQ(ss0[0].side, 1);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
 
     auto & ss1 = mesh.side_set(11);
-    EXPECT_EQ(ss1[0].elem, 0);
-    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
 }
 
 TEST(MeshTest, add_mesh)
@@ -128,16 +124,12 @@ TEST(MeshTest, add_mesh)
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
     auto & ss0 = m.side_set(10);
-    EXPECT_EQ(ss0[0].elem, 1);
-    EXPECT_EQ(ss0[0].side, 1);
-    EXPECT_EQ(ss0[1].elem, 3);
-    EXPECT_EQ(ss0[1].side, 1);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
+    EXPECT_EQ(ss0[1], side_set_entry_t(3, 1));
 
     auto & ss1 = m.side_set(11);
-    EXPECT_EQ(ss1[0].elem, 0);
-    EXPECT_EQ(ss1[0].side, 2);
-    EXPECT_EQ(ss1[0].elem, 2);
-    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
+    EXPECT_EQ(ss1[0], side_set_entry_t(2, 2));
 }
 
 TEST(MeshTest, remove_duplicate_points)
@@ -190,12 +182,10 @@ TEST(MeshTest, duplicate)
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
     auto & ss0 = dup.side_set(10);
-    EXPECT_EQ(ss0[0].elem, 1);
-    EXPECT_EQ(ss0[0].side, 1);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
 
     auto & ss1 = dup.side_set(11);
-    EXPECT_EQ(ss1[0].elem, 0);
-    EXPECT_EQ(ss1[0].side, 2);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
 }
 
 TEST(MeshTest, remap_block_ids)
