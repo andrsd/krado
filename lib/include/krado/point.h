@@ -43,17 +43,9 @@ public:
     double z;
 };
 
-inline Point
-operator+(const Point & a, const Point & b)
-{
-    return Point(a.x + b.x, a.y + b.y, a.z + b.z);
-}
+Point operator+(const Point & a, const Point & b);
 
-inline Point
-operator-(const Point & a, const Point & b)
-{
-    return Point(a.x - b.x, a.y - b.y, a.z - b.z);
-}
+Vector operator-(const Point & a, const Point & b);
 
 bool operator==(const Point & a, const Point & b);
 

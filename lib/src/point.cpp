@@ -150,6 +150,18 @@ Point::transform(const std::vector<double> & tfo)
     return true;
 }
 
+Point
+operator+(const Point & a, const Point & b)
+{
+    return Point(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+
+Vector
+operator-(const Point & a, const Point & b)
+{
+    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
 bool
 operator==(const krado::Point & a, const krado::Point & b)
 {
