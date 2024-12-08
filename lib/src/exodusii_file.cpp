@@ -117,11 +117,13 @@ ExodusIIFile::read()
     this->exo.open(this->fn);
     this->exo.init();
     auto pnts = read_points();
-    auto elems = read_elements();
+    auto [elems, cell_sets] = read_elements();
     auto side_sets = read_side_sets();
     this->exo.close();
 
     Mesh mesh(pnts, elems);
+    for (auto & [id, cs] : cell_sets)
+        mesh.set_cell_set(id, cs);
     for (auto & [id, ss] : side_sets)
         mesh.set_side_set(id, ss);
 
@@ -157,10 +159,11 @@ ExodusIIFile::read_points()
     return points;
 }
 
-std::vector<Element>
+std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>>
 ExodusIIFile::read_elements()
 {
     std::vector<Element> elems;
+    std::map<int, std::vector<gidx_t>> cell_sets;
 
     this->exo.read_blocks();
     for (auto & eb : this->exo.get_element_blocks()) {
@@ -170,6 +173,7 @@ ExodusIIFile::read_elements()
         auto blk_id = eb.get_id();
         for (int i = 0; i < eb.get_num_elements(); i++) {
             auto idx = i * n_elem_nodes;
+            cell_sets[blk_id].push_back(elems.size());
             if (et == Element::LINE2)
                 elems.emplace_back(build_element<Line2>(connect, idx));
             else if (et == Element::TRI3)
@@ -189,7 +193,7 @@ ExodusIIFile::read_elements()
         }
     }
 
-    return elems;
+    return { elems, cell_sets };
 }
 
 std::map<int, std::vector<side_set_entry_t>>
@@ -281,7 +285,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
     if (mesh.cell_set_ids().empty()) {
         std::map<Element::Type, std::vector<gidx_t>> elem_blks;
         int exii_idx = 1;
-        for (auto & cell_id : mesh.cell_ids()) {
+        for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
             this->exii_elem_ids[cell_id] = exii_idx++;
             auto & cell = mesh.element(cell_id);
             auto et = cell.type();

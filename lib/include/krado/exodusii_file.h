@@ -35,7 +35,7 @@ private:
     /// Read elements
     ///
     /// @return Vector of elements
-    std::vector<Element> read_elements();
+    std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>> read_elements();
 
     /// Read side sets
     ///
