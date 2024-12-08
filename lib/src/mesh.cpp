@@ -158,6 +158,7 @@ Mesh::transformed(const Trsf & tr) const
         p = tr * p;
 
     Mesh mesh(pts, this->elems);
+    mesh.cell_sets = this->cell_sets;
     mesh.side_sets = this->side_sets;
     return mesh;
 }
