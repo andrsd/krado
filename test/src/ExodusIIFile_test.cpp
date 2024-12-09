@@ -28,6 +28,12 @@ TEST(ExodusIIFileTest, read_2d)
     EXPECT_THAT(elems[1].type(), Eq(Element::TRI3));
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
 
+    auto cell_set_ids = mesh.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = mesh.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
+
     auto side_set_ids = mesh.side_set_ids();
     EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
 
