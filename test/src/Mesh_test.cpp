@@ -169,6 +169,12 @@ TEST(MeshTest, duplicate)
     EXPECT_THAT(square.points(), Eq(dup.points()));
     EXPECT_THAT(square.elements(), Eq(dup.elements()));
 
+    auto cell_set_ids = dup.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = dup.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
+
     auto ss_ids = dup.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 

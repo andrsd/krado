@@ -223,6 +223,7 @@ Mesh
 Mesh::duplicate() const
 {
     Mesh dup(this->pnts, this->elems);
+    dup.cell_sets = this->cell_sets;
     dup.side_sets = this->side_sets;
     return dup;
 }
