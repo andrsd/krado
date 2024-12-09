@@ -30,6 +30,12 @@ TEST(MeshTest, scaled)
     EXPECT_EQ(pnts[2], Point(0, 0.5));
     EXPECT_EQ(pnts[3], Point(0.5, 0.5));
 
+    auto cell_set_ids = mesh.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = mesh.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
+
     auto ss_ids = mesh.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
@@ -50,6 +56,12 @@ TEST(MeshTest, translated)
     EXPECT_EQ(pnts[1], Point(4, 3));
     EXPECT_EQ(pnts[2], Point(2, 5));
     EXPECT_EQ(pnts[3], Point(4, 5));
+
+    auto cell_set_ids = mesh.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = mesh.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = mesh.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
@@ -92,6 +104,12 @@ TEST(MeshTest, add_mesh)
     EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
     EXPECT_EQ(elems[3].type(), Element::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
+
+    auto cell_set_ids = m.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = m.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1, 2, 3));
 
     auto ss_ids = m.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
