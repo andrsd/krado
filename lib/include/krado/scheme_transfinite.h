@@ -16,7 +16,7 @@ public:
     SchemeTransfinite(const std::string & name);
     void mesh_curve(MeshCurve & curve) override;
 
-protected:
+private:
     virtual Integral1D compute_integral(const MeshCurve & curve) = 0;
 };
 

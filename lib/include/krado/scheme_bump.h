@@ -12,7 +12,7 @@ class SchemeBump : public SchemeTransfinite {
 public:
     SchemeBump();
 
-protected:
+private:
     Integral1D compute_integral(const MeshCurve & curve) override;
 };
 

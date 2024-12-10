@@ -12,7 +12,7 @@ class SchemeBias : public SchemeTransfinite {
 public:
     SchemeBias();
 
-protected:
+private:
     Integral1D compute_integral(const MeshCurve & curve) override;
 };
 

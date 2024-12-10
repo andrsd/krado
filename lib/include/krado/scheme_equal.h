@@ -12,7 +12,7 @@ class SchemeEqual : public SchemeTransfinite {
 public:
     SchemeEqual();
 
-protected:
+private:
     Integral1D compute_integral(const MeshCurve & curve) override;
 };
 

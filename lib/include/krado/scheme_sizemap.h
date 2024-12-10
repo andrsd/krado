@@ -12,7 +12,7 @@ class SchemeSizeMap : public SchemeTransfinite {
 public:
     SchemeSizeMap();
 
-protected:
+private:
     Integral1D compute_integral(const MeshCurve & curve) override;
 };
 
