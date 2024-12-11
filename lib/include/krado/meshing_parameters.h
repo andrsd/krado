@@ -61,10 +61,20 @@ public:
         return this->mparams.get<T>(param_name);
     }
 
+    /// Check if the curve is already meshed
+    ///
+    /// @return `true` if mesh is already present, `false` otherwise
+    bool is_meshed() const;
+
+    /// Mark curve as meshed
+    void set_meshed();
+
 private:
     SchemeFactory & scheme_factory;
     Scheme * schm;
     Parameters mparams;
+    /// Flag indicating if the entity is meshed
+    bool meshed;
 };
 
 } // namespace krado

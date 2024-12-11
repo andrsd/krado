@@ -11,18 +11,16 @@ TEST(WriteExodusIITest, line)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
-    MeshModel mesh(model);
 
-    auto & line = mesh.curve(1);
+    auto & line = model.curve(1);
     // clang-format off
     line.set_scheme("bias")
         .set("intervals", 5)
         .set("coef", 1.2);
     // clang-format on
-    mesh.mesh_curve(1);
+    model.mesh_curve(1);
 
-    mesh.number_points();
-    mesh.build_elements();
+    auto mesh = model.build_mesh();
 
-    // IO::export_mesh("line.exo", mesh);
+    IO::export_mesh("line.exo", mesh);
 }

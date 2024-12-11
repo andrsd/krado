@@ -10,10 +10,8 @@ namespace krado {
 MeshVolume::MeshVolume(const GeomVolume & gvolume,
                        const std::vector<MeshSurface *> & mesh_surfaces) :
     gvolume(gvolume),
-    mesh_surfaces(mesh_surfaces),
-    meshed(false)
+    mesh_surfaces(mesh_surfaces)
 {
-    set<int>("marker", 0);
 }
 
 const GeomVolume &
@@ -26,18 +24,6 @@ const std::vector<MeshSurface *> &
 MeshVolume::surfaces() const
 {
     return this->mesh_surfaces;
-}
-
-bool
-MeshVolume::is_meshed() const
-{
-    return this->meshed;
-}
-
-void
-MeshVolume::set_meshed()
-{
-    this->meshed = true;
 }
 
 } // namespace krado

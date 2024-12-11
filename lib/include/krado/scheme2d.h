@@ -7,6 +7,8 @@
 
 namespace krado {
 
+class GeomCurve;
+
 /// Base class for 2-dimensional mesh generation schemes
 class Scheme2D {
 public:

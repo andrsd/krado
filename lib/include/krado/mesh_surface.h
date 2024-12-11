@@ -54,14 +54,6 @@ public:
     /// @param tri Local vertex indices
     void add_triangle(const std::array<std::size_t, 3> & tri);
 
-    /// Check if the surface is already meshed
-    ///
-    /// @return `true` if mesh is already present, `false` otherwise
-    bool is_meshed() const;
-
-    /// Mark surface as meshed
-    void set_meshed();
-
 private:
     const GeomSurface & gsurface;
     /// Mesh curves bounding this surface
@@ -72,8 +64,6 @@ private:
     std::vector<MeshSurfaceVertex *> surf_vtxs;
     /// Triangles
     std::vector<Element> tris;
-    /// Flag indicating if the surface is meshed
-    bool meshed;
 };
 
 } // namespace krado

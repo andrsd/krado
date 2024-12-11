@@ -61,7 +61,7 @@ public:
     ///
     /// @param pt Physical location
     /// @return Parameters (u, v)
-    std::tuple<double, double> parameter_from_point(const Point &pt) const;
+    std::tuple<double, double> parameter_from_point(const Point & pt) const;
 
     /// Find nearest point
     ///
@@ -73,12 +73,12 @@ public:
     ///
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
-    bool contains_point(const Point &pt) const;
+    bool contains_point(const Point & pt) const;
 
     operator const TopoDS_Shape &() const;
 
 private:
-    std::tuple<bool, double, double> project(const Point &pt) const;
+    std::tuple<bool, double, double> project(const Point & pt) const;
 
     TopoDS_Face face;
     Handle(Geom_Surface) surface;

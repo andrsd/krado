@@ -15,10 +15,8 @@ namespace krado {
 MeshSurface::MeshSurface(const GeomSurface & gsurface,
                          const std::vector<MeshCurve *> & mesh_curves) :
     gsurface(gsurface),
-    mesh_curves(mesh_curves),
-    meshed(false)
+    mesh_curves(mesh_curves)
 {
-    set<int>("marker", 0);
 }
 
 const GeomSurface &
@@ -75,18 +73,6 @@ MeshSurface::add_triangle(const std::array<std::size_t, 3> & tri)
 {
     auto tri3 = Element::Tri3(tri);
     this->tris.emplace_back(tri3);
-}
-
-bool
-MeshSurface::is_meshed() const
-{
-    return this->meshed;
-}
-
-void
-MeshSurface::set_meshed()
-{
-    this->meshed = true;
 }
 
 } // namespace krado

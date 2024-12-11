@@ -132,13 +132,13 @@ PYBIND11_MODULE(krado, m)
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
-        .def("vertex", &GeomModel::vertex, py::return_value_policy::reference)
+        .def("vertex", py::overload_cast<int>(&GeomModel::vertex, py::const_))
         .def("curves", &GeomModel::curves, py::return_value_policy::reference)
-        .def("curve", &GeomModel::curve, py::return_value_policy::reference)
+        .def("curve", py::overload_cast<int>(&GeomModel::curve, py::const_))
         .def("surfaces", &GeomModel::surfaces, py::return_value_policy::reference)
-        .def("surface", &GeomModel::surface, py::return_value_policy::reference)
+        .def("surface", py::overload_cast<int>(&GeomModel::surface, py::const_))
         .def("volumes", &GeomModel::volumes, py::return_value_policy::reference)
-        .def("volume", &GeomModel::volume, py::return_value_policy::reference)
+        .def("volume", py::overload_cast<int>(&GeomModel::volume, py::const_))
     ;
 
     py::class_<GeomVertex>(m, "GeomVertex")
@@ -182,21 +182,6 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<const TopoDS_Solid &>())
         .def("volume", &GeomVolume::volume)
         .def("surfaces", &GeomVolume::surfaces)
-    ;
-
-    py::class_<MeshModel>(m, "MeshModel")
-        .def(py::init<const GeomModel &>())
-        .def("vertex", py::overload_cast<int>(&MeshModel::vertex), py::return_value_policy::reference)
-        .def("curve", py::overload_cast<int>(&MeshModel::curve), py::return_value_policy::reference)
-        .def("surface", py::overload_cast<int>(&MeshModel::surface), py::return_value_policy::reference)
-        .def("volume", py::overload_cast<int>(&MeshModel::volume), py::return_value_policy::reference)
-        .def("mesh_vertex", py::overload_cast<int>(&MeshModel::mesh_vertex))
-        .def("mesh_curve", py::overload_cast<int>(&MeshModel::mesh_curve))
-        .def("mesh_surface", py::overload_cast<int>(&MeshModel::mesh_surface))
-        .def("mesh_volume", py::overload_cast<int>(&MeshModel::mesh_volume))
-        .def("number_points", &MeshModel::number_points)
-        .def("build_elements", &MeshModel::build_elements)
-        .def("bounding_box", &MeshModel::bounding_box)
     ;
 
     py::class_<Mesh>(m, "Mesh")
@@ -251,6 +236,7 @@ PYBIND11_MODULE(krado, m)
         .def("get", &MeshVertex::get<int>)
         .def("get", &MeshVertex::get<double>)
         .def("get", &MeshVertex::get<std::string>)
+        .def("is_meshed", &MeshCurve::is_meshed)
     ;
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
@@ -258,9 +244,8 @@ PYBIND11_MODULE(krado, m)
         .def("point", &MeshVertexAbstract::point)
     ;
 
-    py::class_<MeshVertex, MeshVertexAbstract, MeshingParameters>(m, "MeshVertex")
+    py::class_<MeshVertex, MeshVertexAbstract>(m, "MeshVertex")
         .def(py::init<const GeomVertex &>())
-        .def("is_meshed", &MeshVertex::is_meshed)
     ;
 
     py::class_<MeshCurveVertex, MeshVertexAbstract>(m, "MeshCurveVertex")
@@ -273,28 +258,25 @@ PYBIND11_MODULE(krado, m)
         .def("parameter", &MeshSurfaceVertex::parameter)
     ;
 
-    py::class_<MeshCurve, MeshingParameters>(m, "MeshCurve")
+    py::class_<MeshCurve>(m, "MeshCurve")
         .def(py::init<const GeomCurve &, MeshVertex *, MeshVertex *>())
         .def("all_vertices", &MeshCurve::all_vertices, py::return_value_policy::reference)
         .def("bounding_vertices", &MeshCurve::bounding_vertices, py::return_value_policy::reference)
         .def("curve_vertices", py::overload_cast<>(&MeshCurve::curve_vertices, py::const_), py::return_value_policy::reference)
         .def("segments", &MeshCurve::segments, py::return_value_policy::reference)
-        .def("is_meshed", &MeshCurve::is_meshed)
     ;
 
-    py::class_<MeshSurface, MeshingParameters>(m, "MeshSurface")
+    py::class_<MeshSurface>(m, "MeshSurface")
         .def(py::init<const GeomSurface &, const std::vector<MeshCurve *> &>())
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
         .def("all_vertices", &MeshSurface::all_vertices, py::return_value_policy::reference)
         .def("surface_vertices", &MeshSurface::surface_vertices, py::return_value_policy::reference)
         .def("triangles", &MeshSurface::triangles, py::return_value_policy::reference)
-        .def("is_meshed", &MeshSurface::is_meshed)
     ;
 
-    py::class_<MeshVolume, MeshingParameters>(m, "MeshVolume")
+    py::class_<MeshVolume>(m, "MeshVolume")
         .def(py::init<const GeomVolume &, const std::vector<MeshSurface *> &>())
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
-        .def("is_meshed", &MeshVolume::is_meshed)
     ;
 
     py::class_<Scheme>(m, "Scheme")

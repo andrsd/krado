@@ -21,7 +21,6 @@ TEST(MeshSurfaceTest, api)
     EXPECT_EQ(&msurface.geom_surface(), &gsurf);
 
     EXPECT_EQ(msurface.scheme().name(), "auto");
-    EXPECT_EQ(msurface.get<int>("marker"), 0);
 
     auto mcs = msurface.curves();
     EXPECT_EQ(mcs.size(), 1);

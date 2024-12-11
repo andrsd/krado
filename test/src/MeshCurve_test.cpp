@@ -20,7 +20,6 @@ TEST(MeshCurveTest, api)
     EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
 
     EXPECT_EQ(mcurve.scheme().name(), "auto");
-    EXPECT_EQ(mcurve.get<int>("marker"), 0);
 
     auto & vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);

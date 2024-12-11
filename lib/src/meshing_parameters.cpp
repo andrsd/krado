@@ -9,7 +9,8 @@ namespace krado {
 
 MeshingParameters::MeshingParameters() :
     scheme_factory(SchemeFactory::instance()),
-    schm(this->scheme_factory.create("auto"))
+    schm(this->scheme_factory.create("auto")),
+    meshed(false)
 {
 }
 
@@ -26,6 +27,18 @@ MeshingParameters::scheme() const
     if (this->schm == nullptr)
         throw Exception("Scheme is null");
     return *this->schm;
+}
+
+bool
+MeshingParameters::is_meshed() const
+{
+    return this->meshed;
+}
+
+void
+MeshingParameters::set_meshed()
+{
+    this->meshed = true;
 }
 
 } // namespace krado

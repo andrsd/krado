@@ -6,7 +6,8 @@
 
 using namespace krado;
 
-TEST(MeshVertexTest, api) {
+TEST(MeshVertexTest, api)
+{
     auto vtx = testing::build_vertex(Point(3, 4, 0));
     GeomVertex gvertex(vtx);
 
@@ -14,7 +15,6 @@ TEST(MeshVertexTest, api) {
 
     EXPECT_EQ(&mvertex.geom_vertex(), &gvertex);
     EXPECT_EQ(mvertex.global_id(), 0);
-    EXPECT_EQ(mvertex.get<int>("marker"), 0);
 
     mvertex.set_global_id(123);
     EXPECT_EQ(mvertex.global_id(), 123);

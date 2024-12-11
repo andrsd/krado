@@ -16,18 +16,17 @@ TEST(SchemeBamgTest, mesh_quad)
     STEPFile file(input_file.string());
     auto shape = file.load();
     GeomModel model(shape);
-    MeshModel mesh(model);
 
     // clang-format off
-    mesh.surface(1)
+    model.surface(1)
         .set("marker", 10)
         .set_scheme("bamg")
-            .set("max_area", 0.9);
-    mesh.mesh_surface(1);
+        .set("max_area", 0.9);
+    model.mesh_surface(1);
     // clang-format on
 
-    auto & quad = mesh.surface(1);
-    EXPECT_EQ(quad.all_vertices().size(), 10);
+    auto & quad = model.surface(1);
+    ASSERT_EQ(quad.all_vertices().size(), 10);
     auto & vtx = quad.all_vertices();
     EXPECT_EQ(vtx[0]->point(), Point(0., 0., 0.));
     EXPECT_EQ(vtx[1]->point(), Point(2., 0., 0.));

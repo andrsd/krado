@@ -11,9 +11,7 @@ void
 Scheme2D::select_curve_scheme(MeshCurve & curve)
 {
     if (curve.scheme().name() == "auto") {
-        curve
-            .set_scheme("equal")
-            .set("intervals", 1);
+        curve.set_scheme("equal").set("intervals", 1);
     }
 }
 

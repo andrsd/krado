@@ -11,15 +11,15 @@ TEST(SchemeEqualTest, line)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
-    MeshModel mesh(model);
 
-    auto & line = mesh.curve(1);
     // clang-format off
-    line.set_scheme("equal")
-        .set("intervals", 5);
+    model.curve(1)
+         .set_scheme("equal")
+         .set("intervals", 5);
     // clang-format on
-    mesh.mesh_curve(1);
+    model.mesh_curve(1);
 
+    auto & line = model.curve(1);
     ASSERT_EQ(line.all_vertices().size(), 6);
     auto first_vtx = line.all_vertices().front();
     auto last_vtx = line.all_vertices().back();

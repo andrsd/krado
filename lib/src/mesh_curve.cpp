@@ -13,10 +13,8 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve(gcurve),
-    bnd_vtxs({ v1, v2 }),
-    meshed(false)
+    bnd_vtxs({ v1, v2 })
 {
-    set<int>("marker", 0);
 }
 
 const GeomCurve &
@@ -73,18 +71,6 @@ const std::vector<Element> &
 MeshCurve::segments() const
 {
     return this->segs;
-}
-
-bool
-MeshCurve::is_meshed() const
-{
-    return this->meshed;
-}
-
-void
-MeshCurve::set_meshed()
-{
-    this->meshed = true;
 }
 
 } // namespace krado

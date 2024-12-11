@@ -22,20 +22,10 @@ public:
     /// Get surfaces bounding this surface
     const std::vector<MeshSurface *> & surfaces() const;
 
-    /// Check if the volume is already meshed
-    ///
-    /// @return `true` if mesh is already present, `false` otherwise
-    bool is_meshed() const;
-
-    /// Mark volume as meshed
-    void set_meshed();
-
 private:
     const GeomVolume & gvolume;
     /// Mesh surfaces bounding this surface
     std::vector<MeshSurface *> mesh_surfaces;
-    /// Flag indicating if the volume is meshed
-    bool meshed;
 };
 
 } // namespace krado

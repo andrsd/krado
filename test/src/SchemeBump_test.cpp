@@ -11,16 +11,16 @@ TEST(SchemeBumpTest, coef_above_one)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
-    MeshModel mesh(model);
 
-    auto & line = mesh.curve(1);
+    auto & curve = model.curve(1);
     // clang-format off
-    line.set_scheme("bump")
-        .set("intervals", 5)
-        .set("coef", 1.2);
+    curve.set_scheme("bump")
+         .set("intervals", 5)
+         .set("coef", 1.2);
     // clang-format on
-    mesh.mesh_curve(1);
+    model.mesh_curve(1);
 
+    auto & line = model.curve(1);
     ASSERT_EQ(line.all_vertices().size(), 6);
     auto first_vtx = line.all_vertices().front();
     auto last_vtx = line.all_vertices().back();
@@ -40,16 +40,16 @@ TEST(SchemeBumpTest, coef_below_one)
 {
     auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
     GeomModel model(shape);
-    MeshModel mesh(model);
 
-    auto & line = mesh.curve(1);
+    auto & curve = model.curve(1);
     // clang-format off
-    line.set_scheme("bump")
-        .set("intervals", 5)
-        .set("coef", 0.8);
+    curve.set_scheme("bump")
+         .set("intervals", 5)
+         .set("coef", 0.8);
     // clang-format on
-    mesh.mesh_curve(1);
+    model.mesh_curve(1);
 
+    auto & line = model.curve(1);
     ASSERT_EQ(line.all_vertices().size(), 6);
     auto first_vtx = line.all_vertices().front();
     auto last_vtx = line.all_vertices().back();
