@@ -11,16 +11,17 @@ def test_scheme_equal():
     step = krado.STEPFile(file_name)
     shape = step.load()
     model = krado.GeomModel(shape)
-    mesh = krado.MeshModel(model)
-    mesh.curve(1).set_scheme("equal").set(intervals=4)
+    model.curve(1).set_scheme("equal").set(intervals=4)
 
-    sch = mesh.curve(1).scheme()
+    sch = model.curve(1).scheme()
+    print(sch.name())
     params = sch.get()
+    print(params)
     assert params["intervals"] == 4
 
-    mesh.mesh_curve(1)
+    model.mesh_curve(1)
 
-    crv = mesh.curve(1)
+    crv = model.curve(1)
     verts = crv.all_vertices()
     assert len(verts) == 5
     segs = crv.segments()
