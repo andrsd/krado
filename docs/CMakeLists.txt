@@ -10,7 +10,10 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(Doxyfile.in Doxyfile)
     configure_file(conf.py.in conf.py)
 
-    add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
+    add_custom_target(doc
+        DEPENDS ${PROJECT_BINARY_DIR}/html/index.html
+        COMMENT "Open ${PROJECT_BINARY_DIR}/docs/html/index.html in your browser to view the documentation."
+    )
 
     file(GLOB_RECURSE RST_FILES ${PROJECT_SOURCE_DIR}/docs/*.rst)
     file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/include/*.h)
@@ -34,12 +37,6 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         DEPENDS
             ${PROJECT_BINARY_DIR}/docs/Doxyfile
             ${HEADER_FILES}
-    )
-
-    add_custom_command(
-        TARGET doc
-        POST_BUILD
-        COMMAND echo "Open ${PROJECT_BINARY_DIR}/docs/html/index.html in your browser to view the documentation."
     )
 
 else()
