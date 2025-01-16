@@ -218,7 +218,7 @@ ExodusIIFile::write(const Mesh & mesh)
     this->dim = determine_spatial_dim(mesh);
 
     int n_nodes = (int) mesh.points().size();
-    int n_elems = (int) mesh.cell_ids().size();
+    int n_elems = (int) mesh.elements().size();
     int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
     int n_node_sets = 0;
     int n_side_sets = mesh.side_set_ids().size();
