@@ -16,21 +16,34 @@
 
 namespace krado {
 
+/// Side set entry
 struct side_set_entry_t {
+    /// Element ID
     gidx_t elem;
+    /// Local side number
     std::size_t side;
 
     side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
 };
 
+/// Equality operator for side set entry
 inline bool
 operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
 {
     return lhs.elem == rhs.elem && lhs.side == rhs.side;
 }
 
-class GeomModel;
-
+/// Class representing a mesh
+///
+/// A mesh is a collection of points and elements. Each element is a collection of points.
+/// A point has 3 coordinates (x, y, z).
+/// Cell sets, face sets, and edge sets can be defined on the mesh.
+/// Boundary edges and faces can be computed and obtained via API.
+/// Simple operations like scaling, and translation are supported. General transformations
+/// can be applied to the mesh as well. They are based on homogeneous coordinates and supported
+/// by `Trsf` class.
+///
+/// This class should be used for procedural mesh generation.
 class Mesh {
 public:
     /// Construct empty mesh
