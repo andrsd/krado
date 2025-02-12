@@ -136,6 +136,13 @@ Mesh::scaled(double factor) const
     return transformed(tr);
 }
 
+Mesh &
+Mesh::scale(double factor)
+{
+    auto tr = Trsf::scaled(factor);
+    return transform(tr);
+}
+
 Mesh
 Mesh::scaled(double factor_x, double factor_y, double factor_z) const
 {
@@ -143,11 +150,25 @@ Mesh::scaled(double factor_x, double factor_y, double factor_z) const
     return transformed(tr);
 }
 
+Mesh &
+Mesh::scale(double factor_x, double factor_y, double factor_z)
+{
+    auto tr = Trsf::scaled(factor_x, factor_y, factor_z);
+    return transform(tr);
+}
+
 Mesh
 Mesh::translated(double tx, double ty, double tz) const
 {
     auto tr = Trsf::translated(tx, ty, tz);
     return transformed(tr);
+}
+
+Mesh &
+Mesh::translate(double tx, double ty, double tz)
+{
+    auto tr = Trsf::translated(tx, ty, tz);
+    return transform(tr);
 }
 
 Mesh
@@ -161,6 +182,15 @@ Mesh::transformed(const Trsf & tr) const
     mesh.cell_sets = this->cell_sets;
     mesh.side_sets = this->side_sets;
     return mesh;
+}
+
+Mesh &
+Mesh::transform(const Trsf & tr)
+{
+    auto pts = points();
+    for (auto & p : pts)
+        p = tr * p;
+    return *this;
 }
 
 Mesh &

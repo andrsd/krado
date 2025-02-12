@@ -83,6 +83,12 @@ public:
     /// @return Scaled mesh
     Mesh scaled(double factor) const;
 
+    /// Scale mesh by a factor (isotropic)
+    ///
+    /// @param factor Scaling factor
+    /// @return Reference to this mesh which is scaled
+    Mesh & scale(double factor);
+
     /// Scale mesh by a factor (unisotropic)
     ///
     /// @param factor_x Scaling factor in x-direction
@@ -90,6 +96,14 @@ public:
     /// @param factor_z Scaling factor in z-direction
     /// @return Scaled mesh
     Mesh scaled(double factor_x, double factor_y, double factor_z = 1.) const;
+
+    /// Scale mesh by a factor (unisotropic)
+    ///
+    /// @param factor_x Scaling factor in x-direction
+    /// @param factor_y Scaling factor in y-direction
+    /// @param factor_z Scaling factor in z-direction
+    /// @return Reference to this mesh which is scaled
+    Mesh & scale(double factor_x, double factor_y, double factor_z = 1.);
 
     /// Translate mesh
     ///
@@ -99,11 +113,25 @@ public:
     /// @return Translated mesh
     Mesh translated(double tx, double ty = 0., double tz = 0.) const;
 
+    /// Translate mesh
+    ///
+    /// @param tx Translation in x-direction
+    /// @param ty Translation in y-direction
+    /// @param tz Translation in z-direction
+    /// @return Reference to this mesh which is translated
+    Mesh & translate(double tx, double ty = 0., double tz = 0.);
+
     /// Transform mesh
     ///
     /// @param tr Transformation
     /// @return Transformed mesh
     Mesh transformed(const Trsf & tr) const;
+
+    /// Transform mesh
+    ///
+    /// @param tr Transformation
+    /// @return Reference to this mesh which is transformed
+    Mesh & transform(const Trsf & tr);
 
     /// Add another mesh to this mesh
     ///
