@@ -12,6 +12,53 @@ Trsf::Trsf()
             this->mat[i][j] = 0.;
 }
 
+Trsf &
+Trsf::scale(double factor)
+{
+    for (auto i = 0; i < N - 1; i++)
+        this->mat[i][i] *= factor;
+    return *this;
+}
+
+Trsf &
+Trsf::scale(double factor_x, double factor_y, double factor_z)
+{
+    this->mat[0][0] *= factor_x;
+    this->mat[1][1] *= factor_y;
+    this->mat[2][2] *= factor_z;
+    return *this;
+}
+
+Trsf &
+Trsf::translate(double tx, double ty, double tz)
+{
+    this->mat[0][3] += tx;
+    this->mat[1][3] += ty;
+    this->mat[2][3] += tz;
+    return *this;
+}
+
+Trsf &
+Trsf::rotate_x(double theta)
+{
+    *this *= Trsf::rotated_x(theta);
+    return *this;
+}
+
+Trsf &
+Trsf::rotate_y(double theta)
+{
+    *this *= Trsf::rotated_y(theta);
+    return *this;
+}
+
+Trsf &
+Trsf::rotate_z(double theta)
+{
+    *this *= Trsf::rotated_z(theta);
+    return *this;
+}
+
 Trsf
 Trsf::operator*(const Trsf & other) const
 {
@@ -21,6 +68,18 @@ Trsf::operator*(const Trsf & other) const
             for (auto k = 0; k < N; k++)
                 result.mat[i][j] += other.mat[i][k] * this->mat[k][j];
     return result;
+}
+
+Trsf &
+Trsf::operator*=(const Trsf & other)
+{
+    Trsf result;
+    for (auto i = 0; i < N; i++)
+        for (auto j = 0; j < N; j++)
+            for (auto k = 0; k < N; k++)
+                result.mat[i][j] += other.mat[i][k] * this->mat[k][j];
+    *this = result;
+    return *this;
 }
 
 Point
@@ -35,7 +94,7 @@ Trsf::operator*(const Point & other) const
 }
 
 Trsf
-Trsf::scale(double factor)
+Trsf::scaled(double factor)
 {
     auto s = Trsf::identity();
     for (auto i = 0; i < N - 1; i++)
@@ -44,7 +103,7 @@ Trsf::scale(double factor)
 }
 
 Trsf
-Trsf::scale(double factor_x, double factor_y, double factor_z)
+Trsf::scaled(double factor_x, double factor_y, double factor_z)
 {
     auto s = Trsf::identity();
     s.mat[0][0] = factor_x;
@@ -54,7 +113,7 @@ Trsf::scale(double factor_x, double factor_y, double factor_z)
 }
 
 Trsf
-Trsf::translate(double tx, double ty, double tz)
+Trsf::translated(double tx, double ty, double tz)
 {
     auto t = Trsf::identity();
     t.mat[0][3] = tx;
@@ -64,7 +123,7 @@ Trsf::translate(double tx, double ty, double tz)
 }
 
 Trsf
-Trsf::rotate_x(double theta)
+Trsf::rotated_x(double theta)
 {
     auto r = Trsf::identity();
     r.mat[1][1] = std::cos(theta);
@@ -75,7 +134,7 @@ Trsf::rotate_x(double theta)
 }
 
 Trsf
-Trsf::rotate_y(double theta)
+Trsf::rotated_y(double theta)
 {
     auto r = Trsf::identity();
     r.mat[0][0] = std::cos(theta);
@@ -86,7 +145,7 @@ Trsf::rotate_y(double theta)
 }
 
 Trsf
-Trsf::rotate_z(double theta)
+Trsf::rotated_z(double theta)
 {
     auto r = Trsf::identity();
     r.mat[0][0] = std::cos(theta);
