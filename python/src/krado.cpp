@@ -83,6 +83,9 @@ PYBIND11_MODULE(krado, m)
         .def(float() * py::self)
         .def(py::self * float())
         .def(-py::self)
+        .def("__repr__", [](const Vector &pt) {
+            return "<Vector x=" + std::to_string(pt.x) + " y=" + std::to_string(pt.y) + ", z=" + std::to_string(pt.z) + ">";
+        })
     ;
 
     py::class_<Trsf>(m, "Trsf")
