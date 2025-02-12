@@ -163,7 +163,7 @@ Mesh::transformed(const Trsf & tr) const
     return mesh;
 }
 
-void
+Mesh &
 Mesh::add(const Mesh & other)
 {
     auto n_elem_ofst = this->elems.size();
@@ -194,9 +194,11 @@ Mesh::add(const Mesh & other)
             this->side_sets[id].emplace_back(cell_id, entry.side);
         }
     }
+
+    return *this;
 }
 
-void
+Mesh &
 Mesh::remove_duplicate_points(double tolerance)
 {
     PointCloud cloud(*this);
@@ -208,6 +210,8 @@ Mesh::remove_duplicate_points(double tolerance)
             id = point_map[id];
         elem.set_ids(ids);
     }
+
+    return *this;
 }
 
 BoundingBox3D
@@ -228,10 +232,11 @@ Mesh::duplicate() const
     return dup;
 }
 
-void
+Mesh &
 Mesh::set_cell_set_name(marker_t cell_set_id, const std::string & name)
 {
     this->cell_set_names[cell_set_id] = name;
+    return *this;
 }
 
 std::string
@@ -262,16 +267,18 @@ Mesh::cell_set(marker_t id) const
     }
 }
 
-void
+Mesh &
 Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
 {
     this->cell_sets[id] = cell_ids;
+    return *this;
 }
 
-void
+Mesh &
 Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
 {
     this->face_set_names[face_set_id] = name;
+    return *this;
 }
 
 std::string
@@ -302,16 +309,18 @@ Mesh::face_set(marker_t id) const
     }
 }
 
-void
+Mesh &
 Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
 {
     this->face_sets[id] = face_ids;
+    return *this;
 }
 
-void
+Mesh &
 Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
 {
     this->edge_set_names[edge_set_id] = name;
+    return *this;
 }
 
 std::string
@@ -342,16 +351,18 @@ Mesh::edge_set(marker_t id) const
     }
 }
 
-void
+Mesh &
 Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids)
 {
     this->edge_sets[id] = edge_ids;
+    return *this;
 }
 
-void
+Mesh &
 Mesh::set_side_set_name(marker_t id, const std::string & name)
 {
     this->side_set_names[id] = name;
+    return *this;
 }
 
 std::string
@@ -382,7 +393,7 @@ Mesh::side_set(marker_t id) const
     }
 }
 
-void
+Mesh &
 Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
 {
     std::vector<side_set_entry_t> side_set;
@@ -398,15 +409,17 @@ Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
         side_set.emplace_back(cell, side);
     }
     this->side_sets[id] = side_set;
+    return *this;
 }
 
-void
+Mesh &
 Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
 {
     this->side_sets[id] = side_set_entries;
+    return *this;
 }
 
-void
+Mesh &
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     std::map<marker_t, std::string> new_cell_set_names;
@@ -418,6 +431,7 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
     }
     this->cell_sets = new_cell_sets;
     this->cell_set_names = new_cell_set_names;
+    return *this;
 }
 
 const Range &

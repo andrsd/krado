@@ -108,12 +108,14 @@ public:
     /// Add another mesh to this mesh
     ///
     /// @param other Mesh to add
-    void add(const Mesh & other);
+    /// @return Reference to this mesh
+    Mesh & add(const Mesh & other);
 
     /// Remove duplicate points
     ///
     /// @param tolerance Tolerance for point comparison
-    void remove_duplicate_points(double tolerance = 1e-12);
+    /// @return Reference to this mesh
+    Mesh & remove_duplicate_points(double tolerance = 1e-12);
 
     /// Compute bounding box around the mesh
     ///
@@ -129,7 +131,8 @@ public:
     ///
     /// @param cell_set_id Cell set ID (marker)
     /// @param name Cell set name
-    void set_cell_set_name(marker_t cell_set_id, const std::string & name);
+    /// @return Reference to this mesh
+    Mesh & set_cell_set_name(marker_t cell_set_id, const std::string & name);
 
     /// Get cell set name
     ///
@@ -150,13 +153,15 @@ public:
     ///
     /// @param id Cell set ID
     /// @param cell_ids Cell IDs
-    void set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
+    /// @return Reference to this mesh
+    Mesh & set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
 
     /// Set face set name
     ///
     /// @param face_set_id Face set ID (marker)
     /// @param name Face set name
-    void set_face_set_name(marker_t face_set_id, const std::string & name);
+    /// @return Reference to this mesh
+    Mesh & set_face_set_name(marker_t face_set_id, const std::string & name);
 
     /// Get face set name
     ///
@@ -177,13 +182,15 @@ public:
     ///
     /// @param id Face set ID
     /// @param face_ids Face IDs
-    void set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
+    /// @return Reference to this mesh
+    Mesh & set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
 
     /// Set edge set name
     ///
     /// @param edge_set_id Edge set ID (marker)
     /// @param name Edge set name
-    void set_edge_set_name(marker_t edge_set_id, const std::string & name);
+    /// @return Reference to this mesh
+    Mesh & set_edge_set_name(marker_t edge_set_id, const std::string & name);
 
     /// Get edge set name
     ///
@@ -204,13 +211,15 @@ public:
     ///
     /// @param id Edge set ID
     /// @param edge_ids Edge IDs
-    void set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
+    /// @return Reference to this mesh
+    Mesh & set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
 
     /// Set side set name
     ///
     /// @param id Side set ID
     /// @param name Side set name
-    void set_side_set_name(marker_t id, const std::string & name);
+    /// @return Reference to this mesh
+    Mesh & set_side_set_name(marker_t id, const std::string & name);
 
     /// Get side set name
     ///
@@ -231,18 +240,21 @@ public:
     ///
     /// @param id Side set ID
     /// @param elem_ids Element IDs
-    void set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids);
+    /// @return Reference to this mesh
+    Mesh & set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids);
 
     /// Set side set
     ///
     /// @param id Side set ID
     /// @param side_set_entries Side set entries
-    void set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
+    /// @return Reference to this mesh
+    Mesh & set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
 
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
-    void remap_block_ids(const std::map<marker_t, marker_t> & block_map);
+    /// @return Reference to this mesh
+    Mesh & remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
     /// Get mesh point IDs
     ///
