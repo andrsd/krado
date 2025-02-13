@@ -21,13 +21,9 @@ GeomShell
 imprint(const GeomSurface & surface, const GeomCurve & curve)
 {
     auto edge = TopoDS::Edge(curve);
-    BRepBuilderAPI_MakeWire wire_maker;
-    wire_maker.Add(edge);
-    const auto & wire = wire_maker.Wire();
-
     auto face = TopoDS::Face(surface);
     BRepAlgo_NormalProjection projection(face);
-    projection.Add(wire);
+    projection.Add(edge);
     projection.Build();
     if (!projection.IsDone())
         throw Exception("Imprint: projection of curve onto surface failed.");
@@ -55,14 +51,11 @@ GeomVolume
 imprint(const GeomVolume & volume, const GeomCurve & curve)
 {
     auto edge = TopoDS::Edge(curve);
-    BRepBuilderAPI_MakeWire wire_maker(edge);
-    auto wire = wire_maker.Wire();
-
     auto solid = TopoDS::Solid(volume);
     BRepAlgo_NormalProjection projection(solid);
     // arbitrary distance limit, shapes must be close together
     projection.SetMaxDistance(1e-10);
-    projection.Add(wire);
+    projection.Add(edge);
     projection.Build();
     if (!projection.IsDone())
         throw Exception("Imprint: projection of curve onto volume failed.");
