@@ -13,7 +13,7 @@
 #include "TopoDS_Wire.hxx"
 #include "TopoDS_Solid.hxx"
 #include "TopoDS.hxx"
-#include <TopExp_Explorer.hxx>
+#include "TopExp_Explorer.hxx"
 
 namespace krado {
 
@@ -55,28 +55,32 @@ GeomVolume
 imprint(const GeomVolume & volume, const GeomCurve & curve)
 {
     auto edge = TopoDS::Edge(curve);
-    BRepBuilderAPI_MakeWire wireMaker(edge);
-    auto wire = wireMaker.Wire();
+    BRepBuilderAPI_MakeWire wire_maker(edge);
+    auto wire = wire_maker.Wire();
 
     auto solid = TopoDS::Solid(volume);
     BRepAlgo_NormalProjection projection(solid);
+    // arbitrary distance limit, shapes must be close together
+    projection.SetMaxDistance(1e-10);
     projection.Add(wire);
     projection.Build();
     if (!projection.IsDone())
         throw Exception("Imprint: projection of curve onto volume failed.");
 
-    BRepFeat_SplitShape split_shape(solid);
     TopTools_SequenceOfShape seq;
     TopExp_Explorer exp;
     for (exp.Init(projection.Projection(), TopAbs_EDGE); exp.More(); exp.Next())
         seq.Append(exp.Current());
-    split_shape.Add(seq);
+    if (seq.Size() == 0)
+        throw Exception("Imprint: projection of curve onto volume yield empty result.");
 
-    split_shape.Build();
-    if (!split_shape.IsDone())
+    BRepFeat_SplitShape splitter(solid);
+    splitter.Add(seq);
+    splitter.Build();
+    if (!splitter.IsDone())
         throw Exception("Imprint volume with curve failed.");
 
-    auto result = split_shape.Shape();
+    auto result = splitter.Shape();
     return GeomVolume(TopoDS::Solid(result));
 }
 
