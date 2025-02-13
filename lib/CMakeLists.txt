@@ -31,6 +31,7 @@ target_include_directories(
 target_link_libraries(
     ${NAME}
     PRIVATE
+        ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
         ${OpenCASCADE_DataExchange_LIBRARIES}
         Eigen3::Eigen
         libbamg
