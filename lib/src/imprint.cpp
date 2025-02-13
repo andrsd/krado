@@ -20,23 +20,30 @@ namespace krado {
 GeomShell
 imprint(const GeomSurface & surface, const GeomCurve & curve)
 {
-    BRepBuilderAPI_MakeWire wire_maker;
     auto edge = TopoDS::Edge(curve);
+    BRepBuilderAPI_MakeWire wire_maker;
     wire_maker.Add(edge);
-    const auto & projected_wire = wire_maker.Wire();
+    const auto & wire = wire_maker.Wire();
 
     auto face = TopoDS::Face(surface);
     BRepAlgo_NormalProjection projection(face);
-    projection.Add(projected_wire);
+    projection.Add(wire);
     projection.Build();
+    if (!projection.IsDone())
+        throw Exception("Imprint: projection of curve onto surface failed.");
 
-    BRepFeat_SplitShape split_shape(face);
-    split_shape.Add(projected_wire, face);
-    split_shape.Build();
-    if (split_shape.IsDone()) {
-        auto split_surface = split_shape.Shape();
-        if (split_surface.ShapeType() == TopAbs_SHELL)
-            return GeomShell(TopoDS::Shell(split_surface));
+    TopTools_SequenceOfShape seq;
+    TopExp_Explorer exp;
+    for (exp.Init(projection.Projection(), TopAbs_EDGE); exp.More(); exp.Next())
+        seq.Append(exp.Current());
+
+    BRepFeat_SplitShape splitter(face);
+    splitter.Add(seq);
+    splitter.Build();
+    if (splitter.IsDone()) {
+        auto split_shape = splitter.Shape();
+        if (split_shape.ShapeType() == TopAbs_SHELL)
+            return GeomShell(TopoDS::Shell(split_shape));
         else
             throw Exception("Imprint did not produce a shell.");
     }
