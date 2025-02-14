@@ -98,8 +98,8 @@ public:
 
     /// Create surface mesh
     void mesh_surface(int id);
-
     void mesh_surface(MeshSurface & surface);
+
     /// Create volume mesh
     void mesh_volume(int id);
     void mesh_volume(MeshVolume & volume);
