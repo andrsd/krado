@@ -1,6 +1,5 @@
 #include "gmock/gmock.h"
 #include "krado/geom_model.h"
-#include "krado/mesh_model.h"
 #include "builder.h"
 
 using namespace krado;

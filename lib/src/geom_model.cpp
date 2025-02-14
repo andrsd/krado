@@ -525,15 +525,31 @@ GeomModel::build_elements()
 }
 
 std::vector<Element>
+GeomModel::build_surface_elements()
+{
+    auto bbox = compute_mesh_bounding_box();
+    auto dims = bbox.size();
+
+    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
+        throw Exception("Surface mesh in 1D is not implemented yet");
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
+        return build_1d_elements();
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
+        return build_2d_elements();
+    else
+        throw Exception("Element construction for your setup is not implemented yet");
+}
+
+std::vector<Element>
 GeomModel::build_1d_elements()
 {
     std::vector<Element> elems;
     for (auto & [id, curve] : this->mcrvs) {
-        auto verts = curve.all_vertices();
-        std::array<gidx_t, 2> line;
+        auto & verts = curve.all_vertices();
+        std::array<gidx_t, Line2::N_VERTICES> line;
         for (auto & local_elem : curve.segments()) {
-            for (int i = 0; i < 2; i++) {
-                auto lid = local_elem.ids()[i];
+            for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                auto lid = local_elem.id(i);
                 auto gid = verts[lid]->global_id();
                 line[i] = gid;
             }
@@ -548,11 +564,12 @@ GeomModel::build_2d_elements()
 {
     std::vector<Element> elems;
     for (auto & [id, surface] : this->msurfs) {
-        auto verts = surface.all_vertices();
-        std::array<gidx_t, 3> tri;
-        for (auto & local_elem : surface.triangles()) {
-            for (int i = 0; i < 3; i++) {
-                auto lid = local_elem.ids()[i];
+        auto & verts = surface.all_vertices();
+        auto & tris = surface.triangles();
+        std::array<gidx_t, Tri3::N_VERTICES> tri;
+        for (auto & local_elem : tris) {
+            for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                auto lid = local_elem.id(i);
                 auto gid = verts[lid]->global_id();
                 tri[i] = gid;
             }
@@ -567,6 +584,15 @@ GeomModel::build_mesh()
 {
     auto points = build_points();
     auto elements = build_elements();
+    Mesh mesh(points, elements);
+    return mesh;
+}
+
+Mesh
+GeomModel::build_surface_mesh()
+{
+    auto points = build_points();
+    auto elements = build_surface_elements();
     Mesh mesh(points, elements);
     return mesh;
 }

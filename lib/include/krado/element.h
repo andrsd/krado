@@ -49,6 +49,12 @@ public:
     /// @return Vertex IDs
     const std::vector<gidx_t> & ids() const;
 
+    /// Get vertex IDs
+    ///
+    /// @param idx Local vertex index
+    /// @return Vertex IDs
+    gidx_t id(int idx) const;
+
     /// Set element connectivity. This is good for element renumbering. This cannot be used for
     /// changing element type.
     ///

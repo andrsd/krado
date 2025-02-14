@@ -59,7 +59,7 @@ build_point_map(const MeshSurface & surface)
     std::map<Point, int> pt_id;
     auto & curves = surface.curves();
     for (auto & c : curves) {
-        auto verts = c->all_vertices();
+        auto & verts = c->all_vertices();
         for (auto & vtx : verts) {
             auto pt = vtx->point();
             auto id = pt_id.size();
@@ -96,7 +96,7 @@ create_segment_list(const MeshSurface & surface,
 
     int k = 0;
     for (auto & c : curves) {
-        auto verts = c->all_vertices();
+        auto & verts = c->all_vertices();
         auto & segments = c->segments();
         for (auto & s : segments) {
             auto v1 = s.vertex_id(0);

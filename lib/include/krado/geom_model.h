@@ -107,6 +107,9 @@ public:
     /// Build the mesh from meshed entities
     Mesh build_mesh();
 
+    /// Build the surface mesh from meshed entities
+    Mesh build_surface_mesh();
+
 protected:
     /// Get vertex ID
     ///
@@ -150,6 +153,7 @@ private:
     BoundingBox3D compute_mesh_bounding_box();
     std::vector<Point> build_points();
     std::vector<Element> build_elements();
+    std::vector<Element> build_surface_elements();
     std::vector<Element> build_1d_elements();
     std::vector<Element> build_2d_elements();
 

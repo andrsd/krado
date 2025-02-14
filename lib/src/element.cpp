@@ -74,9 +74,7 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) :
-    elem_type(type),
-    vtx_id(vtx_ids)
+Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) : elem_type(type), vtx_id(vtx_ids)
 {
 }
 
@@ -108,6 +106,12 @@ const std::vector<gidx_t> &
 Element::ids() const
 {
     return this->vtx_id;
+}
+
+gidx_t
+Element::id(int idx) const
+{
+    return this->vtx_id[idx];
 }
 
 void
