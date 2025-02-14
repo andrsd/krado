@@ -54,6 +54,9 @@ public:
     /// @param tri Local vertex indices
     void add_triangle(const std::array<std::size_t, 3> & tri);
 
+    /// Reserve memory for vertices and triangles
+    void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
+
 private:
     const GeomSurface & gsurface;
     /// Mesh curves bounding this surface

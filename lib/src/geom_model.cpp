@@ -455,6 +455,13 @@ GeomModel::mesh_volume(MeshVolume & volume)
 {
     if (!volume.is_meshed()) {
         auto & scheme = get_scheme<Scheme3D>(volume);
+
+        auto surfaces = volume.surfaces();
+        for (auto & srf : surfaces)
+            scheme.select_surface_scheme(*srf);
+        for (auto & srf : surfaces)
+            mesh_surface(*srf);
+
         scheme.mesh_volume(volume);
         volume.set_meshed();
     }

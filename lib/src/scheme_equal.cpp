@@ -3,6 +3,7 @@
 
 #include "krado/scheme_equal.h"
 #include "krado/geom_curve.h"
+#include "krado/mesh_curve.h"
 
 namespace krado {
 

@@ -9,6 +9,7 @@
 #include "TopoDS_Face.hxx"
 #include "Geom_Line.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
+#include "BRepPrimAPI_MakeCylinder.hxx"
 #include "GC_MakeArcOfCircle.hxx"
 
 namespace testing {
@@ -42,7 +43,6 @@ build_arc()
     BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
     make_edge.Build();
     return make_edge.Edge();
-
 }
 
 TopoDS_Face
@@ -96,6 +96,14 @@ build_box(const Point & v1, const Point & v2)
     BRepPrimAPI_MakeBox make_box(pnt1, pnt2);
     make_box.Build();
     return make_box.Solid();
+}
+
+TopoDS_Solid
+build_cylinder(const Point & center, double radius, double height)
+{
+    BRepPrimAPI_MakeCylinder maker(radius, height);
+    maker.Build();
+    return maker.Solid();
 }
 
 } // namespace testing

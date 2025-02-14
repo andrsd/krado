@@ -75,4 +75,11 @@ MeshSurface::add_triangle(const std::array<std::size_t, 3> & tri)
     this->tris.emplace_back(tri3);
 }
 
+void
+MeshSurface::reserve_mem(std::size_t n_vtxs, std::size_t n_tris)
+{
+    this->vtxs.reserve(n_vtxs);
+    this->tris.reserve(n_tris);
+}
+
 } // namespace krado

@@ -10,6 +10,7 @@
 #include "krado/scheme_sizemap.h"
 #include "krado/scheme_bamg.h"
 #include "krado/scheme_triangle.h"
+#include "krado/scheme_trisurf.h"
 
 namespace krado {
 
@@ -30,6 +31,7 @@ SchemeFactory::SchemeFactory()
     add<SchemeSizeMap>("sizemap");
     add<SchemeBAMG>("bamg");
     add<SchemeTriangle>("triangle");
+    add<SchemeTriSurf>("trisurf");
 }
 
 } // namespace krado

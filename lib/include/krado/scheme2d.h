@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include "krado/mesh_surface.h"
-
 namespace krado {
 
-class GeomCurve;
+class MeshSurface;
+class MeshCurve;
 
 /// Base class for 2-dimensional mesh generation schemes
 class Scheme2D {

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "krado/mesh_curve.h"
-
 namespace krado {
+
+class MeshCurve;
 
 /// Base class for 1-dimensional mesh generation schemes
 class Scheme1D {
