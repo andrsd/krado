@@ -13,7 +13,7 @@ public:
     SchemeBetaLaw();
 
 private:
-    Integral1D compute_integral(const MeshCurve & curve) override;
+    [[nodiscard]] Integral1D compute_integral(const MeshCurve & curve) override;
 };
 
 } // namespace krado

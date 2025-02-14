@@ -17,7 +17,7 @@ public:
     void mesh_curve(MeshCurve & curve) override;
 
 private:
-    virtual Integral1D compute_integral(const MeshCurve & curve) = 0;
+    [[nodiscard]] virtual Integral1D compute_integral(const MeshCurve & curve) = 0;
 };
 
 } // namespace krado

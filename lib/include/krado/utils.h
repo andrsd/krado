@@ -15,12 +15,12 @@ namespace krado::utils {
 /// Convert supplied string to upper case.
 ///
 /// @param text The string to convert upper case.
-std::string to_upper(const std::string & text);
+[[nodiscard]] std::string to_upper(const std::string & text);
 
 /// Convert supplied string to lower case.
 ///
 /// @param text The string to convert upper case.
-std::string to_lower(const std::string & text);
+[[nodiscard]] std::string to_lower(const std::string & text);
 
 /// Check that `value` is equal to one of the `options`
 ///
@@ -28,7 +28,7 @@ std::string to_lower(const std::string & text);
 /// @param value Value to test
 /// @param options Possible options
 template <typename T>
-inline bool
+[[nodiscard]] inline bool
 in(T value, const std::vector<T> & options)
 {
     return std::any_of(options.cbegin(), options.cend(), [value](const T & o) {
@@ -37,7 +37,7 @@ in(T value, const std::vector<T> & options)
 }
 
 template <>
-inline bool
+[[nodiscard]] inline bool
 in<std::string>(std::string value, const std::vector<std::string> & options)
 {
     std::string v = utils::to_lower(value);
@@ -47,7 +47,7 @@ in<std::string>(std::string value, const std::vector<std::string> & options)
 }
 
 template <>
-inline bool
+[[nodiscard]] inline bool
 in<const char *>(const char * value, const std::vector<const char *> & options)
 {
     std::string v = utils::to_lower(value);
@@ -61,24 +61,24 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param element_connect The connectivity of the element
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
-std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
-                                const std::vector<int> & idxs);
+[[nodiscard]] std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
+                                              const std::vector<int> & idxs);
 
 /// Create a key from the supplied index. Use this to construct keys for cells
 ///
 /// @param id The index to create a key from
 /// @return The key
-std::size_t key(const std::size_t id);
+[[nodiscard]] std::size_t key(const std::size_t id);
 
 /// Create a key from the supplied indices. Use this to construct keys for edges and faces
 ///
 /// @param idxs The indices to create a key from
 /// @return The key
-std::size_t key(const std::vector<gidx_t> & idxs);
+[[nodiscard]] std::size_t key(const std::vector<gidx_t> & idxs);
 
 /// Get map keys
 template <typename K, typename V>
-std::vector<K>
+[[nodiscard]] std::vector<K>
 map_keys(const std::map<K, V> & in_map)
 {
     std::vector<K> keys;
@@ -89,7 +89,7 @@ map_keys(const std::map<K, V> & in_map)
 }
 
 template <typename T>
-int64_t
+[[nodiscard]] int64_t
 index_of(const std::vector<T> & vec, const T & value)
 {
     auto it = std::find(vec.begin(), vec.end(), value);
@@ -104,7 +104,7 @@ index_of(const std::vector<T> & vec, const T & value)
 // Taken from: https://stackoverflow.com/a/40931342/6122323
 
 template <typename T, typename Iter, std::size_t... Is>
-constexpr auto
+[[nodiscard]] constexpr auto
 to_array(Iter & iter, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)>
 {
     return { { ((void) Is, *iter++)... } };
@@ -113,7 +113,7 @@ to_array(Iter & iter, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)
 template <std::size_t N,
           typename Iter,
           typename T = typename std::iterator_traits<Iter>::value_type>
-constexpr auto
+[[nodiscard]] constexpr auto
 to_array(Iter iter) -> std::array<T, N>
 {
     return to_array<T>(iter, std::make_index_sequence<N> {});

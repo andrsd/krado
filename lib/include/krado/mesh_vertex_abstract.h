@@ -15,12 +15,12 @@ public:
     /// Get physical position in the 3D space
     ///
     /// @return Physical position in the 3D space
-    virtual Point point() const = 0;
+    [[nodiscard]] virtual Point point() const = 0;
 
     /// Get global ID
     ///
     /// @return Global ID of this vertex
-    int global_id() const;
+    [[nodiscard]] int global_id() const;
 
     /// Set global ID
     ///

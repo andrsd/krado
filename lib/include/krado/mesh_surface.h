@@ -22,25 +22,25 @@ public:
     /// Get geometrical surface associated with this surface
     ///
     /// @return Geometrical surface associated with this surface
-    const GeomSurface & geom_surface() const;
+    [[nodiscard]] const GeomSurface & geom_surface() const;
 
     /// Get curves bounding this surface
-    const std::vector<MeshCurve *> & curves() const;
+    [[nodiscard]] const std::vector<MeshCurve *> & curves() const;
 
     /// Get vertices on this surface
     ///
     /// @return Surface vertices
-    const std::vector<MeshVertexAbstract *> & all_vertices() const;
+    [[nodiscard]] const std::vector<MeshVertexAbstract *> & all_vertices() const;
 
     /// Get (internal) vertices on the surface
     ///
     /// @return Vertices on the surface
-    const std::vector<MeshSurfaceVertex *> & surface_vertices() const;
+    [[nodiscard]] const std::vector<MeshSurfaceVertex *> & surface_vertices() const;
 
     /// Get triangles on this surface
     ///
     /// @return Triangles on this surface
-    const std::vector<Element> & triangles() const;
+    [[nodiscard]] const std::vector<Element> & triangles() const;
 
     /// Add vertex
     ///

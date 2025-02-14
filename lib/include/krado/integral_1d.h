@@ -22,13 +22,13 @@ public:
         double xp;
     };
 
-    double
+    [[nodiscard]] double
     value() const
     {
         return this->val;
     }
 
-    const IntPoint &
+    [[nodiscard]] const IntPoint &
     point(int idx) const
     {
         return this->pts[idx];
@@ -55,7 +55,7 @@ public:
     }
 
 private:
-    double
+    [[nodiscard]] double
     trapezoidal(const IntPoint & p1, const IntPoint & p2)
     {
         return 0.5 * (p1.lc + p2.lc) * (p2.t - p1.t);

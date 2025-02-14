@@ -19,17 +19,17 @@ public:
     /// Get geometrical curve this vertex is connected to
     ///
     /// @return Geometrical curve this vertex is connected to
-    const GeomCurve & geom_curve() const;
+    [[nodiscard]] const GeomCurve & geom_curve() const;
 
     /// Get the parametrical position of the vertex on the curve
     ///
     /// @return Parametrical position of the vertex on the curve
-    double parameter() const;
+    [[nodiscard]] double parameter() const;
 
     /// Get physical position in the 3D space
     ///
     /// @return Physical position in the 3D space
-    Point point() const override;
+    [[nodiscard]] Point point() const override;
 
 private:
     const GeomCurve & gcurve;

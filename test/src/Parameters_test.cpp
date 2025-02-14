@@ -7,7 +7,7 @@ using namespace krado;
 TEST(ParametersTest, get)
 {
     Parameters params;
-    EXPECT_THROW_MSG(params.get<int>("i"), "No parameter 'i' found.");
+    EXPECT_THROW_MSG(auto i = params.get<int>("i"), "No parameter 'i' found.");
 }
 
 TEST(ParametersTest, param_value)

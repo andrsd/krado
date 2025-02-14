@@ -144,7 +144,7 @@ TEST(GeomCurveTest, param_from_pt)
     EXPECT_DOUBLE_EQ(u, umid);
 
     // point "outside" the curve
-    EXPECT_THROW(curve.parameter_from_point(Point(5, 6, 7)), Exception);
+    EXPECT_THROW(auto u = curve.parameter_from_point(Point(5, 6, 7)), Exception);
 }
 
 TEST(GeomCurveTest, nearest_point)
@@ -155,7 +155,7 @@ TEST(GeomCurveTest, nearest_point)
     auto npt = curve.nearest_point(Point(1.2, 2.3, 3.1));
     EXPECT_EQ(npt, Point(1.2, 2.2, 3.2));
 
-    EXPECT_THROW(curve.nearest_point(Point(5, 6, 7)), Exception);
+    EXPECT_THROW(auto pt = curve.nearest_point(Point(5, 6, 7)), Exception);
 }
 
 TEST(GeomCurveTest, contains_point)

@@ -15,7 +15,7 @@ public:
     /// Get scheme name
     ///
     /// @return Scheme name
-    std::string name() const;
+    [[nodiscard]] std::string name() const;
 
     /// Set parameter value
     ///
@@ -37,7 +37,7 @@ public:
     /// @param param_name Parameter name
     /// @return `true` if having the parameter, `false` otherwise
     template <typename T>
-    bool
+    [[nodiscard]] bool
     has(const std::string & param_name) const
     {
         return this->params.has<T>(param_name);
@@ -49,7 +49,7 @@ public:
     /// @param param_name Parameter name
     /// @return Value of the parameter
     template <typename T>
-    T
+    [[nodiscard]] T
     get(const std::string & param_name) const
     {
         return this->params.get<T>(param_name);
@@ -58,7 +58,7 @@ public:
     /// Get parameters
     ///
     /// @return Scheme parameters
-    const Parameters & parameters() const;
+    [[nodiscard]] const Parameters & parameters() const;
 
 private:
     /// Scheme name

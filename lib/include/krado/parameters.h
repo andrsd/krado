@@ -76,7 +76,7 @@ protected:
 public:
     /// Check if parameter exist
     template <typename T>
-    bool
+    [[nodiscard]] bool
     has(const std::string & name) const
     {
         auto it = this->params.find(name);
@@ -90,7 +90,7 @@ public:
 
     /// Get parameter value
     template <typename T>
-    inline const T &
+    [[nodiscard]] inline const T &
     get(const std::string & name) const
     {
         if (!this->has<T>(name))
@@ -102,7 +102,7 @@ public:
 
     /// Set parameter
     template <typename T>
-    inline T &
+    [[nodiscard]] inline T &
     set(const std::string & name)
     {
         if (!this->has<T>(name))
@@ -118,13 +118,13 @@ public:
     template <typename T>
     void add_param(const std::string & name);
 
-    bool
+    [[nodiscard]] bool
     is_param_valid(const std::string & name) const
     {
         return this->params.count(name) > 0 && this->params.at(name)->valid;
     }
 
-    std::string
+    [[nodiscard]] std::string
     type(const std::string & name) const
     {
         return this->params.at(name)->type();

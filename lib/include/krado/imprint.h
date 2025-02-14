@@ -15,13 +15,13 @@ class GeomShell;
 /// @param surface Surface to imprint the curve on
 /// @param curve Curve to imprint
 /// @return Imprinted shell
-GeomShell imprint(const GeomSurface & surface, const GeomCurve & curve);
+[[nodiscard]] GeomShell imprint(const GeomSurface & surface, const GeomCurve & curve);
 
 /// Imprint a curve on a volume
 ///
 /// @param volume Volume to imprint the curve on
 /// @param curve Curve to imprint
 /// @return Imprinted volume
-GeomVolume imprint(const GeomVolume & volume, const GeomCurve & curve);
+[[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomCurve & curve);
 
 } // namespace krado

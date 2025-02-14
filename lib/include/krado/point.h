@@ -19,21 +19,21 @@ public:
     /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);
 
-    double operator()(int idx) const;
+    [[nodiscard]] double operator()(int idx) const;
     double & operator()(int idx);
-    Point operator+(const Vector & v) const;
-    Point operator-(const Vector & v) const;
+    [[nodiscard]] Point operator+(const Vector & v) const;
+    [[nodiscard]] Point operator-(const Vector & v) const;
     void operator+=(const Point & p);
     void operator+=(const Vector & v);
     void operator-=(const Point & p);
     void operator-=(const Vector & v);
     void operator*=(double alpha);
     void operator/=(double mult);
-    Point operator*(double alpha);
-    double distance(const Point & p) const;
+    [[nodiscard]] Point operator*(double alpha);
+    [[nodiscard]] double distance(const Point & p) const;
     // lexicographic
-    bool operator<(const Point & p) const;
-    bool transform(const std::vector<double> & tfo);
+    [[nodiscard]] bool operator<(const Point & p) const;
+    void transform(const std::vector<double> & tfo);
 
     /// X-component
     double x;

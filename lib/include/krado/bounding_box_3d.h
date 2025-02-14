@@ -19,7 +19,7 @@ public:
     BoundingBox3D(const Point & pt);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
-    bool empty();
+    [[nodiscard]] bool empty();
 
     void reset();
 
@@ -31,33 +31,33 @@ public:
 
     void scale(double sx, double sy, double sz);
 
-    Point min() const;
+    [[nodiscard]] Point min() const;
 
-    Point max() const;
+    [[nodiscard]] Point max() const;
 
-    Point center() const;
+    [[nodiscard]] Point center() const;
 
-    double diag() const;
+    [[nodiscard]] double diag() const;
 
     void make_cube();
 
     void thicken(double factor);
 
-    bool contains(const BoundingBox3D & bound);
+    [[nodiscard]] bool contains(const BoundingBox3D & bound);
 
-    bool contains(const Point & p);
+    [[nodiscard]] bool contains(const Point & p);
 
-    bool contains(double x, double y, double z);
+    [[nodiscard]] bool contains(double x, double y, double z);
 
-    bool transform(const std::vector<double> & tfo);
+    [[nodiscard]] bool transform(const std::vector<double> & tfo);
 
-    std::array<double, 3> size() const;
+    [[nodiscard]] std::array<double, 3> size() const;
 
     /// Return n-th dimension of the bounding box
     ///
     /// @param n dimension index (0, 1, 2)
     /// @return size of the n-th dimension
-    double size(int n) const;
+    [[nodiscard]] double size(int n) const;
 
 private:
     Point min_pt, max_pt;

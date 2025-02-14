@@ -46,7 +46,7 @@ public:
         }
     }
 
-    int
+    [[nodiscard]] int
     surface_idx(double x, double y)
     {
         auto pt = Point(x, y);
@@ -64,7 +64,7 @@ public:
             return it->second;
     }
 
-    std::size_t
+    [[nodiscard]] std::size_t
     curve_idx(int curve_idx, double x, double y)
     {
         auto & curv_map = this->curv_surf_idx[curve_idx];

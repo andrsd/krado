@@ -70,20 +70,20 @@ public:
         return Iterator(this->end_idx + 1);
     }
 
-    gidx_t
+    [[nodiscard]] gidx_t
     first() const
     {
         return this->start_idx;
     }
 
-    gidx_t
+    [[nodiscard]] gidx_t
     last() const
     {
         return this->end_idx;
     }
 
     /// Get the number of indices in the range
-    gidx_t
+    [[nodiscard]] gidx_t
     size() const
     {
         return this->end_idx - this->start_idx + 1;

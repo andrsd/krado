@@ -26,54 +26,54 @@ public:
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Location in 3D space corresponding to the parametrical position
-    Point point(double u, double v) const;
+    [[nodiscard]] Point point(double u, double v) const;
 
     /// Get normal vector at parametrical location
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Normal vector at location (u, v)
-    Vector normal(double u, double v) const;
+    [[nodiscard]] Vector normal(double u, double v) const;
 
     /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return First derivative
-    std::tuple<Vector, Vector> d1(double u, double v) const;
+    [[nodiscard]] std::tuple<Vector, Vector> d1(double u, double v) const;
 
     /// Get area of the surface
     ///
     /// @return Area of the surface
-    double area() const;
+    [[nodiscard]] double area() const;
 
     /// Get range of the parameter
     ///
     /// @return Range as a tuple [lower, upper]
-    std::tuple<double, double> param_range(int i) const;
+    [[nodiscard]] std::tuple<double, double> param_range(int i) const;
 
     /// Get curves bounding this surface
     ///
     /// @return Curves bounding the surface
-    std::vector<GeomCurve> curves() const;
+    [[nodiscard]] std::vector<GeomCurve> curves() const;
 
     /// Get parameter on the surface from a physical location
     ///
     /// @param pt Physical location
     /// @return Parameters (u, v)
-    std::tuple<double, double> parameter_from_point(const Point & pt) const;
+    [[nodiscard]] std::tuple<double, double> parameter_from_point(const Point & pt) const;
 
     /// Find nearest point
     ///
     /// @param pt Physical point
     /// @return Point on the curve, nearest to `pt`
-    Point nearest_point(const Point & pt) const;
+    [[nodiscard]] Point nearest_point(const Point & pt) const;
 
     /// Check if point is on the curve
     ///
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
-    bool contains_point(const Point & pt) const;
+    [[nodiscard]] bool contains_point(const Point & pt) const;
 
     operator const TopoDS_Shape &() const;
 

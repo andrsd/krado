@@ -134,11 +134,11 @@ Point::operator<(const Point & p) const
     return false;
 }
 
-bool
+void
 Point::transform(const std::vector<double> & tfo)
 {
     if (tfo.size() < 12)
-        return false;
+        throw Exception("Expecting at least 12 entries in 'tfo'.");
     double old[3] = { x, y, z };
     x = y = z = 0.;
     int idx = 0;
@@ -147,7 +147,6 @@ Point::transform(const std::vector<double> & tfo)
             (*this)(i) += old[j] * tfo[idx++];
         (*this)(i) += tfo[idx++];
     }
-    return true;
 }
 
 Point

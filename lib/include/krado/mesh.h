@@ -58,30 +58,30 @@ public:
     /// Get mesh points
     ///
     /// @return Mesh points
-    const std::vector<Point> & points() const;
+    [[nodiscard]] const std::vector<Point> & points() const;
 
     /// Get a point by index
     ///
     /// @param idx Index of the point
     /// @return Point
-    const Point & point(gidx_t idx) const;
+    [[nodiscard]] const Point & point(gidx_t idx) const;
 
     /// Get elements
     ///
     /// @return Mesh elements
-    const std::vector<Element> & elements() const;
+    [[nodiscard]] const std::vector<Element> & elements() const;
 
     /// Get element of the mesh
     ///
     /// @param idx Index of the element
     /// @return Element
-    const Element & element(gidx_t idx) const;
+    [[nodiscard]] const Element & element(gidx_t idx) const;
 
     /// Scale mesh by a factor (isotropic)
     ///
     /// @param factor Scaling factor
     /// @return Scaled mesh
-    Mesh scaled(double factor) const;
+    [[nodiscard]] Mesh scaled(double factor) const;
 
     /// Scale mesh by a factor (isotropic)
     ///
@@ -95,7 +95,7 @@ public:
     /// @param factor_y Scaling factor in y-direction
     /// @param factor_z Scaling factor in z-direction
     /// @return Scaled mesh
-    Mesh scaled(double factor_x, double factor_y, double factor_z = 1.) const;
+    [[nodiscard]] Mesh scaled(double factor_x, double factor_y, double factor_z = 1.) const;
 
     /// Scale mesh by a factor (unisotropic)
     ///
@@ -111,7 +111,7 @@ public:
     /// @param ty Translation in y-direction
     /// @param tz Translation in z-direction
     /// @return Translated mesh
-    Mesh translated(double tx, double ty = 0., double tz = 0.) const;
+    [[nodiscard]] Mesh translated(double tx, double ty = 0., double tz = 0.) const;
 
     /// Translate mesh
     ///
@@ -125,7 +125,7 @@ public:
     ///
     /// @param tr Transformation
     /// @return Transformed mesh
-    Mesh transformed(const Trsf & tr) const;
+    [[nodiscard]] Mesh transformed(const Trsf & tr) const;
 
     /// Transform mesh
     ///
@@ -148,12 +148,12 @@ public:
     /// Compute bounding box around the mesh
     ///
     /// @return Bounding box
-    BoundingBox3D compute_bounding_box() const;
+    [[nodiscard]] BoundingBox3D compute_bounding_box() const;
 
     /// Duplicate mesh
     ///
     /// @return Duplicated mesh
-    Mesh duplicate() const;
+    [[nodiscard]] Mesh duplicate() const;
 
     /// Set cell set name
     ///
@@ -166,16 +166,16 @@ public:
     ///
     /// @param cell_set_id Cell set ID (marker)
     /// @return Cell set name
-    std::string cell_set_name(marker_t cell_set_id) const;
+    [[nodiscard]] std::string cell_set_name(marker_t cell_set_id) const;
 
     /// Get cell set IDs
-    std::vector<marker_t> cell_set_ids() const;
+    [[nodiscard]] std::vector<marker_t> cell_set_ids() const;
 
     /// Get cell set
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    const std::vector<gidx_t> & cell_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & cell_set(marker_t id) const;
 
     /// Set cell set
     ///
@@ -195,16 +195,16 @@ public:
     ///
     /// @param face_set_id Face set ID (marker)
     /// @return Face set name
-    std::string face_set_name(marker_t cell_set_id) const;
+    [[nodiscard]] std::string face_set_name(marker_t cell_set_id) const;
 
     /// Get face set IDs
-    std::vector<marker_t> face_set_ids() const;
+    [[nodiscard]] std::vector<marker_t> face_set_ids() const;
 
     /// Get face set
     ///
     /// @param id Face set ID
     /// @return Face set
-    const std::vector<gidx_t> & face_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & face_set(marker_t id) const;
 
     /// Set face set
     ///
@@ -224,16 +224,16 @@ public:
     ///
     /// @param edge_set_id Edge set ID (marker)
     /// @return Edge set name
-    std::string edge_set_name(marker_t edge_set_id) const;
+    [[nodiscard]] std::string edge_set_name(marker_t edge_set_id) const;
 
     /// Get edge set IDs
-    std::vector<marker_t> edge_set_ids() const;
+    [[nodiscard]] std::vector<marker_t> edge_set_ids() const;
 
     /// Get edge set
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    const std::vector<gidx_t> & edge_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & edge_set(marker_t id) const;
 
     /// Set edge set
     ///
@@ -253,16 +253,16 @@ public:
     ///
     /// @param id Side set ID
     /// @return Side set name
-    std::string side_set_name(marker_t id) const;
+    [[nodiscard]] std::string side_set_name(marker_t id) const;
 
     /// Get side set IDs
-    std::vector<marker_t> side_set_ids() const;
+    [[nodiscard]] std::vector<marker_t> side_set_ids() const;
 
     /// Get side set
     ///
     /// @param id Side set ID
     /// @return Side set
-    const std::vector<side_set_entry_t> & side_set(marker_t id) const;
+    [[nodiscard]] const std::vector<side_set_entry_t> & side_set(marker_t id) const;
 
     /// Set side set
     ///
@@ -287,44 +287,44 @@ public:
     /// Get mesh point IDs
     ///
     /// @return Mesh point IDs
-    const Range & point_ids() const;
+    [[nodiscard]] const Range & point_ids() const;
 
     /// Get mesh edge IDs
     ///
     /// @return Mesh edge IDs
-    const Range & edge_ids() const;
+    [[nodiscard]] const Range & edge_ids() const;
 
     /// Get mesh face IDs
     ///
     /// @return Mesh face IDs
-    const Range & face_ids() const;
+    [[nodiscard]] const Range & face_ids() const;
 
     /// Get mesh cell IDs
     ///
     /// @return Mesh cell IDs
-    const Range & cell_ids() const;
+    [[nodiscard]] const Range & cell_ids() const;
 
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    std::vector<gidx_t> support(gidx_t index) const;
+    [[nodiscard]] std::vector<gidx_t> support(gidx_t index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    std::vector<gidx_t> cone(gidx_t index) const;
+    [[nodiscard]] std::vector<gidx_t> cone(gidx_t index) const;
 
     /// Get cone vertices of a mesh node
     ///
     /// @param index Index of the node
     /// @return Cone vertices
-    std::set<gidx_t> cone_vertices(gidx_t index) const;
+    [[nodiscard]] std::set<gidx_t> cone_vertices(gidx_t index) const;
 
     /// Get element type
     ///
     /// @param index Index of the element
     /// @return Element type
-    Element::Type element_type(gidx_t index) const;
+    [[nodiscard]] Element::Type element_type(gidx_t index) const;
 
     /// Prepare mesh
     void set_up();
@@ -332,24 +332,24 @@ public:
     /// Get all boundary edge IDs
     ///
     /// @return Boundary edge IDs
-    std::vector<gidx_t> boundary_edges() const;
+    [[nodiscard]] std::vector<gidx_t> boundary_edges() const;
 
     /// Get all boundary face IDs
     ///
     /// @return Boundary face IDs
-    std::vector<gidx_t> boundary_faces() const;
+    [[nodiscard]] std::vector<gidx_t> boundary_faces() const;
 
     /// Compute centroid
     ///
     /// @param index Index of the element
     /// @return Centroid
-    Point compute_centroid(gidx_t index) const;
+    [[nodiscard]] Point compute_centroid(gidx_t index) const;
 
     /// Compute outward normal
     ///
     /// @param index Index of the edge/face
     /// @return Outward normal
-    Vector outward_normal(gidx_t index) const;
+    [[nodiscard]] Vector outward_normal(gidx_t index) const;
 
 private:
     void build_hasse_diagram();

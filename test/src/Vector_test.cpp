@@ -27,7 +27,7 @@ TEST(VectorTest, op_call)
     EXPECT_DOUBLE_EQ(vec(1), 6.);
     EXPECT_DOUBLE_EQ(vec(2), 9.);
 
-    EXPECT_THROW({ vec(10); }, Exception);
+    EXPECT_THROW({ auto r = vec(10); }, Exception);
 }
 
 TEST(VectorTest, norm)

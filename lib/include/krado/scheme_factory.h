@@ -34,7 +34,7 @@ public:
         this->classes[class_name] = entry;
     }
 
-    Scheme *
+    [[nodiscard]] Scheme *
     create(const std::string & scheme_name)
     {
         auto entry = get_entry(scheme_name);

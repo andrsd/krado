@@ -15,7 +15,8 @@ namespace krado {
 /// @param layers Number of layers
 /// @param thickness Thickness of the extrusion
 /// @return Extruded mesh
-Mesh extrude(const Mesh & mesh, const Vector & direction, int layers, double thickness);
+[[nodiscard]] Mesh
+extrude(const Mesh & mesh, const Vector & direction, int layers, double thickness);
 
 /// Extrude a mesh
 ///
@@ -23,6 +24,7 @@ Mesh extrude(const Mesh & mesh, const Vector & direction, int layers, double thi
 /// @param direction Extrusion direction
 /// @param thicknesses Thickness of each layer
 /// @return Extruded mesh
-Mesh extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> & thicknesses);
+[[nodiscard]] Mesh
+extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> & thicknesses);
 
 } // namespace krado

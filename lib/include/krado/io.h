@@ -17,7 +17,7 @@ public:
     ///
     /// @param file_name Name of the file
     /// @return Mesh read from the file
-    static Mesh import_mesh(const std::string & file_name);
+    [[nodiscard]] static Mesh import_mesh(const std::string & file_name);
 };
 
 } // namespace krado

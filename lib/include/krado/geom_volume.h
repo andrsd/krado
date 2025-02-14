@@ -18,12 +18,12 @@ public:
     /// Get volume of the volume
     ///
     /// @return Volume of the volume
-    double volume() const;
+    [[nodiscard]] double volume() const;
 
     /// Get surfaces bounding this volume
     ///
     /// @return Curves bounding the surface
-    std::vector<GeomSurface> surfaces() const;
+    [[nodiscard]] std::vector<GeomSurface> surfaces() const;
 
     operator const TopoDS_Shape &() const;
 

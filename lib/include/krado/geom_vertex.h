@@ -16,11 +16,11 @@ public:
     /// Is this a null vertex.  Infinite curves report null vertices as their bounding vertices.
     ///
     /// @return `true` if this is null vertex, `false` otherwise
-    bool is_null() const;
+    [[nodiscard]] bool is_null() const;
 
-    double x() const;
-    double y() const;
-    double z() const;
+    [[nodiscard]] double x() const;
+    [[nodiscard]] double y() const;
+    [[nodiscard]] double z() const;
 
     operator const TopoDS_Shape &() const;
 

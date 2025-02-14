@@ -17,10 +17,10 @@ public:
     /// Get geometrical volume associated with this surface
     ///
     /// @return Geometrical volume associated with this surface
-    const GeomVolume & geom_volume() const;
+    [[nodiscard]] const GeomVolume & geom_volume() const;
 
     /// Get surfaces bounding this surface
-    const std::vector<MeshSurface *> & surfaces() const;
+    [[nodiscard]] const std::vector<MeshSurface *> & surfaces() const;
 
 private:
     const GeomVolume & gvolume;

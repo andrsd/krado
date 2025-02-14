@@ -12,7 +12,7 @@ namespace krado {
 class STEPFile {
 public:
     STEPFile(const std::string & file_name);
-    GeomShape load() const;
+    [[nodiscard]] GeomShape load() const;
 
 private:
     std::string file_name;

@@ -50,7 +50,7 @@ public:
     /// @param pt Point in 3D space
     /// @param power Power parameter
     /// @return Interpolated value
-    double sample(const Point & pt, double power = 2.) const;
+    [[nodiscard]] double sample(const Point & pt, double power = 2.) const;
 
 private:
     /// Point sin 3D space

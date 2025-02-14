@@ -25,35 +25,35 @@ public:
     /// Get element type
     ///
     /// @return Element type
-    Type type() const;
+    [[nodiscard]] Type type() const;
 
     /// Get number of vertices
     ///
     /// @return Number of vertices
-    int num_vertices() const;
+    [[nodiscard]] int num_vertices() const;
 
     /// Get vertex ID fom local index
     ///
     /// @param idx Local vertex index
     /// @return Vertex ID
-    gidx_t vertex_id(int idx) const;
+    [[nodiscard]] gidx_t vertex_id(int idx) const;
 
     /// Call operator to access vertex index
     ///
     /// @param idx Vertex index
     /// @return Vertex ID
-    gidx_t operator()(int idx) const;
+    [[nodiscard]] gidx_t operator()(int idx) const;
 
     /// Get vertex IDs
     ///
     /// @return Vertex IDs
-    const std::vector<gidx_t> & ids() const;
+    [[nodiscard]] const std::vector<gidx_t> & ids() const;
 
     /// Get vertex IDs
     ///
     /// @param idx Local vertex index
     /// @return Vertex IDs
-    gidx_t id(int idx) const;
+    [[nodiscard]] gidx_t id(int idx) const;
 
     /// Set element connectivity. This is good for element renumbering. This cannot be used for
     /// changing element type.
@@ -66,15 +66,15 @@ private:
     std::vector<gidx_t> vtx_id;
 
 public:
-    static std::string type(Type type);
-    static Element Point(gidx_t id);
-    static Element Line2(const std::array<gidx_t, 2> & ids);
-    static Element Tri3(const std::array<gidx_t, 3> & ids);
-    static Element Quad4(const std::array<gidx_t, 4> & ids);
-    static Element Tetra4(const std::array<gidx_t, 4> & ids);
-    static Element Pyramid5(const std::array<gidx_t, 5> & ids);
-    static Element Prism6(const std::array<gidx_t, 6> & ids);
-    static Element Hex8(const std::array<gidx_t, 8> & ids);
+    [[nodiscard]] static std::string type(Type type);
+    [[nodiscard]] static Element Point(gidx_t id);
+    [[nodiscard]] static Element Line2(const std::array<gidx_t, 2> & ids);
+    [[nodiscard]] static Element Tri3(const std::array<gidx_t, 3> & ids);
+    [[nodiscard]] static Element Quad4(const std::array<gidx_t, 4> & ids);
+    [[nodiscard]] static Element Tetra4(const std::array<gidx_t, 4> & ids);
+    [[nodiscard]] static Element Pyramid5(const std::array<gidx_t, 5> & ids);
+    [[nodiscard]] static Element Prism6(const std::array<gidx_t, 6> & ids);
+    [[nodiscard]] static Element Hex8(const std::array<gidx_t, 8> & ids);
 };
 
 class Line2 {

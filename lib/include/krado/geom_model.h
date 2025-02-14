@@ -28,65 +28,65 @@ public:
     ///
     /// @param id Vertex id
     /// @return Vertex with specified ID
-    const GeomVertex & geom_vertex(int id) const;
-    GeomVertex & geom_vertex(int id);
+    [[nodiscard]] const GeomVertex & geom_vertex(int id) const;
+    [[nodiscard]] GeomVertex & geom_vertex(int id);
 
     /// Get curve with specified ID
     ///
     /// @param id Curve id
     /// @return Curve with specified ID
-    const GeomCurve & geom_curve(int id) const;
-    GeomCurve & geom_curve(int id);
+    [[nodiscard]] const GeomCurve & geom_curve(int id) const;
+    [[nodiscard]] GeomCurve & geom_curve(int id);
 
     /// Get surface with specified ID
     ///
     /// @param id Surface ID
     /// @return Surface with specified ID
-    const GeomSurface & geom_surface(int id) const;
-    GeomSurface & geom_surface(int id);
+    [[nodiscard]] const GeomSurface & geom_surface(int id) const;
+    [[nodiscard]] GeomSurface & geom_surface(int id);
 
     /// Get volume with specified ID
     ///
     /// @param id Volume ID
     /// @return Volume with specified ID
-    const GeomVolume & geom_volume(int id) const;
-    GeomVolume & geom_volume(int id);
+    [[nodiscard]] const GeomVolume & geom_volume(int id) const;
+    [[nodiscard]] GeomVolume & geom_volume(int id);
 
     /// Vertex
-    const MeshVertex & vertex(int id) const;
-    MeshVertex & vertex(int id);
+    [[nodiscard]] const MeshVertex & vertex(int id) const;
+    [[nodiscard]] MeshVertex & vertex(int id);
 
     /// Get model vertices
     ///
     /// @return Vertices
-    const std::map<int, MeshVertex> & vertices() const;
+    [[nodiscard]] const std::map<int, MeshVertex> & vertices() const;
 
     /// Curve
-    const MeshCurve & curve(int id) const;
-    MeshCurve & curve(int id);
+    [[nodiscard]] const MeshCurve & curve(int id) const;
+    [[nodiscard]] MeshCurve & curve(int id);
 
     /// Get model curves
     ///
     /// @return Curves
-    const std::map<int, MeshCurve> & curves() const;
+    [[nodiscard]] const std::map<int, MeshCurve> & curves() const;
 
     /// Surface
-    const MeshSurface & surface(int id) const;
-    MeshSurface & surface(int id);
+    [[nodiscard]] const MeshSurface & surface(int id) const;
+    [[nodiscard]] MeshSurface & surface(int id);
 
     /// Get model surfaces
     ///
     /// @return Surfaces
-    const std::map<int, MeshSurface> & surfaces() const;
+    [[nodiscard]] const std::map<int, MeshSurface> & surfaces() const;
 
     /// Volume
-    const MeshVolume & volume(int id) const;
-    MeshVolume & volume(int id);
+    [[nodiscard]] const MeshVolume & volume(int id) const;
+    [[nodiscard]] MeshVolume & volume(int id);
 
     /// Get model volume
     ///
     /// @return Volume
-    const std::map<int, MeshVolume> & volumes() const;
+    [[nodiscard]] const std::map<int, MeshVolume> & volumes() const;
 
     /// Create vertex mesh
     void mesh_vertex(int id);
@@ -105,38 +105,38 @@ public:
     void mesh_volume(MeshVolume & volume);
 
     /// Build the mesh from meshed entities
-    Mesh build_mesh();
+    [[nodiscard]] Mesh build_mesh();
 
     /// Build the surface mesh from meshed entities
-    Mesh build_surface_mesh();
+    [[nodiscard]] Mesh build_surface_mesh();
 
 protected:
     /// Get vertex ID
     ///
     /// @param vertex Vertex
     /// @return Vertex ID
-    int vertex_id(const GeomVertex & vertex) const;
+    [[nodiscard]] int vertex_id(const GeomVertex & vertex) const;
 
     /// Get curve ID
     ///
     /// @param curve Curve
     /// @return Curve ID
-    int curve_id(const GeomCurve & curve) const;
+    [[nodiscard]] int curve_id(const GeomCurve & curve) const;
 
     /// Get surface ID
     ///
     /// @param surface Surface
     /// @return Surface ID
-    int surface_id(const GeomSurface & surface) const;
+    [[nodiscard]] int surface_id(const GeomSurface & surface) const;
 
     /// Get volume ID
     ///
     /// @param volume Volume
     /// @return Volume ID
-    int volume_id(const GeomVolume & volume) const;
+    [[nodiscard]] int volume_id(const GeomVolume & volume) const;
 
     template <typename T, typename U>
-    T &
+    [[nodiscard]] T &
     get_scheme(U entity) const
     {
         return dynamic_cast<T &>(entity.scheme());
@@ -150,12 +150,12 @@ private:
     void bind_solids(const GeomShape & shape);
     void initialize();
 
-    BoundingBox3D compute_mesh_bounding_box();
-    std::vector<Point> build_points();
-    std::vector<Element> build_elements();
-    std::vector<Element> build_surface_elements();
-    std::vector<Element> build_1d_elements();
-    std::vector<Element> build_2d_elements();
+    [[nodiscard]] BoundingBox3D compute_mesh_bounding_box();
+    [[nodiscard]] std::vector<Point> build_points();
+    [[nodiscard]] std::vector<Element> build_elements();
+    [[nodiscard]] std::vector<Element> build_surface_elements();
+    [[nodiscard]] std::vector<Element> build_1d_elements();
+    [[nodiscard]] std::vector<Element> build_2d_elements();
 
     GeomShape root_shape;
 

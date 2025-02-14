@@ -17,7 +17,7 @@ public:
     /// Get surfaces bounding this volume
     ///
     /// @return Curves bounding the surface
-    std::vector<GeomSurface> surfaces() const;
+    [[nodiscard]] std::vector<GeomSurface> surfaces() const;
 
     operator const TopoDS_Shell &() const;
 

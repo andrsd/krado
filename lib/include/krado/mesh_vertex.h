@@ -17,12 +17,12 @@ public:
     /// Get geometrical vertex associated with this vertex
     ///
     /// @return Geometrical vertex associated with this vertex
-    const GeomVertex & geom_vertex() const;
+    [[nodiscard]] const GeomVertex & geom_vertex() const;
 
     /// Get physical position in the 3D space
     ///
     /// @return Physical position in the 3D space
-    Point point() const override;
+    [[nodiscard]] Point point() const override;
 
 private:
     const GeomVertex & gvtx;

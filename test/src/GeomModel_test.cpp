@@ -21,7 +21,7 @@ TEST(GeomModelTest, load)
     auto v2 = model.vertex(2);
     EXPECT_EQ(v2.point(), Point(1., 0., 0.));
 
-    EXPECT_THROW({ model.vertex(0); }, Exception);
+    EXPECT_THROW({ auto & v = model.vertex(0); }, Exception);
 }
 
 TEST(GeomModelTest, load_quad)
@@ -35,7 +35,7 @@ TEST(GeomModelTest, load_quad)
     EXPECT_EQ(model.curves().size(), 4);
 
     EXPECT_EQ(model.surfaces().size(), 1);
-    EXPECT_THROW({ model.surface(1000); }, Exception);
+    EXPECT_THROW({ auto & s = model.surface(1000); }, Exception);
 }
 
 TEST(GeomModelTest, load_box)
@@ -50,5 +50,5 @@ TEST(GeomModelTest, load_box)
     EXPECT_EQ(model.surfaces().size(), 6);
 
     EXPECT_EQ(model.volumes().size(), 1);
-    EXPECT_THROW({ model.volume(1000); }, Exception);
+    EXPECT_THROW({ auto & v = model.volume(1000); }, Exception);
 }

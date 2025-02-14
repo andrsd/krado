@@ -49,6 +49,6 @@ TEST(ImprintTest, volume_with_curve_that_is_too_far)
     auto line = testing::build_line(Point(2, 2, -1), Point(-2, -2, -1));
     GeomCurve curve(line);
 
-    EXPECT_THROW_MSG(imprint(box, curve),
+    EXPECT_THROW_MSG(auto res = imprint(box, curve),
                      "Imprint: projection of curve onto volume yield empty result.");
 }

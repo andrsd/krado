@@ -58,7 +58,7 @@ public:
     ///
     /// @param other Transformation to apply
     /// @return Composition of transformations
-    Trsf operator*(const Trsf & other) const;
+    [[nodiscard]] Trsf operator*(const Trsf & other) const;
 
     /// Apply transformation
     ///
@@ -70,7 +70,7 @@ public:
     ///
     /// @param point Point to transform
     /// @return Transformed point
-    Point operator*(const Point & other) const;
+    [[nodiscard]] Point operator*(const Point & other) const;
 
 private:
     static constexpr int N = 4;
@@ -82,7 +82,7 @@ public:
     ///
     /// @param factor Scaling factor
     /// @return Scaling transformation
-    static Trsf scaled(double factor);
+    [[nodiscard]] static Trsf scaled(double factor);
 
     /// Create anisotropic scaling transformation
     ///
@@ -90,7 +90,7 @@ public:
     /// @param factor_y scaling factor in y direction
     /// @param factor_z scaling factor in z direction
     /// @return Scaling transformation
-    static Trsf scaled(double factor_x, double factor_y, double factor_z = 1.);
+    [[nodiscard]] static Trsf scaled(double factor_x, double factor_y, double factor_z = 1.);
 
     /// Create translation transformation
     ///
@@ -98,30 +98,30 @@ public:
     /// @param ty Translation in y direction
     /// @param tz Translation in z direction
     /// @return Translation transformation
-    static Trsf translated(double tx, double ty, double tz = 0.);
+    [[nodiscard]] static Trsf translated(double tx, double ty, double tz = 0.);
 
     /// Create rotation transformation around z axis
     ///
     /// @param theta Rotation angle in radians
     /// @return Rotation transformation
-    static Trsf rotated_x(double theta);
+    [[nodiscard]] static Trsf rotated_x(double theta);
 
     /// Create rotation transformation around y axis
     ///
     /// @param theta Rotation angle in radians
     /// @return Rotation transformation
-    static Trsf rotated_y(double theta);
+    [[nodiscard]] static Trsf rotated_y(double theta);
 
     /// Create rotation transformation around z axis
     ///
     /// @param theta Rotation angle in radians
     /// @return Rotation transformation
-    static Trsf rotated_z(double theta);
+    [[nodiscard]] static Trsf rotated_z(double theta);
 
     /// Create identity transformation
     ///
     /// @return Identity transformation
-    static Trsf identity();
+    [[nodiscard]] static Trsf identity();
 };
 
 } // namespace krado

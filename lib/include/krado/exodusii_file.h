@@ -19,7 +19,7 @@ public:
     /// Read mesh from ExodusII file
     ///
     /// @return Mesh object read from file
-    Mesh read();
+    [[nodiscard]] Mesh read();
 
     /// Write mesh to ExodusII file
     ///
@@ -30,23 +30,24 @@ private:
     /// Read nodes
     ///
     /// @return Vector of points
-    std::vector<Point> read_points();
+    [[nodiscard]] std::vector<Point> read_points();
 
     /// Read elements
     ///
     /// @return Vector of elements
-    std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>> read_elements();
+    [[nodiscard]] std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>>
+    read_elements();
 
     /// Read side sets
     ///
     /// @return Vector of side set entries
-    std::map<int, std::vector<side_set_entry_t>> read_side_sets();
+    [[nodiscard]] std::map<int, std::vector<side_set_entry_t>> read_side_sets();
 
     /// Determine mesh spatial dimension
     ///
     /// @param mesh Mesh object
     /// @return Spatial dimension
-    int determine_spatial_dim(const Mesh & mesh);
+    [[nodiscard]] int determine_spatial_dim(const Mesh & mesh);
 
     /// Write info
     void write_info();
