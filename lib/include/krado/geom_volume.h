@@ -28,9 +28,9 @@ public:
     operator const TopoDS_Shape &() const;
 
 private:
-    TopoDS_Solid solid;
+    TopoDS_Solid solid_;
     /// volume
-    double vol;
+    double volume_;
 };
 
 } // namespace krado
