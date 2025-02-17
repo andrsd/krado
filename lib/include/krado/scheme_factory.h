@@ -31,7 +31,7 @@ public:
     add(const std::string & class_name)
     {
         Entry entry = { &build_scheme<T> };
-        this->classes[class_name] = entry;
+        this->classes_[class_name] = entry;
     }
 
     [[nodiscard]] Scheme *
@@ -39,7 +39,7 @@ public:
     {
         auto entry = get_entry(scheme_name);
         auto * object = entry.build_ptr();
-        this->objects.push_back(object);
+        this->objects_.push_back(object);
         return object;
     }
 
@@ -47,9 +47,9 @@ public:
     void
     destroy()
     {
-        while (!this->objects.empty()) {
-            delete this->objects.front();
-            this->objects.pop_front();
+        while (!this->objects_.empty()) {
+            delete this->objects_.front();
+            this->objects_.pop_front();
         }
     }
 
@@ -66,16 +66,16 @@ private:
     const Entry &
     get_entry(const std::string & class_name) const
     {
-        auto it = this->classes.find(class_name);
-        if (it == this->classes.end())
+        auto it = this->classes_.find(class_name);
+        if (it == this->classes_.end())
             throw Exception("Unknown scheme '{}'.", class_name);
         return it->second;
     }
 
     /// All registered classes that we can build
-    std::map<std::string, Entry> classes;
+    std::map<std::string, Entry> classes_;
     /// All objects built by this factory
-    std::list<Scheme *> objects;
+    std::list<Scheme *> objects_;
 };
 
 } // namespace krado
