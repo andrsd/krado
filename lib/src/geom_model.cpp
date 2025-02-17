@@ -18,7 +18,7 @@
 
 namespace krado {
 
-GeomModel::GeomModel(const GeomShape & root_shape) : root_shape(root_shape)
+GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
 {
     bind_shape(root_shape);
     initialize();
@@ -28,7 +28,7 @@ const GeomVertex &
 GeomModel::geom_vertex(int id) const
 {
     try {
-        return this->vtxs.at(id);
+        return this->vtxs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No vertex with id {}", id);
@@ -39,7 +39,7 @@ GeomVertex &
 GeomModel::geom_vertex(int id)
 {
     try {
-        return this->vtxs.at(id);
+        return this->vtxs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No vertex with id {}", id);
@@ -50,7 +50,7 @@ int
 GeomModel::vertex_id(const GeomVertex & vertex) const
 {
     try {
-        return this->vtx_id.Find(vertex);
+        return this->vtx_id_.Find(vertex);
     }
     catch (...) {
         throw Exception("No ID for vertex");
@@ -61,7 +61,7 @@ const GeomCurve &
 GeomModel::geom_curve(int id) const
 {
     try {
-        return this->crvs.at(id);
+        return this->crvs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No curve with id {}", id);
@@ -72,7 +72,7 @@ GeomCurve &
 GeomModel::geom_curve(int id)
 {
     try {
-        return this->crvs.at(id);
+        return this->crvs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No curve with id {}", id);
@@ -83,7 +83,7 @@ int
 GeomModel::curve_id(const GeomCurve & curve) const
 {
     try {
-        return this->crv_id.Find(curve);
+        return this->crv_id_.Find(curve);
     }
     catch (...) {
         throw Exception("No ID for curve");
@@ -94,7 +94,7 @@ const GeomSurface &
 GeomModel::geom_surface(int id) const
 {
     try {
-        return this->srfs.at(id);
+        return this->srfs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No surface with id {}", id);
@@ -105,7 +105,7 @@ GeomSurface &
 GeomModel::geom_surface(int id)
 {
     try {
-        return this->srfs.at(id);
+        return this->srfs_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No surface with id {}", id);
@@ -116,7 +116,7 @@ int
 GeomModel::surface_id(const GeomSurface & surface) const
 {
     try {
-        return this->srf_id.Find(surface);
+        return this->srf_id_.Find(surface);
     }
     catch (...) {
         throw Exception("No ID for surface");
@@ -127,7 +127,7 @@ const GeomVolume &
 GeomModel::geom_volume(int id) const
 {
     try {
-        return this->vols.at(id);
+        return this->vols_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No volume with id {}", id);
@@ -138,7 +138,7 @@ GeomVolume &
 GeomModel::geom_volume(int id)
 {
     try {
-        return this->vols.at(id);
+        return this->vols_.at(id);
     }
     catch (std::out_of_range & e) {
         throw Exception("No volume with id {}", id);
@@ -149,7 +149,7 @@ int
 GeomModel::volume_id(const GeomVolume & volume) const
 {
     try {
-        return this->vol_id.Find(volume);
+        return this->vol_id_.Find(volume);
     }
     catch (...) {
         throw Exception("No ID for volume");
@@ -171,10 +171,10 @@ GeomModel::bind_solids(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
-        if (!this->vol_id.IsBound(solid)) {
-            auto id = this->vols.size() + 1;
-            this->vols.emplace(id, GeomVolume(solid));
-            this->vol_id.Bind(solid, id);
+        if (!this->vol_id_.IsBound(solid)) {
+            auto id = this->vols_.size() + 1;
+            this->vols_.emplace(id, GeomVolume(solid));
+            this->vol_id_.Bind(solid, id);
         }
     }
 }
@@ -185,10 +185,10 @@ GeomModel::bind_faces(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
-        if (!this->srf_id.IsBound(face)) {
-            auto id = this->srfs.size() + 1;
-            this->srfs.emplace(id, GeomSurface(face));
-            this->srf_id.Bind(face, id);
+        if (!this->srf_id_.IsBound(face)) {
+            auto id = this->srfs_.size() + 1;
+            this->srfs_.emplace(id, GeomSurface(face));
+            this->srf_id_.Bind(face, id);
         }
     }
 }
@@ -199,10 +199,10 @@ GeomModel::bind_edges(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
-        if (!this->crv_id.IsBound(edge)) {
-            auto id = this->crvs.size() + 1;
-            this->crvs.emplace(id, GeomCurve(edge));
-            this->crv_id.Bind(edge, id);
+        if (!this->crv_id_.IsBound(edge)) {
+            auto id = this->crvs_.size() + 1;
+            this->crvs_.emplace(id, GeomCurve(edge));
+            this->crv_id_.Bind(edge, id);
         }
     }
 }
@@ -213,10 +213,10 @@ GeomModel::bind_vertices(const GeomShape & shape)
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
-        if (!this->vtx_id.IsBound(vertex)) {
-            auto id = this->vtxs.size() + 1;
-            this->vtxs.emplace(id, GeomVertex(vertex));
-            this->vtx_id.Bind(vertex, id);
+        if (!this->vtx_id_.IsBound(vertex)) {
+            auto id = this->vtxs_.size() + 1;
+            this->vtxs_.emplace(id, GeomVertex(vertex));
+            this->vtx_id_.Bind(vertex, id);
         }
     }
 }
@@ -224,22 +224,22 @@ GeomModel::bind_vertices(const GeomShape & shape)
 void
 GeomModel::initialize()
 {
-    for (auto & [id, gvtx] : this->vtxs) {
+    for (auto & [id, gvtx] : this->vtxs_) {
         MeshVertex mvtx(gvtx);
-        this->mvtxs.emplace(id, mvtx);
+        this->mvtxs_.emplace(id, mvtx);
     }
 
-    for (auto & [id, geom_curve] : this->crvs) {
+    for (auto & [id, geom_curve] : this->crvs_) {
         auto id1 = vertex_id(geom_curve.first_vertex());
         auto id2 = vertex_id(geom_curve.last_vertex());
         auto & v1 = vertex(id1);
         auto & v2 = vertex(id2);
 
         MeshCurve mesh_crv(geom_curve, &v1, &v2);
-        this->mcrvs.emplace(id, mesh_crv);
+        this->mcrvs_.emplace(id, mesh_crv);
     }
 
-    for (auto & [id, geom_surface] : this->srfs) {
+    for (auto & [id, geom_surface] : this->srfs_) {
         auto surface_curves = geom_surface.curves();
         std::vector<MeshCurve *> mesh_curves;
         for (auto & gcurve : surface_curves) {
@@ -249,10 +249,10 @@ GeomModel::initialize()
         }
 
         MeshSurface mesh_surf(geom_surface, mesh_curves);
-        this->msurfs.emplace(id, mesh_surf);
+        this->msurfs_.emplace(id, mesh_surf);
     }
 
-    for (auto & [id, geom_volume] : this->vols) {
+    for (auto & [id, geom_volume] : this->vols_) {
         auto volume_surfaces = geom_volume.surfaces();
         std::vector<MeshSurface *> mesh_surfaces;
         for (auto & gsurface : volume_surfaces) {
@@ -262,7 +262,7 @@ GeomModel::initialize()
         }
 
         MeshVolume mesh_vol(geom_volume, mesh_surfaces);
-        this->mvols.emplace(id, mesh_vol);
+        this->mvols_.emplace(id, mesh_vol);
     }
 }
 
@@ -270,7 +270,7 @@ const MeshVertex &
 GeomModel::vertex(int id) const
 {
     try {
-        return this->mvtxs.at(id);
+        return this->mvtxs_.at(id);
     }
     catch (...) {
         throw Exception("No vertex with ID = {}", id);
@@ -281,7 +281,7 @@ MeshVertex &
 GeomModel::vertex(int id)
 {
     try {
-        return this->mvtxs.at(id);
+        return this->mvtxs_.at(id);
     }
     catch (...) {
         throw Exception("No vertex with ID = {}", id);
@@ -291,14 +291,14 @@ GeomModel::vertex(int id)
 const std::map<int, MeshVertex> &
 GeomModel::vertices() const
 {
-    return this->mvtxs;
+    return this->mvtxs_;
 }
 
 const MeshCurve &
 GeomModel::curve(int id) const
 {
     try {
-        return this->mcrvs.at(id);
+        return this->mcrvs_.at(id);
     }
     catch (...) {
         throw Exception("No curve with ID = {}", id);
@@ -309,7 +309,7 @@ MeshCurve &
 GeomModel::curve(int id)
 {
     try {
-        return this->mcrvs.at(id);
+        return this->mcrvs_.at(id);
     }
     catch (...) {
         throw Exception("No curve with ID = {}", id);
@@ -319,14 +319,14 @@ GeomModel::curve(int id)
 const std::map<int, MeshCurve> &
 GeomModel::curves() const
 {
-    return this->mcrvs;
+    return this->mcrvs_;
 }
 
 const MeshSurface &
 GeomModel::surface(int id) const
 {
     try {
-        return this->msurfs.at(id);
+        return this->msurfs_.at(id);
     }
     catch (...) {
         throw Exception("No surface with ID = {}", id);
@@ -337,7 +337,7 @@ MeshSurface &
 GeomModel::surface(int id)
 {
     try {
-        return this->msurfs.at(id);
+        return this->msurfs_.at(id);
     }
     catch (...) {
         throw Exception("No surface with ID = {}", id);
@@ -347,14 +347,14 @@ GeomModel::surface(int id)
 const std::map<int, MeshSurface> &
 GeomModel::surfaces() const
 {
-    return this->msurfs;
+    return this->msurfs_;
 }
 
 const MeshVolume &
 GeomModel::volume(int id) const
 {
     try {
-        return this->mvols.at(id);
+        return this->mvols_.at(id);
     }
     catch (...) {
         throw Exception("No volume with ID = {}", id);
@@ -365,7 +365,7 @@ MeshVolume &
 GeomModel::volume(int id)
 {
     try {
-        return this->mvols.at(id);
+        return this->mvols_.at(id);
     }
     catch (...) {
         throw Exception("No volume with ID = {}", id);
@@ -375,13 +375,13 @@ GeomModel::volume(int id)
 const std::map<int, MeshVolume> &
 GeomModel::volumes() const
 {
-    return this->mvols;
+    return this->mvols_;
 }
 
 void
 GeomModel::mesh_vertex(int id)
 {
-    auto & vertex = this->mvtxs.at(id);
+    auto & vertex = this->mvtxs_.at(id);
     mesh_vertex(vertex);
 }
 
@@ -396,7 +396,7 @@ GeomModel::mesh_vertex(MeshVertex & gvertex)
 void
 GeomModel::mesh_curve(int id)
 {
-    auto & curve = this->mcrvs.at(id);
+    auto & curve = this->mcrvs_.at(id);
     mesh_curve(curve);
 }
 
@@ -422,7 +422,7 @@ GeomModel::mesh_curve(MeshCurve & curve)
 void
 GeomModel::mesh_surface(int id)
 {
-    auto & surface = this->msurfs.at(id);
+    auto & surface = this->msurfs_.at(id);
     mesh_surface(surface);
 }
 
@@ -446,7 +446,7 @@ GeomModel::mesh_surface(MeshSurface & surface)
 void
 GeomModel::mesh_volume(int id)
 {
-    auto & volume = this->mvols.at(id);
+    auto & volume = this->mvols_.at(id);
     mesh_volume(volume);
 }
 
@@ -473,18 +473,18 @@ GeomModel::build_points()
     std::vector<Point> pnts;
     gidx_t gid = 0;
 
-    for (auto & [id, v] : this->mvtxs) {
+    for (auto & [id, v] : this->mvtxs_) {
         v.set_global_id(gid);
         pnts.emplace_back(v.point());
         gid++;
     }
-    for (auto & [id, curve] : this->mcrvs)
+    for (auto & [id, curve] : this->mcrvs_)
         for (auto & v : curve.curve_vertices()) {
             v->set_global_id(gid);
             pnts.emplace_back(v->point());
             gid++;
         }
-    for (auto & [id, surface] : this->msurfs)
+    for (auto & [id, surface] : this->msurfs_)
         for (auto & v : surface.surface_vertices()) {
             v->set_global_id(gid);
             pnts.emplace_back(v->point());
@@ -497,12 +497,12 @@ BoundingBox3D
 GeomModel::compute_mesh_bounding_box()
 {
     BoundingBox3D bbox;
-    for (auto & [id, v] : this->mvtxs)
+    for (auto & [id, v] : this->mvtxs_)
         bbox += v.point();
-    for (auto & [id, curve] : this->mcrvs)
+    for (auto & [id, curve] : this->mcrvs_)
         for (auto & v : curve.curve_vertices())
             bbox += v->point();
-    for (auto & [id, surface] : this->msurfs)
+    for (auto & [id, surface] : this->msurfs_)
         for (auto & v : surface.surface_vertices())
             bbox += v->point();
     return bbox;
@@ -544,7 +544,7 @@ std::vector<Element>
 GeomModel::build_1d_elements()
 {
     std::vector<Element> elems;
-    for (auto & [id, curve] : this->mcrvs) {
+    for (auto & [id, curve] : this->mcrvs_) {
         auto & verts = curve.all_vertices();
         std::array<gidx_t, Line2::N_VERTICES> line;
         for (auto & local_elem : curve.segments()) {
@@ -563,7 +563,7 @@ std::vector<Element>
 GeomModel::build_2d_elements()
 {
     std::vector<Element> elems;
-    for (auto & [id, surface] : this->msurfs) {
+    for (auto & [id, surface] : this->msurfs_) {
         auto & verts = surface.all_vertices();
         auto & tris = surface.triangles();
         std::array<gidx_t, Tri3::N_VERTICES> tri;

@@ -158,26 +158,26 @@ private:
     [[nodiscard]] std::vector<Element> build_1d_elements();
     [[nodiscard]] std::vector<Element> build_2d_elements();
 
-    GeomShape root_shape;
+    GeomShape root_shape_;
 
-    std::map<int, GeomVertex> vtxs;
-    std::map<int, GeomCurve> crvs;
-    std::map<int, GeomSurface> srfs;
-    std::map<int, GeomVolume> vols;
+    std::map<int, GeomVertex> vtxs_;
+    std::map<int, GeomCurve> crvs_;
+    std::map<int, GeomSurface> srfs_;
+    std::map<int, GeomVolume> vols_;
 
-    TopTools_DataMapOfShapeInteger vtx_id;
-    TopTools_DataMapOfShapeInteger crv_id;
-    TopTools_DataMapOfShapeInteger srf_id;
-    TopTools_DataMapOfShapeInteger vol_id;
+    TopTools_DataMapOfShapeInteger vtx_id_;
+    TopTools_DataMapOfShapeInteger crv_id_;
+    TopTools_DataMapOfShapeInteger srf_id_;
+    TopTools_DataMapOfShapeInteger vol_id_;
 
-    std::map<int, MeshVertex> mvtxs;
-    std::map<int, MeshCurve> mcrvs;
-    std::map<int, MeshSurface> msurfs;
-    std::map<int, MeshVolume> mvols;
+    std::map<int, MeshVertex> mvtxs_;
+    std::map<int, MeshCurve> mcrvs_;
+    std::map<int, MeshSurface> msurfs_;
+    std::map<int, MeshVolume> mvols_;
     /// Mesh points
-    std::vector<Point> pnts;
+    std::vector<Point> pnts_;
     /// Mesh elements
-    std::vector<Element> elems;
+    std::vector<Element> elems_;
 };
 
 } // namespace krado
