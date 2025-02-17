@@ -60,7 +60,7 @@ public:
     [[nodiscard]] double size(int n) const;
 
 private:
-    Point min_pt, max_pt;
+    Point min_pt_, max_pt_;
 };
 
 } // namespace krado
