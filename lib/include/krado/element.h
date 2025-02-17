@@ -62,8 +62,8 @@ public:
     void set_ids(const std::vector<gidx_t> & ids);
 
 private:
-    Type elem_type;
-    std::vector<gidx_t> vtx_id;
+    Type elem_type_;
+    std::vector<gidx_t> vtx_id_;
 
 public:
     [[nodiscard]] static std::string type(Type type);

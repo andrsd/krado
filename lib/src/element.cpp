@@ -74,51 +74,51 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) : elem_type(type), vtx_id(vtx_ids)
+Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) : elem_type_(type), vtx_id_(vtx_ids)
 {
 }
 
 Element::Type
 Element::type() const
 {
-    return this->elem_type;
+    return this->elem_type_;
 }
 
 int
 Element::num_vertices() const
 {
-    return this->vtx_id.size();
+    return this->vtx_id_.size();
 }
 
 gidx_t
 Element::vertex_id(int idx) const
 {
-    return this->vtx_id[idx];
+    return this->vtx_id_[idx];
 }
 
 gidx_t
 Element::operator()(int idx) const
 {
-    return this->vtx_id[idx];
+    return this->vtx_id_[idx];
 }
 
 const std::vector<gidx_t> &
 Element::ids() const
 {
-    return this->vtx_id;
+    return this->vtx_id_;
 }
 
 gidx_t
 Element::id(int idx) const
 {
-    return this->vtx_id[idx];
+    return this->vtx_id_[idx];
 }
 
 void
 Element::set_ids(const std::vector<gidx_t> & ids)
 {
-    if (this->vtx_id.size() == ids.size())
-        this->vtx_id = ids;
+    if (this->vtx_id_.size() == ids.size())
+        this->vtx_id_ = ids;
     else
         throw Exception("Element::set_ids: size mismatch");
 }
