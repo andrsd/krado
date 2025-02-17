@@ -404,18 +404,23 @@ void
 GeomModel::mesh_curve(MeshCurve & curve)
 {
     if (!curve.is_meshed()) {
-        auto geom_curve = curve.geom_curve();
-        if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
-            return;
+        try {
+            auto & geom_curve = curve.geom_curve();
+            if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
+                return;
 
-        auto & scheme = get_scheme<Scheme1D>(curve);
+            auto & scheme1d = get_scheme<Scheme1D>(curve);
 
-        auto bnd_vtxs = curve.bounding_vertices();
-        for (auto & v : bnd_vtxs)
-            mesh_vertex(*v);
+            auto & bnd_vtxs = curve.bounding_vertices();
+            for (auto & v : bnd_vtxs)
+                mesh_vertex(*v);
 
-        scheme.mesh_curve(curve);
-        curve.set_meshed();
+            scheme1d.mesh_curve(curve);
+            curve.set_meshed();
+        }
+        catch (const std::bad_cast & e) {
+            throw Exception("Scheme '{}' is not a 1D scheme", curve.scheme().name());
+        }
     }
 }
 
@@ -430,16 +435,21 @@ void
 GeomModel::mesh_surface(MeshSurface & surface)
 {
     if (!surface.is_meshed()) {
-        auto & scheme = get_scheme<Scheme2D>(surface);
+        try {
+            auto & scheme2d = get_scheme<Scheme2D>(surface);
 
-        auto curves = surface.curves();
-        for (auto & crv : curves)
-            scheme.select_curve_scheme(*crv);
-        for (auto & crv : curves)
-            mesh_curve(*crv);
+            auto & curves = surface.curves();
+            for (auto & crv : curves)
+                scheme2d.select_curve_scheme(*crv);
+            for (auto & crv : curves)
+                mesh_curve(*crv);
 
-        scheme.mesh_surface(surface);
-        surface.set_meshed();
+            scheme2d.mesh_surface(surface);
+            surface.set_meshed();
+        }
+        catch (const std::bad_cast & e) {
+            throw Exception("Scheme '{}' is not a 2D scheme", surface.scheme().name());
+        }
     }
 }
 
@@ -454,16 +464,21 @@ void
 GeomModel::mesh_volume(MeshVolume & volume)
 {
     if (!volume.is_meshed()) {
-        auto & scheme = get_scheme<Scheme3D>(volume);
+        try {
+            auto & scheme3d = get_scheme<Scheme3D>(volume);
 
-        auto surfaces = volume.surfaces();
-        for (auto & srf : surfaces)
-            scheme.select_surface_scheme(*srf);
-        for (auto & srf : surfaces)
-            mesh_surface(*srf);
+            auto & surfaces = volume.surfaces();
+            for (auto & srf : surfaces)
+                scheme3d.select_surface_scheme(*srf);
+            for (auto & srf : surfaces)
+                mesh_surface(*srf);
 
-        scheme.mesh_volume(volume);
-        volume.set_meshed();
+            scheme3d.mesh_volume(volume);
+            volume.set_meshed();
+        }
+        catch (const std::bad_cast & e) {
+            throw Exception("Scheme '{}' is not a 3D scheme", volume.scheme().name());
+        }
     }
 }
 
