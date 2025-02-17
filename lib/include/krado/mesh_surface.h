@@ -58,15 +58,15 @@ public:
     void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
 
 private:
-    const GeomSurface & gsurface;
+    const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
-    std::vector<MeshCurve *> mesh_curves;
+    std::vector<MeshCurve *> mesh_curves_;
     /// All vertices on this surface
-    std::vector<MeshVertexAbstract *> vtxs;
+    std::vector<MeshVertexAbstract *> vtxs_;
     /// Surface vertices
-    std::vector<MeshSurfaceVertex *> surf_vtxs;
+    std::vector<MeshSurfaceVertex *> surf_vtxs_;
     /// Triangles
-    std::vector<Element> tris;
+    std::vector<Element> tris_;
 };
 
 } // namespace krado
