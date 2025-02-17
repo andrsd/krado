@@ -75,7 +75,7 @@ public:
 private:
     static constexpr int N = 4;
 
-    double mat[N][N];
+    double mat_[N][N];
 
 public:
     /// Create isotropic scaling transformation
