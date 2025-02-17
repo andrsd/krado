@@ -7,28 +7,28 @@ namespace krado {
 
 MeshCurveVertex::MeshCurveVertex(const GeomCurve & geom_curve, double u) :
     MeshVertexAbstract(),
-    gcurve(geom_curve),
-    u(u)
+    gcurve_(geom_curve),
+    u_(u)
 {
-    this->phys_pt = geom_curve.point(u);
+    this->phys_pt_ = geom_curve.point(u);
 }
 
 const GeomCurve &
 MeshCurveVertex::geom_curve() const
 {
-    return this->gcurve;
+    return this->gcurve_;
 }
 
 double
 MeshCurveVertex::parameter() const
 {
-    return this->u;
+    return this->u_;
 }
 
 Point
 MeshCurveVertex::point() const
 {
-    return this->phys_pt;
+    return this->phys_pt_;
 }
 
 } // namespace krado

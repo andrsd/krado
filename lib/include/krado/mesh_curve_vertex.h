@@ -32,11 +32,11 @@ public:
     [[nodiscard]] Point point() const override;
 
 private:
-    const GeomCurve & gcurve;
+    const GeomCurve & gcurve_;
     /// Parametrical position on the curve
-    double u;
+    double u_;
     /// Physical location corresponding to the `u` parameter
-    Point phys_pt;
+    Point phys_pt_;
 };
 
 } // namespace krado
