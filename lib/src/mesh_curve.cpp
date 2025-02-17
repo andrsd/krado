@@ -12,65 +12,65 @@
 namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
-    gcurve(gcurve),
-    bnd_vtxs({ v1, v2 })
+    gcurve_(gcurve),
+    bnd_vtxs_({ v1, v2 })
 {
 }
 
 const GeomCurve &
 MeshCurve::geom_curve() const
 {
-    return this->gcurve;
+    return this->gcurve_;
 }
 
 const std::vector<MeshVertexAbstract *> &
 MeshCurve::all_vertices() const
 {
-    return this->vtxs;
+    return this->vtxs_;
 }
 
 const std::vector<MeshVertex *> &
 MeshCurve::bounding_vertices() const
 {
-    return this->bnd_vtxs;
+    return this->bnd_vtxs_;
 }
 
 void
 MeshCurve::add_vertex(MeshVertex * vertex)
 {
-    this->vtxs.push_back(vertex);
+    this->vtxs_.push_back(vertex);
 }
 
 void
 MeshCurve::add_vertex(MeshCurveVertex * curve_vertex)
 {
-    this->curve_vtx.push_back(curve_vertex);
-    this->vtxs.push_back(curve_vertex);
+    this->curve_vtx_.push_back(curve_vertex);
+    this->vtxs_.push_back(curve_vertex);
 }
 
 const std::vector<MeshCurveVertex *> &
 MeshCurve::curve_vertices() const
 {
-    return this->curve_vtx;
+    return this->curve_vtx_;
 }
 
 std::vector<MeshCurveVertex *> &
 MeshCurve::curve_vertices()
 {
-    return this->curve_vtx;
+    return this->curve_vtx_;
 }
 
 void
 MeshCurve::add_segment(const std::array<std::size_t, 2> & seg)
 {
     auto line2 = Element::Line2(seg);
-    this->segs.emplace_back(line2);
+    this->segs_.emplace_back(line2);
 }
 
 const std::vector<Element> &
 MeshCurve::segments() const
 {
-    return this->segs;
+    return this->segs_;
 }
 
 } // namespace krado

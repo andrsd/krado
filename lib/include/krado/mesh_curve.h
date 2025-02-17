@@ -62,15 +62,15 @@ public:
     [[nodiscard]] const std::vector<Element> & segments() const;
 
 private:
-    const GeomCurve & gcurve;
+    const GeomCurve & gcurve_;
     /// All vertices on this curve
-    std::vector<MeshVertexAbstract *> vtxs;
+    std::vector<MeshVertexAbstract *> vtxs_;
     /// Bounding vertices
-    std::vector<MeshVertex *> bnd_vtxs;
+    std::vector<MeshVertex *> bnd_vtxs_;
     /// Vertices on the curve (excluding the bounding vertices)
-    std::vector<MeshCurveVertex *> curve_vtx;
+    std::vector<MeshCurveVertex *> curve_vtx_;
     /// Segments of this curve, using vertex indexing local to this edge
-    std::vector<Element> segs;
+    std::vector<Element> segs_;
 };
 
 } // namespace krado
