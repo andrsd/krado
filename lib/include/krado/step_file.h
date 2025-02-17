@@ -15,7 +15,7 @@ public:
     [[nodiscard]] GeomShape load() const;
 
 private:
-    std::string file_name;
+    std::string file_name_;
 };
 
 } // namespace krado
