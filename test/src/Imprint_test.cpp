@@ -2,7 +2,7 @@
 #include "krado/exception.h"
 #include "krado/geom_model.h"
 #include "krado/geom_volume.h"
-#include "krado/imprint.h"
+#include "krado/ops.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_shell.h"

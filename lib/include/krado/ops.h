@@ -8,7 +8,10 @@
 
 namespace krado {
 
+class GeomVolume;
+class GeomSurface;
 class GeomCurve;
+class GeomShell;
 
 /// Split a curve at a given parameter
 ///
@@ -17,5 +20,19 @@ class GeomCurve;
 /// @return Tuple of two curves
 [[nodiscard]] std::tuple<GeomCurve, GeomCurve> split_curve(const GeomCurve & curve,
                                                            Standard_Real split_param);
+
+/// Imprint a curve on a surface
+///
+/// @param surface Surface to imprint the curve on
+/// @param curve Curve to imprint
+/// @return Imprinted shell
+[[nodiscard]] GeomShell imprint(const GeomSurface & surface, const GeomCurve & curve);
+
+/// Imprint a curve on a volume
+///
+/// @param volume Volume to imprint the curve on
+/// @param curve Curve to imprint
+/// @return Imprinted volume
+[[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomCurve & curve);
 
 } // namespace krado
