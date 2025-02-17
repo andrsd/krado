@@ -6,43 +6,43 @@
 
 namespace krado {
 
-GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : vertex(vertex)
+GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : vertex_(vertex)
 {
-    if (!this->vertex.IsNull()) {
-        gp_Pnt pnt = BRep_Tool::Pnt(this->vertex);
-        this->x_coord = pnt.X();
-        this->y_coord = pnt.Y();
-        this->z_coord = pnt.Z();
+    if (!this->vertex_.IsNull()) {
+        gp_Pnt pnt = BRep_Tool::Pnt(this->vertex_);
+        this->x_ = pnt.X();
+        this->y_ = pnt.Y();
+        this->z_ = pnt.Z();
     }
 }
 
 bool
 GeomVertex::is_null() const
 {
-    return this->vertex.IsNull();
+    return this->vertex_.IsNull();
 }
 
 double
 GeomVertex::x() const
 {
-    return this->x_coord;
+    return this->x_;
 }
 
 double
 GeomVertex::y() const
 {
-    return this->y_coord;
+    return this->y_;
 }
 
 double
 GeomVertex::z() const
 {
-    return this->z_coord;
+    return this->z_;
 }
 
 GeomVertex::operator const TopoDS_Shape &() const
 {
-    return this->vertex;
+    return this->vertex_;
 }
 
 } // namespace krado

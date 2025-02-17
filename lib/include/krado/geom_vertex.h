@@ -25,8 +25,8 @@ public:
     operator const TopoDS_Shape &() const;
 
 private:
-    TopoDS_Vertex vertex;
-    double x_coord, y_coord, z_coord;
+    TopoDS_Vertex vertex_;
+    double x_, y_, z_;
 };
 
 } // namespace krado
