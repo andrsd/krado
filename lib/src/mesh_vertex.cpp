@@ -5,18 +5,18 @@
 
 namespace krado {
 
-MeshVertex::MeshVertex(const GeomVertex & geom_vertex) : MeshVertexAbstract(), gvtx(geom_vertex) {}
+MeshVertex::MeshVertex(const GeomVertex & geom_vertex) : MeshVertexAbstract(), gvtx_(geom_vertex) {}
 
 const GeomVertex &
 MeshVertex::geom_vertex() const
 {
-    return this->gvtx;
+    return this->gvtx_;
 }
 
 Point
 MeshVertex::point() const
 {
-    return Point(this->gvtx.x(), this->gvtx.y(), this->gvtx.z());
+    return Point(this->gvtx_.x(), this->gvtx_.y(), this->gvtx_.z());
 }
 
 } // namespace krado

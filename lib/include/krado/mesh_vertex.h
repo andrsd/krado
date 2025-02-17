@@ -25,7 +25,7 @@ public:
     [[nodiscard]] Point point() const override;
 
 private:
-    const GeomVertex & gvtx;
+    const GeomVertex & gvtx_;
 };
 
 } // namespace krado
