@@ -15,19 +15,19 @@ public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = gidx_t;
 
-        explicit Iterator(value_type idx) : idx(idx) {}
+        explicit Iterator(value_type idx) : idx_(idx) {}
 
         const value_type &
         operator*() const
         {
-            return this->idx;
+            return this->idx_;
         }
 
         /// Prefix increment
         Iterator &
         operator++()
         {
-            this->idx++;
+            this->idx_++;
             return *this;
         }
 
@@ -43,62 +43,62 @@ public:
         friend bool
         operator==(const Iterator & a, const Iterator & b)
         {
-            return a.idx == b.idx;
+            return a.idx_ == b.idx_;
         };
 
         friend bool
         operator!=(const Iterator & a, const Iterator & b)
         {
-            return a.idx != b.idx;
+            return a.idx_ != b.idx_;
         };
 
     private:
-        gidx_t idx;
+        gidx_t idx_;
     };
 
-    Range(gidx_t start, gidx_t end) : start_idx(start), end_idx(end) {}
+    Range(gidx_t start, gidx_t end) : start_idx_(start), end_idx_(end) {}
 
     Iterator
     begin() const
     {
-        return Iterator(this->start_idx);
+        return Iterator(this->start_idx_);
     }
 
     Iterator
     end() const
     {
-        return Iterator(this->end_idx + 1);
+        return Iterator(this->end_idx_ + 1);
     }
 
     [[nodiscard]] gidx_t
     first() const
     {
-        return this->start_idx;
+        return this->start_idx_;
     }
 
     [[nodiscard]] gidx_t
     last() const
     {
-        return this->end_idx;
+        return this->end_idx_;
     }
 
     /// Get the number of indices in the range
     [[nodiscard]] gidx_t
     size() const
     {
-        return this->end_idx - this->start_idx + 1;
+        return this->end_idx_ - this->start_idx_ + 1;
     }
 
     void
     expand(gidx_t v)
     {
-        this->start_idx = std::min(this->start_idx, v);
-        this->end_idx = std::max(this->end_idx, v);
+        this->start_idx_ = std::min(this->start_idx_, v);
+        this->end_idx_ = std::max(this->end_idx_, v);
     }
 
 private:
-    gidx_t start_idx;
-    gidx_t end_idx;
+    gidx_t start_idx_;
+    gidx_t end_idx_;
 };
 
 inline bool
