@@ -33,7 +33,7 @@ private:
     void sew_faces(double tolerance);
     void make_solids(double tolerance);
 
-    TopoDS_Shape shape;
+    TopoDS_Shape shape_;
 };
 
 } // namespace krado
