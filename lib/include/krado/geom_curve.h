@@ -91,16 +91,16 @@ public:
     operator const TopoDS_Edge &() const;
 
 private:
-    TopoDS_Edge edge;
-    Handle(Geom_Curve) curve;
+    TopoDS_Edge edge_;
+    Handle(Geom_Curve) curve_;
     /// Curve type
-    CurveType crv_type;
+    CurveType crv_type_;
     /// Minimum value of the parameter
-    double umin;
+    double umin_;
     /// Maximum value of the parameter
-    double umax;
+    double umax_;
     /// Curve length
-    double len;
+    double len_;
 };
 
 } // namespace krado
