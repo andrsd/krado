@@ -25,33 +25,33 @@ public:
     [[nodiscard]] double
     value() const
     {
-        return this->val;
+        return this->value_;
     }
 
     [[nodiscard]] const IntPoint &
     point(int idx) const
     {
-        return this->pts[idx];
+        return this->pts_[idx];
     }
 
     template <typename FUNCTION>
     void
     integrate(const GeomCurve & curve, double t1, double t2, FUNCTION f)
     {
-        this->depth = 0;
+        this->depth_ = 0;
 
         IntPoint from;
         from.t = t1;
         from.lc = f(curve, from.t);
         from.p = 0.0;
-        this->pts.push_back(from);
+        this->pts_.push_back(from);
 
         IntPoint to;
         to.t = t2;
         to.lc = f(curve, to.t);
 
         integrate_recursively(curve, from, to, f);
-        this->val = this->pts.back().p;
+        this->value_ = this->pts_.back().p;
     }
 
 private:
@@ -65,7 +65,7 @@ private:
     void
     integrate_recursively(const GeomCurve & curve, IntPoint & from, IntPoint & to, FUNCTION f)
     {
-        this->depth++;
+        this->depth_++;
 
         IntPoint mid;
         mid.t = 0.5 * (from.t + to.t);
@@ -76,31 +76,31 @@ private:
         double const val3 = trapezoidal(mid, to);
         double const err = std::abs(val1 - val2 - val3);
 
-        if (((err < this->precision) && (this->depth > 6)) || (this->depth > 25)) {
-            IntPoint p1 = this->pts.back();
+        if (((err < this->precision_) && (this->depth_ > 6)) || (this->depth_ > 25)) {
+            IntPoint p1 = this->pts_.back();
             mid.p = p1.p + val2;
-            this->pts.push_back(mid);
+            this->pts_.push_back(mid);
 
-            p1 = this->pts.back();
+            p1 = this->pts_.back();
             to.p = p1.p + val3;
-            this->pts.push_back(to);
+            this->pts_.push_back(to);
         }
         else {
             integrate_recursively(curve, from, mid, f);
             integrate_recursively(curve, mid, to, f);
         }
 
-        this->depth--;
+        this->depth_--;
     }
 
     /// Value of the integral
-    double val;
+    double value_;
     /// integration points
-    std::vector<IntPoint> pts;
+    std::vector<IntPoint> pts_;
     /// resursive depth during integration
-    int depth;
+    int depth_;
     ///
-    double precision = 1e-8;
+    double precision_ = 1e-8;
 };
 
 } // namespace krado
