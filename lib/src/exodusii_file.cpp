@@ -109,17 +109,17 @@ build_element(const std::vector<int> & connect, int idx)
 
 //
 
-ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn(file_name) {}
+ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn_(file_name) {}
 
 Mesh
 ExodusIIFile::read()
 {
-    this->exo.open(this->fn);
-    this->exo.init();
+    this->exo_.open(this->fn_);
+    this->exo_.init();
     auto pnts = read_points();
     auto [elems, cell_sets] = read_elements();
     auto side_sets = read_side_sets();
-    this->exo.close();
+    this->exo_.close();
 
     Mesh mesh(pnts, elems);
     for (auto & [id, cs] : cell_sets)
@@ -135,24 +135,24 @@ ExodusIIFile::read_points()
 {
     std::vector<Point> points;
 
-    this->exo.read_coords();
-    int dim = this->exo.get_dim();
-    int n_nodes = this->exo.get_num_nodes();
+    this->exo_.read_coords();
+    int dim = this->exo_.get_dim();
+    int n_nodes = this->exo_.get_num_nodes();
     if (dim == 1) {
-        auto x = this->exo.get_x_coords();
+        auto x = this->exo_.get_x_coords();
         for (auto i = 0; i < n_nodes; i++)
             points.emplace_back(x[i]);
     }
     else if (dim == 2) {
-        auto x = this->exo.get_x_coords();
-        auto y = this->exo.get_y_coords();
+        auto x = this->exo_.get_x_coords();
+        auto y = this->exo_.get_y_coords();
         for (auto i = 0; i < n_nodes; i++)
             points.emplace_back(x[i], y[i]);
     }
     else if (dim == 3) {
-        auto x = this->exo.get_x_coords();
-        auto y = this->exo.get_y_coords();
-        auto z = this->exo.get_z_coords();
+        auto x = this->exo_.get_x_coords();
+        auto y = this->exo_.get_y_coords();
+        auto z = this->exo_.get_z_coords();
         for (auto i = 0; i < n_nodes; i++)
             points.emplace_back(x[i], y[i], z[i]);
     }
@@ -165,8 +165,8 @@ ExodusIIFile::read_elements()
     std::vector<Element> elems;
     std::map<int, std::vector<gidx_t>> cell_sets;
 
-    this->exo.read_blocks();
-    for (auto & eb : this->exo.get_element_blocks()) {
+    this->exo_.read_blocks();
+    for (auto & eb : this->exo_.get_element_blocks()) {
         auto et = exII::element_type(eb.get_element_type());
         auto connect = eb.get_connectivity();
         auto n_elem_nodes = eb.get_num_nodes_per_element();
@@ -200,8 +200,8 @@ std::map<int, std::vector<side_set_entry_t>>
 ExodusIIFile::read_side_sets()
 {
     std::map<int, std::vector<side_set_entry_t>> side_sets;
-    this->exo.read_side_sets();
-    for (auto & ss : this->exo.get_side_sets()) {
+    this->exo_.read_side_sets();
+    for (auto & ss : this->exo_.get_side_sets()) {
         auto id = ss.get_id();
         auto & elem_ids = ss.get_element_ids();
         auto & sides = ss.get_side_ids();
@@ -214,22 +214,22 @@ ExodusIIFile::read_side_sets()
 void
 ExodusIIFile::write(const Mesh & mesh)
 {
-    this->exo.create(this->fn);
-    this->dim = determine_spatial_dim(mesh);
+    this->exo_.create(this->fn_);
+    this->dim_ = determine_spatial_dim(mesh);
 
     int n_nodes = (int) mesh.points().size();
     int n_elems = (int) mesh.elements().size();
     int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
     int n_node_sets = 0;
     int n_side_sets = mesh.side_set_ids().size();
-    this->exo.init("", this->dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
+    this->exo_.init("", this->dim_, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
     write_info();
     write_coords(mesh);
     write_elements(mesh);
     write_side_sets(mesh);
 
-    this->exo.close();
+    this->exo_.close();
 }
 
 int
@@ -254,7 +254,7 @@ ExodusIIFile::write_info()
 
     std::vector<std::string> info(1);
     info[0] = fmt::format("Created by krado v{} on {}", KRADO_VERSION, datetime);
-    this->exo.write_info(info);
+    this->exo_.write_info(info);
 }
 
 void
@@ -262,21 +262,21 @@ ExodusIIFile::write_coords(const Mesh & mesh)
 {
     std::vector<double> x, y, z;
     for (auto & pt : mesh.points()) {
-        if (this->dim >= 1)
+        if (this->dim_ >= 1)
             x.push_back(pt.x);
-        if (this->dim >= 2)
+        if (this->dim_ >= 2)
             y.push_back(pt.y);
-        if (this->dim >= 3)
+        if (this->dim_ >= 3)
             z.push_back(pt.z);
     }
 
-    if (this->dim == 1)
-        this->exo.write_coords(x);
-    else if (this->dim == 2)
-        this->exo.write_coords(x, y);
-    else if (this->dim == 3)
-        this->exo.write_coords(x, y, z);
-    this->exo.write_coord_names();
+    if (this->dim_ == 1)
+        this->exo_.write_coords(x);
+    else if (this->dim_ == 2)
+        this->exo_.write_coords(x, y);
+    else if (this->dim_ == 3)
+        this->exo_.write_coords(x, y, z);
+    this->exo_.write_coord_names();
 }
 
 void
@@ -286,7 +286,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
         std::map<Element::Type, std::vector<gidx_t>> elem_blks;
         int exii_idx = 1;
         for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
-            this->exii_elem_ids[cell_id] = exii_idx++;
+            this->exii_elem_ids_[cell_id] = exii_idx++;
             auto & cell = mesh.element(cell_id);
             auto et = cell.type();
             elem_blks[et].push_back(cell_id);
@@ -307,7 +307,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
                     for (int j = 0; j < el.ids().size(); j++)
                         connect.push_back(el.vertex_id(j) + 1);
                 }
-                this->exo.write_block(blk_id, el_type, elems.size(), connect);
+                this->exo_.write_block(blk_id, el_type, elems.size(), connect);
                 blk_id++;
             }
         }
@@ -330,18 +330,18 @@ ExodusIIFile::write_elements(const Mesh & mesh)
                 std::vector<int> connect;
                 connect.reserve(n);
                 for (auto & cell_id : elem_ids) {
-                    this->exii_elem_ids[cell_id] = exii_idx++;
+                    this->exii_elem_ids_[cell_id] = exii_idx++;
                     const auto & el = mesh.element(cell_id);
                     for (int j = 0; j < el.ids().size(); j++)
                         connect.push_back(el.vertex_id(j) + 1);
                 }
-                this->exo.write_block(blk_id, el_type, elem_ids.size(), connect);
+                this->exo_.write_block(blk_id, el_type, elem_ids.size(), connect);
                 blk_names.push_back(mesh.cell_set_name(blk_id));
             }
         }
 
         if (!blk_names.empty())
-            this->exo.write_block_names(blk_names);
+            this->exo_.write_block_names(blk_names);
     }
 }
 
@@ -355,15 +355,15 @@ ExodusIIFile::write_side_sets(const Mesh & mesh)
         std::vector<int> sides;
         auto & entries = mesh.side_set(sid);
         for (auto & en : entries) {
-            elems.push_back(this->exii_elem_ids.at(en.elem));
+            elems.push_back(this->exii_elem_ids_.at(en.elem));
             auto et = mesh.element_type(en.elem);
             sides.push_back(exII::local_side_index(et, en.side));
         }
-        this->exo.write_side_set(sid, elems, sides);
+        this->exo_.write_side_set(sid, elems, sides);
         side_sets_names.push_back(mesh.side_set_name(sid));
     }
 
-    this->exo.write_side_set_names(side_sets_names);
+    this->exo_.write_side_set_names(side_sets_names);
 }
 
 } // namespace krado

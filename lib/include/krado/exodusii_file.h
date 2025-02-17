@@ -62,13 +62,13 @@ private:
     void write_side_sets(const Mesh & mesh);
 
     /// File name
-    std::string fn;
+    std::string fn_;
     /// ExodusII file object
-    exodusIIcpp::File exo;
+    exodusIIcpp::File exo_;
     /// Spatial dimension
-    int dim;
+    int dim_;
     /// Maaping from krado indexing into exodusii indexing
-    std::map<std::size_t, int> exii_elem_ids;
+    std::map<std::size_t, int> exii_elem_ids_;
 };
 
 } // namespace krado
