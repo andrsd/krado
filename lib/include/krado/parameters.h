@@ -79,9 +79,9 @@ public:
     [[nodiscard]] bool
     has(const std::string & name) const
     {
-        auto it = this->params.find(name);
+        auto it = this->params_.find(name);
 
-        if (it != this->params.end())
+        if (it != this->params_.end())
             if (dynamic_cast<const Parameter<T> *>(it->second) != nullptr)
                 return true;
 
@@ -96,7 +96,7 @@ public:
         if (!this->has<T>(name))
             throw Exception("No parameter '{}' found.", name);
 
-        auto it = this->params.find(name);
+        auto it = this->params_.find(name);
         return dynamic_cast<Parameter<T> *>(it->second)->get();
     }
 
@@ -106,10 +106,10 @@ public:
     set(const std::string & name)
     {
         if (!this->has<T>(name))
-            this->params[name] = new Parameter<T>;
+            this->params_[name] = new Parameter<T>;
 
-        this->params[name]->valid = true;
-        return dynamic_cast<Parameter<T> *>(this->params[name])->set();
+        this->params_[name]->valid = true;
+        return dynamic_cast<Parameter<T> *>(this->params_[name])->set();
     }
 
     template <typename T, typename S>
@@ -121,13 +121,13 @@ public:
     [[nodiscard]] bool
     is_param_valid(const std::string & name) const
     {
-        return this->params.count(name) > 0 && this->params.at(name)->valid;
+        return this->params_.count(name) > 0 && this->params_.at(name)->valid;
     }
 
     [[nodiscard]] std::string
     type(const std::string & name) const
     {
-        return this->params.at(name)->type();
+        return this->params_.at(name)->type();
     }
 
     typedef std::map<std::string, Parameters::Value *>::iterator iterator;
@@ -136,25 +136,25 @@ public:
     Parameters::iterator
     begin()
     {
-        return this->params.begin();
+        return this->params_.begin();
     }
 
     Parameters::const_iterator
     begin() const
     {
-        return this->params.begin();
+        return this->params_.begin();
     }
 
     Parameters::iterator
     end()
     {
-        return this->params.end();
+        return this->params_.end();
     }
 
     Parameters::const_iterator
     end() const
     {
-        return this->params.end();
+        return this->params_.end();
     }
 
     Parameters &
@@ -162,7 +162,7 @@ public:
     {
         this->clear();
         for (const auto & par : rhs)
-            this->params[par.first] = par.second->copy();
+            this->params_[par.first] = par.second->copy();
         return *this;
     }
 
@@ -171,10 +171,10 @@ public:
     operator+=(const Parameters & rhs)
     {
         for (const auto & rpar : rhs) {
-            auto jt = this->params.find(rpar.first);
-            if (jt != this->params.end())
+            auto jt = this->params_.find(rpar.first);
+            if (jt != this->params_.end())
                 delete jt->second;
-            this->params[rpar.first] = rpar.second->copy();
+            this->params_[rpar.first] = rpar.second->copy();
         }
         return *this;
     }
@@ -182,15 +182,15 @@ public:
     void
     clear()
     {
-        for (auto & it : this->params)
+        for (auto & it : this->params_)
             delete it.second;
-        this->params.clear();
+        this->params_.clear();
     }
 
 private:
     /// The actual parameter data. Each Metadata object contains attributes for the corresponding
     /// parameter.
-    std::map<std::string, Value *> params;
+    std::map<std::string, Value *> params_;
 };
 
 template <typename T>
@@ -200,7 +200,7 @@ Parameters::add_param(const std::string & name)
     if (!this->has<T>(name)) {
         auto * param = new Parameter<T>;
         param->valid = false;
-        this->params[name] = param;
+        this->params_[name] = param;
     }
 }
 
@@ -212,7 +212,7 @@ Parameters::add_param(const std::string & name, const S & value)
         auto * param = new Parameter<T>;
         param->value = value;
         param->valid = true;
-        this->params[name] = param;
+        this->params_[name] = param;
     }
 }
 
