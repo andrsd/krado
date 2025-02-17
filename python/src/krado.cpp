@@ -16,7 +16,6 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "krado/mesh.h"
-#include "krado/mesh_model.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_curve.h"
