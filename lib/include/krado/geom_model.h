@@ -16,6 +16,7 @@
 #include "krado/scheme.h"
 #include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
+#include <Standard_TypeDef.hxx>
 #include <map>
 
 namespace krado {

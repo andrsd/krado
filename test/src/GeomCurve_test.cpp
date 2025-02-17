@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
+#include "krado/ops.h"
 #include "krado/exception.h"
 #include "builder.h"
 
@@ -178,4 +179,14 @@ TEST(GeomCurveTest, circle)
     auto [lo, hi] = curves[0].param_range();
     EXPECT_DOUBLE_EQ(lo, 0.);
     EXPECT_DOUBLE_EQ(hi, 2. * PI);
+}
+
+TEST(GeomCurveTest, split)
+{
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 0.5, 0));
+    GeomSurface gsurf(rect);
+    auto curves = gsurf.curves();
+    auto [lower, upper] = split_curve(curves[0], 0.25);
+    EXPECT_DOUBLE_EQ(lower.length(), 0.25);
+    EXPECT_DOUBLE_EQ(upper.length(), 0.75);
 }

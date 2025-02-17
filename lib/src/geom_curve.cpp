@@ -26,7 +26,7 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), umin(0), umax(0)
         this->edge = TopoDS::Edge(this->edge.Oriented(TopAbs_FORWARD));
     }
     this->curve = BRep_Tool::Curve(this->edge, this->umin, this->umax);
-    if(this->curve->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve))
+    if (this->curve->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve))
         this->crv_type = BSpline;
     else if (this->curve->DynamicType() == STANDARD_TYPE(Geom_BezierCurve))
         this->crv_type = Bezier;
@@ -36,7 +36,6 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : edge(edge), umin(0), umax(0)
         this->crv_type = Circle;
     else
         this->crv_type = Unknown;
-
 
     GProp_GProps props;
     BRepGProp::LinearProperties(this->edge, props);
@@ -155,6 +154,11 @@ GeomCurve::contains_point(const Point & pt) const
 }
 
 GeomCurve::operator const TopoDS_Shape &() const
+{
+    return this->edge;
+}
+
+GeomCurve::operator const TopoDS_Edge &() const
 {
     return this->edge;
 }

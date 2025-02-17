@@ -9,6 +9,8 @@
 #include "TopoDS_Face.hxx"
 #include "Geom_Line.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
+#include "BRepBuilderAPI_MakeWire.hxx"
+#include "BRepBuilderAPI_MakeFace.hxx"
 #include "BRepPrimAPI_MakeCylinder.hxx"
 #include "GC_MakeArcOfCircle.hxx"
 
@@ -86,6 +88,24 @@ build_triangle(const Point & center, double radius)
     BRepLib_MakeFace make_face(wire);
     make_face.Build();
     return make_face.Face();
+}
+
+TopoDS_Face
+build_rect(Point pt1, Point pt2)
+{
+    gp_Pnt p1(pt1.x, pt1.y, 0);
+    gp_Pnt p2(pt2.x, pt1.y, 0);
+    gp_Pnt p3(pt2.x, pt2.y, 0);
+    gp_Pnt p4(pt1.x, pt2.y, 0);
+
+    auto edge1 = BRepBuilderAPI_MakeEdge(p1, p2);
+    auto edge2 = BRepBuilderAPI_MakeEdge(p2, p3);
+    auto edge3 = BRepBuilderAPI_MakeEdge(p3, p4);
+    auto edge4 = BRepBuilderAPI_MakeEdge(p4, p1);
+
+    auto wire = BRepBuilderAPI_MakeWire(edge1, edge2, edge3, edge4);
+
+    return BRepBuilderAPI_MakeFace(wire);
 }
 
 TopoDS_Solid

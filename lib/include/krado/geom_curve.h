@@ -88,6 +88,8 @@ public:
 
     operator const TopoDS_Shape &() const;
 
+    operator const TopoDS_Edge &() const;
+
 private:
     TopoDS_Edge edge;
     Handle(Geom_Curve) curve;
