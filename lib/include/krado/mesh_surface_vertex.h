@@ -34,11 +34,11 @@ public:
     [[nodiscard]] Point point() const override;
 
 private:
-    const GeomSurface & gsurface;
+    const GeomSurface & gsurface_;
     /// Parametrical position on the curve
-    double u, v;
+    double u_, v_;
     /// Physical location corresponding to the (`u`, `v`) parameter
-    Point phys_pt;
+    Point phys_pt_;
 };
 
 } // namespace krado
