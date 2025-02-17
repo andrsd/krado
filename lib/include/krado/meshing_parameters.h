@@ -33,7 +33,7 @@ public:
     [[nodiscard]] MeshingParameters &
     set(const std::string & param_name, const T & value)
     {
-        this->mparams.set<T>(param_name) = value;
+        this->mparams_.set<T>(param_name) = value;
         return *this;
     }
 
@@ -46,7 +46,7 @@ public:
     [[nodiscard]] bool
     has(const std::string & param_name) const
     {
-        return this->mparams.has<T>(param_name);
+        return this->mparams_.has<T>(param_name);
     }
 
     /// Get parameter value
@@ -58,7 +58,7 @@ public:
     [[nodiscard]] T
     get(const std::string & param_name) const
     {
-        return this->mparams.get<T>(param_name);
+        return this->mparams_.get<T>(param_name);
     }
 
     /// Check if the curve is already meshed
@@ -70,11 +70,11 @@ public:
     void set_meshed();
 
 private:
-    SchemeFactory & scheme_factory;
-    Scheme * schm;
-    Parameters mparams;
+    SchemeFactory & scheme_factory_;
+    Scheme * scheme_;
+    Parameters mparams_;
     /// Flag indicating if the entity is meshed
-    bool meshed;
+    bool meshed_;
 };
 
 } // namespace krado
