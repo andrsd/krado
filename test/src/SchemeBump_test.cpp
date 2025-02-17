@@ -8,7 +8,7 @@ using namespace krado;
 
 TEST(SchemeBumpTest, coef_above_one)
 {
-    auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
+    auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
     auto & curve = model.curve(1);
@@ -37,7 +37,7 @@ TEST(SchemeBumpTest, coef_above_one)
 
 TEST(SchemeBumpTest, coef_below_one)
 {
-    auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
+    auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
     auto & curve = model.curve(1);

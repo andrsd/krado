@@ -3,13 +3,14 @@
 
 #pragma once
 
+#include "krado/geom_shape.h"
 #include "TopoDS_Vertex.hxx"
 
 namespace krado {
 
 class GeomModel;
 
-class GeomVertex {
+class GeomVertex : public GeomShape {
 public:
     explicit GeomVertex(const TopoDS_Vertex & vertex);
 

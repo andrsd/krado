@@ -1,22 +1,22 @@
 #pragma once
 
 #include "krado/point.h"
-#include "TopoDS_Vertex.hxx"
-#include "TopoDS_Edge.hxx"
-#include "TopoDS_Face.hxx"
-#include "TopoDS_Solid.hxx"
+#include "krado/geom_vertex.h"
+#include "krado/geom_curve.h"
+#include "krado/geom_surface.h"
+#include "krado/geom_volume.h"
 
 using namespace krado;
 
 namespace testing {
 
-TopoDS_Vertex build_vertex(Point pt);
-TopoDS_Edge build_line(Point pt1, Point pt2);
-TopoDS_Edge build_arc();
-TopoDS_Face build_circle(const Point & center, double radius);
-TopoDS_Face build_triangle(const Point & center, double radius);
-TopoDS_Face build_rect(Point pt1, Point pt2);
-TopoDS_Solid build_box(const Point & v1, const Point & v2);
-TopoDS_Solid build_cylinder(const Point & center, double radius, double height);
+GeomVertex build_vertex(Point pt);
+GeomCurve build_line(Point pt1, Point pt2);
+GeomCurve build_arc();
+GeomSurface build_circle(const Point & center, double radius);
+GeomSurface build_triangle(const Point & center, double radius);
+GeomSurface build_rect(Point pt1, Point pt2);
+GeomVolume build_box(const Point & v1, const Point & v2);
+GeomVolume build_cylinder(const Point & center, double radius, double height);
 
 } // namespace testing

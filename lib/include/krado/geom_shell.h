@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/geom_shape.h"
 #include "krado/geom_surface.h"
 #include "TopoDS_Shell.hxx"
 
@@ -10,7 +11,7 @@ namespace krado {
 
 class GeomModel;
 
-class GeomShell {
+class GeomShell : public GeomShape {
 public:
     explicit GeomShell(const TopoDS_Shell & shell);
 

@@ -12,10 +12,11 @@
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
+#include "krado/geom_shape.h"
 
 namespace krado {
 
-GeomSurface::GeomSurface(const TopoDS_Face & face) : face_(face)
+GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face), face_(face)
 {
     this->surface_ = BRep_Tool::Surface(this->face_);
 
@@ -25,10 +26,15 @@ GeomSurface::GeomSurface(const TopoDS_Face & face) : face_(face)
 
     ShapeAnalysis::GetFaceUVBounds(this->face_, this->umin_, this->umax_, this->vmin_, this->vmax_);
 
-    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
+    this->proj_pt_on_surface_.Init(this->surface_,
+                                   this->umin_,
+                                   this->umax_,
+                                   this->vmin_,
+                                   this->vmax_);
 }
 
 GeomSurface::GeomSurface(const GeomSurface & other) :
+    GeomShape(other),
     face_(other.face_),
     surface_(other.surface_),
     surf_area_(other.surf_area_),
@@ -37,10 +43,15 @@ GeomSurface::GeomSurface(const GeomSurface & other) :
     vmin_(other.vmin_),
     vmax_(other.vmax_)
 {
-    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
+    this->proj_pt_on_surface_.Init(this->surface_,
+                                   this->umin_,
+                                   this->umax_,
+                                   this->vmin_,
+                                   this->vmax_);
 }
 
 GeomSurface::GeomSurface(GeomSurface && other) :
+    GeomShape(other),
     face_(other.face_),
     surface_(other.surface_),
     surf_area_(other.surf_area_),
@@ -49,7 +60,11 @@ GeomSurface::GeomSurface(GeomSurface && other) :
     vmin_(other.vmin_),
     vmax_(other.vmax_)
 {
-    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
+    this->proj_pt_on_surface_.Init(this->surface_,
+                                   this->umin_,
+                                   this->umax_,
+                                   this->vmin_,
+                                   this->vmax_);
 }
 
 Point

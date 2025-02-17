@@ -8,7 +8,7 @@ using namespace krado;
 
 TEST(WriteExodusIITest, line)
 {
-    auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
+    auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
     auto & line = model.curve(1);

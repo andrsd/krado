@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/geom_shape.h"
 #include "krado/geom_surface.h"
 #include "TopoDS_Solid.hxx"
 #include <vector>
@@ -11,7 +12,7 @@ namespace krado {
 
 class GeomModel;
 
-class GeomVolume {
+class GeomVolume : public GeomShape {
 public:
     explicit GeomVolume(const TopoDS_Solid & solid);
 

@@ -17,9 +17,8 @@ TEST(ImprintTest, surface_with_curve)
     GeomSurface circ(circ_face);
 
     auto line = testing::build_line(Point(2, 2, -1), Point(-2, -2, -1));
-    GeomCurve curve(line);
 
-    auto result = imprint(circ, curve);
+    auto result = imprint(circ, line);
 
     auto surfaces = result.surfaces();
     EXPECT_EQ(surfaces.size(), 2);
@@ -33,9 +32,8 @@ TEST(ImprintTest, volume_with_curve)
     GeomVolume box(box_solid);
 
     auto line = testing::build_line(Point(2, 2, 0), Point(-2, -2, 0));
-    GeomCurve curve(line);
 
-    auto result = imprint(box, curve);
+    auto result = imprint(box, line);
 
     auto surfaces = result.surfaces();
     EXPECT_EQ(surfaces.size(), 7);
@@ -47,8 +45,7 @@ TEST(ImprintTest, volume_with_curve_that_is_too_far)
     GeomVolume box(box_solid);
 
     auto line = testing::build_line(Point(2, 2, -1), Point(-2, -2, -1));
-    GeomCurve curve(line);
 
-    EXPECT_THROW_MSG(auto res = imprint(box, curve),
+    EXPECT_THROW_MSG(auto res = imprint(box, line),
                      "Imprint: projection of curve onto volume yield empty result.");
 }

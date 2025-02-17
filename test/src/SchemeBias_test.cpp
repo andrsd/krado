@@ -8,7 +8,7 @@ using namespace krado;
 
 TEST(SchemeBiasTest, line)
 {
-    auto shape = GeomShape(testing::build_line(Point(0, 0, 0), Point(1, 0, 0)));
+    auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
     auto & curve = model.curve(1);

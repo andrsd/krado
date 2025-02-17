@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/geom_shape.h"
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/geom_curve.h"
@@ -15,7 +16,7 @@ namespace krado {
 
 class GeomModel;
 
-class GeomSurface {
+class GeomSurface : public GeomShape {
 public:
     explicit GeomSurface(const TopoDS_Face & face);
     GeomSurface(const GeomSurface & other);

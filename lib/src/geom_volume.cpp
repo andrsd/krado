@@ -9,7 +9,7 @@
 
 namespace krado {
 
-GeomVolume::GeomVolume(const TopoDS_Solid & solid) : solid_(solid)
+GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(solid), solid_(solid)
 {
     GProp_GProps props;
     BRepGProp::VolumeProperties(this->solid_, props);

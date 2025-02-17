@@ -11,13 +11,12 @@ using namespace krado;
 TEST(MeshCurveTest, api)
 {
     auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
-    GeomCurve gcurve(edge);
 
-    MeshVertex v1(gcurve.first_vertex());
-    MeshVertex v2(gcurve.last_vertex());
-    MeshCurve mcurve(gcurve, &v1, &v2);
+    MeshVertex v1(edge.first_vertex());
+    MeshVertex v2(edge.last_vertex());
+    MeshCurve mcurve(edge, &v1, &v2);
 
-    EXPECT_EQ(&mcurve.geom_curve(), &gcurve);
+    EXPECT_EQ(&mcurve.geom_curve(), &edge);
 
     EXPECT_EQ(mcurve.scheme().name(), "auto");
 
@@ -30,13 +29,12 @@ TEST(MeshCurveTest, api)
 TEST(MeshCurveTest, mesh)
 {
     auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
-    GeomCurve gcurve(edge);
-    auto gvtx1 = gcurve.first_vertex();
-    auto gvtx2 = gcurve.last_vertex();
+    auto gvtx1 = edge.first_vertex();
+    auto gvtx2 = edge.last_vertex();
 
     MeshVertex v1(gvtx1);
     MeshVertex v2(gvtx2);
-    MeshCurve mcurve(gcurve, &v1, &v2);
+    MeshCurve mcurve(edge, &v1, &v2);
 
     SchemeEqual equal;
     equal.set("intervals", 4);
@@ -53,7 +51,7 @@ TEST(MeshCurveTest, mesh)
     EXPECT_DOUBLE_EQ(vtx2->parameter(), 2.5);
     EXPECT_DOUBLE_EQ(vtx2->point().x, 1.5);
     EXPECT_DOUBLE_EQ(vtx2->point().y, 2.0);
-    EXPECT_EQ(&vtx2->geom_curve(), &gcurve);
+    EXPECT_EQ(&vtx2->geom_curve(), &edge);
 
     auto segs = mcurve.segments();
     EXPECT_EQ(segs.size(), 4);

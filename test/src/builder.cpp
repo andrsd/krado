@@ -13,29 +13,30 @@
 #include "BRepBuilderAPI_MakeFace.hxx"
 #include "BRepPrimAPI_MakeCylinder.hxx"
 #include "GC_MakeArcOfCircle.hxx"
+#include "krado/geom_surface.h"
 
 namespace testing {
 
-TopoDS_Vertex
+GeomVertex
 build_vertex(Point pt)
 {
     gp_Pnt gpnt(pt.x, pt.y, pt.z);
     BRepLib_MakeVertex make_vtx(gpnt);
     make_vtx.Build();
-    return make_vtx.Vertex();
+    return GeomVertex(make_vtx.Vertex());
 }
 
-TopoDS_Edge
+GeomCurve
 build_line(Point pt1, Point pt2)
 {
     gp_Pnt pnt1(pt1.x, pt1.y, pt1.z);
     gp_Pnt pnt2(pt2.x, pt2.y, pt2.z);
     BRepLib_MakeEdge make_edge(pnt1, pnt2);
     make_edge.Build();
-    return make_edge.Edge();
+    return GeomCurve(make_edge.Edge());
 }
 
-TopoDS_Edge
+GeomCurve
 build_arc()
 {
     gp_Pnt pt1(-1, 0, 0);
@@ -44,10 +45,10 @@ build_arc()
     GC_MakeArcOfCircle mk_arc(pt1, pt2, pt3);
     BRepBuilderAPI_MakeEdge make_edge(mk_arc.Value());
     make_edge.Build();
-    return make_edge.Edge();
+    return GeomCurve(make_edge.Edge());
 }
 
-TopoDS_Face
+GeomSurface
 build_circle(const Point & center, double radius)
 {
     gp_Ax2 ax2;
@@ -60,10 +61,10 @@ build_circle(const Point & center, double radius)
     auto wire = make_wire.Wire();
     BRepLib_MakeFace make_face(wire);
     make_face.Build();
-    return make_face.Face();
+    return GeomSurface(make_face.Face());
 }
 
-TopoDS_Face
+GeomSurface
 build_triangle(const Point & center, double radius)
 {
     gp_Pnt ctr(center.x, center.y, center.z);
@@ -87,10 +88,10 @@ build_triangle(const Point & center, double radius)
     auto wire = make_wire.Wire();
     BRepLib_MakeFace make_face(wire);
     make_face.Build();
-    return make_face.Face();
+    return GeomSurface(make_face.Face());
 }
 
-TopoDS_Face
+GeomSurface
 build_rect(Point pt1, Point pt2)
 {
     gp_Pnt p1(pt1.x, pt1.y, 0);
@@ -105,25 +106,25 @@ build_rect(Point pt1, Point pt2)
 
     auto wire = BRepBuilderAPI_MakeWire(edge1, edge2, edge3, edge4);
 
-    return BRepBuilderAPI_MakeFace(wire);
+    return GeomSurface(BRepBuilderAPI_MakeFace(wire));
 }
 
-TopoDS_Solid
+GeomVolume
 build_box(const Point & v1, const Point & v2)
 {
     gp_Pnt pnt1(v1.x, v1.y, v1.z);
     gp_Pnt pnt2(v2.x, v2.y, v2.z);
     BRepPrimAPI_MakeBox make_box(pnt1, pnt2);
     make_box.Build();
-    return make_box.Solid();
+    return GeomVolume(make_box.Solid());
 }
 
-TopoDS_Solid
+GeomVolume
 build_cylinder(const Point & center, double radius, double height)
 {
     BRepPrimAPI_MakeCylinder maker(radius, height);
     maker.Build();
-    return maker.Solid();
+    return GeomVolume(maker.Solid());
 }
 
 } // namespace testing
