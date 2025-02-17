@@ -5,18 +5,18 @@
 
 namespace krado {
 
-MeshVertexAbstract::MeshVertexAbstract() : gid(0) {}
+MeshVertexAbstract::MeshVertexAbstract() : gid_(0) {}
 
 int
 MeshVertexAbstract::global_id() const
 {
-    return this->gid;
+    return this->gid_;
 }
 
 void
 MeshVertexAbstract::set_global_id(int id)
 {
-    this->gid = id;
+    this->gid_ = id;
 }
 
 } // namespace krado

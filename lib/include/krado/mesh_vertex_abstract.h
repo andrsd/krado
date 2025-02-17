@@ -28,7 +28,7 @@ public:
     void set_global_id(int id);
 
 private:
-    int gid;
+    int gid_;
 };
 
 } // namespace krado
