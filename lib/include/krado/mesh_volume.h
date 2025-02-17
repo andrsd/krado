@@ -23,9 +23,9 @@ public:
     [[nodiscard]] const std::vector<MeshSurface *> & surfaces() const;
 
 private:
-    const GeomVolume & gvolume;
+    const GeomVolume & gvolume_;
     /// Mesh surfaces bounding this surface
-    std::vector<MeshSurface *> mesh_surfaces;
+    std::vector<MeshSurface *> mesh_surfaces_;
 };
 
 } // namespace krado
