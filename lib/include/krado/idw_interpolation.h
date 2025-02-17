@@ -54,9 +54,9 @@ public:
 
 private:
     /// Point sin 3D space
-    std::vector<Point> pts;
+    std::vector<Point> pts_;
     /// Weights for each point
-    std::vector<double> weights;
+    std::vector<double> weights_;
 };
 
 } // namespace krado
