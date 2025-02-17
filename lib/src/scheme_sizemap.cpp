@@ -17,15 +17,13 @@ namespace {
 
 class FTransfiniteSizeMap {
 public:
-    FTransfiniteSizeMap()
-    {
-    }
+    FTransfiniteSizeMap() {}
 
     double
     operator()(const GeomCurve & curve, double u)
     {
-        auto p = curve.point(u);
-        auto [u_lo, u_hi] = curve.param_range();
+        // auto p = curve.point(u);
+        // auto [u_lo, u_hi] = curve.param_range();
         double lc_here = 1.e22;
 
         // if(t == t_begin && ge->getBeginVertex())
@@ -41,9 +39,7 @@ private:
 
 } // namespace
 
-SchemeSizeMap::SchemeSizeMap() : SchemeTransfinite("sizemap")
-{
-}
+SchemeSizeMap::SchemeSizeMap() : SchemeTransfinite("sizemap") {}
 
 Integral1D
 SchemeSizeMap::compute_integral(const MeshCurve & curve)

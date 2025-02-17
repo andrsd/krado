@@ -32,11 +32,11 @@ build_curve_vertices(const GeomCurve & curve, const Integral1D & integral, int n
             const double d = (double) n_points * b;
             if ((std::abs(p1.p) < std::abs(d)) && (std::abs(d) <= std::abs(p2.p))) {
                 double const dt = p2.t - p1.t;
-                double const dlc = p2.lc - p1.lc;
+                // double const dlc = p2.lc - p1.lc;
                 double const dp = p2.p - p1.p;
                 double const t = p1.t + dt / dp * (d - p1.p);
-                const double d1_mag = curve.d1(t).norm();
-                double lc = d1_mag / (p1.lc + dlc / dp * (d1_mag - p1.p));
+                // const double d1_mag = curve.d1(t).norm();
+                // double lc = d1_mag / (p1.lc + dlc / dp * (d1_mag - p1.p));
                 vertices[n_points - 1] = new MeshCurveVertex(curve, t);
                 // TODO: store Lc in mesh curve vertex
                 n_points++;
