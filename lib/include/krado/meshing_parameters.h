@@ -30,7 +30,7 @@ public:
     /// @param value Parameter value
     /// @return This scheme
     template <typename T>
-    [[nodiscard]] MeshingParameters &
+    MeshingParameters &
     set(const std::string & param_name, const T & value)
     {
         this->mparams_.set<T>(param_name) = value;
@@ -43,7 +43,7 @@ public:
     /// @param param_name Parameter name
     /// @return `true` if haveing the parameter, `false` otherwise
     template <typename T>
-    [[nodiscard]] bool
+    bool
     has(const std::string & param_name) const
     {
         return this->mparams_.has<T>(param_name);
@@ -64,7 +64,7 @@ public:
     /// Check if the curve is already meshed
     ///
     /// @return `true` if mesh is already present, `false` otherwise
-    [[nodiscard]] bool is_meshed() const;
+    bool is_meshed() const;
 
     /// Mark curve as meshed
     void set_meshed();
