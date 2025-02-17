@@ -80,14 +80,14 @@ public:
 private:
     std::tuple<bool, double, double> project(const Point & pt) const;
 
-    TopoDS_Face face;
-    Handle(Geom_Surface) surface;
+    TopoDS_Face face_;
+    Handle(Geom_Surface) surface_;
     /// Surface area
-    double surf_area;
-    double umin, umax;
-    double vmin, vmax;
+    double surf_area_;
+    double umin_, umax_;
+    double vmin_, vmax_;
     /// Needs to be a pointer, because GeomSurface must be movable
-    mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface;
+    mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface_;
 };
 
 } // namespace krado

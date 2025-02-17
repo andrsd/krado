@@ -15,54 +15,54 @@
 
 namespace krado {
 
-GeomSurface::GeomSurface(const TopoDS_Face & face) : face(face)
+GeomSurface::GeomSurface(const TopoDS_Face & face) : face_(face)
 {
-    this->surface = BRep_Tool::Surface(this->face);
+    this->surface_ = BRep_Tool::Surface(this->face_);
 
     GProp_GProps props;
-    BRepGProp::SurfaceProperties(this->face, props);
-    this->surf_area = props.Mass();
+    BRepGProp::SurfaceProperties(this->face_, props);
+    this->surf_area_ = props.Mass();
 
-    ShapeAnalysis::GetFaceUVBounds(this->face, this->umin, this->umax, this->vmin, this->vmax);
+    ShapeAnalysis::GetFaceUVBounds(this->face_, this->umin_, this->umax_, this->vmin_, this->vmax_);
 
-    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
+    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
 }
 
 GeomSurface::GeomSurface(const GeomSurface & other) :
-    face(other.face),
-    surface(other.surface),
-    surf_area(other.surf_area),
-    umin(other.umin),
-    umax(other.umax),
-    vmin(other.vmin),
-    vmax(other.vmax)
+    face_(other.face_),
+    surface_(other.surface_),
+    surf_area_(other.surf_area_),
+    umin_(other.umin_),
+    umax_(other.umax_),
+    vmin_(other.vmin_),
+    vmax_(other.vmax_)
 {
-    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
+    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
 }
 
 GeomSurface::GeomSurface(GeomSurface && other) :
-    face(other.face),
-    surface(other.surface),
-    surf_area(other.surf_area),
-    umin(other.umin),
-    umax(other.umax),
-    vmin(other.vmin),
-    vmax(other.vmax)
+    face_(other.face_),
+    surface_(other.surface_),
+    surf_area_(other.surf_area_),
+    umin_(other.umin_),
+    umax_(other.umax_),
+    vmin_(other.vmin_),
+    vmax_(other.vmax_)
 {
-    this->proj_pt_on_surface.Init(this->surface, this->umin, this->umax, this->vmin, this->vmax);
+    this->proj_pt_on_surface_.Init(this->surface_, this->umin_, this->umax_, this->vmin_, this->vmax_);
 }
 
 Point
 GeomSurface::point(double u, double v) const
 {
-    gp_Pnt pnt = this->surface->Value(u, v);
+    gp_Pnt pnt = this->surface_->Value(u, v);
     return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
 Vector
 GeomSurface::normal(double u, double v) const
 {
-    BRepAdaptor_Surface breps(this->face);
+    BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
     prop.SetParameters(u, v);
     auto n = prop.Normal();
@@ -72,7 +72,7 @@ GeomSurface::normal(double u, double v) const
 std::tuple<Vector, Vector>
 GeomSurface::d1(double u, double v) const
 {
-    BRepAdaptor_Surface breps(this->face);
+    BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
     prop.SetParameters(u, v);
     auto d1u = prop.D1U();
@@ -83,16 +83,16 @@ GeomSurface::d1(double u, double v) const
 double
 GeomSurface::area() const
 {
-    return this->surf_area;
+    return this->surf_area_;
 }
 
 std::tuple<double, double>
 GeomSurface::param_range(int i) const
 {
     if (i == 0)
-        return { this->umin, this->umax };
+        return { this->umin_, this->umax_ };
     else if (i == 1)
-        return { this->vmin, this->vmax };
+        return { this->vmin_, this->vmax_ };
     else
         throw Exception("Incorrect index.");
 }
@@ -102,7 +102,7 @@ GeomSurface::curves() const
 {
     std::vector<GeomCurve> crvs;
     TopExp_Explorer exp;
-    for (exp.Init(this->face, TopAbs_EDGE); exp.More(); exp.Next()) {
+    for (exp.Init(this->face_, TopAbs_EDGE); exp.More(); exp.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp.Current());
         auto gcurve = GeomCurve(edge);
         crvs.emplace_back(gcurve);
@@ -122,18 +122,18 @@ GeomSurface::parameter_from_point(const Point & pt) const
 
 GeomSurface::operator const TopoDS_Shape &() const
 {
-    return this->face;
+    return this->face_;
 }
 
 std::tuple<bool, double, double>
 GeomSurface::project(const Point & pt) const
 {
     gp_Pnt pnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface.Perform(pnt);
+    this->proj_pt_on_surface_.Perform(pnt);
 
-    if (this->proj_pt_on_surface.NbPoints() > 0) {
+    if (this->proj_pt_on_surface_.NbPoints() > 0) {
         double u, v;
-        this->proj_pt_on_surface.LowerDistanceParameters(u, v);
+        this->proj_pt_on_surface_.LowerDistanceParameters(u, v);
         return { true, u, v };
     }
     else
@@ -144,9 +144,9 @@ Point
 GeomSurface::nearest_point(const Point & pt) const
 {
     gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface.Perform(gpnt);
-    if (this->proj_pt_on_surface.NbPoints()) {
-        gpnt = this->proj_pt_on_surface.NearestPoint();
+    this->proj_pt_on_surface_.Perform(gpnt);
+    if (this->proj_pt_on_surface_.NbPoints()) {
+        gpnt = this->proj_pt_on_surface_.NearestPoint();
         return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
     }
     else
@@ -157,7 +157,7 @@ bool
 GeomSurface::contains_point(const Point & pt) const
 {
     Point xyz = nearest_point(pt);
-    const Standard_Real tolerance = BRep_Tool::Tolerance(this->face);
+    const Standard_Real tolerance = BRep_Tool::Tolerance(this->face_);
     if (pt.distance(xyz) <= tolerance)
         return true;
     else
