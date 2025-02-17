@@ -6,18 +6,18 @@
 
 namespace krado {
 
-Scheme::Scheme(const std::string & name) : nm(name) {}
+Scheme::Scheme(const std::string & name) : name_(name) {}
 
 std::string
 Scheme::name() const
 {
-    return this->nm;
+    return this->name_;
 }
 
 const Parameters &
 Scheme::parameters() const
 {
-    return this->params;
+    return this->params_;
 }
 
 } // namespace krado

@@ -27,7 +27,7 @@ public:
     Scheme &
     set(const std::string & param_name, const T & value)
     {
-        this->params.set<T>(param_name) = value;
+        this->params_.set<T>(param_name) = value;
         return *this;
     }
 
@@ -40,7 +40,7 @@ public:
     [[nodiscard]] bool
     has(const std::string & param_name) const
     {
-        return this->params.has<T>(param_name);
+        return this->params_.has<T>(param_name);
     }
 
     /// Get parameter value
@@ -52,7 +52,7 @@ public:
     [[nodiscard]] T
     get(const std::string & param_name) const
     {
-        return this->params.get<T>(param_name);
+        return this->params_.get<T>(param_name);
     }
 
     /// Get parameters
@@ -62,9 +62,9 @@ public:
 
 private:
     /// Scheme name
-    std::string nm;
+    std::string name_;
     /// Parameters used by the scheme
-    Parameters params;
+    Parameters params_;
 };
 
 } // namespace krado
