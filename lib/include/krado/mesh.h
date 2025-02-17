@@ -358,15 +358,15 @@ private:
     hasse_add_edge(gidx_t parent_node_id, const std::vector<gidx_t> & edge_connect)
     {
         auto k = utils::key(edge_connect);
-        if (this->key_map.find(k) == this->key_map.end()) {
-            gidx_t edge_node_id = this->hasse.size();
-            this->key_map[k] = edge_node_id;
-            this->hasse.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
-            this->hasse.add_edge(parent_node_id, edge_node_id);
+        if (this->key_map_.find(k) == this->key_map_.end()) {
+            gidx_t edge_node_id = this->hasse_.size();
+            this->key_map_[k] = edge_node_id;
+            this->hasse_.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
+            this->hasse_.add_edge(parent_node_id, edge_node_id);
         }
         else {
-            auto edge_node_id = this->key_map[k];
-            this->hasse.add_edge(parent_node_id, edge_node_id);
+            auto edge_node_id = this->key_map_[k];
+            this->hasse_.add_edge(parent_node_id, edge_node_id);
         }
     }
 
@@ -375,21 +375,21 @@ private:
     hasse_add_faces(gidx_t id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
-        auto elem_node_id = this->key_map[iid];
+        auto elem_node_id = this->key_map_[iid];
 
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_FACES; ++j) {
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[j]);
             auto k = utils::key(face_connect);
-            if (this->key_map.find(k) == this->key_map.end()) {
-                auto face_node_id = this->hasse.size();
-                this->key_map[k] = face_node_id;
-                this->hasse.add_node(face_node_id, HasseDiagram::NodeType::Face);
-                this->hasse.add_edge(elem_node_id, face_node_id);
+            if (this->key_map_.find(k) == this->key_map_.end()) {
+                auto face_node_id = this->hasse_.size();
+                this->key_map_[k] = face_node_id;
+                this->hasse_.add_node(face_node_id, HasseDiagram::NodeType::Face);
+                this->hasse_.add_edge(elem_node_id, face_node_id);
             }
             else {
-                auto face_node_id = this->key_map[k];
-                this->hasse.add_edge(elem_node_id, face_node_id);
+                auto face_node_id = this->key_map_[k];
+                this->hasse_.add_edge(elem_node_id, face_node_id);
             }
         }
     }
@@ -401,7 +401,7 @@ private:
         const auto & elem_connect = elem.ids();
         for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[i]);
-            auto face_node_id = this->key_map[utils::key(face_connect)];
+            auto face_node_id = this->key_map_[utils::key(face_connect)];
 
             for (std::size_t j = 0; j < ELEMENT_TYPE::FACE_EDGES[i].size(); ++j) {
                 auto edge = ELEMENT_TYPE::FACE_EDGES[i][j];
@@ -417,7 +417,7 @@ private:
     hasse_add_edges(gidx_t id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
-        auto elem_node_id = this->key_map[iid];
+        auto elem_node_id = this->key_map_[iid];
 
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
@@ -433,12 +433,12 @@ private:
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
             auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
-            auto edge_node_id = this->key_map[utils::key(edge_connect)];
+            auto edge_node_id = this->key_map_[utils::key(edge_connect)];
             for (auto & vtx : edge_connect) {
                 auto vtx_id = utils::key(vtx);
-                if (this->key_map.find(vtx_id) != this->key_map.end()) {
-                    auto vtx_node_id = this->key_map[vtx_id];
-                    this->hasse.add_edge(edge_node_id, vtx_node_id);
+                if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
+                    auto vtx_node_id = this->key_map_[vtx_id];
+                    this->hasse_.add_edge(edge_node_id, vtx_node_id);
                 }
                 else
                     throw Exception("Vertex not found in key map");
@@ -447,31 +447,31 @@ private:
     }
 
     /// Mesh points
-    std::vector<Point> pnts;
+    std::vector<Point> pnts_;
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
-    std::vector<Element> elems;
+    std::vector<Element> elems_;
     /// Cell set names
-    std::map<marker_t, std::string> cell_set_names;
+    std::map<marker_t, std::string> cell_set_names_;
     /// Cell sets
-    std::map<marker_t, std::vector<gidx_t>> cell_sets;
+    std::map<marker_t, std::vector<gidx_t>> cell_sets_;
     /// Face set names
-    std::map<marker_t, std::string> face_set_names;
+    std::map<marker_t, std::string> face_set_names_;
     /// Face sets
-    std::map<marker_t, std::vector<gidx_t>> face_sets;
+    std::map<marker_t, std::vector<gidx_t>> face_sets_;
     /// Edge set names
-    std::map<marker_t, std::string> edge_set_names;
+    std::map<marker_t, std::string> edge_set_names_;
     /// Edge sets
-    std::map<marker_t, std::vector<gidx_t>> edge_sets;
+    std::map<marker_t, std::vector<gidx_t>> edge_sets_;
 
     /// Side set names
-    std::map<marker_t, std::string> side_set_names;
+    std::map<marker_t, std::string> side_set_names_;
     /// Side sets
-    std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
+    std::map<marker_t, std::vector<side_set_entry_t>> side_sets_;
 
     /// Hasse diagram representing the mesh
-    HasseDiagram hasse;
+    HasseDiagram hasse_;
     /// Map of keys to node IDs
-    std::map<std::size_t, gidx_t> key_map;
+    std::map<std::size_t, gidx_t> key_map_;
 };
 
 } // namespace krado

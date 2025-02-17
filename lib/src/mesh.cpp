@@ -103,30 +103,30 @@ remove_duplicates(const PointCloud & cloud, double threshold)
 
 Mesh::Mesh() {}
 
-Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) : pnts(points), elems(elems) {}
+Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) : pnts_(points), elems_(elems) {}
 
 const std::vector<Point> &
 Mesh::points() const
 {
-    return this->pnts;
+    return this->pnts_;
 }
 
 const Point &
 Mesh::point(gidx_t idx) const
 {
-    return this->pnts.at(idx);
+    return this->pnts_.at(idx);
 }
 
 const std::vector<Element> &
 Mesh::elements() const
 {
-    return this->elems;
+    return this->elems_;
 }
 
 const Element &
 Mesh::element(gidx_t idx) const
 {
-    return this->elems.at(idx);
+    return this->elems_.at(idx);
 }
 
 Mesh
@@ -178,9 +178,9 @@ Mesh::transformed(const Trsf & tr) const
     for (auto & p : pts)
         p = tr * p;
 
-    Mesh mesh(pts, this->elems);
-    mesh.cell_sets = this->cell_sets;
-    mesh.side_sets = this->side_sets;
+    Mesh mesh(pts, this->elems_);
+    mesh.cell_sets_ = this->cell_sets_;
+    mesh.side_sets_ = this->side_sets_;
     return mesh;
 }
 
@@ -196,24 +196,24 @@ Mesh::transform(const Trsf & tr)
 Mesh &
 Mesh::add(const Mesh & other)
 {
-    auto n_elem_ofst = this->elems.size();
-    auto n_pt_ofst = this->pnts.size();
+    auto n_elem_ofst = this->elems_.size();
+    auto n_pt_ofst = this->pnts_.size();
     // merge points
-    this->pnts.insert(this->pnts.end(), other.pnts.begin(), other.pnts.end());
+    this->pnts_.insert(this->pnts_.end(), other.pnts_.begin(), other.pnts_.end());
     // merge elements
-    for (auto & elem : other.elems) {
+    for (auto & elem : other.elems_) {
         auto ids = elem.ids();
         for (auto & id : ids)
             id += n_pt_ofst;
         auto new_elem = Element(elem.type(), ids);
-        this->elems.emplace_back(new_elem);
+        this->elems_.emplace_back(new_elem);
     }
 
     // merge cell sets
     for (auto & id : other.cell_set_ids()) {
         auto & cs = other.cell_set(id);
         for (auto & cell_id : cs)
-            this->cell_sets[id].emplace_back(cell_id + n_elem_ofst);
+            this->cell_sets_[id].emplace_back(cell_id + n_elem_ofst);
     }
 
     // merge side sets
@@ -221,7 +221,7 @@ Mesh::add(const Mesh & other)
         auto & ss = other.side_set(id);
         for (auto & entry : ss) {
             auto cell_id = entry.elem + n_elem_ofst;
-            this->side_sets[id].emplace_back(cell_id, entry.side);
+            this->side_sets_[id].emplace_back(cell_id, entry.side);
         }
     }
 
@@ -233,8 +233,8 @@ Mesh::remove_duplicate_points(double tolerance)
 {
     PointCloud cloud(*this);
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
-    this->pnts = unique_points;
-    for (auto & elem : this->elems) {
+    this->pnts_ = unique_points;
+    for (auto & elem : this->elems_) {
         auto ids = elem.ids();
         for (auto & id : ids)
             id = point_map[id];
@@ -248,7 +248,7 @@ BoundingBox3D
 Mesh::compute_bounding_box() const
 {
     BoundingBox3D bbox;
-    for (const auto & pt : this->pnts)
+    for (const auto & pt : this->pnts_)
         bbox += pt;
     return bbox;
 }
@@ -256,16 +256,16 @@ Mesh::compute_bounding_box() const
 Mesh
 Mesh::duplicate() const
 {
-    Mesh dup(this->pnts, this->elems);
-    dup.cell_sets = this->cell_sets;
-    dup.side_sets = this->side_sets;
+    Mesh dup(this->pnts_, this->elems_);
+    dup.cell_sets_ = this->cell_sets_;
+    dup.side_sets_ = this->side_sets_;
     return dup;
 }
 
 Mesh &
 Mesh::set_cell_set_name(marker_t cell_set_id, const std::string & name)
 {
-    this->cell_set_names[cell_set_id] = name;
+    this->cell_set_names_[cell_set_id] = name;
     return *this;
 }
 
@@ -273,7 +273,7 @@ std::string
 Mesh::cell_set_name(marker_t cell_set_id) const
 {
     try {
-        return this->cell_set_names.at(cell_set_id);
+        return this->cell_set_names_.at(cell_set_id);
     }
     catch (const std::out_of_range & e) {
         return std::string("");
@@ -283,14 +283,14 @@ Mesh::cell_set_name(marker_t cell_set_id) const
 std::vector<marker_t>
 Mesh::cell_set_ids() const
 {
-    return utils::map_keys(this->cell_sets);
+    return utils::map_keys(this->cell_sets_);
 }
 
 const std::vector<gidx_t> &
 Mesh::cell_set(marker_t id) const
 {
     try {
-        return this->cell_sets.at(id);
+        return this->cell_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Cell set ID {} does not exist", id);
@@ -300,14 +300,14 @@ Mesh::cell_set(marker_t id) const
 Mesh &
 Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
 {
-    this->cell_sets[id] = cell_ids;
+    this->cell_sets_[id] = cell_ids;
     return *this;
 }
 
 Mesh &
 Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
 {
-    this->face_set_names[face_set_id] = name;
+    this->face_set_names_[face_set_id] = name;
     return *this;
 }
 
@@ -315,7 +315,7 @@ std::string
 Mesh::face_set_name(marker_t face_set_id) const
 {
     try {
-        return this->face_set_names.at(face_set_id);
+        return this->face_set_names_.at(face_set_id);
     }
     catch (const std::out_of_range & e) {
         return std::string("");
@@ -325,14 +325,14 @@ Mesh::face_set_name(marker_t face_set_id) const
 std::vector<marker_t>
 Mesh::face_set_ids() const
 {
-    return utils::map_keys(this->face_sets);
+    return utils::map_keys(this->face_sets_);
 }
 
 const std::vector<gidx_t> &
 Mesh::face_set(marker_t id) const
 {
     try {
-        return this->face_sets.at(id);
+        return this->face_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Face set ID {} does not exist", id);
@@ -342,14 +342,14 @@ Mesh::face_set(marker_t id) const
 Mesh &
 Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
 {
-    this->face_sets[id] = face_ids;
+    this->face_sets_[id] = face_ids;
     return *this;
 }
 
 Mesh &
 Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
 {
-    this->edge_set_names[edge_set_id] = name;
+    this->edge_set_names_[edge_set_id] = name;
     return *this;
 }
 
@@ -357,7 +357,7 @@ std::string
 Mesh::edge_set_name(marker_t edge_set_id) const
 {
     try {
-        return this->edge_set_names.at(edge_set_id);
+        return this->edge_set_names_.at(edge_set_id);
     }
     catch (const std::out_of_range & e) {
         return std::string("");
@@ -367,14 +367,14 @@ Mesh::edge_set_name(marker_t edge_set_id) const
 std::vector<marker_t>
 Mesh::edge_set_ids() const
 {
-    return utils::map_keys(this->edge_sets);
+    return utils::map_keys(this->edge_sets_);
 }
 
 const std::vector<gidx_t> &
 Mesh::edge_set(marker_t id) const
 {
     try {
-        return this->edge_sets.at(id);
+        return this->edge_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Edge set ID {} does not exist", id);
@@ -384,14 +384,14 @@ Mesh::edge_set(marker_t id) const
 Mesh &
 Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids)
 {
-    this->edge_sets[id] = edge_ids;
+    this->edge_sets_[id] = edge_ids;
     return *this;
 }
 
 Mesh &
 Mesh::set_side_set_name(marker_t id, const std::string & name)
 {
-    this->side_set_names[id] = name;
+    this->side_set_names_[id] = name;
     return *this;
 }
 
@@ -399,7 +399,7 @@ std::string
 Mesh::side_set_name(marker_t id) const
 {
     try {
-        return this->side_set_names.at(id);
+        return this->side_set_names_.at(id);
     }
     catch (const std::out_of_range & e) {
         return std::string("");
@@ -409,14 +409,14 @@ Mesh::side_set_name(marker_t id) const
 std::vector<marker_t>
 Mesh::side_set_ids() const
 {
-    return utils::map_keys(this->side_sets);
+    return utils::map_keys(this->side_sets_);
 }
 
 const std::vector<side_set_entry_t> &
 Mesh::side_set(marker_t id) const
 {
     try {
-        return this->side_sets.at(id);
+        return this->side_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Side set ID {} does not exist", id);
@@ -438,14 +438,14 @@ Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
         auto side = utils::index_of(cell_connect, eid);
         side_set.emplace_back(cell, side);
     }
-    this->side_sets[id] = side_set;
+    this->side_sets_[id] = side_set;
     return *this;
 }
 
 Mesh &
 Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
 {
-    this->side_sets[id] = side_set_entries;
+    this->side_sets_[id] = side_set_entries;
     return *this;
 }
 
@@ -454,50 +454,50 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     std::map<marker_t, std::string> new_cell_set_names;
     std::map<marker_t, std::vector<gidx_t>> new_cell_sets;
-    for (auto & [block_id, cells] : this->cell_sets) {
+    for (auto & [block_id, cells] : this->cell_sets_) {
         auto new_block_id = block_map.at(block_id);
         new_cell_sets[new_block_id] = cells;
         new_cell_set_names[new_block_id] = cell_set_name(block_id);
     }
-    this->cell_sets = new_cell_sets;
-    this->cell_set_names = new_cell_set_names;
+    this->cell_sets_ = new_cell_sets;
+    this->cell_set_names_ = new_cell_set_names;
     return *this;
 }
 
 const Range &
 Mesh::point_ids() const
 {
-    return this->hasse.vertices();
+    return this->hasse_.vertices();
 }
 
 const Range &
 Mesh::edge_ids() const
 {
-    return this->hasse.edges();
+    return this->hasse_.edges();
 }
 
 const Range &
 Mesh::face_ids() const
 {
-    return this->hasse.faces();
+    return this->hasse_.faces();
 }
 
 const Range &
 Mesh::cell_ids() const
 {
-    return this->hasse.cells();
+    return this->hasse_.cells();
 }
 
 std::vector<gidx_t>
 Mesh::support(gidx_t index) const
 {
-    return this->hasse.get_in_vertices(index);
+    return this->hasse_.get_in_vertices(index);
 }
 
 std::vector<gidx_t>
 Mesh::cone(gidx_t index) const
 {
-    return this->hasse.get_out_vertices(index);
+    return this->hasse_.get_out_vertices(index);
 }
 
 std::set<gidx_t>
@@ -524,7 +524,7 @@ Mesh::cone_vertices(gidx_t index) const
 Element::Type
 Mesh::element_type(gidx_t index) const
 {
-    return this->elems.at(index).type();
+    return this->elems_.at(index).type();
 }
 
 void
@@ -536,30 +536,30 @@ Mesh::set_up()
 void
 Mesh::build_hasse_diagram()
 {
-    auto n_cells = this->elems.size();
+    auto n_cells = this->elems_.size();
     // Add Hasse nodes for cells
     for (std::size_t i = 0; i < n_cells; ++i) {
         auto id = utils::key(-(i + 1));
-        if (this->key_map.find(id) == this->key_map.end()) {
+        if (this->key_map_.find(id) == this->key_map_.end()) {
             auto elem_node_id = i;
-            this->key_map[id] = elem_node_id;
-            this->hasse.add_node(elem_node_id, HasseDiagram::NodeType::Cell);
+            this->key_map_[id] = elem_node_id;
+            this->hasse_.add_node(elem_node_id, HasseDiagram::NodeType::Cell);
         }
     }
 
     // Add Hasse nodes for points
-    for (std::size_t i = 0; i < this->pnts.size(); ++i) {
+    for (std::size_t i = 0; i < this->pnts_.size(); ++i) {
         auto vtx_id = utils::key(i);
-        if (this->key_map.find(vtx_id) == this->key_map.end()) {
-            gidx_t vtx_node_id = this->hasse.size();
-            this->key_map[vtx_id] = vtx_node_id;
-            this->hasse.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
+        if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
+            gidx_t vtx_node_id = this->hasse_.size();
+            this->key_map_[vtx_id] = vtx_node_id;
+            this->hasse_.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
         }
     }
 
     // Add faces
     for (std::size_t i = 0; i < n_cells; ++i) {
-        const auto & cell = this->elems[i];
+        const auto & cell = this->elems_[i];
         if (cell.type() == Element::TETRA4)
             hasse_add_faces<Tetra4>(i, cell);
         else if (cell.type() == Element::PYRAMID5)
@@ -572,7 +572,7 @@ Mesh::build_hasse_diagram()
 
     // Add edges
     for (std::size_t i = 0; i < n_cells; ++i) {
-        const auto & cell = this->elems[i];
+        const auto & cell = this->elems_[i];
         if (cell.type() == Element::TRI3) {
             hasse_add_edges<Tri3>(i, cell);
             hasse_add_edge_vertices<Tri3>(i, cell);
@@ -628,10 +628,10 @@ Point
 Mesh::compute_centroid(gidx_t index) const
 {
     auto connect = cone_vertices(index);
-    auto pnts_ofst = this->elems.size();
+    auto pnts_ofst = this->elems_.size();
     Point ctr(0, 0, 0);
     for (auto & pt_id : connect) {
-        auto & pt = this->pnts[pt_id - pnts_ofst];
+        auto & pt = this->pnts_[pt_id - pnts_ofst];
         ctr += pt;
     }
     ctr *= 1. / connect.size();
@@ -648,19 +648,19 @@ Mesh::outward_normal(gidx_t index) const
     auto cell_id = supp[0];
     auto cell_ctr = compute_centroid(cell_id);
 
-    auto side_type = this->hasse.node_type(index);
+    auto side_type = this->hasse_.node_type(index);
     if (side_type == HasseDiagram::NodeType::Vertex) {
         throw Exception("Normals are not supported for points, yet");
     }
     else if (side_type == HasseDiagram::NodeType::Edge) {
         auto connect_verts = cone_vertices(index);
         std::vector<gidx_t> verts(connect_verts.begin(), connect_verts.end());
-        auto pnts_ofst = this->elems.size();
+        auto pnts_ofst = this->elems_.size();
 
-        auto v1 = Vector(this->pnts[verts[1] - pnts_ofst] - this->pnts[verts[0] - pnts_ofst]);
+        auto v1 = Vector(this->pnts_[verts[1] - pnts_ofst] - this->pnts_[verts[0] - pnts_ofst]);
         auto n = Vector(-v1.y, v1.x, 0);
         n.normalize();
-        auto c_v1 = Vector(this->pnts[verts[0] - pnts_ofst] - cell_ctr);
+        auto c_v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - cell_ctr);
         auto dot = dot_product(n, c_v1);
         if (dot <= 0)
             n = -n;
@@ -671,11 +671,11 @@ Mesh::outward_normal(gidx_t index) const
 
         auto connect_verts = cone_vertices(index);
         std::vector<gidx_t> verts(connect_verts.begin(), connect_verts.end());
-        auto pnts_ofst = this->elems.size();
+        auto pnts_ofst = this->elems_.size();
 
-        auto v1 = Vector(this->pnts[verts[0] - pnts_ofst] - side_ctr);
-        auto v2 = Vector(this->pnts[verts[1] - pnts_ofst] - side_ctr);
-        auto c_v1 = Vector(this->pnts[verts[0] - pnts_ofst] - cell_ctr);
+        auto v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - side_ctr);
+        auto v2 = Vector(this->pnts_[verts[1] - pnts_ofst] - side_ctr);
+        auto c_v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - cell_ctr);
         auto n = cross_product(v1, v2);
         n.normalize();
         auto dot = dot_product(n, c_v1);
