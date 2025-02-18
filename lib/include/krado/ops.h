@@ -35,4 +35,11 @@ class GeomShell;
 /// @return Imprinted volume
 [[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomCurve & curve);
 
+/// Imprint a curve on a volume
+///
+/// @param volume Volume to imprint the curve on
+/// @param curve Curve to imprint
+/// @return Imprinted volume
+[[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomVolume & imp_volume);
+
 } // namespace krado

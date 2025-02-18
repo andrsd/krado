@@ -49,3 +49,21 @@ TEST(ImprintTest, volume_with_curve_that_is_too_far)
     EXPECT_THROW_MSG(auto res = imprint(box, line),
                      "Imprint: projection of curve onto volume yield empty result.");
 }
+
+TEST(ImprintTest, volume_with_volume)
+{
+    auto box1 = testing::build_box(Point(0, -1, -0.5), Point(1.5, 1, 2));
+    auto box2 = testing::build_box(Point(0, -0.25, 0.5), Point(-0.5, 0.25, 1.5));
+
+    auto result = imprint(box1, box2);
+
+    auto surfaces = result.surfaces();
+    EXPECT_EQ(surfaces.size(), 7);
+    EXPECT_DOUBLE_EQ(surfaces[0].area(), 4.5);
+    EXPECT_DOUBLE_EQ(surfaces[1].area(), 0.5);
+    EXPECT_DOUBLE_EQ(surfaces[2].area(), 5.);
+    EXPECT_DOUBLE_EQ(surfaces[3].area(), 3.75);
+    EXPECT_DOUBLE_EQ(surfaces[4].area(), 3.75);
+    EXPECT_DOUBLE_EQ(surfaces[5].area(), 3.);
+    EXPECT_DOUBLE_EQ(surfaces[6].area(), 3.);
+}

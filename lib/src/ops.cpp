@@ -17,6 +17,9 @@
 #include "TopoDS_Solid.hxx"
 #include "TopoDS.hxx"
 #include "TopExp_Explorer.hxx"
+#include "BRepAlgoAPI_Splitter.hxx"
+#include "TopoDS_Edge.hxx"
+#include "TopTools_DataMapOfShapeInteger.hxx"
 
 namespace krado {
 
@@ -92,6 +95,44 @@ imprint(const GeomVolume & volume, const GeomCurve & curve)
     splitter.Build();
     if (!splitter.IsDone())
         throw Exception("Imprint volume with curve failed.");
+
+    auto result = splitter.Shape();
+    return GeomVolume(TopoDS::Solid(result));
+}
+
+GeomVolume
+imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
+{
+    TopTools_ListOfShape args;
+    args.Append(volume);
+
+    BRepAlgo_NormalProjection projection(volume);
+    // arbitrary distance limit, shapes must be close together
+    projection.SetMaxDistance(1e-10);
+    TopExp_Explorer vol_exp;
+    TopTools_DataMapOfShapeInteger crv_id;
+    int id = 0;
+    for (vol_exp.Init(imp_vol, TopAbs_EDGE); vol_exp.More(); vol_exp.Next()) {
+        auto edge = TopoDS::Edge(vol_exp.Current());
+        if (!crv_id.IsBound(edge)) {
+            crv_id.Bind(edge, ++id);
+            projection.Add(edge);
+        }
+    }
+    projection.Build();
+    if (!projection.IsDone())
+        throw Exception("Projection of volume onto volume failed.");
+    TopTools_ListOfShape tools;
+    projection.BuildWire(tools);
+    if (tools.IsEmpty())
+        throw Exception("Projection of volume onto volume yield empty result.");
+
+    BRepAlgoAPI_Splitter splitter;
+    splitter.SetArguments(args);
+    splitter.SetTools(tools);
+    splitter.Build();
+    if (!splitter.IsDone())
+        throw Exception("imprint volume with volume failed.");
 
     auto result = splitter.Shape();
     return GeomVolume(TopoDS::Solid(result));
