@@ -43,10 +43,8 @@ split_curve(const GeomCurve & curve, Standard_Real split_param)
 GeomShell
 imprint(const GeomSurface & surface, const GeomCurve & curve)
 {
-    auto edge = TopoDS::Edge(curve);
-    auto face = TopoDS::Face(surface);
-    BRepAlgo_NormalProjection projection(face);
-    projection.Add(edge);
+    BRepAlgo_NormalProjection projection(surface);
+    projection.Add(curve);
     projection.Build();
     if (!projection.IsDone())
         throw Exception("Imprint: projection of curve onto surface failed.");
@@ -56,7 +54,7 @@ imprint(const GeomSurface & surface, const GeomCurve & curve)
     for (exp.Init(projection.Projection(), TopAbs_EDGE); exp.More(); exp.Next())
         seq.Append(exp.Current());
 
-    BRepFeat_SplitShape splitter(face);
+    BRepFeat_SplitShape splitter(surface);
     splitter.Add(seq);
     splitter.Build();
     if (splitter.IsDone()) {
@@ -73,12 +71,10 @@ imprint(const GeomSurface & surface, const GeomCurve & curve)
 GeomVolume
 imprint(const GeomVolume & volume, const GeomCurve & curve)
 {
-    auto edge = TopoDS::Edge(curve);
-    auto solid = TopoDS::Solid(volume);
-    BRepAlgo_NormalProjection projection(solid);
+    BRepAlgo_NormalProjection projection(volume);
     // arbitrary distance limit, shapes must be close together
     projection.SetMaxDistance(1e-10);
-    projection.Add(edge);
+    projection.Add(curve);
     projection.Build();
     if (!projection.IsDone())
         throw Exception("Imprint: projection of curve onto volume failed.");
@@ -90,7 +86,7 @@ imprint(const GeomVolume & volume, const GeomCurve & curve)
     if (seq.Size() == 0)
         throw Exception("Imprint: projection of curve onto volume yield empty result.");
 
-    BRepFeat_SplitShape splitter(solid);
+    BRepFeat_SplitShape splitter(volume);
     splitter.Add(seq);
     splitter.Build();
     if (!splitter.IsDone())
