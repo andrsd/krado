@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/geom_shape.h"
+#include "krado/point.h"
 #include "TopoDS_Vertex.hxx"
 
 namespace krado {
@@ -22,6 +23,11 @@ public:
     [[nodiscard]] double x() const;
     [[nodiscard]] double y() const;
     [[nodiscard]] double z() const;
+
+    /// Get vertex location as a point
+    ///
+    /// @return Vertex location
+    [[nodiscard]] Point point() const;
 
     operator const TopoDS_Shape &() const;
 

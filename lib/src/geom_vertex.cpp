@@ -40,6 +40,12 @@ GeomVertex::z() const
     return this->z_;
 }
 
+Point
+GeomVertex::point() const
+{
+    return Point(this->x_, this->y_, this->z_);
+}
+
 GeomVertex::operator const TopoDS_Shape &() const
 {
     return this->vertex_;
