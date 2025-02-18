@@ -16,7 +16,7 @@ MeshVertex::geom_vertex() const
 Point
 MeshVertex::point() const
 {
-    return Point(this->gvtx_.x(), this->gvtx_.y(), this->gvtx_.z());
+    return this->gvtx_.point();
 }
 
 } // namespace krado

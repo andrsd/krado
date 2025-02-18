@@ -164,6 +164,7 @@ PYBIND11_MODULE(krado, m)
         .def("x", &GeomVertex::x)
         .def("y", &GeomVertex::y)
         .def("z", &GeomVertex::z)
+        .def("point", &GeomVertex::point)
         .def("is_null", &GeomVertex::is_null)
     ;
 

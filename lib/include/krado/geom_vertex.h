@@ -33,7 +33,7 @@ public:
 
 private:
     TopoDS_Vertex vertex_;
-    double x_, y_, z_;
+    Point pt_;
 };
 
 } // namespace krado

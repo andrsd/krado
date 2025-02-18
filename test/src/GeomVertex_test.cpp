@@ -22,3 +22,13 @@ TEST(GeomVertexTest, null_vertex)
     GeomVertex v(vtx);
     EXPECT_TRUE(v.is_null());
 }
+
+TEST(GeomVertexTest, point)
+{
+    auto vtx = testing::build_vertex(Point(1, 2, 3));
+    GeomVertex v(vtx);
+    auto pt = v.point();
+    EXPECT_DOUBLE_EQ(pt.x, 1.);
+    EXPECT_DOUBLE_EQ(pt.y, 2.);
+    EXPECT_DOUBLE_EQ(pt.z, 3.);
+}

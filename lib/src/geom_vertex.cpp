@@ -10,9 +10,7 @@ GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex
 {
     if (!this->vertex_.IsNull()) {
         gp_Pnt pnt = BRep_Tool::Pnt(this->vertex_);
-        this->x_ = pnt.X();
-        this->y_ = pnt.Y();
-        this->z_ = pnt.Z();
+        this->pt_ = Point(pnt.X(), pnt.Y(), pnt.Z());
     }
 }
 
@@ -25,25 +23,25 @@ GeomVertex::is_null() const
 double
 GeomVertex::x() const
 {
-    return this->x_;
+    return this->pt_.x;
 }
 
 double
 GeomVertex::y() const
 {
-    return this->y_;
+    return this->pt_.y;
 }
 
 double
 GeomVertex::z() const
 {
-    return this->z_;
+    return this->pt_.z;
 }
 
 Point
 GeomVertex::point() const
 {
-    return Point(this->x_, this->y_, this->z_);
+    return this->pt_;
 }
 
 GeomVertex::operator const TopoDS_Shape &() const
