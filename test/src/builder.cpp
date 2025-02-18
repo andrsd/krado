@@ -15,6 +15,8 @@
 #include "GC_MakeArcOfCircle.hxx"
 #include "krado/geom_surface.h"
 
+using namespace krado;
+
 namespace testing {
 
 GeomVertex

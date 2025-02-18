@@ -4,6 +4,8 @@
 #include "krado/geom_curve.h"
 #include "krado/geom_model.h"
 
+using namespace krado;
+
 TEST(SchemeTest, mesh_curve_with_2d_scheme)
 {
     auto line = testing::build_line(Point(0, 0), Point(1, 0));
