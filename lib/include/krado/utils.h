@@ -10,6 +10,10 @@
 #include <vector>
 #include <map>
 
+namespace krado {
+class Point;
+}
+
 namespace krado::utils {
 
 /// Convert supplied string to upper case.
@@ -118,5 +122,13 @@ to_array(Iter iter) -> std::array<T, N>
 {
     return to_array<T>(iter, std::make_index_sequence<N> {});
 }
+
+/// Compute the angle at (p2) between three points
+///
+/// @param p1 The first point
+/// @param p2 The second point
+/// @param p3 The third point
+/// @return The angle at (p2) between the three points [radians]
+[[nodiscard]] double angle(const Point & p1, const Point & p2, const Point & p3);
 
 } // namespace krado::utils

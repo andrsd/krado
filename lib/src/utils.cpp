@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/utils.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include "boost/functional/hash.hpp"
 #include <cstdint>
 
@@ -51,6 +53,17 @@ key(const std::vector<gidx_t> & idxs)
         boost::hash_combine(hash_value, v);
 
     return hash_value;
+}
+
+double
+angle(const Point & p1, const Point & p2, const Point & p3)
+{
+    auto a = p1 - p2;
+    auto b = p3 - p2;
+    auto c = cross_product(a, b);
+    auto sin_alpha = c.norm();
+    auto cos_alpha = dot_product(a, b);
+    return std::atan2(sin_alpha, cos_alpha);
 }
 
 } // namespace krado::utils

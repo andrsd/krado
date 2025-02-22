@@ -45,7 +45,12 @@ public:
 
 Point operator+(const Point & a, const Point & b);
 
-Vector operator-(const Point & a, const Point & b);
+/// Compute vector from two points
+///
+/// @param a First point
+/// @param b Second point
+/// @return Vector (a - b)
+[[nodiscard]] Vector operator-(const Point & a, const Point & b);
 
 bool operator==(const Point & a, const Point & b);
 
