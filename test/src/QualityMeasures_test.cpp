@@ -7,7 +7,7 @@
 
 using namespace krado;
 
-TEST(QualityMeasuresTest, eta_tri3)
+TEST(QualityMeasuresTest, tri3)
 {
     auto gtri = testing::build_triangle(Point(0., 0., 0.), 1.);
 
@@ -20,11 +20,11 @@ TEST(QualityMeasuresTest, eta_tri3)
     MeshVertex mvtx3(v3);
 
     auto tri = MeshElement(ElementType::TRI3, { &mvtx1, &mvtx2, &mvtx3 });
-    auto eta = quality::eta(tri);
-    EXPECT_NEAR(eta, 0.75, 1e-8);
+    EXPECT_NEAR(quality::eta(tri), 0.75, 1e-8);
+    EXPECT_NEAR(quality::gamma(tri), 0.828427, 1e-5);
 }
 
-TEST(QualityMeasuresTest, eta_quad4)
+TEST(QualityMeasuresTest, quad4)
 {
     auto gquad = testing::build_rect(Point(0, 0, 0), Point(3, 1));
 
@@ -39,6 +39,6 @@ TEST(QualityMeasuresTest, eta_quad4)
     MeshVertex mvtx4(v4);
 
     auto quad = MeshElement(ElementType::QUAD4, { &mvtx1, &mvtx2, &mvtx3, &mvtx4 });
-    auto eta = quality::eta(quad);
-    EXPECT_NEAR(eta, 1., 1e-8);
+    EXPECT_NEAR(quality::eta(quad), 1., 1e-8);
+    EXPECT_NEAR(quality::gamma(quad), 1., 1e-8);
 }

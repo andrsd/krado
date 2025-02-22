@@ -19,5 +19,11 @@ namespace quality {
 ///       circle that can encompass the element)
 double eta(const MeshElement & e);
 
+/// Compute gamma quality measure for a given element
+///
+/// @param e Mesh element
+/// @return Gamma quality measure [0-1], where 1 is the best quality and 0 is the worst
+double gamma(const MeshElement & e);
+
 } // namespace quality
 } // namespace krado

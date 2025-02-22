@@ -117,6 +117,107 @@ qm_eta<ElementType::TETRA4>(const MeshElement & el)
     return 12. * std::pow(3 * std::abs(volume), 2. / 3.) / l;
 }
 
+/// gamma quality measure for a given element
+template <ElementType ET>
+double qm_gamma(const MeshElement & e);
+
+template <>
+double
+qm_gamma<ElementType::TRI3>(const MeshElement & el)
+{
+    // quality = rho / R = 2 * inscribed radius / circumradius
+    std::array<Point, 3> pt = { el.vertex(0)->point(),
+                                el.vertex(1)->point(),
+                                el.vertex(2)->point() };
+    auto a = pt[2] - pt[1];
+    auto b = pt[0] - pt[2];
+    auto c = pt[1] - pt[0];
+    a.normalize();
+    b.normalize();
+    c.normalize();
+    auto pva = cross_product(b, c);
+    const auto sina = pva.norm();
+    auto pvb = cross_product(c, a);
+    const auto sinb = pvb.norm();
+    auto pvc = cross_product(a, b);
+    const auto sinc = pvc.norm();
+    if (sina == 0.0 && sinb == 0.0 && sinc == 0.0)
+        return 0.0;
+    else
+        return 2 * (2 * sina * sinb * sinc / (sina + sinb + sinc));
+}
+
+template <>
+double
+qm_gamma<ElementType::QUAD4>(const MeshElement & el)
+{
+    return qm_eta<ElementType::QUAD4>(el);
+}
+
+template <>
+double
+qm_gamma<ElementType::TETRA4>(const MeshElement & el)
+{
+    // quality = rho / R = 3 * inradius / circumradius
+
+    std::array<Point, 4> pt { el.vertex(0)->point(),
+                              el.vertex(1)->point(),
+                              el.vertex(2)->point(),
+                              el.vertex(3)->point() };
+
+    double p0[3] = { pt[0].x, pt[0].y, pt[0].z };
+    double p1[3] = { pt[1].x, pt[1].y, pt[1].z };
+    double p2[3] = { pt[2].x, pt[2].y, pt[2].z };
+    double p3[3] = { pt[3].x, pt[3].y, pt[3].z };
+
+    auto volume = (robust_predicates::orient3d(p0, p1, p2, p3)) / 6.0;
+
+    if (std::fabs(volume) == 0)
+        return 0;
+
+    auto & x1 = pt[0].x;
+    auto & y1 = pt[0].y;
+    auto & z1 = pt[0].z;
+    auto & x2 = pt[1].x;
+    auto & y2 = pt[1].y;
+    auto & z2 = pt[1].z;
+    auto & x3 = pt[2].x;
+    auto & y3 = pt[2].y;
+    auto & z3 = pt[2].z;
+    auto & x4 = pt[3].x;
+    auto & y4 = pt[3].y;
+    auto & z4 = pt[3].z;
+
+    auto la = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
+    auto lb = (x3 - x1) * (x3 - x1) + (y3 - y1) * (y3 - y1) + (z3 - z1) * (z3 - z1);
+    auto lc = (x4 - x1) * (x4 - x1) + (y4 - y1) * (y4 - y1) + (z4 - z1) * (z4 - z1);
+    auto lA = (x4 - x3) * (x4 - x3) + (y4 - y3) * (y4 - y3) + (z4 - z3) * (z4 - z3);
+    auto lB = (x4 - x2) * (x4 - x2) + (y4 - y2) * (y4 - y2) + (z4 - z2) * (z4 - z2);
+    auto lC = (x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2) + (z3 - z2) * (z3 - z2);
+
+    auto lalA = std::sqrt(la * lA);
+    auto lblB = std::sqrt(lb * lB);
+    auto lclC = std::sqrt(lc * lC);
+
+    auto inside_sqrt =
+        (lalA + lblB + lclC) * (lalA + lblB - lclC) * (lalA - lblB + lclC) * (-lalA + lblB + lclC);
+
+    // This happens when the 4 points are (nearly) co-planar
+    // => R is actually undetermined but the quality is (close to) zero
+    if (inside_sqrt <= 0)
+        return 0;
+
+    auto R = std::sqrt(inside_sqrt) / 24. / volume;
+
+    auto s1 = std::fabs(utils::triangle_area(pt[0], pt[1], pt[2]));
+    auto s2 = std::fabs(utils::triangle_area(pt[0], pt[2], pt[3]));
+    auto s3 = std::fabs(utils::triangle_area(pt[0], pt[1], pt[3]));
+    auto s4 = std::fabs(utils::triangle_area(pt[1], pt[2], pt[3]));
+    auto rho = 3. * 3. * volume / (s1 + s2 + s3 + s4);
+
+    return rho / R;
+}
+
 } // namespace
 
 double
@@ -128,6 +229,19 @@ eta(const MeshElement & e)
         return qm_eta<ElementType::QUAD4>(e);
     else if (e.type() == ElementType::TETRA4)
         return qm_eta<ElementType::TETRA4>(e);
+    else
+        return 0.;
+}
+
+double
+gamma(const MeshElement & e)
+{
+    if (e.type() == ElementType::TRI3)
+        return qm_gamma<ElementType::TRI3>(e);
+    else if (e.type() == ElementType::QUAD4)
+        return qm_gamma<ElementType::QUAD4>(e);
+    else if (e.type() == ElementType::TETRA4)
+        return qm_gamma<ElementType::TETRA4>(e);
     else
         return 0.;
 }

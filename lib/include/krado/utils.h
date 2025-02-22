@@ -134,4 +134,12 @@ std::string to_str(T val);
 /// @return The angle at (p2) between the three points [radians]
 [[nodiscard]] double angle(const Point & p1, const Point & p2, const Point & p3);
 
+/// Compute the area of a triangle
+///
+/// @param p1 The first point
+/// @param p2 The second point
+/// @param p3 The third point
+/// @return The area of the triangle
+[[nodiscard]] double triangle_area(const Point & p1, const Point & p2, const Point & p3);
+
 } // namespace krado::utils
