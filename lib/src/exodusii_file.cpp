@@ -13,49 +13,49 @@ namespace krado {
 namespace exII {
 
 const char *
-element_name(Element::Type t)
+element_name(ElementType t)
 {
     switch (t) {
-    case Element::LINE2:
+    case ElementType::LINE2:
         return "BAR2";
-    case Element::TRI3:
+    case ElementType::TRI3:
         return "TRI3";
-    case Element::QUAD4:
+    case ElementType::QUAD4:
         return "QUAD4";
-    case Element::TETRA4:
+    case ElementType::TETRA4:
         return "TET4";
-    case Element::PYRAMID5:
+    case ElementType::PYRAMID5:
         return "PYRAMID5";
-    case Element::PRISM6:
+    case ElementType::PRISM6:
         return "WEDGE6";
-    case Element::HEX8:
+    case ElementType::HEX8:
         return "HEX8";
     default:
         break;
     }
-    throw Exception("Unsupported element type {}.", t);
+    throw Exception("Unsupported element type {}.", utils::to_str(t));
 }
 
-Element::Type
+ElementType
 element_type(const std::string elem_type_name)
 {
     auto ellc = utils::to_lower(elem_type_name);
     if (utils::in(ellc, { "circle", "sphere" }))
-        return Element::POINT;
+        return ElementType::POINT;
     else if (utils::in(ellc, { "bar", "bar2" }))
-        return Element::LINE2;
+        return ElementType::LINE2;
     else if (utils::in(ellc, { "tri3", "tri" }))
-        return Element::TRI3;
+        return ElementType::TRI3;
     else if (utils::in(ellc, { "quad", "quad4" }))
-        return Element::QUAD4;
+        return ElementType::QUAD4;
     else if (utils::in(ellc, { "tet", "tet4", "tetra", "tetra4" }))
-        return Element::TETRA4;
+        return ElementType::TETRA4;
     else if (utils::in(ellc, { "pyramid", "pyramid5", "pyr5" }))
-        return Element::PYRAMID5;
+        return ElementType::PYRAMID5;
     else if (utils::in(ellc, { "wedge", "wedge6" }))
-        return Element::PRISM6;
+        return ElementType::PRISM6;
     else if (utils::in(ellc, { "hex", "hex8" }))
-        return Element::HEX8;
+        return ElementType::HEX8;
     else
         throw std::runtime_error("Unsupported element type: " + elem_type_name);
 }
@@ -72,23 +72,23 @@ build_element_connect(const std::vector<int> & connect, int idx)
 
 /// Remap krado side index to exodusII side index
 int
-local_side_index(Element::Type et, int idx)
+local_side_index(ElementType et, int idx)
 {
-    if (utils::in(et, { Element::Type::LINE2, Element::Type::TRI3, Element::Type::QUAD4 }))
+    if (utils::in(et, { ElementType::LINE2, ElementType::TRI3, ElementType::QUAD4 }))
         return idx + 1;
-    else if (et == Element::Type::TETRA4) {
+    else if (et == ElementType::TETRA4) {
         std::array<int, 4> sides = { 4, 1, 2, 3 };
         return sides[idx];
     }
-    else if (et == Element::Type::PYRAMID5) {
+    else if (et == ElementType::PYRAMID5) {
         std::array<int, 5> sides = { 4, 1, 2, 3, 5 };
         return sides[idx];
     }
-    else if (et == Element::Type::PRISM6) {
+    else if (et == ElementType::PRISM6) {
         std::array<int, 5> sides = { 4, 1, 2, 3, 5 };
         return sides[idx];
     }
-    else if (et == Element::Type::HEX8) {
+    else if (et == ElementType::HEX8) {
         std::array<int, 6> sides = { 1, 3, 4, 2, 5, 6 };
         return sides[idx];
     }
@@ -174,19 +174,19 @@ ExodusIIFile::read_elements()
         for (int i = 0; i < eb.get_num_elements(); i++) {
             auto idx = i * n_elem_nodes;
             cell_sets[blk_id].push_back(elems.size());
-            if (et == Element::LINE2)
+            if (et == ElementType::LINE2)
                 elems.emplace_back(build_element<Line2>(connect, idx));
-            else if (et == Element::TRI3)
+            else if (et == ElementType::TRI3)
                 elems.emplace_back(build_element<Tri3>(connect, idx));
-            else if (et == Element::QUAD4)
+            else if (et == ElementType::QUAD4)
                 elems.emplace_back(build_element<Quad4>(connect, idx));
-            else if (et == Element::TETRA4)
+            else if (et == ElementType::TETRA4)
                 elems.emplace_back(build_element<Tetra4>(connect, idx));
-            else if (et == Element::PYRAMID5)
+            else if (et == ElementType::PYRAMID5)
                 elems.emplace_back(build_element<Pyramid5>(connect, idx));
-            else if (et == Element::PRISM6)
+            else if (et == ElementType::PRISM6)
                 elems.emplace_back(build_element<Prism6>(connect, idx));
-            else if (et == Element::HEX8)
+            else if (et == ElementType::HEX8)
                 elems.emplace_back(build_element<Hex8>(connect, idx));
             else
                 throw std::runtime_error("Unsupported element type: " + eb.get_element_type());
@@ -283,7 +283,7 @@ void
 ExodusIIFile::write_elements(const Mesh & mesh)
 {
     if (mesh.cell_set_ids().empty()) {
-        std::map<Element::Type, std::vector<gidx_t>> elem_blks;
+        std::map<ElementType, std::vector<gidx_t>> elem_blks;
         int exii_idx = 1;
         for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
             this->exii_elem_ids_[cell_id] = exii_idx++;

@@ -3,6 +3,7 @@
 
 #include "krado/utils.h"
 #include "krado/point.h"
+#include "krado/types.h"
 #include "krado/vector.h"
 #include "boost/functional/hash.hpp"
 #include <cstdint>
@@ -53,6 +54,30 @@ key(const std::vector<gidx_t> & idxs)
         boost::hash_combine(hash_value, v);
 
     return hash_value;
+}
+
+template <>
+std::string
+to_str(ElementType val)
+{
+    if (val == ElementType::POINT)
+        return "POINT";
+    else if (val == ElementType::LINE2)
+        return "LINE2";
+    else if (val == ElementType::TRI3)
+        return "TRI3";
+    else if (val == ElementType::QUAD4)
+        return "QUAD4";
+    else if (val == ElementType::TETRA4)
+        return "TETRA4";
+    else if (val == ElementType::PYRAMID5)
+        return "PYRAMID5";
+    else if (val == ElementType::PRISM6)
+        return "PRISM6";
+    else if (val == ElementType::HEX8)
+        return "HEX8";
+    else
+        return "UNKNOWN";
 }
 
 double

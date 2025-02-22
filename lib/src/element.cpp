@@ -3,6 +3,7 @@
 
 #include "krado/element.h"
 #include "krado/exception.h"
+#include "krado/types.h"
 #include <array>
 
 namespace krado {
@@ -74,11 +75,13 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(Type type, const std::vector<gidx_t> & vtx_ids) : elem_type_(type), vtx_id_(vtx_ids)
+Element::Element(ElementType type, const std::vector<gidx_t> & vtx_ids) :
+    elem_type_(type),
+    vtx_id_(vtx_ids)
 {
 }
 
-Element::Type
+ElementType
 Element::type() const
 {
     return this->elem_type_;
@@ -126,76 +129,77 @@ Element::set_ids(const std::vector<gidx_t> & ids)
 Element
 Element::Point(gidx_t id)
 {
-    Element pt(POINT, { id });
+    Element pt(ElementType::POINT, { id });
     return pt;
 }
 
 Element
 Element::Line2(const std::array<gidx_t, 2> & ids)
 {
-    Element line2(LINE2, { ids[0], ids[1] });
+    Element line2(ElementType::LINE2, { ids[0], ids[1] });
     return line2;
 }
 
 Element
 Element::Tri3(const std::array<gidx_t, 3> & ids)
 {
-    return Element(TRI3, { ids[0], ids[1], ids[2] });
+    return Element(ElementType::TRI3, { ids[0], ids[1], ids[2] });
 }
 
 Element
 Element::Quad4(const std::array<gidx_t, 4> & ids)
 {
-    return Element(QUAD4, { ids[0], ids[1], ids[2], ids[3] });
+    return Element(ElementType::QUAD4, { ids[0], ids[1], ids[2], ids[3] });
 }
 
 Element
 Element::Tetra4(const std::array<gidx_t, 4> & ids)
 {
-    Element tet4(TETRA4, { ids[0], ids[1], ids[2], ids[3] });
+    Element tet4(ElementType::TETRA4, { ids[0], ids[1], ids[2], ids[3] });
     return tet4;
 }
 
 Element
 Element::Pyramid5(const std::array<gidx_t, 5> & ids)
 {
-    Element pyr5(PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
+    Element pyr5(ElementType::PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
     return pyr5;
 }
 
 Element
 Element::Prism6(const std::array<gidx_t, 6> & ids)
 {
-    Element wed6(PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
+    Element wed6(ElementType::PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
     return wed6;
 }
 
 Element
 Element::Hex8(const std::array<gidx_t, 8> & ids)
 {
-    Element hex8(HEX8, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });
+    Element hex8(ElementType::HEX8,
+                 { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });
     return hex8;
 }
 
 std::string
-Element::type(Type type)
+Element::type(ElementType type)
 {
     std::string str_type;
-    if (type == krado::Element::POINT)
+    if (type == ElementType::POINT)
         return "POINT";
-    else if (type == krado::Element::LINE2)
+    else if (type == ElementType::LINE2)
         return "LINE2";
-    else if (type == krado::Element::TRI3)
+    else if (type == ElementType::TRI3)
         return "TRI3";
-    else if (type == krado::Element::QUAD4)
+    else if (type == ElementType::QUAD4)
         return "QUAD4";
-    else if (type == krado::Element::TETRA4)
+    else if (type == ElementType::TETRA4)
         return "TETRA4";
-    else if (type == krado::Element::PYRAMID5)
+    else if (type == ElementType::PYRAMID5)
         return "PYRAMID5";
-    else if (type == krado::Element::PRISM6)
+    else if (type == ElementType::PRISM6)
         return "PRISM6";
-    else if (type == krado::Element::HEX8)
+    else if (type == ElementType::HEX8)
         return "HEX8";
     else
         return "unknown";

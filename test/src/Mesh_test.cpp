@@ -96,13 +96,13 @@ TEST(MeshTest, add_mesh)
 
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
-    EXPECT_EQ(elems[0].type(), Element::TRI3);
+    EXPECT_EQ(elems[0].type(), ElementType::TRI3);
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
-    EXPECT_EQ(elems[1].type(), Element::TRI3);
+    EXPECT_EQ(elems[1].type(), ElementType::TRI3);
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
-    EXPECT_EQ(elems[2].type(), Element::TRI3);
+    EXPECT_EQ(elems[2].type(), ElementType::TRI3);
     EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
-    EXPECT_EQ(elems[3].type(), Element::TRI3);
+    EXPECT_EQ(elems[3].type(), ElementType::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
 
     auto cell_set_ids = m.cell_set_ids();
@@ -146,13 +146,13 @@ TEST(MeshTest, remove_duplicate_points)
 
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
-    EXPECT_EQ(elems[0].type(), Element::TRI3);
+    EXPECT_EQ(elems[0].type(), ElementType::TRI3);
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
-    EXPECT_EQ(elems[1].type(), Element::TRI3);
+    EXPECT_EQ(elems[1].type(), ElementType::TRI3);
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
-    EXPECT_EQ(elems[2].type(), Element::TRI3);
+    EXPECT_EQ(elems[2].type(), ElementType::TRI3);
     EXPECT_THAT(elems[2].ids(), ElementsAre(1, 4, 3));
-    EXPECT_EQ(elems[3].type(), Element::TRI3);
+    EXPECT_EQ(elems[3].type(), ElementType::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(3, 4, 5));
 
     auto bbox = m.compute_bounding_box();

@@ -23,9 +23,9 @@ TEST(ExodusIIFileTest, read_2d)
 
     auto & elems = mesh.elements();
     EXPECT_EQ(elems.size(), 2);
-    EXPECT_THAT(elems[0].type(), Eq(Element::TRI3));
+    EXPECT_THAT(elems[0].type(), Eq(ElementType::TRI3));
     EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
-    EXPECT_THAT(elems[1].type(), Eq(Element::TRI3));
+    EXPECT_THAT(elems[1].type(), Eq(ElementType::TRI3));
     EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
 
     auto cell_set_ids = mesh.cell_set_ids();

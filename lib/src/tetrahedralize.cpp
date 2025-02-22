@@ -13,7 +13,7 @@ namespace krado {
 
 namespace {
 
-template <Element::Type ET>
+template <ElementType ET>
 std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
 nodes_to_tet_nodes_determiner(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el);
 
@@ -21,7 +21,7 @@ nodes_to_tet_nodes_determiner(const std::array<gidx_t, ElementSelector<ET>::N_VE
 ///
 /// @param el The element to be split
 /// @return A vector of TET4 elements
-template <Element::Type ET>
+template <ElementType ET>
 std::vector<std::array<gidx_t, Tetra4::N_VERTICES>>
 elem_splitter(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el)
 {
@@ -40,7 +40,7 @@ elem_splitter(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el)
 ///
 /// @param elem The element to be split
 /// @return A vector of TET4 elements
-template <Element::Type ET>
+template <ElementType ET>
 std::vector<std::array<gidx_t, Tetra4::N_VERTICES>>
 split_elem(const Element & elem)
 {
@@ -53,13 +53,13 @@ split_elem(const Element & elem)
 /// @param type The type of the element
 /// @return The number of TET4 elements
 int
-num_of_tets(Element::Type type)
+num_of_tets(ElementType type)
 {
-    if (type == Element::HEX8)
+    if (type == ElementType::HEX8)
         return 6;
-    else if (type == Element::PRISM6)
+    else if (type == ElementType::PRISM6)
         return 3;
-    else if (type == Element::PYRAMID5)
+    else if (type == ElementType::PYRAMID5)
         return 2;
     else
         return 1;
@@ -192,7 +192,7 @@ hex8_rotation(lidx_t min_id_index, lidx_t sec_min_pos)
 
 template <>
 std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
-nodes_to_tet_nodes_determiner<Element::Type::HEX8>(const std::array<gidx_t, Hex8::N_VERTICES> & hex)
+nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<gidx_t, Hex8::N_VERTICES> & hex)
 {
     // Find the node with the minimum id
     auto min_node_id_index =
@@ -260,7 +260,7 @@ pyramid5_rotation(gidx_t min_id_index)
 
 template <>
 std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
-nodes_to_tet_nodes_determiner<Element::Type::PYRAMID5>(
+nodes_to_tet_nodes_determiner<ElementType::PYRAMID5>(
     const std::array<gidx_t, Pyramid5::N_VERTICES> & pyramid)
 {
     auto min_node_id_index =
@@ -324,7 +324,7 @@ prism6_rotation(lidx_t min_id_index)
 
 template <>
 std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
-nodes_to_tet_nodes_determiner<Element::Type::PRISM6>(
+nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
     const std::array<gidx_t, Prism6::N_VERTICES> & prism)
 {
     auto min_node_id_index =
@@ -373,22 +373,22 @@ tetrahedralize(const Mesh & mesh)
     elems.reserve(n_tets);
     for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
         auto & el = mesh.element(cell_id);
-        if (el.type() == Element::HEX8) {
-            auto tet4s = split_elem<Element::HEX8>(el);
+        if (el.type() == ElementType::HEX8) {
+            auto tet4s = split_elem<ElementType::HEX8>(el);
             for (auto & tet : tet4s) {
                 elem_map[cell_id].push_back(elems.size());
                 elems.emplace_back(Element::Tetra4(tet));
             }
         }
-        else if (el.type() == Element::PYRAMID5) {
-            auto tet4s = split_elem<Element::PYRAMID5>(el);
+        else if (el.type() == ElementType::PYRAMID5) {
+            auto tet4s = split_elem<ElementType::PYRAMID5>(el);
             for (auto & tet : tet4s) {
                 elem_map[cell_id].push_back(elems.size());
                 elems.emplace_back(Element::Tetra4(tet));
             }
         }
-        else if (el.type() == Element::PRISM6) {
-            auto tet4s = split_elem<Element::PRISM6>(el);
+        else if (el.type() == ElementType::PRISM6) {
+            auto tet4s = split_elem<ElementType::PRISM6>(el);
             for (auto & tet : tet4s) {
                 elem_map[cell_id].push_back(elems.size());
                 elems.emplace_back(Element::Tetra4(tet));

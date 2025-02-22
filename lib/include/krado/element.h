@@ -13,19 +13,17 @@ namespace krado {
 
 class Element {
 public:
-    enum Type { POINT, LINE2, TRI3, QUAD4, TETRA4, PYRAMID5, PRISM6, HEX8 };
-
     /// Build an element
     ///
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
     /// @param marker Element marker
-    Element(Type type, const std::vector<gidx_t> & vtx_ids);
+    Element(ElementType type, const std::vector<gidx_t> & vtx_ids);
 
     /// Get element type
     ///
     /// @return Element type
-    [[nodiscard]] Type type() const;
+    [[nodiscard]] ElementType type() const;
 
     /// Get number of vertices
     ///
@@ -62,11 +60,11 @@ public:
     void set_ids(const std::vector<gidx_t> & ids);
 
 private:
-    Type elem_type_;
+    ElementType elem_type_;
     std::vector<gidx_t> vtx_id_;
 
 public:
-    [[nodiscard]] static std::string type(Type type);
+    [[nodiscard]] static std::string type(ElementType type);
     [[nodiscard]] static Element Point(gidx_t id);
     [[nodiscard]] static Element Line2(const std::array<gidx_t, 2> & ids);
     [[nodiscard]] static Element Tri3(const std::array<gidx_t, 3> & ids);
@@ -79,14 +77,14 @@ public:
 
 class Line2 {
 public:
-    static constexpr Element::Type TYPE = Element::LINE2;
+    static constexpr ElementType TYPE = ElementType::LINE2;
     static constexpr int N_VERTICES = 2;
     static const std::vector<int> EDGE_VERTICES;
 };
 
 class Tri3 {
 public:
-    static constexpr Element::Type TYPE = Element::TRI3;
+    static constexpr ElementType TYPE = ElementType::TRI3;
     static constexpr int N_VERTICES = 3;
     static constexpr int N_EDGES = 3;
     static const std::vector<int> EDGES;
@@ -95,7 +93,7 @@ public:
 
 class Quad4 {
 public:
-    static constexpr Element::Type TYPE = Element::QUAD4;
+    static constexpr ElementType TYPE = ElementType::QUAD4;
     static constexpr int N_VERTICES = 4;
     static constexpr int N_EDGES = 4;
     static const std::vector<int> EDGES;
@@ -104,7 +102,7 @@ public:
 
 class Tetra4 {
 public:
-    static constexpr Element::Type TYPE = Element::TETRA4;
+    static constexpr ElementType TYPE = ElementType::TETRA4;
     static constexpr int N_VERTICES = 4;
     static constexpr int N_EDGES = 6;
     static constexpr int N_FACES = 4;
@@ -116,7 +114,7 @@ public:
 
 class Pyramid5 {
 public:
-    static constexpr Element::Type TYPE = Element::PYRAMID5;
+    static constexpr ElementType TYPE = ElementType::PYRAMID5;
     static constexpr int N_VERTICES = 5;
     static constexpr int N_EDGES = 8;
     static constexpr int N_FACES = 5;
@@ -128,7 +126,7 @@ public:
 
 class Prism6 {
 public:
-    static constexpr Element::Type TYPE = Element::PRISM6;
+    static constexpr ElementType TYPE = ElementType::PRISM6;
     static constexpr int N_VERTICES = 6;
     static constexpr int N_EDGES = 9;
     static constexpr int N_FACES = 5;
@@ -140,7 +138,7 @@ public:
 
 class Hex8 {
 public:
-    static constexpr Element::Type TYPE = Element::HEX8;
+    static constexpr ElementType TYPE = ElementType::HEX8;
     static constexpr int N_VERTICES = 8;
     static constexpr int N_EDGES = 12;
     static constexpr int N_FACES = 6;
@@ -152,23 +150,23 @@ public:
 
 //
 
-template <Element::Type ET>
+template <ElementType ET>
 struct ElementSelector;
 
 template <>
-struct ElementSelector<Element::Type::HEX8> {
+struct ElementSelector<ElementType::HEX8> {
     static constexpr int N_VERTICES = Hex8::N_VERTICES;
     static constexpr int N_FACES = Hex8::N_FACES;
 };
 
 template <>
-struct ElementSelector<Element::Type::PRISM6> {
+struct ElementSelector<ElementType::PRISM6> {
     static constexpr int N_VERTICES = Prism6::N_VERTICES;
     static constexpr int N_FACES = Prism6::N_FACES;
 };
 
 template <>
-struct ElementSelector<Element::Type::PYRAMID5> {
+struct ElementSelector<ElementType::PYRAMID5> {
     static constexpr int N_VERTICES = Pyramid5::N_VERTICES;
     static constexpr int N_FACES = Pyramid5::N_FACES;
 };

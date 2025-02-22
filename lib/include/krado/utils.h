@@ -123,6 +123,9 @@ to_array(Iter iter) -> std::array<T, N>
     return to_array<T>(iter, std::make_index_sequence<N> {});
 }
 
+template <typename T>
+std::string to_str(T val);
+
 /// Compute the angle at (p2) between three points
 ///
 /// @param p1 The first point

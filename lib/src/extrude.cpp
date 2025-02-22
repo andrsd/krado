@@ -10,7 +10,7 @@ namespace krado {
 
 namespace {
 
-template <Element::Type T>
+template <ElementType T>
 Element
 extrude_element(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
@@ -19,7 +19,7 @@ extrude_element(const Element & el, std::size_t layer, std::size_t layer_stride)
 
 template <>
 Element
-extrude_element<Element::LINE2>(const Element & el, std::size_t layer, std::size_t layer_stride)
+extrude_element<ElementType::LINE2>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
     std::array<std::size_t, Quad4::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
@@ -31,7 +31,7 @@ extrude_element<Element::LINE2>(const Element & el, std::size_t layer, std::size
 
 template <>
 Element
-extrude_element<Element::TRI3>(const Element & el, std::size_t layer, std::size_t layer_stride)
+extrude_element<ElementType::TRI3>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
     std::array<std::size_t, Prism6::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
@@ -45,7 +45,7 @@ extrude_element<Element::TRI3>(const Element & el, std::size_t layer, std::size_
 
 template <>
 Element
-extrude_element<Element::QUAD4>(const Element & el, std::size_t layer, std::size_t layer_stride)
+extrude_element<ElementType::QUAD4>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
     std::array<std::size_t, Hex8::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
@@ -61,7 +61,7 @@ extrude_element<Element::QUAD4>(const Element & el, std::size_t layer, std::size
 
 //
 
-template <Element::Type T>
+template <ElementType T>
 int
 extrude_element_side(const Element & el, int side)
 {
@@ -70,7 +70,7 @@ extrude_element_side(const Element & el, int side)
 
 template <>
 int
-extrude_element_side<Element::LINE2>(const Element & el, int side)
+extrude_element_side<ElementType::LINE2>(const Element & el, int side)
 {
     // this maps edge side to quad side
     std::array<int, 2> quad_side = { 3, 1 };
@@ -79,7 +79,7 @@ extrude_element_side<Element::LINE2>(const Element & el, int side)
 
 template <>
 int
-extrude_element_side<Element::TRI3>(const Element & el, int side)
+extrude_element_side<ElementType::TRI3>(const Element & el, int side)
 {
     // this maps triangle side to prism side
     return side + 1;
@@ -87,7 +87,7 @@ extrude_element_side<Element::TRI3>(const Element & el, int side)
 
 template <>
 int
-extrude_element_side<Element::QUAD4>(const Element & el, int side)
+extrude_element_side<ElementType::QUAD4>(const Element & el, int side)
 {
     // this maps quad side to hex side
     std::array<int, 4> hex_side = { 0, 3, 1, 2 };
@@ -125,12 +125,12 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     std::vector<Element> elems;
     for (std::size_t i = 0; i < thicknesses.size(); ++i) {
         for (auto & el : mesh.elements()) {
-            if (el.type() == Element::LINE2)
-                elems.emplace_back(extrude_element<Element::LINE2>(el, i, point_stride));
-            else if (el.type() == Element::TRI3)
-                elems.emplace_back(extrude_element<Element::TRI3>(el, i, point_stride));
-            else if (el.type() == Element::QUAD4)
-                elems.emplace_back(extrude_element<Element::QUAD4>(el, i, point_stride));
+            if (el.type() == ElementType::LINE2)
+                elems.emplace_back(extrude_element<ElementType::LINE2>(el, i, point_stride));
+            else if (el.type() == ElementType::TRI3)
+                elems.emplace_back(extrude_element<ElementType::TRI3>(el, i, point_stride));
+            else if (el.type() == ElementType::QUAD4)
+                elems.emplace_back(extrude_element<ElementType::QUAD4>(el, i, point_stride));
             else
                 throw Exception("Extrusion of element type '{}' not supported",
                                 Element::type(el.type()));
@@ -160,15 +160,18 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
             for (auto & entry : ss) {
                 auto cell_id = entry.elem + elem_stride * i;
                 auto & cell = mesh.element(entry.elem);
-                if (cell.type() == Element::LINE2)
-                    side_set.emplace_back(cell_id,
-                                          extrude_element_side<Element::LINE2>(cell, entry.side));
-                else if (cell.type() == Element::TRI3)
-                    side_set.emplace_back(cell_id,
-                                          extrude_element_side<Element::TRI3>(cell, entry.side));
-                else if (cell.type() == Element::QUAD4)
-                    side_set.emplace_back(cell_id,
-                                          extrude_element_side<Element::QUAD4>(cell, entry.side));
+                if (cell.type() == ElementType::LINE2)
+                    side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::LINE2>(cell, entry.side));
+                else if (cell.type() == ElementType::TRI3)
+                    side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::TRI3>(cell, entry.side));
+                else if (cell.type() == ElementType::QUAD4)
+                    side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::QUAD4>(cell, entry.side));
                 else
                     throw Exception("Extrusion of element type '{}' not supported",
                                     Element::type(cell.type()));

@@ -324,7 +324,7 @@ public:
     ///
     /// @param index Index of the element
     /// @return Element type
-    [[nodiscard]] Element::Type element_type(gidx_t index) const;
+    [[nodiscard]] ElementType element_type(gidx_t index) const;
 
     /// Prepare mesh
     void set_up();
