@@ -70,7 +70,7 @@ SchemeTransfinite::mesh_curve(MeshCurve & curve)
         curve.add_vertex(cv);
     curve.add_vertex(bnd_verts[1]);
     for (std::size_t i = 0; i < n_intervals; i++)
-        curve.add_segment({ i, i + 1 });
+        curve.add_segment({ curve.all_vertices()[i], curve.all_vertices()[i + 1] });
 }
 
 } // namespace krado

@@ -153,9 +153,8 @@ private:
             if (curve->is_meshed()) {
                 auto & curve_vtxs = curve->all_vertices();
                 for (auto & segs : curve->segments()) {
-                    auto vtx1 = this->local_vtx_id[curve_vtxs[segs.ids()[0]]];
-                    auto vtx2 = this->local_vtx_id[curve_vtxs[segs.ids()[1]]];
-                    std::array<int, 2> edge = { vtx1, vtx2 };
+                    std::array<int, 2> edge = { this->local_vtx_id[segs.vertex(0)],
+                                                this->local_vtx_id[segs.vertex(1)] };
                     add_edge(eidx, edge, curve_idx, true);
                     eidx++;
                 }
@@ -247,16 +246,16 @@ SchemeBAMG::mesh_surface(MeshSurface & surface)
         auto & edge = mg.edge(i);
         auto crv_idx = edge.ref;
         auto curve = surface.curves()[crv_idx];
-        curve->add_segment({ im.curve_idx(crv_idx, edge[0].r.x, edge[0].r.y),
-                             im.curve_idx(crv_idx, edge[1].r.x, edge[1].r.y) });
+        curve->add_segment({ im.curve_vertex(crv_idx, edge[0].r.x, edge[0].r.y),
+                             im.curve_vertex(crv_idx, edge[1].r.x, edge[1].r.y) });
     }
 
     for (int i = 0; i < mg.num_of_triangles(); i++) {
         if (mg.is_triangle_active(i)) {
-            std::array<std::size_t, 3> tri;
+            std::array<MeshVertexAbstract *, 3> tri;
             for (int j = 0; j < 3; j++) {
                 auto vtx = mg.triangle(i)[j];
-                auto idx = im.surface_idx(vtx.r.x, vtx.r.y);
+                auto idx = im.surface_vertex(vtx.r.x, vtx.r.y);
                 tri[j] = idx;
             }
             surface.add_triangle(tri);

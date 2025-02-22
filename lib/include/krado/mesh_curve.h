@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "krado/element.h"
+#include "krado/mesh_element.h"
 #include "krado/meshing_parameters.h"
 #include <vector>
 
@@ -54,12 +54,12 @@ public:
     /// Add new curve segment
     ///
     /// @param seg Local vertex indices
-    void add_segment(const std::array<std::size_t, 2> & seg);
+    void add_segment(const std::array<MeshVertexAbstract *, 2> & seg);
 
     /// Get curve segments
     ///
     /// @return Curse segments using vertex indexing local to this edge
-    [[nodiscard]] const std::vector<Element> & segments() const;
+    [[nodiscard]] const std::vector<MeshElement> & segments() const;
 
 private:
     const GeomCurve & gcurve_;
@@ -70,7 +70,7 @@ private:
     /// Vertices on the curve (excluding the bounding vertices)
     std::vector<MeshCurveVertex *> curve_vtx_;
     /// Segments of this curve, using vertex indexing local to this edge
-    std::vector<Element> segs_;
+    std::vector<MeshElement> segs_;
 };
 
 } // namespace krado

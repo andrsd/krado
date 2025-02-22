@@ -1,5 +1,6 @@
 #pragma once
 
+#include "krado/mesh_vertex_abstract.h"
 #include "krado/point.h"
 #include "krado/geom_surface.h"
 #include "krado/mesh_surface.h"
@@ -19,15 +20,13 @@ public:
         for (auto & curve : surface.curves()) {
             for (auto & v : curve->bounding_vertices()) {
                 auto pt = v->point();
-                auto idx = this->surf_idx_.size();
-                auto [it, inserted] = this->surf_idx_.try_emplace(pt, idx);
+                auto [it, inserted] = this->surf_idx_.try_emplace(pt, v);
                 if (inserted)
                     surface.add_vertex(v);
             }
             for (auto & v : curve->curve_vertices()) {
                 auto pt = v->point();
-                auto idx = this->surf_idx_.size();
-                auto [it, inserted] = this->surf_idx_.try_emplace(pt, idx);
+                auto [it, inserted] = this->surf_idx_.try_emplace(pt, v);
                 if (inserted)
                     surface.add_vertex(v);
             }
@@ -35,19 +34,19 @@ public:
 
         for (int cidx = 0; cidx < surface.curves().size(); cidx++) {
             auto curve = surface.curves()[cidx];
-            for (int i = 0; i < curve->all_vertices().size(); i++) {
-                auto pt = curve->all_vertices()[i]->point();
-                this->curv_surf_idx_[cidx].try_emplace(pt, i);
+            for (auto & v : curve->all_vertices()) {
+                auto pt = v->point();
+                this->curv_surf_idx_[cidx].try_emplace(pt, v);
             }
         }
-        for (int i = 0; i < surface.all_vertices().size(); i++) {
-            auto pt = surface.all_vertices()[i]->point();
-            this->surf_idx_.try_emplace(pt, i);
+        for (auto & v : surface.all_vertices()) {
+            auto pt = v->point();
+            this->surf_idx_.try_emplace(pt, v);
         }
     }
 
-    [[nodiscard]] int
-    surface_idx(double x, double y)
+    [[nodiscard]] MeshVertexAbstract *
+    surface_vertex(double x, double y)
     {
         auto pt = Point(x, y);
         auto it = this->surf_idx_.find(pt);
@@ -55,17 +54,16 @@ public:
             auto & geom_surface = surface_.geom_surface();
             auto [u, v] = geom_surface.parameter_from_point(pt);
             auto sv = new MeshSurfaceVertex(geom_surface, u, v);
-            auto idx = surface_.all_vertices().size();
-            this->surf_idx_.try_emplace(pt, idx);
+            this->surf_idx_.try_emplace(pt, sv);
             this->surface_.add_vertex(sv);
-            return idx;
+            return sv;
         }
         else
             return it->second;
     }
 
-    [[nodiscard]] std::size_t
-    curve_idx(int curve_idx, double x, double y)
+    [[nodiscard]] MeshVertexAbstract *
+    curve_vertex(int curve_idx, double x, double y)
     {
         auto & curv_map = this->curv_surf_idx_[curve_idx];
         auto pt = Point(x, y);
@@ -75,15 +73,13 @@ public:
             auto & geom_curve = curve->geom_curve();
             auto u = geom_curve.parameter_from_point(pt);
             auto cv = new MeshCurveVertex(geom_curve, u);
-            auto idx = curve->all_vertices().size();
-            this->curv_surf_idx_[curve_idx].try_emplace(pt, idx);
+            this->curv_surf_idx_[curve_idx].try_emplace(pt, cv);
             curve->add_vertex(cv);
 
-            auto sidx = surface_.all_vertices().size();
-            this->surf_idx_.try_emplace(pt, sidx);
+            this->surf_idx_.try_emplace(pt, cv);
             this->surface_.add_vertex(cv);
 
-            return idx;
+            return cv;
         }
         else
             return it->second;
@@ -92,9 +88,9 @@ public:
 private:
     MeshSurface & surface_;
     /// Map from physical location to local surface vertex index
-    std::map<Point, int> surf_idx_;
+    std::map<Point, MeshVertexAbstract *> surf_idx_;
     /// Map from physical location to local curve vertex index
-    std::map<int, std::map<Point, int>> curv_surf_idx_;
+    std::map<int, std::map<Point, MeshVertexAbstract *>> curv_surf_idx_;
 };
 
 } // namespace krado

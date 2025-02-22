@@ -564,9 +564,8 @@ GeomModel::build_1d_elements()
         std::array<gidx_t, Line2::N_VERTICES> line;
         for (auto & local_elem : curve.segments()) {
             for (int i = 0; i < Line2::N_VERTICES; ++i) {
-                auto lid = local_elem.id(i);
-                auto gid = verts[lid]->global_id();
-                line[i] = gid;
+                auto * vtx = local_elem.vertex(i);
+                line[i] = vtx->global_id();
             }
             elems.emplace_back(Element::Line2(line));
         }
@@ -584,9 +583,8 @@ GeomModel::build_2d_elements()
         std::array<gidx_t, Tri3::N_VERTICES> tri;
         for (auto & local_elem : tris) {
             for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                auto lid = local_elem.id(i);
-                auto gid = verts[lid]->global_id();
-                tri[i] = gid;
+                auto * vtx = local_elem.vertex(i);
+                tri[i] = vtx->global_id();
             }
             elems.emplace_back(Element::Tri3(tri));
         }

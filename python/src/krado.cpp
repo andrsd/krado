@@ -16,6 +16,7 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "krado/mesh.h"
+#include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_curve.h"
@@ -261,6 +262,10 @@ PYBIND11_MODULE(krado, m)
         .def("get", &MeshingParameters::get<double>)
         .def("get", &MeshingParameters::get<std::string>)
         .def("is_meshed", &MeshingParameters::is_meshed)
+    ;
+
+    py::class_<MeshElement>(m, "MeshElement")
+        .def(py::init<ElementType, const std::vector<MeshVertexAbstract *> &>())
     ;
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")

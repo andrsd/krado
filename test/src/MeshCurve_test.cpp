@@ -57,11 +57,7 @@ TEST(MeshCurveTest, mesh)
     EXPECT_EQ(segs.size(), 4);
     EXPECT_EQ(segs[0].type(), ElementType::LINE2);
     EXPECT_EQ(segs[0].num_vertices(), 2);
-    EXPECT_EQ(segs[0].vertex_id(0), 0);
-    EXPECT_EQ(segs[0].vertex_id(1), 1);
 
     EXPECT_EQ(segs[3].type(), ElementType::LINE2);
     EXPECT_EQ(segs[3].num_vertices(), 2);
-    EXPECT_EQ(segs[3].vertex_id(0), 3);
-    EXPECT_EQ(segs[3].vertex_id(1), 4);
 }

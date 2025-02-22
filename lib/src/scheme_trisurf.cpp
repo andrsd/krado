@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme_trisurf.h"
+#include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_curve.h"
@@ -11,6 +12,7 @@
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
 #include "Poly_Triangulation.hxx"
+#include <array>
 
 namespace krado {
 
@@ -46,13 +48,14 @@ SchemeTriSurf::mesh_volume(MeshVolume & volume)
                 srf->add_vertex(new MeshSurfaceVertex(geom_surface, uv.X(), uv.Y()));
             }
 
+            auto & vertices = srf->all_vertices();
             for (int i = 0; i < triangulation->NbTriangles(); ++i) {
                 auto tri = triangulation->Triangle(i + 1);
                 Standard_Integer n1, n2, n3;
                 tri.Get(n1, n2, n3);
-                std::array<std::size_t, 3> t { static_cast<std::size_t>(n1 - 1),
-                                               static_cast<std::size_t>(n2 - 1),
-                                               static_cast<std::size_t>(n3 - 1) };
+                std::array<MeshVertexAbstract *, 3> t { vertices[n1 - 1],
+                                                        vertices[n2 - 1],
+                                                        vertices[n3 - 1] };
                 srf->add_triangle(t);
             }
         }

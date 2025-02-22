@@ -4,6 +4,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
+#include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
@@ -43,7 +44,7 @@ MeshSurface::surface_vertices() const
     return this->surf_vtxs_;
 }
 
-const std::vector<Element> &
+const std::vector<MeshElement> &
 MeshSurface::triangles() const
 {
     return this->tris_;
@@ -69,9 +70,9 @@ MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
 }
 
 void
-MeshSurface::add_triangle(const std::array<std::size_t, 3> & tri)
+MeshSurface::add_triangle(const std::array<MeshVertexAbstract *, 3> & tri)
 {
-    auto tri3 = Element::Tri3(tri);
+    MeshElement tri3(ElementType::TRI3, { tri[0], tri[1], tri[2] });
     this->tris_.emplace_back(tri3);
 }
 

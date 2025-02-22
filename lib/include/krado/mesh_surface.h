@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "krado/element.h"
+#include "krado/mesh_element.h"
 #include "krado/meshing_parameters.h"
 
 namespace krado {
@@ -40,7 +40,7 @@ public:
     /// Get triangles on this surface
     ///
     /// @return Triangles on this surface
-    [[nodiscard]] const std::vector<Element> & triangles() const;
+    [[nodiscard]] const std::vector<MeshElement> & triangles() const;
 
     /// Add vertex
     ///
@@ -52,7 +52,7 @@ public:
     /// Add new triangle
     ///
     /// @param tri Local vertex indices
-    void add_triangle(const std::array<std::size_t, 3> & tri);
+    void add_triangle(const std::array<MeshVertexAbstract *, 3> & tri);
 
     /// Reserve memory for vertices and triangles
     void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
@@ -66,7 +66,7 @@ private:
     /// Surface vertices
     std::vector<MeshSurfaceVertex *> surf_vtxs_;
     /// Triangles
-    std::vector<Element> tris_;
+    std::vector<MeshElement> tris_;
 };
 
 } // namespace krado

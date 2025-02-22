@@ -34,8 +34,10 @@ TEST(MeshSurfaceTest, api)
     auto mvtx2 = new MeshSurfaceVertex(gsurf, 0., 0.1);
     msurface.add_vertex(mvtx2);
 
-    msurface.add_triangle({ 2, 0, 1 });
+    msurface.add_triangle({ mvtx2, mvtx0, mvtx1 });
     auto & triangles = msurface.triangles();
     ASSERT_EQ(triangles.size(), 1);
-    EXPECT_THAT(triangles[0].ids(), ElementsAre(2, 0, 1));
+    EXPECT_EQ(triangles[0].vertex(0), mvtx2);
+    EXPECT_EQ(triangles[0].vertex(1), mvtx0);
+    EXPECT_EQ(triangles[0].vertex(2), mvtx1);
 }
