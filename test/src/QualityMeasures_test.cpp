@@ -42,3 +42,22 @@ TEST(QualityMeasuresTest, quad4)
     EXPECT_NEAR(quality::eta(quad), 1., 1e-8);
     EXPECT_NEAR(quality::gamma(quad), 1., 1e-8);
 }
+
+TEST(QualityMeasuresTest, tet4)
+{
+    auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
+
+    auto v1 = box.surfaces()[0].curves()[0].first_vertex();
+    auto v2 = box.surfaces()[2].curves()[0].last_vertex();
+    auto v3 = box.surfaces()[4].curves()[1].first_vertex();
+    auto v4 = box.surfaces()[0].curves()[0].last_vertex();
+
+    MeshVertex mvtx1(v1);
+    MeshVertex mvtx2(v2);
+    MeshVertex mvtx3(v3);
+    MeshVertex mvtx4(v4);
+
+    auto tet = MeshElement(ElementType::TETRA4, { &mvtx1, &mvtx2, &mvtx3, &mvtx4 });
+    EXPECT_NEAR(quality::eta(tet), 0.5943097, 1e-6);
+    EXPECT_NEAR(quality::gamma(tet), 0.5345225, 1e-6);
+}
