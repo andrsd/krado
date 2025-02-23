@@ -7,7 +7,7 @@
 namespace krado {
 
 MeshSurfaceVertex::MeshSurfaceVertex(const GeomSurface & geom_surface, double u, double v) :
-    MeshVertexAbstract(),
+    MeshVertexAbstract(geom_surface),
     gsurface_(geom_surface),
     u_(u),
     v_(v)

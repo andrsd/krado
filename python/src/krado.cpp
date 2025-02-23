@@ -269,7 +269,6 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
-        .def(py::init<>())
         .def("point", &MeshVertexAbstract::point)
     ;
 

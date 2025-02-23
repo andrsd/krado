@@ -5,7 +5,11 @@
 
 namespace krado {
 
-MeshVertexAbstract::MeshVertexAbstract() : gid_(0) {}
+MeshVertexAbstract::MeshVertexAbstract(const GeomShape & geom_shape) :
+    gid_(0),
+    geom_shape_(geom_shape)
+{
+}
 
 int
 MeshVertexAbstract::global_id() const

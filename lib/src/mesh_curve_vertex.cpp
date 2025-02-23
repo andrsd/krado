@@ -6,7 +6,7 @@
 namespace krado {
 
 MeshCurveVertex::MeshCurveVertex(const GeomCurve & geom_curve, double u) :
-    MeshVertexAbstract(),
+    MeshVertexAbstract(geom_curve),
     gcurve_(geom_curve),
     u_(u)
 {

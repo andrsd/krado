@@ -5,7 +5,11 @@
 
 namespace krado {
 
-MeshVertex::MeshVertex(const GeomVertex & geom_vertex) : MeshVertexAbstract(), gvtx_(geom_vertex) {}
+MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
+    MeshVertexAbstract(geom_vertex),
+    gvtx_(geom_vertex)
+{
+}
 
 const GeomVertex &
 MeshVertex::geom_vertex() const

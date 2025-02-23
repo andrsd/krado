@@ -7,9 +7,11 @@
 
 namespace krado {
 
+class GeomShape;
+
 class MeshVertexAbstract {
 public:
-    MeshVertexAbstract();
+    MeshVertexAbstract(const GeomShape & geom_shape);
     virtual ~MeshVertexAbstract() = default;
 
     /// Get physical position in the 3D space
@@ -27,8 +29,16 @@ public:
     /// @param id New ID to assign
     void set_global_id(int id);
 
+    /// Geometrical shape associated with this vertex
+    ///
+    /// @return Geometrical shape associated with this vertex
+    const GeomShape & geom_shape() const;
+
 private:
+    /// Global ID of this vertex
     int gid_;
+    /// Geometrical shape associated with this vertex
+    const GeomShape & geom_shape_;
 };
 
 } // namespace krado
