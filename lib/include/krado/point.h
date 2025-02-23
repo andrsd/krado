@@ -21,6 +21,13 @@ public:
 
     [[nodiscard]] double operator()(int idx) const;
     double & operator()(int idx);
+
+    /// Add two points
+    ///
+    /// @param v Point to add
+    /// @return Point (this + v)
+    [[nodiscard]] Point operator+(const Point & v) const;
+
     [[nodiscard]] Point operator+(const Vector & v) const;
     [[nodiscard]] Point operator-(const Vector & v) const;
 
@@ -50,8 +57,6 @@ public:
     /// Z-component
     double z;
 };
-
-Point operator+(const Point & a, const Point & b);
 
 bool operator==(const Point & a, const Point & b);
 

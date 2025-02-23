@@ -40,6 +40,12 @@ Point::operator()(int idx)
 }
 
 Point
+Point::operator+(const Point & b) const
+{
+    return Point(this->x + b.x, this->y + b.y, this->z + b.z);
+}
+
+Point
 Point::operator+(const Vector & v) const
 {
     Point p = *this;
@@ -153,12 +159,6 @@ Point::transform(const std::vector<double> & tfo)
             (*this)(i) += old[j] * tfo[idx++];
         (*this)(i) += tfo[idx++];
     }
-}
-
-Point
-operator+(const Point & a, const Point & b)
-{
-    return Point(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
 bool
