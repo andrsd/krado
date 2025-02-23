@@ -23,6 +23,14 @@ public:
     double & operator()(int idx);
     [[nodiscard]] Point operator+(const Vector & v) const;
     [[nodiscard]] Point operator-(const Vector & v) const;
+
+    /// Compute vector from two points
+    ///
+    /// @param a First point
+    /// @param b Second point
+    /// @return Vector (this - b)
+    [[nodiscard]] Vector operator-(const Point & v) const;
+
     void operator+=(const Point & p);
     void operator+=(const Vector & v);
     void operator-=(const Point & p);
@@ -44,13 +52,6 @@ public:
 };
 
 Point operator+(const Point & a, const Point & b);
-
-/// Compute vector from two points
-///
-/// @param a First point
-/// @param b Second point
-/// @return Vector (a - b)
-[[nodiscard]] Vector operator-(const Point & a, const Point & b);
 
 bool operator==(const Point & a, const Point & b);
 

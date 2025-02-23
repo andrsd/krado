@@ -55,6 +55,12 @@ Point::operator-(const Vector & v) const
     return p;
 }
 
+Vector
+Point::operator-(const Point & v) const
+{
+    return Vector(this->x - v.x, this->y - v.y, this->z - v.z);
+}
+
 void
 Point::operator+=(const Point & p)
 {
@@ -153,12 +159,6 @@ Point
 operator+(const Point & a, const Point & b)
 {
     return Point(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-
-Vector
-operator-(const Point & a, const Point & b)
-{
-    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
 bool
