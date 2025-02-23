@@ -16,7 +16,7 @@ public:
     double
     operator()(const GeomCurve & curve, double u)
     {
-        return curve.d1(u).norm() / curve.length();
+        return curve.d1(u).magnitude() / curve.length();
     }
 };
 

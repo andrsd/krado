@@ -33,7 +33,7 @@ TEST(VectorTest, op_call)
 TEST(VectorTest, norm)
 {
     Vector a(3, 4, 0);
-    EXPECT_DOUBLE_EQ(a.norm(), 5.);
+    EXPECT_DOUBLE_EQ(a.magnitude(), 5.);
 }
 
 TEST(VectorTest, normalize)

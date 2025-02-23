@@ -33,10 +33,10 @@ public:
 
     Vector & operator*=(double alpha);
 
-    /// Compute L2 norm of the vector
+    /// Compute magnitude of the vector
     ///
-    /// @return L2 norm of the vector
-    [[nodiscard]] double norm() const;
+    /// @return MAgnitude of the vector
+    [[nodiscard]] double magnitude() const;
 
     /// Normalize the vector
     void normalize();

@@ -23,7 +23,7 @@ public:
         double t = (u - u_lower) / (u_hi - u_lower);
 
         if (this->coef < 1.) {
-            auto d = curve.d1(u).norm();
+            auto d = curve.d1(u).magnitude();
             return d * this->coef / curve.length();
         }
         else {

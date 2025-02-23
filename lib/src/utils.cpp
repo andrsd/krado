@@ -86,7 +86,7 @@ angle(const Point & p1, const Point & p2, const Point & p3)
     auto a = p1 - p2;
     auto b = p3 - p2;
     auto c = cross_product(a, b);
-    auto sin_alpha = c.norm();
+    auto sin_alpha = c.magnitude();
     auto cos_alpha = dot_product(a, b);
     return std::atan2(sin_alpha, cos_alpha);
 }
@@ -97,7 +97,7 @@ triangle_area(const Point & p1, const Point & p2, const Point & p3)
     auto a = p3 - p2;
     auto b = p1 - p2;
     auto c = cross_product(a, b);
-    return 0.5 * c.norm();
+    return 0.5 * c.magnitude();
 }
 
 } // namespace krado::utils

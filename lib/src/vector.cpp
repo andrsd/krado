@@ -27,7 +27,7 @@ Vector::operator()(int idx) const
 }
 
 double
-Vector::norm() const
+Vector::magnitude() const
 {
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
@@ -35,7 +35,7 @@ Vector::norm() const
 void
 Vector::normalize()
 {
-    double n = norm();
+    double n = magnitude();
     if (n) {
         this->x /= n;
         this->y /= n;

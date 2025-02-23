@@ -31,7 +31,7 @@ public:
         // else if(t == t_end && ge->getEndVertex())
         //     lc_here = BGM_MeshSize(ge->getEndVertex(), t, 0, p.x(), p.y(), p.z());
         // lc_here = std::min(lc_here, BGM_MeshSize(ge, t, 0, p.x(), p.y(), p.z()));
-        return curve.d1(u).norm() / lc_here;
+        return curve.d1(u).magnitude() / lc_here;
     }
 
 private:

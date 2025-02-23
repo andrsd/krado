@@ -27,7 +27,7 @@ public:
     {
         double length = curve.length();
 
-        double d = curve.d1(u).norm();
+        double d = curve.d1(u).magnitude();
 
         auto [u_lower, u_upper] = curve.param_range();
         double t = (u - u_lower) / (u_upper - u_lower);

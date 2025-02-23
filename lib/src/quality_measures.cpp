@@ -136,11 +136,11 @@ qm_gamma<ElementType::TRI3>(const MeshElement & el)
     b.normalize();
     c.normalize();
     auto pva = cross_product(b, c);
-    const auto sina = pva.norm();
+    const auto sina = pva.magnitude();
     auto pvb = cross_product(c, a);
-    const auto sinb = pvb.norm();
+    const auto sinb = pvb.magnitude();
     auto pvc = cross_product(a, b);
-    const auto sinc = pvc.norm();
+    const auto sinc = pvc.magnitude();
     if (sina == 0.0 && sinb == 0.0 && sinc == 0.0)
         return 0.0;
     else

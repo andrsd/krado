@@ -128,7 +128,7 @@ BoundingBox3D::make_cube()
     Point cc = center();
     this->max_pt_ = cc + Point(1, 1, 1);
     this->min_pt_ = cc + Point(-1, -1, -1);
-    double sc = len.norm() * 0.5;
+    double sc = len.magnitude() * 0.5;
     scale(sc, sc, sc);
 }
 

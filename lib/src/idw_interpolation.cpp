@@ -34,7 +34,7 @@ IDWInterpolation::sample(const Point & pt, double power) const
     double weighted_sum = 0.0;
     double weight_total = 0.0;
     for (std::size_t i = 0; i < this->pts_.size(); ++i) {
-        auto distance = (this->pts_[i] - pt).norm();
+        auto distance = (this->pts_[i] - pt).magnitude();
         if (distance == 0.0)
             return this->weights_[i];
 
