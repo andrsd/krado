@@ -23,7 +23,7 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
         ${OpenCASCADE_INCLUDE_DIR}
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/lib/include
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/include>
         ${CMAKE_SOURCE_DIR}/contrib
         ${Boost_INCLUDE_DIRS}
 )
@@ -33,6 +33,7 @@ target_link_libraries(
     PRIVATE
         Eigen3::Eigen
         libbamg
+        robust_predicates
     PUBLIC
         fmt::fmt
         exodusIIcpp::exodusIIcpp

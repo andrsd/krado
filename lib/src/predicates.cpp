@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/predicates.h"
-#include "krado/robust_predicates.h"
 #include "krado/point.h"
 #include "krado/uv_param.h"
+#include "robust_predicates/robust_predicates.h"
 
 namespace krado {
 

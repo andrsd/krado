@@ -1,10 +1,11 @@
 #include "krado/bds.h"
 #include "krado/geom_surface.h"
 #include "krado/quality_measures.h"
-#include "krado/robust_predicates.h"
-#include "Eigen/Eigen"
+#include "krado/numerics.h"
 #include "krado/types.h"
 #include "krado/uv_param.h"
+#include "Eigen/Eigen"
+#include "robust_predicates/robust_predicates.h"
 #include <stack>
 #include <cmath>
 
