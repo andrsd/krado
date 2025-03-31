@@ -12,6 +12,7 @@ class GeomShape {
 public:
     enum HealFlag { FIX_DEGENERATED, FIX_SMALL_EDGES, FIX_SMALL_FACES, SEW_FACES, MAKE_SOLIDS };
 
+    GeomShape() = default;
     explicit GeomShape(const TopoDS_Shape & shape);
 
     void clean();
