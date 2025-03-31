@@ -31,14 +31,14 @@ target_include_directories(
 target_link_libraries(
     ${NAME}
     PRIVATE
-        ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
-        ${OpenCASCADE_DataExchange_LIBRARIES}
         Eigen3::Eigen
         libbamg
     PUBLIC
         fmt::fmt
         exodusIIcpp::exodusIIcpp
         ${Boost_LIBRARIES}
+        ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
+        ${OpenCASCADE_DataExchange_LIBRARIES}
 )
 
 if (KRADO_WITH_TRIANGLE)
