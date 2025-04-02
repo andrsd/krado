@@ -3,7 +3,7 @@
 //
 // This is a rewrite of `meshGEdge` from gmsh
 
-#include "krado/scheme_bump.h"
+#include "krado/scheme/bump.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 
@@ -37,7 +37,7 @@ public:
                 ((double) this->n_points * length);
         }
         double b = -a * length * length / (4. * (this->coef - 1.));
-        return d / (-a * std::pow(t * length - (length) * 0.5, 2) + b);
+        return d / (-a * std::pow(t * length - (length) *0.5, 2) + b);
     }
 
 public:

@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
-#include "krado/scheme_triangle.h"
+#include "krado/scheme/triangle.h"
 #include "krado/mesh.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_vertex_abstract.h"
 #include "krado/surface_index_mapper.h"
 #include <map>
 #include <array>
@@ -96,14 +98,13 @@ create_segment_list(const MeshSurface & surface,
 
     int k = 0;
     for (auto & c : curves) {
-        auto & verts = c->all_vertices();
         auto & segments = c->segments();
         for (auto & s : segments) {
-            auto v1 = s.vertex_id(0);
-            auto v2 = s.vertex_id(1);
+            auto v1 = s.vertex(0);
+            auto v2 = s.vertex(1);
 
-            auto pt1 = verts[v1]->point();
-            auto pt2 = verts[v2]->point();
+            auto pt1 = v1->point();
+            auto pt2 = v2->point();
 
             auto id1 = pt_id.at(pt1);
             auto id2 = pt_id.at(pt2);
@@ -204,12 +205,11 @@ SchemeTriangle::mesh_surface(MeshSurface & surface)
 
     SurfaceIndexMapper im(surface);
     for (int i = 0; i < out.numberoftriangles; i++) {
-        std::array<std::size_t, 3> tri;
+        std::array<MeshVertexAbstract *, 3> tri;
         for (int j = 0; j < 3; j++) {
             auto vtx_id = out.trianglelist[i * 3 + j];
             auto pt = tri::get_point(out.pointlist, vtx_id);
-            auto idx = im.surface_idx(pt.x, pt.y);
-            tri[j] = idx;
+            tri[j] = im.surface_vertex(pt.x, pt.y);
         }
         surface.add_triangle(tri);
     }

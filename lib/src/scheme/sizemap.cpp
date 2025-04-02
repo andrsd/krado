@@ -3,7 +3,7 @@
 //
 // This is a rewrite of `meshGEdge` from gmsh
 
-#include "krado/scheme_sizemap.h"
+#include "krado/scheme/sizemap.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"

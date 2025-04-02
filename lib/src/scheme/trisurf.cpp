@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
-#include "krado/scheme_trisurf.h"
+#include "krado/scheme/trisurf.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"

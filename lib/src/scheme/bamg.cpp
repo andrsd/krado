@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
-#include "krado/scheme_bamg.h"
+#include "krado/scheme/bamg.h"
 #include "krado/mesh.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_surface_vertex.h"

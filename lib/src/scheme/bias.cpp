@@ -3,7 +3,7 @@
 //
 // This is a rewrite of `meshGEdge` from gmsh
 
-#include "krado/scheme_bias.h"
+#include "krado/scheme/bias.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
@@ -18,9 +18,7 @@ namespace {
 // Geometric progression ar^i; Sum of n terms = length = a (r^n-1)/(r-1)
 class FTransfiniteSizeMap {
 public:
-    FTransfiniteSizeMap(double coef, int n_pts, int ori) : coef(coef), n_points(n_pts), ori(ori)
-    {
-    }
+    FTransfiniteSizeMap(double coef, int n_pts, int ori) : coef(coef), n_points(n_pts), ori(ori) {}
 
     double
     operator()(const GeomCurve & curve, double u)
@@ -49,9 +47,7 @@ private:
 
 } // namespace
 
-SchemeBias::SchemeBias() : SchemeTransfinite("bias")
-{
-}
+SchemeBias::SchemeBias() : SchemeTransfinite("bias") {}
 
 Integral1D
 SchemeBias::compute_integral(const MeshCurve & curve)

@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme_factory.h"
-#include "krado/scheme_auto.h"
-#include "krado/scheme_equal.h"
-#include "krado/scheme_bias.h"
-#include "krado/scheme_bump.h"
-#include "krado/scheme_betalaw.h"
-#include "krado/scheme_sizemap.h"
-#include "krado/scheme_bamg.h"
-#include "krado/scheme_triangle.h"
-#include "krado/scheme_trisurf.h"
+#include "krado/scheme/auto.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/bias.h"
+#include "krado/scheme/bump.h"
+#include "krado/scheme/betalaw.h"
+#include "krado/scheme/sizemap.h"
+#include "krado/scheme/bamg.h"
+#include "krado/scheme/triangle.h"
+#include "krado/scheme/trisurf.h"
 
 namespace krado {
 

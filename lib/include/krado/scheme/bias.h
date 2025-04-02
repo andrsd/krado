@@ -4,13 +4,13 @@
 #pragma once
 
 #include "krado/scheme.h"
-#include "krado/scheme_transfinite.h"
+#include "krado/scheme/transfinite.h"
 
 namespace krado {
 
-class SchemeBetaLaw : public SchemeTransfinite {
+class SchemeBias : public SchemeTransfinite {
 public:
-    SchemeBetaLaw();
+    SchemeBias();
 
 private:
     [[nodiscard]] Integral1D compute_integral(const MeshCurve & curve) override;

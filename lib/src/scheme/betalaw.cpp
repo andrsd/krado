@@ -3,7 +3,7 @@
 //
 // This is a rewrite of `meshGEdge` from gmsh
 
-#include "krado/scheme_betalaw.h"
+#include "krado/scheme/betalaw.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 

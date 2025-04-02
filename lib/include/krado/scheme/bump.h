@@ -4,7 +4,7 @@
 #pragma once
 
 #include "krado/scheme.h"
-#include "krado/scheme_transfinite.h"
+#include "krado/scheme/transfinite.h"
 
 namespace krado {
 
