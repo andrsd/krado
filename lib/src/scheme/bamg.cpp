@@ -11,6 +11,7 @@
 #include "Eigen/Eigen"
 #include <array>
 #include <map>
+#include <cassert>
 
 namespace krado {
 
@@ -62,6 +63,7 @@ public:
     int
     num_of_triangles()
     {
+        assert(this->Th != nullptr);
         return this->Th->nbt;
     }
 
@@ -74,18 +76,21 @@ public:
     const bamg::Triangle &
     triangle(int idx) const
     {
+        assert(this->Th != nullptr);
         return this->Th->triangles[idx];
     }
 
     int
     num_of_edges() const
     {
+        assert(this->Th != nullptr);
         return this->Th->nbe;
     }
 
     const bamg::Edge &
     edge(int idx) const
     {
+        assert(this->Th != nullptr);
         return this->Th->edges[idx];
     }
 
@@ -126,6 +131,7 @@ private:
     {
         int n_edges = 0;
         for (auto & curve : this->surface.curves()) {
+            assert(curve != nullptr);
             if (curve->is_meshed())
                 n_edges += curve->segments().size();
             else
@@ -150,6 +156,7 @@ private:
 
         for (int curve_idx = 0, eidx = 0; curve_idx < this->surface.curves().size(); curve_idx++) {
             auto & curve = this->surface.curves()[curve_idx];
+            assert(curve != nullptr);
             if (curve->is_meshed()) {
                 auto & curve_vtxs = curve->all_vertices();
                 for (auto & segs : curve->segments()) {
@@ -195,8 +202,10 @@ private:
         this->len[i1] += l12;
         this->len[i2] += l12;
 
-        if (req)
+        if (req) {
+            assert(Gh.edges != nullptr);
             this->Gh.edges->SetRequired();
+        }
 
         Hmin = Min(Hmin, l12);
     }
@@ -246,6 +255,7 @@ SchemeBAMG::mesh_surface(MeshSurface & surface)
         auto & edge = mg.edge(i);
         auto crv_idx = edge.ref;
         auto curve = surface.curves()[crv_idx];
+        assert(curve != nullptr);
         curve->add_segment({ im.curve_vertex(crv_idx, edge[0].r.x, edge[0].r.y),
                              im.curve_vertex(crv_idx, edge[1].r.x, edge[1].r.y) });
     }

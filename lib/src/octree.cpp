@@ -58,6 +58,8 @@ OctTree::insert(void * element)
 void
 OctTree::arrange()
 {
+    assert(this->info != nullptr);
+
     std::vector<void *>::iterator iter;
     for (iter = this->info->list_all_elements.begin(); iter != this->info->list_all_elements.end();
          iter++) {

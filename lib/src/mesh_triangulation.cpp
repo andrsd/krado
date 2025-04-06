@@ -10,6 +10,7 @@
 #include "krado/uv_param.h"
 #include "krado/predicates.h"
 #include "krado/log.h"
+#include <cassert>
 #include <unordered_map>
 #include <list>
 #include <set>
@@ -107,6 +108,8 @@ hilbert_coordinates(double x,
 static PolyMesh::Face *
 Walk(PolyMesh::Face * f, double x, double y)
 {
+    assert(f != nullptr);
+
     Point POS(x, y, 0.);
     PolyMesh::HalfEdge * he = f->he;
 
@@ -168,6 +171,11 @@ intersect(PolyMesh::Vertex * v0,
           PolyMesh::Vertex * b0,
           PolyMesh::Vertex * b1)
 {
+    assert(v0 != nullptr);
+    assert(v1 != nullptr);
+    assert(b0 != nullptr);
+    assert(b1 != nullptr);
+
     auto s0 = orient2d(v0->position, v1->position, b0->position);
     auto s1 = orient2d(v0->position, v1->position, b1->position);
     if (s0 * s1 >= 0)
@@ -182,9 +190,13 @@ intersect(PolyMesh::Vertex * v0,
 static int
 recover_edge(PolyMesh & pm, PolyMesh::Vertex * v_start, PolyMesh::Vertex * v_end)
 {
+    assert(v_start != nullptr);
+    assert(v_end != nullptr);
+
     PolyMesh::HalfEdge * he = v_start->he;
     std::list<PolyMesh::HalfEdge *> list;
 
+    assert(he != nullptr);
     do {
         PolyMesh::Vertex * v1 = he->next->v;
         if (v1 == v_end) {
@@ -258,6 +270,8 @@ recover_edge(PolyMesh & pm, PolyMesh::Vertex * v_start, PolyMesh::Vertex * v_end
 static PolyMesh::HalfEdge *
 Color(PolyMesh::HalfEdge * he, int color)
 {
+    assert(he != nullptr);
+
     std::stack<PolyMesh::Face *> stack;
     stack.push(he->f);
 
@@ -265,9 +279,11 @@ Color(PolyMesh::HalfEdge * he, int color)
 
     while (!stack.empty()) {
         PolyMesh::Face * f = stack.top();
+        assert(f != nullptr);
         stack.pop();
         f->data = color;
         he = f->he;
+        assert(he != nullptr);
         for (int i = 0; i < 3; i++) {
             if (he->data == -1 && he->opposite != nullptr && he->opposite->f->data == -1) {
                 stack.push(he->opposite->f);
@@ -284,11 +300,15 @@ Color(PolyMesh::HalfEdge * he, int color)
 static int
 delaunay_edge_criterion_plane_isotropic(PolyMesh::HalfEdge * he, void *)
 {
+    assert(he != nullptr);
     if (he->opposite == nullptr)
         return -1;
     auto * v0 = he->v;
+    assert(he->next != nullptr);
     auto * v1 = he->next->v;
+    assert(he->next->next != nullptr);
     auto * v2 = he->next->next->v;
+    assert(he->opposite->next->next != nullptr);
     auto * v = he->opposite->next->next->v;
 
     // FIXME : should be oriented anyway !
@@ -342,6 +362,7 @@ get_node_copies(MeshSurface & msurface)
         throw Exception("No edges");
 
     for (auto e : edges) {
+        assert(e != nullptr);
         if (!e->is_mesh_degenerated()) {
             std::set<MeshVertexAbstract *, MeshVertexAbstract::PtrLessThan> e_vertices;
             for (auto & seg : e->segments()) {
@@ -358,6 +379,7 @@ get_node_copies(MeshSurface & msurface)
             }
             // printf("model edge %lu %lu vertices\n", e->tag(), e_vertices.size());
             for (auto & vtx : e_vertices) {
+                assert(vtx != nullptr);
                 UVParam par;
                 bool success;
                 if (direction != -1) {
@@ -447,6 +469,7 @@ surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> *
             throw Exception("No curves");
 
         for (auto & e : curves) {
+            assert(e != nullptr);
             if (!e->is_mesh_degenerated()) {
                 for (auto & s : e->segments()) {
                     auto c0 = copies.find(s.vertex(0)->num());
@@ -496,6 +519,8 @@ surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> *
         while (iter++ < 100) {
             int count = 0;
             for (auto he : pm.hedges) {
+                assert(he != nullptr);
+                assert(he->f != nullptr);
                 if (he->opposite && he->f->data == faceTag && he->opposite->f->data == faceTag) {
                     if (delaunay_edge_criterion_plane_isotropic(he, nullptr)) {
                         if (intersect(he->v,

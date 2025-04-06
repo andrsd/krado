@@ -1,4 +1,5 @@
 #include "krado/poly_mesh.h"
+#include <cassert>
 
 namespace krado {
 
@@ -24,6 +25,10 @@ PolyMesh::HalfEdge::HalfEdge(Vertex * vv) :
 Vector
 PolyMesh::HalfEdge::d() const
 {
+    assert(this->next != nullptr);
+    assert(this->next->v != nullptr);
+    assert(this->v != nullptr);
+
     Vector t = this->next->v->position - this->v->position;
     t.normalize();
     return t;
@@ -54,9 +59,12 @@ PolyMesh::reset()
 size_t
 PolyMesh::degree(const Vertex * v) const
 {
+    assert(v != nullptr);
+
     HalfEdge * he = v->he;
     size_t count = 0;
     do {
+        assert(he != nullptr);
         he = he->opposite;
         if (he == nullptr)
             return -1;
@@ -69,6 +77,8 @@ PolyMesh::degree(const Vertex * v) const
 size_t
 PolyMesh::num_sides(const HalfEdge * he) const
 {
+    assert(he != nullptr);
+
     size_t count = 0;
     const HalfEdge * start = he;
     do {
@@ -81,9 +91,13 @@ PolyMesh::num_sides(const HalfEdge * he) const
 Vector
 PolyMesh::normal(const Vertex * v) const
 {
+    assert(v != nullptr);
+
     Vector n(0, 0, 0);
     HalfEdge * he = v->he;
     do {
+        assert(he != nullptr);
+
         Vector n1 = he->d();
         he = he->opposite;
         if (he == nullptr)
@@ -98,6 +112,8 @@ PolyMesh::normal(const Vertex * v) const
 PolyMesh::HalfEdge *
 PolyMesh::get_edge(Vertex * v0, Vertex * v1)
 {
+    assert(v0 != nullptr);
+
     HalfEdge * he = v0->he;
     do {
         if (he->next->v == v1)
@@ -119,6 +135,14 @@ PolyMesh::create_face(Face * f,
                       HalfEdge * he1,
                       HalfEdge * he2)
 {
+    assert(f != nullptr);
+    assert(v0 != nullptr);
+    assert(v1 != nullptr);
+    assert(v2 != nullptr);
+    assert(he0 != nullptr);
+    assert(he1 != nullptr);
+    assert(he2 != nullptr);
+
     he0->v = v0;
     he1->v = v1;
     he2->v = v2;
@@ -139,6 +163,8 @@ PolyMesh::create_face(Face * f,
 int
 PolyMesh::swap_edge(HalfEdge * he0)
 {
+    assert(he0 != nullptr);
+
     HalfEdge * heo0 = he0->opposite;
     if (heo0 == nullptr)
         return -1;
@@ -147,6 +173,11 @@ PolyMesh::swap_edge(HalfEdge * he0)
     HalfEdge * he2 = he1->next;
     HalfEdge * heo1 = heo0->next;
     HalfEdge * heo2 = heo1->next;
+
+    assert(heo1 != nullptr);
+    assert(heo2 != nullptr);
+    assert(heo0 != nullptr);
+    assert(he2 != nullptr);
 
     Vertex * v0 = heo1->v;
     Vertex * v1 = heo2->v;
@@ -161,6 +192,8 @@ PolyMesh::swap_edge(HalfEdge * he0)
 int
 PolyMesh::merge_faces(HalfEdge * he)
 {
+    assert(he != nullptr);
+
     PolyMesh::HalfEdge * heo = he->opposite;
 
     if (heo == nullptr)
@@ -194,6 +227,8 @@ PolyMesh::cleanv()
 {
     std::vector<Vertex *> uv;
     for (auto v : this->vertices) {
+        assert(v != nullptr);
+
         if (v->he)
             uv.push_back(v);
         else
@@ -207,6 +242,8 @@ PolyMesh::cleanh()
 {
     std::vector<HalfEdge *> uh;
     for (auto h : this->hedges) {
+        assert(h != nullptr);
+
         if (h->f)
             uh.push_back(h);
         else
@@ -220,6 +257,8 @@ PolyMesh::cleanf()
 {
     std::vector<Face *> uf;
     for (auto f : this->faces) {
+        assert(f != nullptr);
+
         if (f->he)
             uf.push_back(f);
         else
@@ -239,6 +278,8 @@ PolyMesh::clean()
 int
 PolyMesh::split_edge(HalfEdge * he0m, const Vector & position, int data)
 {
+    assert(he0m != nullptr);
+
     HalfEdge * he1m = he0m->opposite;
     if (he1m == nullptr)
         return -1;
@@ -340,6 +381,8 @@ PolyMesh::split_triangle(int index,
                          void * data,
                          std::vector<HalfEdge *> * t)
 {
+    assert(f != nullptr);
+
     // one more vertex
     auto * v = new Vertex(x, y, z);
     v->data = -1;

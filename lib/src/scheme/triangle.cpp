@@ -12,6 +12,7 @@
 #include <map>
 #include <array>
 #include <set>
+#include <cassert>
 
 #ifdef KRADO_WITH_TRIANGLE
 extern "C" {
@@ -63,6 +64,7 @@ build_point_map(const MeshSurface & surface)
     for (auto & c : curves) {
         auto & verts = c->all_vertices();
         for (auto & vtx : verts) {
+            assert(vtx != nullptr);
             auto pt = vtx->point();
             auto id = pt_id.size();
             pt_id.try_emplace(pt, id);
@@ -91,13 +93,16 @@ create_segment_list(const MeshSurface & surface,
     // segments
     int n_segments = 0;
     auto & curves = surface.curves();
-    for (auto & c : curves)
+    for (auto & c : curves) {
+        assert(c != nullptr);
         n_segments += (int) c->segments().size();
+    }
     io.numberofsegments = n_segments;
     io.segmentlist = (int *) malloc(n_segments * 2 * sizeof(int));
 
     int k = 0;
     for (auto & c : curves) {
+        assert(c != nullptr);
         auto & segments = c->segments();
         for (auto & s : segments) {
             auto v1 = s.vertex(0);

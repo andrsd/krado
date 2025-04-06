@@ -13,6 +13,7 @@
 #include "TopoDS.hxx"
 #include "Poly_Triangulation.hxx"
 #include <array>
+#include <cassert>
 
 namespace krado {
 
@@ -34,7 +35,8 @@ SchemeTriSurf::mesh_volume(MeshVolume & volume)
 
     // process resulting mesh
     for (auto & srf : volume.surfaces()) {
-        auto geom_surface = srf->geom_surface();
+        assert(srf != nullptr);
+        auto & geom_surface = srf->geom_surface();
         auto face = TopoDS::Face(geom_surface);
 
         TopLoc_Location location;

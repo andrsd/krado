@@ -8,6 +8,7 @@
 #include "krado/log.h"
 #include "Eigen/Eigen"
 #include "robust_predicates/robust_predicates.h"
+#include <cassert>
 #include <stack>
 #include <cmath>
 
@@ -16,6 +17,10 @@ namespace krado {
 static double
 cos_N(BDS_Point * p1, BDS_Point * p2, BDS_Point * p3, const GeomSurface & gf)
 {
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+    assert(p3 != nullptr);
+
     auto n = normal_triangle(p1, p2, p3);
     UVParam uv { (p1->u + p2->u + p3->u) / 3., (p1->v + p2->v + p3->v) / 3. };
     auto N = gf.normal(uv);
@@ -25,6 +30,8 @@ cos_N(BDS_Point * p1, BDS_Point * p2, BDS_Point * p3, const GeomSurface & gf)
 double
 bds_face_validity(const GeomSurface & gf, BDS_Face * f)
 {
+    assert(f != nullptr);
+
     BDS_Point * pts[4];
     if (!f->get_nodes(pts))
         return 0.;
@@ -40,18 +47,26 @@ bds_face_validity(const GeomSurface & gf, BDS_Face * f)
 static Point
 make_point(const BDS_Point * pt)
 {
+    assert(pt != nullptr);
+
     return Point(pt->x, pt->y, pt->z);
 }
 
 static UVParam
 make_uvparam(const BDS_Point * pt)
 {
+    assert(pt != nullptr);
+
     return UVParam(pt->u, pt->v);
 }
 
 static double
 vector_triangle_parametric(BDS_Point * p1, BDS_Point * p2, BDS_Point * p3)
 {
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+    assert(p3 != nullptr);
+
     auto a = make_uvparam(p1) - make_uvparam(p2);
     auto b = make_uvparam(p1) - make_uvparam(p3);
     return determinant(a, b);
@@ -60,6 +75,10 @@ vector_triangle_parametric(BDS_Point * p1, BDS_Point * p2, BDS_Point * p3)
 Vector
 normal_triangle(BDS_Point * p1, BDS_Point * p2, BDS_Point * p3)
 {
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+    assert(p3 != nullptr);
+
     auto a = make_point(p1) - make_point(p2);
     auto b = make_point(p1) - make_point(p3);
     auto v = cross_product(a, b);
@@ -195,6 +214,9 @@ BDS_Point::lc() const
 
 BDS_Edge::BDS_Edge(BDS_Point * A, BDS_Point * B) : deleted(false), g(nullptr)
 {
+    assert(A != nullptr);
+    assert(B != nullptr);
+
     if (*A < *B) {
         p1 = A;
         p2 = B;
@@ -229,6 +251,8 @@ BDS_Edge::num_faces() const
 BDS_Point *
 BDS_Edge::common_vertex(const BDS_Edge * other) const
 {
+    assert(other != nullptr);
+
     if (p1 == other->p1 || p1 == other->p2)
         return p1;
     if (p2 == other->p1 || p2 == other->p2)
@@ -260,6 +284,11 @@ BDS_Edge::add_face(BDS_Face * f)
 bool
 BDS_Edge::operator<(const BDS_Edge & other) const
 {
+    assert(other.p1 != nullptr);
+    assert(other.p2 != nullptr);
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+
     if (*other.p1 < *p1)
         return true;
     if (*p1 < *other.p1)
@@ -299,11 +328,17 @@ BDS_Face::BDS_Face(BDS_Edge * A, BDS_Edge * B, BDS_Edge * C, BDS_Edge * D) :
     e4(D),
     g(nullptr)
 {
+    assert(A != nullptr);
+    assert(B != nullptr);
+    assert(C != nullptr);
+
     e1->add_face(this);
     e2->add_face(this);
     e3->add_face(this);
-    if (e4)
+    if (e4) {
+        assert(D != nullptr);
         e4->add_face(this);
+    }
 }
 
 int
@@ -367,18 +402,27 @@ BDS_Face::get_nodes(BDS_Point * n[4]) const
 bool
 GeomLessThan::operator()(const BDS_GeomEntity * ent1, const BDS_GeomEntity * ent2) const
 {
+    assert(ent1 != nullptr);
+    assert(ent2 != nullptr);
+
     return *ent1 < *ent2;
 }
 
 bool
 PointLessThan::operator()(const BDS_Point * ent1, const BDS_Point * ent2) const
 {
+    assert(ent1 != nullptr);
+    assert(ent2 != nullptr);
+
     return *ent1 < *ent2;
 }
 
 bool
 PointLessThanLexicographic::operator()(const BDS_Point * ent1, const BDS_Point * ent2) const
 {
+    assert(ent1 != nullptr);
+    assert(ent2 != nullptr);
+
     if (ent1->x - ent2->x > t)
         return true;
     if (ent1->x - ent2->x < -t)
@@ -395,11 +439,16 @@ PointLessThanLexicographic::operator()(const BDS_Point * ent1, const BDS_Point *
 bool
 EdgeLessThan::operator()(const BDS_Edge * ent1, const BDS_Edge * ent2) const
 {
+    assert(ent1 != nullptr);
+    assert(ent2 != nullptr);
+
     return *ent1 < *ent2;
 }
 
 EdgeToRecover::EdgeToRecover(int p1, int p2, const GeomCurve * ge) : ge(ge)
 {
+    assert(ge != nullptr);
+
     if (p1 < p2) {
         this->p1 = p1;
         this->p2 = p2;
@@ -455,6 +504,8 @@ BDS_Mesh::find_point(int p)
 BDS_Edge *
 BDS_Mesh::find_edge(BDS_Point * p, int num2)
 {
+    assert(p != nullptr);
+
     auto eit = p->edges.begin();
     while (eit != p->edges.end()) {
         if ((*eit)->p1 == p && (*eit)->p2->iD == num2)
@@ -469,6 +520,8 @@ BDS_Mesh::find_edge(BDS_Point * p, int num2)
 BDS_Edge *
 BDS_Mesh::find_edge(BDS_Point * p1, BDS_Point * p2)
 {
+    assert(p2 != nullptr);
+
     return find_edge(p1, p2->iD);
 }
 
@@ -513,6 +566,9 @@ intersect_edges_2d(double x1,
 BDS_Edge *
 BDS_Mesh::recover_edge_fast(BDS_Point * p1, BDS_Point * p2)
 {
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+
     std::vector<BDS_Face *> ts = p1->get_triangles();
 
     auto it = ts.begin();
@@ -629,6 +685,9 @@ BDS_Mesh::recover_edge(int num1,
 BDS_Edge *
 BDS_Mesh::find_edge(BDS_Point * p1, BDS_Point * p2, BDS_Face * t) const
 {
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
+
     BDS_Point P1(p1->iD);
     BDS_Point P2(p2->iD);
     BDS_Edge E(&P1, &P2);
@@ -657,6 +716,10 @@ is_equivalent(BDS_Edge * e1,
 BDS_Face *
 BDS_Mesh::find_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3)
 {
+    assert(e1 != nullptr);
+    assert(e2 != nullptr);
+    assert(e3 != nullptr);
+
     for (int i = 0; i < e1->num_faces(); i++) {
         BDS_Face * t = e1->faces(i);
         if (is_equivalent(e1, e2, e3, t->e1, t->e2, t->e3)) {
@@ -904,6 +967,9 @@ BDS_Mesh::~BDS_Mesh()
 bool
 BDS_Mesh::split_edge(BDS_Edge * e, BDS_Point * mid, bool check_area_param)
 {
+    assert(e != nullptr);
+    assert(mid != nullptr);
+
     /*
           p1
         / | \
@@ -1037,6 +1103,11 @@ BDS_SwapEdgeTestRecover::operator()(BDS_Point * _p1,
                                     BDS_Point * _q1,
                                     BDS_Point * _q2) const
 {
+    assert(_p1 != nullptr);
+    assert(_p2 != nullptr);
+    assert(_q1 != nullptr);
+    assert(_q2 != nullptr);
+
     double p1[2] = { _p1->u, _p1->v };
     double p2[2] = { _p2->u, _p2->v };
     double op1[2] = { _q1->u, _q1->v };
@@ -1077,6 +1148,9 @@ BDS_SwapEdgeTestQuality::operator()(BDS_Point * p1,
 {
     if (!test_small_triangles)
         return true;
+
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
 
     // AVOID CREATING POINTS WITH 2 NEIGHBORING TRIANGLES
     //  std::vector<BDS_Face*> f1 = p1->getTriangles();
@@ -1204,6 +1278,8 @@ BDS_SwapEdgeTestNormals::operator()(BDS_Point * _p1,
 bool
 BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
 {
+    assert(e != nullptr);
+
     /*
           p1
         / | \
@@ -1360,6 +1436,9 @@ BDS_Edge::num_triangles() const
 bool
 BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, BDS_Point * p, bool force)
 {
+    assert(e != nullptr);
+    assert(p != nullptr);
+
     if (!force && e->num_faces() != 2)
         return false;
     if (!force && p->g && p->g->classif_degree == 0)
@@ -1508,6 +1587,8 @@ BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, BDS_Point * p, bool force)
 static inline bool
 validityOfCavity(const BDS_Point * p, const std::vector<BDS_Point *> & nbg)
 {
+    assert(p != nullptr);
+
     double p_[2] = { p->u, p->v };
     double q_[2] = { nbg[0]->degenerated == 1 ? nbg[1]->u : nbg[0]->u,
                      nbg[0]->degenerated == 2 ? nbg[1]->v : nbg[0]->v };
@@ -1534,6 +1615,8 @@ getOrderedNeighboringVertices(BDS_Point * p,
                               std::vector<BDS_Face *> & ts,
                               int CHECK)
 {
+    assert(p != nullptr);
+
     if (p->iD == CHECK) {
         printf("LISTING THE TRIANGLES\n");
         for (size_t i = 0; i < ts.size(); i++) {
@@ -1616,6 +1699,9 @@ getTutteEnergy(const BDS_Point * p, const std::vector<BDS_Point *> & nbg, double
 {
     if (nbg.empty())
         return 1.e22;
+
+    assert(p != nullptr);
+
     double E = 0;
     double MAX = 0., MIN = 0.;
     for (size_t i = 0; i < nbg.size(); ++i) {
@@ -1640,6 +1726,8 @@ getCentroidUV(const BDS_Point * p,
               const std::vector<UVParam> & kernel,
               const std::vector<double> & lc)
 {
+    assert(p != nullptr);
+
     double U = 0., V = 0., LC = 0.;
     double factSum = 0;
     for (size_t i = 0; i < kernel.size(); ++i) {
@@ -1701,6 +1789,8 @@ getIntersection(const UVParam & p1, const UVParam & p2, const UVParam & q1, cons
 static inline std::tuple<std::vector<UVParam>, std::vector<double>>
 computeSomeKindOfKernel(const BDS_Point * p, const std::vector<BDS_Point *> & nbg, int check)
 {
+    assert(p != nullptr);
+
     std::vector<UVParam> kernel;
     std::vector<double> lc;
 
@@ -1811,6 +1901,8 @@ minimizeTutteEnergyProj(BDS_Point * p,
                         const GeomSurface & gf,
                         int check)
 {
+    assert(p != nullptr);
+
     Point x;
     double oldX = p->x, oldY = p->y, oldZ = p->z, oldU = p->u, oldV = p->v;
     double sum = 0;
@@ -1878,6 +1970,8 @@ minimizeTutteEnergyParam(BDS_Point * p,
                          const GeomSurface & gf,
                          int check)
 {
+    assert(p != nullptr);
+
     double oldX = p->x, oldY = p->y, oldZ = p->z, oldU = p->u, oldV = p->v;
     double RATIO2 = 0;
     auto [UV, LC] = getCentroidUV(p, gf, kernel, lc);
@@ -1913,6 +2007,8 @@ minimizeTutteEnergyParam(BDS_Point * p,
 bool
 BDS_Mesh::smooth_point_centroid(BDS_Point * p, const GeomSurface & gf, double threshold)
 {
+    assert(p != nullptr);
+
     if (p->degenerated)
         return false;
     if (p->g && p->g->classif_degree <= 1)
