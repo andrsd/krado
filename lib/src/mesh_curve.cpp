@@ -9,6 +9,7 @@
 #include "krado/exception.h"
 #include "krado/scheme.h"
 #include "krado/types.h"
+#include "krado/log.h"
 #include <array>
 
 namespace krado {
@@ -85,12 +86,10 @@ MeshCurve::segments() const
 bool
 MeshCurve::is_mesh_degenerated() const
 {
-    // if (this->too_small)
-    //     Msg::Debug("Degenerated mesh on curve %d: too small", tag());
-    // if (this->bnd_vtxs[0] && this->bnd_vtxs[0] == this->bnd_vtxs[1] && this->vtxs.size() < 2)
-    //     Msg::Debug("Degenerated mesh on curve %d: %d mesh nodes",
-    //                tag(),
-    //                (int) this->vtxs.size());
+    if (this->too_smoll)
+        Log::debug("Degenerated mesh on curve {}: too small", tag());
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->vtxs_.size() < 2)
+        Log::debug("Degenerated mesh on curve {}: {} mesh nodes", tag(), (int) this->vtxs_.size());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
                                this->vtxs_.size() < 2);
 }

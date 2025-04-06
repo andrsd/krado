@@ -4,6 +4,7 @@
 // This is a re-write of OctTree from GMSH
 
 #include "krado/octree.h"
+#include "krado/log.h"
 
 namespace krado {
 
@@ -190,7 +191,7 @@ OctTree::add_element_to_bucket(OctantBucket * bucket,
                 ELink ptr2 = ptr1;
                 ptr1 = ptr1->next;
                 if (ptrBucket == nullptr) {
-                    // Msg::Error("Null bucket in octree");
+                    Log::error("Null bucket in octree");
                     return false;
                 }
                 ptr2->next = ptrBucket->lhead;
@@ -240,7 +241,7 @@ OctTree::find_element_bucket(OctantBucket * buckets_head, const Point & pt)
             }
         }
         if (i == num) {
-            // Msg::Error("No bucket contains the given point!");
+            Log::error("No bucket contains the given point!");
             return nullptr;
         }
     }
@@ -312,7 +313,7 @@ OctTree::search_element(OctantBucket * buckets_head, const Point & pt, GlobalInf
     if (ptr_bucket == nullptr) {
         // this is not an error
         // TODO RE ENABLE MSG
-        // Msg::Debug("Could not find point in octree (in search element)");
+        Log::debug("Could not find point in octree (in search element)");
         return nullptr;
     }
 
@@ -384,7 +385,7 @@ OctTree::search_all_elements(OctantBucket * buckets_head,
     std::vector<void *> elements;
     OctantBucket * ptr_bucket = find_element_bucket(buckets_head, pt);
     if (ptr_bucket == nullptr) {
-        // Msg::Debug("Could not find point in octree (in search all elements)");
+        Log::debug("Could not find point in octree (in search all elements)");
         return elements;
     }
 

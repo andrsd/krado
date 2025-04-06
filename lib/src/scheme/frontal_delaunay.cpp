@@ -15,6 +15,7 @@
 #include "krado/scheme/frontal_delaunay_bds.h"
 #include "krado/geom_surface.h"
 #include "krado/surface_index_mapper.h"
+#include "krado/log.h"
 #include <array>
 #include <iostream>
 
@@ -207,8 +208,8 @@ mesh_generator(MeshSurface & msurface,
                     boundary.erase(v2);
             }
         }
-        // else
-        //     Msg::Debug("Degenerated mesh on edge %d", (*ite)->tag());
+        else
+            Log::debug("Degenerated mesh on edge {}", e->tag());
     }
 
     if (boundary.size()) {
@@ -234,10 +235,9 @@ mesh_generator(MeshSurface & msurface,
         all_vertices.insert(mvtx);
 
     if (all_vertices.size() < 3) {
-        // Msg::Warning("Mesh generation of surface %d skipped: only %d nodes on "
-        //              "the boundary",
-        //              gf->tag(),
-        //              all_vertices.size());
+        Log::warn("Mesh generation of surface %d skipped: only {} nodes on the boundary",
+                  msurface.tag(),
+                  all_vertices.size());
         // gf->meshStatistics.status = GFace::DONE;
         return true;
     }
@@ -323,7 +323,7 @@ mesh_generator(MeshSurface & msurface,
     // Recover the boundary edges and compute characteristic lenghts using mesh
     // edge spacing. If two of these edges intersect, then the 1D mesh have to be
     // densified
-    // Msg::Debug("Recovering %d model edges", edges.size());
+    Log::debug("Recovering {} model curves", msurface.curves().size());
     std::set<EdgeToRecover> edges_to_recover;
     std::set<EdgeToRecover> edges_not_recovered;
     for (auto & mcrv : msurface.curves()) {
@@ -365,9 +365,9 @@ mesh_generator(MeshSurface & msurface,
         }
     }
 
-    // Msg::Debug("Recovering %d mesh edges (%d not recovered)",
-    //            edgesToRecover.size(),
-    //            edgesNotRecovered.size());
+    Log::debug("Recovering {} mesh edges ({} not recovered)",
+               edges_to_recover.size(),
+               edges_not_recovered.size());
 
     if (edges_not_recovered.size() /*|| gf->meshStatistics.refineAllEdges*/) {
         // std::ostringstream sstream;
@@ -406,12 +406,12 @@ mesh_generator(MeshSurface & msurface,
         return false;
     }
 
-    // if (recur_iter > 0)
-    //     Msg::Info(":-) All edges recovered after %d iteration%s",
-    //               recur_iter,
-    //               (recur_iter > 1) ? "s" : "");
+    if (recur_iter > 0)
+        Log::info(":-) All edges recovered after {} iteration{}",
+                  recur_iter,
+                  (recur_iter > 1) ? "s" : "");
 
-    // Msg::Debug("Boundary edges recovered for surface %d", gf->tag());
+    Log::debug("Boundary edges recovered for surface {}", msurface.tag());
 
     // look for a triangle that has a negative node and recursively tag all
     // exterior triangles
@@ -486,7 +486,7 @@ mesh_generator(MeshSurface & msurface,
 
     // compute characteristic lengths at vertices
     if (!only_initial_mesh) {
-        // Msg::Debug("Computing mesh size field at mesh nodes %d", edgesToRecover.size());
+        Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
         for (auto & pp : m.points) {
             auto itv = recover_map.find(pp);
             if (itv != recover_map.end()) {
@@ -563,14 +563,14 @@ mesh_generator(MeshSurface & msurface,
 
     {
         int nb_swap;
-        // Msg::Debug("Delaunizing the initial mesh");
+        Log::debug("Delaunizing the initial mesh");
         delaunayize_bds(msurface, m, nb_swap);
     }
 
     // only delete the mesh data stored in the base GFace class
     msurface.delete_mesh();
 
-    // Msg::Debug("Starting to add internal nodes");
+    Log::debug("Starting to add internal nodes");
     // start mesh generation
 
     // fill the small gmsh structures

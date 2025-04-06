@@ -18,6 +18,7 @@
 #include "krado/intersect_curve_surface.h"
 #include "krado/consts.h"
 #include "krado/background_mesh_tools.h"
+#include "krado/log.h"
 #include "robust_predicates/robust_predicates.h"
 #include <Eigen/Eigen>
 #include <limits>
@@ -879,29 +880,19 @@ insert_a_point(MeshSurface & gf,
                                  test_star_shapeness);
         // }
         if (result != 1) {
-            // if (result == -1)
-            //     Msg::Debug("Point %g %g cannot be inserted because cavity if of size 1",
-            //                center[0],
-            //                center[1]);
-            // if (result == -2)
-            //     Msg::Debug("Point %g %g cannot be inserted because euler formula is "
-            //                "not fulfilled",
-            //                center[0],
-            //                center[1]);
-            // if (result == -3)
-            //     Msg::Debug("Point %g %g cannot be inserted because cavity is not star shaped",
-            //                center[0],
-            //                center[1]);
-            // if (result == -4)
-            //     Msg::Debug("Point %g %g cannot be inserted because it is too close to "
-            //                "another point)",
-            //                center[0],
-            //                center[1]);
-            // if (result == -5)
-            //     Msg::Debug("Point %g %g cannot be inserted because it is out of the "
-            //                "parametric domain)",
-            //                center[0],
-            //                center[1]);
+            if (result == -1)
+                Log::debug("Point {} cannot be inserted because cavity if of size 1", center);
+            if (result == -2)
+                Log::debug("Point {} cannot be inserted because euler formula is not fulfilled",
+                           center);
+            if (result == -3)
+                Log::debug("Point {} cannot be inserted because cavity is not star shaped", center);
+            if (result == -4)
+                Log::debug("Point {} cannot be inserted because it is too close to another point",
+                           center);
+            if (result == -5)
+                Log::debug("Point {} cannot be inserted because it is out of the parametric domain",
+                           center);
 
             all_tris.erase(it);
             worst->force_radius(-1);
@@ -940,7 +931,7 @@ bowyer_watson(MeshSurface & msurface,
     BidimMeshData data(equivalence, parametricCoordinates);
 
     if (!build_mesh_generation_data_structures(msurface, all_tris, data)) {
-        // Msg::Error("Invalid meshing data structure");
+        Log::error("Invalid meshing data structure");
         return;
     }
 
@@ -957,9 +948,9 @@ bowyer_watson(MeshSurface & msurface,
         }
         else {
             if (iter++ % 5000 == 0) {
-                // Msg::Debug("%7d points created -- Worst tri radius is %8.3f",
-                //            DATA.vSizes.size(),
-                //            worst->getRadius());
+                Log::debug("{:7d} points created -- Worst tri radius is {:8.3f}",
+                           data.v_sizes.size(),
+                           worst->radius());
             }
             // VERIFY STOP !!!
             if (worst->radius() < 0.5 * std::sqrt(2.0) || (int) data.v_sizes.size() > max_pnt)
@@ -1200,7 +1191,7 @@ bowyer_watson_frontal(MeshSurface & msurface,
     auto degenerated = get_degenerated_vertices(msurface);
 
     if (!build_mesh_generation_data_structures(msurface, all_tris, data)) {
-        // Msg::Error("Invalid meshing data structure");
+        Log::error("Invalid meshing data structure");
         return;
     }
 
@@ -1229,10 +1220,10 @@ bowyer_watson_frontal(MeshSurface & msurface,
         assert(worst != nullptr);
         if (!worst->is_deleted() && is_active(worst, LIMIT, active_edge) &&
             worst->radius() > LIMIT) {
-            // if (ITER++ % 5000 == 0)
-            //     Msg::Debug("%7d points created -- Worst tri radius is %8.3f",
-            //                surface.all_vertices().size(),
-            //                worst->getRadius());
+            if (iter++ % 5000 == 0)
+                Log::debug("{:7d} points created -- Worst tri radius is {:8.3f}",
+                           msurface.all_vertices().size(),
+                           worst->radius());
             UVParam new_point;
             std::tuple<double, double, double> metric;
             if (optimal_point_frontal_b(msurface, worst, active_edge, data, new_point, metric)) {
@@ -1408,11 +1399,11 @@ recover_edges(std::vector<MTri3 *> & t, std::vector<MeshElement> & edges)
             edges_to_recover.push_back(edges[i]);
     }
 
-    // Msg::Info("%d edges to recover among %d edges", edgesToRecover.size(), edges.size());
+    Log::info("{} edges to recover among {} edges", edges_to_recover.size(), edges.size());
     for (std::size_t i = 0; i < edges_to_recover.size(); ++i) {
         auto * mstart = edges_to_recover[i].vertex(0);
         auto * mend = edges_to_recover[i].vertex(1);
-        // Msg::Info("recovering edge %d %d", mstart->getNum(), mend->getNum());
+        Log::info("recovering edge {} {", mstart->num(), mend->num());
         while (recover_edge_by_swaps(t, mstart, mend, edges))
             ;
     }

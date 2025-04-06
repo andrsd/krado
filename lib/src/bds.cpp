@@ -5,6 +5,7 @@
 #include "krado/types.h"
 #include "krado/uv_param.h"
 #include "krado/consts.h"
+#include "krado/log.h"
 #include "Eigen/Eigen"
 #include "robust_predicates/robust_predicates.h"
 #include <stack>
@@ -550,7 +551,7 @@ BDS_Mesh::recover_edge(int num1,
     if (!p1 || !p2)
         throw Exception("Could not find points {} or {} in BDS mesh", num1, num2);
 
-    // Msg::Debug("Edge %d %d has to be recovered", num1, num2);
+    Log::debug(1, "Edge {} {} has to be recovered", num1, num2);
 
     int ix = 0;
     double x[2];
@@ -576,14 +577,15 @@ BDS_Mesh::recover_edge(int num1,
                     if (e2r.find(EdgeToRecover(e->p1->iD, e->p2->iD, nullptr)) != e2r.end()) {
                         auto itr1 = e2r.find(EdgeToRecover(e->p1->iD, e->p2->iD, nullptr));
                         auto itr2 = e2r.find(EdgeToRecover(num1, num2, nullptr));
-                        // Msg::Debug("edge %d %d on model edge %d cannot be recovered because"
-                        //            " it intersects %d %d on model edge %d",
-                        //            num1,
-                        //            num2,
-                        //            itr2->ge->tag(),
-                        //            e->p1->iD,
-                        //            e->p2->iD,
-                        //            itr1->ge->tag());
+                        Log::debug(1,
+                                   "edge {} {} on model edge {} cannot be recovered because it "
+                                   "intersects {} {} on model edge {}",
+                                   num1,
+                                   num2,
+                                   itr2->ge->tag(),
+                                   e->p1->iD,
+                                   e->p2->iD,
+                                   itr1->ge->tag());
                         // now throw a class that contains the diagnostic
                         not_recovered.insert(EdgeToRecover(num1, num2, itr2->ge));
                         not_recovered.insert(EdgeToRecover(e->p1->iD, e->p2->iD, itr1->ge));
@@ -602,17 +604,7 @@ BDS_Mesh::recover_edge(int num1,
         if (!intersected.size() || ix > 300) {
             auto * eee = find_edge(num1, num2);
             if (eee == nullptr) {
-                // if (Msg::GetVerbosity() > 98) {
-                //     outputScalarField(triangles, "debugp.pos", 1);
-                //     outputScalarField(triangles, "debugr.pos", 0);
-                //     Msg::Debug("edge %d %d cannot be recovered at all, look at debugp.pos "
-                //                "and debugr.pos",
-                //                num1,
-                //                num2);
-                // }
-                // else {
-                //     Msg::Debug("edge %d %d cannot be recovered at all", num1, num2);
-                // }
+                Log::debug("edge {} {} cannot be recovered at all", num1, num2);
                 return { nullptr, true };
             }
             return { eee, fatal };
@@ -625,7 +617,7 @@ BDS_Mesh::recover_edge(int num1,
         }
 
         if (!success) {
-            // Msg::Debug("edge %d %d cannot be recovered at all\n", num1, num2);
+            Log::debug("edge {} {} cannot be recovered at all", num1, num2);
             return { nullptr, true };
         }
 
@@ -1138,7 +1130,7 @@ BDS_SwapEdgeTestQuality::operator()(BDS_Point * _p1,
         p2 = _op2;
     }
     else {
-        // Msg::Warning("Unable to detect the new edge in BDS_SwapEdgeTestQuality\n");
+        Log::warn("Unable to detect the new edge in BDS_SwapEdgeTestQuality");
     }
 
     if (p1 && p2) {

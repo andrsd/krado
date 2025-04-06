@@ -13,6 +13,7 @@
 #include "krado/geom_surface.h"
 #include "krado/vector.h"
 #include "krado/numerics.h"
+#include "krado/log.h"
 
 namespace krado {
 
@@ -75,7 +76,7 @@ build_mesh_generation_data_structures(MeshSurface & msurface,
         set_lcs_init(tri, v_sizes_map);
 
     if (v_sizes_map.find(nullptr) != v_sizes_map.end()) {
-        // Msg::Error("Some NULL points exist in 2D mesh");
+        Log::error("Some NULL points exist in 2D mesh");
         return false;
     }
 
@@ -223,7 +224,7 @@ compute_equivalent_triangles(const MeshSurface & msurface,
     }
 
     if (wtf.size()) {
-        // Msg::Info("%d triangles are equivalent", WTF.size());
+        Log::info("{} triangles are equivalent", wtf.size());
         return true;
     }
     return false;

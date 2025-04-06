@@ -9,6 +9,7 @@
 #include "krado/geom_surface.h"
 #include "krado/uv_param.h"
 #include "krado/predicates.h"
+#include "krado/log.h"
 #include <unordered_map>
 #include <list>
 #include <set>
@@ -96,8 +97,8 @@ hilbert_coordinates(double x,
             yRed = -yRed;
             RESULT += 3 * BIG;
         }
-        // else
-        //     Msg::Warning("Hilbert failed %d %d", coordRed, coordBlue);
+        else
+            Log::warn("Hilbert failed {} {}", coordRed, coordBlue);
         BIG /= 4;
     }
     return RESULT;
