@@ -12,7 +12,7 @@ list(APPEND SRC bamg.cpp)
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
 if(NOT MSVC)
-    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME bamg)
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME krado-bamg)
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DCMAKE -DNOTFREEFEM)
