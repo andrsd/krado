@@ -21,6 +21,7 @@ option(KRADO_BUILD_TESTS "Build tests" NO)
 option(KRADO_WITH_TRIANGLE "Build with triangle support, set TRIANGLE_DIR to the location with triangle source files" NO)
 
 find_package(fmt 9.0 REQUIRED)
+find_package(spdlog 1 REQUIRED)
 find_package(exodusIIcpp 2.0 REQUIRED)
 find_package(OpenCASCADE REQUIRED)
 if(OpenCASCADE_FOUND)

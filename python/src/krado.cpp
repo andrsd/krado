@@ -31,6 +31,8 @@
 #include "krado/transform.h"
 #include "krado/vector.h"
 #include "krado/io.h"
+#include "krado/log.h"
+#include <fmt/core.h>
 
 namespace py = pybind11;
 using namespace krado;
@@ -45,6 +47,42 @@ public:
         PYBIND11_OVERRIDE_PURE(Point, MeshVertexAbstract, point);
     }
 };
+
+void
+py_log_log(int level, const std::string & msg)
+{
+    Log::log(level, msg);
+}
+
+void
+py_log_info(int level, const std::string & msg)
+{
+    Log::info(level, msg);
+}
+
+void
+py_log_warn(int level, const std::string & msg)
+{
+    Log::warn(level, msg);
+}
+
+void
+py_log_error(int level, const std::string & msg)
+{
+    Log::error(level, msg);
+}
+
+void
+py_log_trace(int level, const std::string & msg)
+{
+    Log::trace(level, msg);
+}
+
+void
+py_log_debug(int level, const std::string & msg)
+{
+    Log::debug(level, msg);
+}
 
 PYBIND11_MODULE(krado, m)
 {
@@ -354,5 +392,12 @@ PYBIND11_MODULE(krado, m)
     m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
 
+    auto log = m.def_submodule("log", "Submodule for logging");
+    m.def("log", &py_log_log, py::arg("level"), py::arg("msg"));
+    m.def("info", &py_log_info, py::arg("level"), py::arg("msg"));
+    m.def("warn", &py_log_warn, py::arg("level"), py::arg("msg"));
+    m.def("error", &py_log_error, py::arg("level"), py::arg("msg"));
+    m.def("trace", &py_log_trace, py::arg("level"), py::arg("msg"));
+    m.def("debug", &py_log_debug, py::arg("level"), py::arg("msg"));
     // clang-format on
 }

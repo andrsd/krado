@@ -16,6 +16,12 @@ set_target_properties(
         SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
+target_compile_definitions(
+    ${NAME}
+    PRIVATE
+        SPDLOG_FMT_EXTERNAL
+)
+
 target_include_directories(
     ${NAME}
     PUBLIC
@@ -36,6 +42,7 @@ target_link_libraries(
         robust_predicates
     PUBLIC
         fmt::fmt
+        spdlog::spdlog
         exodusIIcpp::exodusIIcpp
         ${Boost_LIBRARIES}
         ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
