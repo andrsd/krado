@@ -10,7 +10,8 @@ namespace krado {
 
 MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
     MeshVertexAbstract(geom_vertex),
-    gvtx_(geom_vertex)
+    gvtx_(geom_vertex),
+    mesh_size_(MAX_LC)
 {
 }
 
@@ -33,9 +34,15 @@ MeshVertex::point() const
 }
 
 double
-MeshVertex::prescribed_mesh_size_at_vertex() const
+MeshVertex::mesh_size() const
 {
-    return MAX_LC;
+    return this->mesh_size_;
+}
+
+void
+MeshVertex::set_mesh_size(double size)
+{
+    this->mesh_size_ = size;
 }
 
 } // namespace krado

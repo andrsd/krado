@@ -69,6 +69,12 @@ public:
 
     void set_too_small(bool value);
 
+    /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
+    ///
+    /// @param u Parameter value
+    /// @return Mesh size at parameter
+    double mesh_size_at_param(double u) const;
+
 private:
     const GeomCurve & gcurve_;
     /// All vertices on this curve

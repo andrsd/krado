@@ -7,6 +7,7 @@
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_vertex.h"
 #include "krado/numerics.h"
 #include "krado/utils.h"
 #include "krado/consts.h"
@@ -18,24 +19,17 @@ namespace {
 
 class FTransfiniteSizeMap {
 public:
-    FTransfiniteSizeMap() {}
+    FTransfiniteSizeMap(const MeshCurve & curve) : mcurve_(curve) {}
 
     double
     operator()(const GeomCurve & curve, double u)
     {
-        // auto p = curve.point(u);
-        // auto [u_lo, u_hi] = curve.param_range();
-        double lc_here = MAX_LC;
-
-        // if(t == t_begin && ge->getBeginVertex())
-        //     lc_here = BGM_MeshSize(ge->getBeginVertex(), t, 0, p.x(), p.y(), p.z());
-        // else if(t == t_end && ge->getEndVertex())
-        //     lc_here = BGM_MeshSize(ge->getEndVertex(), t, 0, p.x(), p.y(), p.z());
-        // lc_here = std::min(lc_here, BGM_MeshSize(ge, t, 0, p.x(), p.y(), p.z()));
-        return curve.d1(u).magnitude() / lc_here;
+        auto lc = this->mcurve_.mesh_size_at_param(u);
+        return curve.d1(u).magnitude() / lc;
     }
 
 private:
+    const MeshCurve & mcurve_;
 };
 
 } // namespace
@@ -45,15 +39,11 @@ SchemeSizeMap::SchemeSizeMap() : SchemeTransfinite("sizemap") {}
 Integral1D
 SchemeSizeMap::compute_integral(const MeshCurve & curve)
 {
-    // auto coeff = get<double>("coef");
-    // auto n_intervals = get<int>("intervals");
-    // auto n_pts = n_intervals + 1;
-
     auto & geom_curve = curve.geom_curve();
     auto [u_lower, u_upper] = geom_curve.param_range();
 
     Integral1D integral;
-    integral.integrate(geom_curve, u_lower, u_upper, FTransfiniteSizeMap());
+    integral.integrate(geom_curve, u_lower, u_upper, FTransfiniteSizeMap(curve));
     return integral;
 }
 

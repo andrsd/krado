@@ -87,7 +87,7 @@ build_mesh_generation_data_structures(MeshSurface & msurface,
     std::set<MeshVertexAbstract *> embedded_vertices;
     for (auto & mvtx : msurface.embedded_vertices()) {
         if (mvtx) {
-            v_sizes_map[mvtx] = std::min(v_sizes_map[mvtx], mvtx->prescribed_mesh_size_at_vertex());
+            v_sizes_map[mvtx] = std::min(v_sizes_map[mvtx], mvtx->mesh_size());
             embedded_vertices.insert(mvtx);
         }
     }

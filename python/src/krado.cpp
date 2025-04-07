@@ -312,6 +312,8 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<MeshVertex, MeshVertexAbstract>(m, "MeshVertex")
         .def(py::init<const GeomVertex &>())
+        .def("mesh_size", &MeshVertex::mesh_size)
+        .def("set_mesh_size", &MeshVertex::set_mesh_size)
     ;
 
     py::class_<MeshCurveVertex, MeshVertexAbstract>(m, "MeshCurveVertex")

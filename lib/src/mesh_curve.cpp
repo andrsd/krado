@@ -10,6 +10,7 @@
 #include "krado/scheme.h"
 #include "krado/types.h"
 #include "krado/log.h"
+#include "krado/consts.h"
 #include <array>
 
 namespace krado {
@@ -98,6 +99,27 @@ void
 MeshCurve::set_too_small(bool value)
 {
     this->too_smoll = value;
+}
+
+double
+MeshCurve::mesh_size_at_param(double u) const
+{
+    auto [u_lo, u_hi] = this->gcurve_.param_range();
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[1]) {
+        // 2 bounding vertices => interpolate the size
+        double lc1 = this->bnd_vtxs_[0]->mesh_size();
+        double lc2 = this->bnd_vtxs_[1]->mesh_size();
+        auto alpha = (u - u_lo) / (u_hi - u_lo);
+        return (1 - alpha) * lc1 + alpha * lc2;
+    }
+    else if (this->bnd_vtxs_[0] && std::abs(u - u_lo) < EPSILON) {
+        return this->bnd_vtxs_[0]->mesh_size();
+    }
+    else if (this->bnd_vtxs_[1] && std::abs(u - u_hi) < EPSILON) {
+        return this->bnd_vtxs_[1]->mesh_size();
+    }
+    else
+        return MAX_LC;
 }
 
 //

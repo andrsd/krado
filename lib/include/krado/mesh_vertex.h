@@ -31,11 +31,20 @@ public:
     /// @return Physical position in the 3D space
     [[nodiscard]] Point point() const override;
 
+    /// Get the mesh size at the vertex.
     ///
-    double prescribed_mesh_size_at_vertex() const;
+    /// @return The mesh size at the vertex.
+    double mesh_size() const;
+
+    /// Set the mesh size at the vertex.
+    ///
+    /// @param size The new mesh size.
+    void set_mesh_size(double size);
 
 private:
     const GeomVertex & gvtx_;
+    /// Mesh size at the vertex.
+    double mesh_size_;
 
 public:
     struct PtrLessThan {
