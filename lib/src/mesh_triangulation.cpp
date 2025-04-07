@@ -429,7 +429,7 @@ get_node_copies(MeshSurface & msurface)
 PolyMesh
 surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> * additional)
 {
-    auto faceTag = msurface.tag();
+    auto srf_id = msurface.id();
 
     PolyMesh pm;
 
@@ -497,8 +497,8 @@ surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> *
                             auto * he = pm.get_edge(v0, v1);
                             if (he) {
                                 if (he->opposite)
-                                    he->opposite->data = e->tag();
-                                he->data = e->tag();
+                                    he->opposite->data = e->id();
+                                he->data = e->id();
                             }
                         }
                     }
@@ -511,7 +511,7 @@ surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> *
         // meaning exterior
         auto * other_side = Color(pm.vertices[0]->he, -2);
         // other_side is inthernal to the face --> color them with tag faceTag
-        other_side = Color(other_side, faceTag);
+        other_side = Color(other_side, srf_id);
         // holes will be tagged -1
 
         // flip edges that have been scrambled
@@ -521,7 +521,7 @@ surface_initial_mesh(MeshSurface & msurface, bool recover, std::vector<double> *
             for (auto he : pm.hedges) {
                 assert(he != nullptr);
                 assert(he->f != nullptr);
-                if (he->opposite && he->f->data == faceTag && he->opposite->f->data == faceTag) {
+                if (he->opposite && he->f->data == srf_id && he->opposite->f->data == srf_id) {
                     if (delaunay_edge_criterion_plane_isotropic(he, nullptr)) {
                         if (intersect(he->v,
                                       he->next->v,

@@ -26,12 +26,7 @@
 
 namespace krado {
 
-GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) :
-    dim_(dim),
-    shape_(shape),
-    entity_tag_(-1)
-{
-}
+GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) : dim_(dim), shape_(shape), id_(-1) {}
 
 int
 GeomShape::dim() const
@@ -40,15 +35,15 @@ GeomShape::dim() const
 }
 
 int
-GeomShape::tag() const
+GeomShape::id() const
 {
-    return this->entity_tag_;
+    return this->id_;
 }
 
 void
-GeomShape::setTag(int tag)
+GeomShape::set_id(int id)
 {
-    this->entity_tag_ = tag;
+    this->id_ = id;
 }
 
 void

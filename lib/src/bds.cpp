@@ -638,10 +638,10 @@ BDS_Mesh::recover_edge(int num1,
                                    "intersects {} {} on model edge {}",
                                    num1,
                                    num2,
-                                   itr2->ge->tag(),
+                                   itr2->ge->id(),
                                    e->p1->iD,
                                    e->p2->iD,
-                                   itr1->ge->tag());
+                                   itr1->ge->id());
                         // now throw a class that contains the diagnostic
                         not_recovered.insert(EdgeToRecover(num1, num2, itr2->ge));
                         not_recovered.insert(EdgeToRecover(e->p1->iD, e->p2->iD, itr1->ge));

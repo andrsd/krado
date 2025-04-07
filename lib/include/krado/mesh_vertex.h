@@ -16,7 +16,10 @@ class MeshVertex : public MeshVertexAbstract, public MeshingParameters {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
 
-    int tag() const;
+    /// Get the unique identifier of the vertex.
+    ///
+    /// @return The unique identifier of the vertex.
+    int id() const;
 
     /// Get geometrical vertex associated with this vertex
     ///
@@ -39,7 +42,7 @@ public:
         bool
         operator()(const MeshVertex * v1, const MeshVertex * v2) const
         {
-            return v1->tag() < v2->tag();
+            return v1->id() < v2->id();
         }
     };
 };

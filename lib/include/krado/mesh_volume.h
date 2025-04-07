@@ -14,7 +14,10 @@ class MeshVolume : public MeshingParameters {
 public:
     MeshVolume(const GeomVolume & gvolume, const std::vector<MeshSurface *> & mesh_surfaces);
 
-    int tag() const;
+    /// Get the unique identifier of the volume.
+    ///
+    /// @return The unique identifier of the volume.
+    int id() const;
 
     /// Get geometrical volume associated with this surface
     ///

@@ -75,7 +75,7 @@ recover_curve(BDS_Mesh & m,
 
     BDS_GeomEntity * g = nullptr;
     if (pass == 2) {
-        auto tag = mcurve->tag();
+        auto tag = mcurve->id();
         m.add_geom(tag, 1);
         g = m.get_geom(tag, 1);
     }
@@ -104,8 +104,8 @@ recover_curve(BDS_Mesh & m,
                             -1, // seg.getNum(),
                             i + 1,
                             mcurve->segments().size(),
-                            mcurve->tag(),
-                            msurface.tag());
+                            mcurve->id(),
+                            msurface.id());
                     }
                     return !failed;
                 }
@@ -209,7 +209,7 @@ mesh_generator(MeshSurface & msurface,
             }
         }
         else
-            Log::debug("Degenerated mesh on edge {}", e->tag());
+            Log::debug("Degenerated mesh on edge {}", e->id());
     }
 
     if (boundary.size()) {
@@ -236,7 +236,7 @@ mesh_generator(MeshSurface & msurface,
 
     if (all_vertices.size() < 3) {
         Log::warn("Mesh generation of surface %d skipped: only {} nodes on the boundary",
-                  msurface.tag(),
+                  msurface.id(),
                   all_vertices.size());
         // gf->meshStatistics.status = GFace::DONE;
         return true;
@@ -259,8 +259,8 @@ mesh_generator(MeshSurface & msurface,
         auto & ge = vtx->geom_shape();
         auto [par, success] = reparam_mesh_vertex_on_surface(vtx, msurface.geom_surface());
         auto * pp = m.add_point(points.size(), par, msurface.geom_surface());
-        m.add_geom(ge.tag(), ge.dim());
-        BDS_GeomEntity * g = m.get_geom(ge.tag(), ge.dim());
+        m.add_geom(ge.id(), ge.dim());
+        BDS_GeomEntity * g = m.get_geom(ge.id(), ge.dim());
         assert(pp != nullptr);
         pp->g = g;
         recover_map[pp] = vtx;
@@ -392,7 +392,7 @@ mesh_generator(MeshSurface & msurface,
             for (auto & edge : edges_not_recovered) {
                 int p1 = edge.p1;
                 int p2 = edge.p2;
-                throw Exception("Edge not recovered: {} {} {}", p1, p2, edge.ge->tag());
+                throw Exception("Edge not recovered: {} {} {}", p1, p2, edge.ge->id());
             }
         }
 
@@ -411,7 +411,7 @@ mesh_generator(MeshSurface & msurface,
                   recur_iter,
                   (recur_iter > 1) ? "s" : "");
 
-    Log::debug("Boundary edges recovered for surface {}", msurface.tag());
+    Log::debug("Boundary edges recovered for surface {}", msurface.id());
 
     // look for a triangle that has a negative node and recursively tag all
     // exterior triangles

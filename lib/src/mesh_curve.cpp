@@ -22,9 +22,9 @@ MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2)
 }
 
 int
-MeshCurve::tag() const
+MeshCurve::id() const
 {
-    return this->gcurve_.tag();
+    return this->gcurve_.id();
 }
 
 const GeomCurve &
@@ -87,9 +87,9 @@ bool
 MeshCurve::is_mesh_degenerated() const
 {
     if (this->too_smoll)
-        Log::debug("Degenerated mesh on curve {}: too small", tag());
+        Log::debug("Degenerated mesh on curve {}: too small", id());
     if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->vtxs_.size() < 2)
-        Log::debug("Degenerated mesh on curve {}: {} mesh nodes", tag(), (int) this->vtxs_.size());
+        Log::debug("Degenerated mesh on curve {}: {} mesh nodes", id(), (int) this->vtxs_.size());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
                                this->vtxs_.size() < 2);
 }

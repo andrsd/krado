@@ -17,7 +17,10 @@ class MeshCurve : public MeshingParameters {
 public:
     MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2);
 
-    int tag() const;
+    /// Get the unique identifier of the curve.
+    ///
+    /// @return The unique identifier of the curve.
+    int id() const;
 
     /// Get geometrical curve associated with this curve
     ///

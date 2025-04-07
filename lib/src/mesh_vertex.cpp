@@ -15,9 +15,9 @@ MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
 }
 
 int
-MeshVertex::tag() const
+MeshVertex::id() const
 {
-    return this->gvtx_.tag();
+    return this->gvtx_.id();
 }
 
 const GeomVertex &

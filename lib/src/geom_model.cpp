@@ -174,7 +174,7 @@ GeomModel::bind_solids(const GeomShape & shape)
         if (!this->vol_id_.IsBound(solid)) {
             auto id = this->vols_.size() + 1;
             GeomVolume gvol(solid);
-            gvol.setTag(id);
+            gvol.set_id(id);
             this->vols_.emplace(id, gvol);
             this->vol_id_.Bind(solid, id);
         }
@@ -190,7 +190,7 @@ GeomModel::bind_faces(const GeomShape & shape)
         if (!this->srf_id_.IsBound(face)) {
             auto id = this->srfs_.size() + 1;
             GeomSurface gsurf(face);
-            gsurf.setTag(id);
+            gsurf.set_id(id);
             this->srfs_.emplace(id, gsurf);
             this->srf_id_.Bind(face, id);
         }
@@ -206,7 +206,7 @@ GeomModel::bind_edges(const GeomShape & shape)
         if (!this->crv_id_.IsBound(edge)) {
             auto id = this->crvs_.size() + 1;
             GeomCurve gedge(edge);
-            gedge.setTag(id);
+            gedge.set_id(id);
             this->crvs_.emplace(id, gedge);
             this->crv_id_.Bind(edge, id);
         }
@@ -222,7 +222,7 @@ GeomModel::bind_vertices(const GeomShape & shape)
         if (!this->vtx_id_.IsBound(vertex)) {
             auto id = this->vtxs_.size() + 1;
             GeomVertex gvtx(vertex);
-            gvtx.setTag(id);
+            gvtx.set_id(id);
             this->vtxs_.emplace(id, gvtx);
             this->vtx_id_.Bind(vertex, id);
         }

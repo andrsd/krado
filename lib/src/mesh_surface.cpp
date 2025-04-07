@@ -22,9 +22,9 @@ MeshSurface::MeshSurface(const GeomSurface & gsurface,
 }
 
 int
-MeshSurface::tag() const
+MeshSurface::id() const
 {
-    return this->gsurface_.tag();
+    return this->gsurface_.id();
 }
 
 const GeomSurface &

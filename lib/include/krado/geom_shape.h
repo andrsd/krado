@@ -23,9 +23,15 @@ public:
                                       SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
 
-    int tag() const;
+    /// Get the unique identifier of the shape
+    ///
+    /// @return The unique identifier of the shape.
+    int id() const;
 
-    void setTag(int tag);
+    /// Set the unique identifier of the shape
+    ///
+    /// @param id The unique identifier of the shape.
+    void set_id(int id);
 
     operator const TopoDS_Shape &() const;
 
@@ -42,7 +48,7 @@ private:
 
     int dim_;
     TopoDS_Shape shape_;
-    int entity_tag_;
+    int id_;
 };
 
 } // namespace krado
