@@ -53,4 +53,8 @@ if (KRADO_WITH_TRIANGLE)
     target_link_libraries(${NAME} PUBLIC triangle)
 endif()
 
+if (KRADO_WITH_MOAB)
+    target_link_libraries(${NAME} PRIVATE MOAB)
+endif()
+
 configure_file(include/config.h.in include/krado/config.h)

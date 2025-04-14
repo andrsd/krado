@@ -6,6 +6,7 @@
 #include <pybind11/stl.h>
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
+#include "krado/dagmc_file.h"
 #include "krado/extrude.h"
 #include "krado/exodusii_file.h"
 #include "krado/step_file.h"
@@ -388,6 +389,11 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
         .def("write", &ExodusIIFile::write)
+    ;
+
+    py::class_<DAGMCFile>(m, "DAGMCFile")
+        .def(py::init<const std::string &>())
+        .def("write", &DAGMCFile::write)
     ;
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));

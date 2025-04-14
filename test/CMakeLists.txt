@@ -12,6 +12,10 @@ target_compile_definitions(${PROJECT_NAME}
         -DKRADO_UNIT_TESTS_ROOT="${KRADO_UNIT_TESTS_ROOT}"
 )
 
+if (KRADO_WITH_MOAB)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE KRADO_WITH_MOAB)
+endif()
+
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC
