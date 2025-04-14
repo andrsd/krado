@@ -83,6 +83,12 @@ public:
         return (this->mask_ & flag);
     }
 
+    unsigned int
+    as_uint() const
+    {
+        return this->mask_;
+    }
+
 private:
     constexpr static inline unsigned int
     initializer_list_helper(typename std::initializer_list<ENUM>::const_iterator it,
