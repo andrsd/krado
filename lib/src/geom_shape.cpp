@@ -46,6 +46,31 @@ GeomShape::set_id(int id)
     this->id_ = id;
 }
 
+bool
+GeomShape::has_material() const
+{
+    return !this->material_name_.empty();
+}
+
+void
+GeomShape::set_material(const std::string & name, double density)
+{
+    this->material_name_ = name;
+    this->density_ = density;
+}
+
+const std::string &
+GeomShape::material() const
+{
+    return this->material_name_;
+}
+
+double
+GeomShape::density() const
+{
+    return this->density_;
+}
+
 void
 GeomShape::clean()
 {

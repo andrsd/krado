@@ -179,6 +179,10 @@ PYBIND11_MODULE(krado, m)
         .def("clean", &GeomShape::clean)
         .def("heal", &GeomShape::heal)
         .def("scale", &GeomShape::scale)
+        .def("has_material", &GeomShape::has_material)
+        .def("set_material", &GeomShape::set_material)
+        .def("material", &GeomShape::material)
+        .def("density", &GeomShape::density)
     ;
 
     py::class_<GeomModel>(m, "GeomModel")

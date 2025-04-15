@@ -33,6 +33,27 @@ public:
     /// @param id The unique identifier of the shape.
     void set_id(int id);
 
+    /// Query if this shape has material assigned to it
+    ///
+    /// @return `true` if material is assigned, `false` otherwise
+    bool has_material() const;
+
+    /// Set material
+    ///
+    /// @param name Material name
+    /// @param density Density [g/cm^3]
+    void set_material(const std::string & name, double density = 0.);
+
+    /// Get material
+    ///
+    /// @return Material name
+    const std::string & material() const;
+
+    /// Return density
+    ///
+    /// @return Density [g/cm^3]
+    double density() const;
+
     operator const TopoDS_Shape &() const;
 
 private:
@@ -49,6 +70,12 @@ private:
     int dim_;
     TopoDS_Shape shape_;
     int id_;
+    /// Material name
+    std::string material_name_;
+    /// Material description
+    std::string material_description_;
+    /// Density
+    double density_;
 };
 
 } // namespace krado

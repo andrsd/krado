@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "builder.h"
 #include "krado/step_file.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_vertex.h"
@@ -40,4 +41,14 @@ TEST(GeomShapeTest, scale)
     EXPECT_DOUBLE_EQ(v.x(), 0.5);
     EXPECT_DOUBLE_EQ(v.y(), 1.);
     EXPECT_DOUBLE_EQ(v.z(), 1.5);
+}
+
+TEST(GeomShapeTest, material)
+{
+    auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
+    EXPECT_FALSE(box.has_material());
+    box.set_material("steel", 8);
+    EXPECT_TRUE(box.has_material());
+    EXPECT_EQ(box.material(), "steel");
+    EXPECT_DOUBLE_EQ(box.density(), 8.);
 }
