@@ -2,13 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/dagmc_file.h"
-#include "krado/element.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
-#include "krado/mesh_element.h"
-#include "krado/mesh_vertex_abstract.h"
-#include "krado/mesh_volume.h"
-#include "krado/types.h"
 #ifdef KRADO_WITH_MOAB
     #include "MBTagConventions.hpp"
     #include "moab/Core.hpp"
