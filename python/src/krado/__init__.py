@@ -3,6 +3,8 @@
 
 from .krado import *
 
+__version__ = krado.__version__
+
 __all__ = [
-    STEPFile,
+    "STEPFile",
 ]

@@ -88,7 +88,7 @@ py_log_debug(int level, const std::string & msg)
 PYBIND11_MODULE(krado, m)
 {
     m.doc() = "pybind11 plugin for krado";
-    py::setattr(m, "version", py::str(KRADO_VERSION));
+    m.attr("__version__") = KRADO_VERSION;
 
     // clang-format off
     py::class_<STEPFile>(m, "STEPFile")
