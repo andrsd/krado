@@ -449,11 +449,11 @@ PYBIND11_MODULE(krado, m)
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
 
     auto log = m.def_submodule("log", "Submodule for logging");
-    m.def("log", &py_log_log, py::arg("level"), py::arg("msg"));
-    m.def("info", &py_log_info, py::arg("level"), py::arg("msg"));
-    m.def("warn", &py_log_warn, py::arg("level"), py::arg("msg"));
-    m.def("error", &py_log_error, py::arg("level"), py::arg("msg"));
-    m.def("trace", &py_log_trace, py::arg("level"), py::arg("msg"));
-    m.def("debug", &py_log_debug, py::arg("level"), py::arg("msg"));
+    log.def("log", &py_log_log, py::arg("level"), py::arg("msg"));
+    log.def("info", &py_log_info, py::arg("level"), py::arg("msg"));
+    log.def("warn", &py_log_warn, py::arg("level"), py::arg("msg"));
+    log.def("error", &py_log_error, py::arg("level"), py::arg("msg"));
+    log.def("trace", &py_log_trace, py::arg("level"), py::arg("msg"));
+    log.def("debug", &py_log_debug, py::arg("level"), py::arg("msg"));
     // clang-format on
 }
