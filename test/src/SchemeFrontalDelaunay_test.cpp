@@ -12,7 +12,8 @@ TEST(SchemeFrontalDelaunayTest, mesh_quarter_circle)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
     STEPFile file(input_file.string());
-    auto shape = file.load();
+    auto shapes = file.load();
+    auto shape = shapes[0];
     GeomModel model(shape);
 
     // clang-format off

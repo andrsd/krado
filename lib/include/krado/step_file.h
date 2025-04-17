@@ -5,6 +5,7 @@
 
 #include "krado/geom_shape.h"
 #include <string>
+#include <vector>
 
 namespace krado {
 
@@ -12,7 +13,7 @@ namespace krado {
 class STEPFile {
 public:
     STEPFile(const std::string & file_name);
-    [[nodiscard]] GeomShape load() const;
+    [[nodiscard]] std::vector<GeomShape> load() const;
 
 private:
     std::string file_name_;

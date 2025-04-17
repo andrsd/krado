@@ -12,8 +12,8 @@ TEST(GeomModelTest, load)
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
 
     STEPFile file(input_file.string());
-    auto shape = file.load();
-    GeomModel model(shape);
+    auto shapes = file.load();
+    GeomModel model(shapes[0]);
 
     auto v1 = model.vertex(1);
     EXPECT_EQ(v1.point(), Point(0., 0., 0.));
@@ -29,8 +29,8 @@ TEST(GeomModelTest, load_quad)
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
 
     STEPFile file(input_file.string());
-    auto shape = file.load();
-    GeomModel model(shape);
+    auto shapes = file.load();
+    GeomModel model(shapes[0]);
     EXPECT_EQ(model.vertices().size(), 4);
     EXPECT_EQ(model.curves().size(), 4);
 
@@ -43,8 +43,8 @@ TEST(GeomModelTest, load_box)
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box.step";
 
     STEPFile file(input_file.string());
-    auto shape = file.load();
-    GeomModel model(shape);
+    auto shapes = file.load();
+    GeomModel model(shapes[0]);
     EXPECT_EQ(model.vertices().size(), 8);
     EXPECT_EQ(model.curves().size(), 12);
     EXPECT_EQ(model.surfaces().size(), 6);

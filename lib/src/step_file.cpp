@@ -10,7 +10,7 @@ namespace krado {
 
 STEPFile::STEPFile(const std::string & file_name) : file_name_(file_name) {}
 
-GeomShape
+std::vector<GeomShape>
 STEPFile::load() const
 {
     TCollection_AsciiString fname(this->file_name_.c_str());
@@ -23,8 +23,10 @@ STEPFile::load() const
 
     reader.NbRootsForTransfer();
     reader.TransferRoots();
-    auto result = reader.OneShape();
-    return GeomShape(-1, result);
+    std::vector<GeomShape> shapes;
+    for (int idx = 1; idx <= reader.NbShapes(); ++idx)
+        shapes.push_back(GeomShape(-1, reader.Shape(idx)));
+    return shapes;
 }
 
 } // namespace krado

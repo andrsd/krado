@@ -9,8 +9,8 @@ assets_dir = os.path.join(root_dir, "test", "assets")
 def test_scheme_equal():
     file_name = os.path.join(assets_dir, "line.step")
     step = krado.STEPFile(file_name)
-    shape = step.load()
-    model = krado.GeomModel(shape)
+    shapes = step.load()
+    model = krado.GeomModel(shapes[0])
     model.curve(1).set_scheme("equal").set(intervals=4)
 
     sch = model.curve(1).scheme()

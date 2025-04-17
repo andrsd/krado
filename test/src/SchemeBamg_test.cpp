@@ -13,7 +13,8 @@ TEST(SchemeBamgTest, mesh_quad)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
     STEPFile file(input_file.string());
-    auto shape = file.load();
+    auto shapes = file.load();
+    auto shape = shapes[0];
     GeomModel model(shape);
 
     // clang-format off

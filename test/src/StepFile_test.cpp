@@ -13,7 +13,7 @@ TEST(STEPFileTest, load)
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());
-        auto shape = file.load();
+        auto shapes = file.load();
     });
 }
 
@@ -21,8 +21,10 @@ TEST(STEPFileTest, load_non_existing)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "non-existent";
 
-    EXPECT_THAT_THROW_MSG({
-        STEPFile file(input_file.string());
-        auto shape = file.load();
-    }, HasSubstr("Could not read file"));
+    EXPECT_THAT_THROW_MSG(
+        {
+            STEPFile file(input_file.string());
+            auto shapes = file.load();
+        },
+        HasSubstr("Could not read file"));
 }
