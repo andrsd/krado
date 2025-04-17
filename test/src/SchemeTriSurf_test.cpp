@@ -7,8 +7,7 @@ using namespace krado;
 TEST(SchemeTriSurfTest, cylinder)
 {
     auto cyl = testing::build_cylinder(Point(0, 0, 0), 0.75, 1.25);
-    auto shape = GeomShape(cyl);
-    GeomModel model(shape);
+    GeomModel model(cyl);
 
     // clang-format off
     model.volume(1)
