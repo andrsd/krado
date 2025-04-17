@@ -55,6 +55,7 @@ endif()
 
 if (KRADO_WITH_MOAB)
     target_link_libraries(${NAME} PRIVATE MOAB)
+    target_compile_definitions(${NAME} PRIVATE KRADO_WITH_MOAB)
 endif()
 
 configure_file(include/config.h.in include/krado/config.h)
