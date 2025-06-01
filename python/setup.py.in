@@ -1,8 +1,0 @@
-from setuptools import Extension, setup
-
-setup(
-    name='krado',
-    version='${PROJECT_VERSION}',
-    packages=['krado'],
-    package_dir={ '': '${CMAKE_CURRENT_SOURCE_DIR}/src' }
-)
