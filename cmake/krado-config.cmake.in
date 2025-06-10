@@ -10,7 +10,7 @@ find_dependency(fmt 9.0)
 find_dependency(exodusIIcpp 2.0)
 find_dependency(OpenCASCADE)
 find_dependency(Eigen3 3.4)
-find_dependency(Boost 1.70)
+find_dependency(Boost 1.70 CONFIG)
 
 find_library(KRADO_LIBRARY NAMES krado HINTS ${PACKAGE_PREFIX_DIR}/lib NO_DEFAULT_PATH)
 find_path(KRADO_INCLUDE_DIR mesh.h HINTS ${PACKAGE_PREFIX_DIR}/include/krado)
