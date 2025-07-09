@@ -124,3 +124,12 @@ TEST(GeomSurfaceTest, contains_point)
     EXPECT_FALSE(circ.contains_point(Point(0, 0, -0.1)));
     EXPECT_THROW({ auto b = circ.contains_point(Point(2.1, 0, 0)); }, Exception);
 }
+
+TEST(GeomSurfaceTest, is_circular_face)
+{
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
+    EXPECT_TRUE(is_circular_face(circ));
+
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 2., 0.));
+    EXPECT_FALSE(is_circular_face(rect));
+}

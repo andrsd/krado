@@ -14,6 +14,7 @@
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
+#include "Geom_Circle.hxx"
 
 namespace krado {
 
@@ -217,6 +218,20 @@ point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam 
     if (count % 2 == 0)
         return false;
     return true;
+}
+
+// - - -
+
+bool
+is_circular_face(const GeomSurface & surface)
+{
+    TopExp_Explorer exp(surface, TopAbs_EDGE);
+    if (!exp.More())
+        return false;
+    auto edge = TopoDS::Edge(exp.Current());
+    Standard_Real f, l;
+    Handle(Geom_Curve) curve = BRep_Tool::Curve(edge, f, l);
+    return !curve.IsNull() && curve->IsKind(STANDARD_TYPE(Geom_Circle));
 }
 
 } // namespace krado

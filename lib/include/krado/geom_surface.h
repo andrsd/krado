@@ -111,4 +111,10 @@ private:
 bool
 point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam & out, int & N);
 
+/// Check that the surface is circular
+///
+/// @param surface The surface to check
+/// @return `true` if the surface is circular, `false` otherwise
+bool is_circular_face(const GeomSurface & surface);
+
 } // namespace krado
