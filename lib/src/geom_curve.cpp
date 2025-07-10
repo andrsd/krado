@@ -172,4 +172,17 @@ GeomCurve::operator const TopoDS_Edge &() const
     return this->edge_;
 }
 
+// - - -
+
+Point
+get_circle_center(const GeomCurve & crv)
+{
+    if (crv.type() != GeomCurve::Circle)
+        throw Exception("Curve {} is not a circle", crv.id());
+
+    const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
+    gp_Pnt center = circle->Location();
+    return Point(center.X(), center.Y(), center.Z());
+}
+
 } // namespace krado

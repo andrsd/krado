@@ -68,7 +68,8 @@ SchemeTransfinite::mesh_curve(MeshCurve & curve)
     curve.add_vertex(bnd_verts[0]);
     for (auto & cv : curve_vtxs)
         curve.add_vertex(cv);
-    curve.add_vertex(bnd_verts[1]);
+    if (bnd_verts.size() == 2)
+        curve.add_vertex(bnd_verts[1]);
     for (std::size_t i = 0; i < n_intervals; i++)
         curve.add_segment({ curve.all_vertices()[i], curve.all_vertices()[i + 1] });
 }

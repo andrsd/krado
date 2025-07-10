@@ -10,10 +10,13 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <array>
 
 namespace krado {
 class Point;
 class UVParam;
+class MeshVertexAbstract;
+class Vector;
 } // namespace krado
 
 namespace krado::utils {
@@ -152,5 +155,10 @@ std::string to_str(T val);
 [[nodiscard]] double distance(const Point & p1, const Point & p2);
 
 [[nodiscard]] double distance(const UVParam & p1, const UVParam & p2);
+
+std::array<MeshVertexAbstract *, 3> ccw_triangle(MeshVertexAbstract * v1,
+                                                 MeshVertexAbstract * v2,
+                                                 MeshVertexAbstract * v3,
+                                                 const Vector & normal);
 
 } // namespace krado::utils

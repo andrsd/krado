@@ -17,9 +17,13 @@ namespace krado {
 
 MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
     gcurve_(gcurve),
-    bnd_vtxs_({ v1, v2 }),
     too_smoll(false)
 {
+    this->bnd_vtxs_.push_back(v1);
+    if (v1 && v2) {
+        if (utils::distance(v1->point(), v2->point()) > 1e-12)
+            this->bnd_vtxs_.push_back(v2);
+    }
 }
 
 int

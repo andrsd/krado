@@ -105,6 +105,14 @@ private:
     double umax_;
     /// Curve length
     double len_;
+
+    friend Point get_circle_center(const GeomCurve & crv);
 };
+
+/// Get center of a circular curve
+///
+/// @param crv Curve to investigate
+/// @return Center of the circle
+Point get_circle_center(const GeomCurve & crv);
 
 } // namespace krado

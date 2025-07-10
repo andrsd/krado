@@ -7,6 +7,7 @@
 #include "krado/scheme/bias.h"
 #include "krado/scheme/bump.h"
 #include "krado/scheme/betalaw.h"
+#include "krado/scheme/circle.h"
 #include "krado/scheme/sizemap.h"
 #include "krado/scheme/bamg.h"
 #include "krado/scheme/triangle.h"
@@ -34,6 +35,7 @@ SchemeFactory::SchemeFactory()
     add<SchemeTriangle>("triangle");
     add<SchemeTriSurf>("trisurf");
     add<SchemeFrontalDelaunay>("frontal-delaunay");
+    add<SchemeTriCircle>("tricircle");
 }
 
 } // namespace krado
