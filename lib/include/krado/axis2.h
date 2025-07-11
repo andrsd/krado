@@ -32,7 +32,7 @@ public:
 
     const Vector & y_direction() const;
 
-    const Vector & z_direction() const;
+    const Vector & direction() const;
 
     /// Transform local (u,v) coords in XY plane to 3D point
     Point local_to_world(double u, double v) const;

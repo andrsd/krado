@@ -10,7 +10,7 @@ TEST(Axis2Test, ctor)
     EXPECT_EQ(ax.location(), Point(0, 0, 0));
     EXPECT_EQ(ax.x_direction(), Vector(1, 0, 0));
     EXPECT_EQ(ax.y_direction(), Vector(0, 1, 0));
-    EXPECT_EQ(ax.z_direction(), Vector(0, 0, 1));
+    EXPECT_EQ(ax.direction(), Vector(0, 0, 1));
 }
 
 TEST(Axis2Test, ctor_dir)
@@ -21,9 +21,9 @@ TEST(Axis2Test, ctor_dir)
     Axis2 ax(origin, normal);
 
     EXPECT_EQ(ax.location(), origin);
-    EXPECT_NEAR(dot_product(ax.z_direction(), normal.normalized()), 1.0, 1e-12);
-    EXPECT_NEAR(dot_product(ax.x_direction(), ax.z_direction()), 0.0, 1e-12);
-    EXPECT_NEAR(dot_product(ax.y_direction(), ax.z_direction()), 0.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.direction(), normal.normalized()), 1.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.x_direction(), ax.direction()), 0.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.y_direction(), ax.direction()), 0.0, 1e-12);
     EXPECT_NEAR(dot_product(ax.x_direction(), ax.y_direction()), 0.0, 1e-12);
 }
 
@@ -36,9 +36,9 @@ TEST(Axis2Test, ctor_n_dir)
     Axis2 ax(origin, normal, vx);
 
     EXPECT_EQ(ax.location(), origin);
-    EXPECT_NEAR(dot_product(ax.z_direction(), normal.normalized()), 1.0, 1e-12);
-    EXPECT_NEAR(dot_product(ax.x_direction(), ax.z_direction()), 0.0, 1e-12);
-    EXPECT_NEAR(dot_product(ax.y_direction(), ax.z_direction()), 0.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.direction(), normal.normalized()), 1.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.x_direction(), ax.direction()), 0.0, 1e-12);
+    EXPECT_NEAR(dot_product(ax.y_direction(), ax.direction()), 0.0, 1e-12);
     EXPECT_NEAR(dot_product(ax.x_direction(), ax.y_direction()), 0.0, 1e-12);
 }
 

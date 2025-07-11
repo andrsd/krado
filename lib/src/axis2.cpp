@@ -56,7 +56,7 @@ Axis2::y_direction() const
 }
 
 const Vector &
-Axis2::z_direction() const
+Axis2::direction() const
 {
     return this->z_dir_;
 }
