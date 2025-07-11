@@ -15,9 +15,9 @@ Axis2::Axis2() :
 {
 }
 
-Axis2::Axis2(const Point & P, const Vector & V) : loc_ { P }
+Axis2::Axis2(const Point & pt, const Vector & v) : loc_ { pt }
 {
-    this->z_dir_ = V.normalized();
+    this->z_dir_ = v.normalized();
 
     auto ref = (std::abs(this->z_dir_.x) < 0.9) ? Vector { 1, 0, 0 } : Vector { 0, 1, 0 };
 
@@ -25,11 +25,11 @@ Axis2::Axis2(const Point & P, const Vector & V) : loc_ { P }
     this->y_dir_ = cross_product(this->z_dir_, this->x_dir_).normalized();
 }
 
-Axis2::Axis2(const Point & P, const Vector & N, const Vector & Vx) : loc_ { P }
+Axis2::Axis2(const Point & pt, const Vector & n, const Vector & v_x) : loc_ { pt }
 {
-    this->z_dir_ = N.normalized();
+    this->z_dir_ = n.normalized();
 
-    auto temp = cross_product(this->z_dir_, Vx);
+    auto temp = cross_product(this->z_dir_, v_x);
     if (temp.magnitude() < 1e-9)
         throw Exception("Axis2: N and Vx are parallel");
 

@@ -15,16 +15,16 @@ public:
 
     /// Constructor: origin + main direction
     ///
-    /// @param P Origin point
-    /// @param V Main direction vector
-    Axis2(const Point & P, const Vector & V);
+    /// @param pt Origin point
+    /// @param v Main direction vector
+    Axis2(const Point & pt, const Vector & v);
 
     /// Constructor: origin + normal + X-like vector (like gp_Ax2(P, N, Vx))
     ///
-    /// @param P Origin point
-    /// @param N Normal vector
-    /// @param Vx X-like vector
-    Axis2(const Point & P, const Vector & N, const Vector & Vx);
+    /// @param pt Origin point
+    /// @param n Normal vector
+    /// @param v_x X-like vector
+    Axis2(const Point & pt, const Vector & n, const Vector & v_x);
 
     const Point & location() const;
 
