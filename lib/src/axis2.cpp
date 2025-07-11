@@ -61,6 +61,12 @@ Axis2::direction() const
     return this->z_dir_;
 }
 
+Axis1
+Axis2::axis() const
+{
+    return Axis1(this->loc_, this->z_dir_);
+}
+
 Point
 Axis2::local_to_world(double u, double v) const
 {

@@ -5,6 +5,7 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/axis1.h"
 
 namespace krado {
 
@@ -33,6 +34,11 @@ public:
     const Vector & y_direction() const;
 
     const Vector & direction() const;
+
+    /// Returns the main axis
+    ///
+    /// @return The main location point and the main direction
+    Axis1 axis() const;
 
     /// Transform local (u,v) coords in XY plane to 3D point
     Point local_to_world(double u, double v) const;
