@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "krado/axis2.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
 #include "krado/dagmc_file.h"
@@ -91,6 +92,19 @@ PYBIND11_MODULE(krado, m)
     m.attr("__version__") = KRADO_VERSION;
 
     // clang-format off
+
+    py::class_<Axis2>(m, "Axis2")
+        .def(py::init())
+        .def(py::init<const Point &, const Vector &>())
+        .def(py::init<const Point &, const Vector &, const Vector &>())
+        .def("location", &Axis2::location)
+        .def("x_direction", &Axis2::x_direction)
+        .def("y_direction", &Axis2::y_direction)
+        .def("z_direction", &Axis2::z_direction)
+        .def("local_to_world", &Axis2::local_to_world)
+        .def("world_to_local", &Axis2::world_to_local)
+    ;
+
     py::class_<STEPFile>(m, "STEPFile")
         .def(py::init<const std::string &>())
         .def("load", &STEPFile::load, py::return_value_policy::move)
