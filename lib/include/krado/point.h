@@ -22,6 +22,13 @@ public:
     /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);
 
+    /// Check if two points are equal within a tolerance
+    ///
+    /// @param other Other point
+    /// @param tol Tolerance
+    /// @return `true` if points are equal within tolerance
+    bool is_equal(const Point & other, double tol = 1e-15) const;
+
     [[nodiscard]] double operator()(int idx) const;
     double & operator()(int idx);
 

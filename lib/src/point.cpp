@@ -16,6 +16,13 @@ Point::Point(const UVParam & uv) : x(uv.u), y(uv.v), z(0.) {}
 
 Point::Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
+bool
+Point::is_equal(const Point & other, double tol) const
+{
+    auto diff = *this - other;
+    return diff.magnitude() <= tol;
+}
+
 double
 Point::operator()(int idx) const
 {
