@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
@@ -27,6 +28,8 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "krado/linear_pattern.h"
+#include "krado/circular_pattern.h"
+#include "krado/hexagonal_pattern.h"
 #include "krado/element.h"
 #include "krado/scheme.h"
 #include "krado/point.h"
@@ -93,6 +96,14 @@ PYBIND11_MODULE(krado, m)
     m.attr("__version__") = KRADO_VERSION;
 
     // clang-format off
+
+    py::class_<Axis1>(m, "Axis1")
+        .def(py::init())
+        .def(py::init<const Point &, const Vector &>())
+        .def("location", &Axis1::location)
+        .def("direction", &Axis1::direction)
+        .def("is_equal", &Axis1::is_equal)
+    ;
 
     py::class_<Axis2>(m, "Axis2")
         .def(py::init())
@@ -466,6 +477,16 @@ PYBIND11_MODULE(krado, m)
         .def("ny", &LinearPattern::ny)
         .def("dx", &LinearPattern::dx)
         .def("dy", &LinearPattern::dy)
+    ;
+
+    py::class_<CircularPattern, Pattern>(m, "CircularPattern")
+        .def(py::init<const Axis2 &, double, int, double>())
+        .def("radius", &CircularPattern::radius)
+    ;
+
+    py::class_<HexagonalPattern, Pattern>(m, "HexagonalPattern")
+        .def(py::init<const Axis2 &, double, int>())
+        .def("flat_to_flat", &HexagonalPattern::flat_to_flat)
     ;
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
