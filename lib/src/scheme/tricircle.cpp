@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 David Andrs <andrsd@gmail.com>
 // SPDX-License-Identifier: MIT
 
-#include "krado/scheme/circle.h"
+#include "krado/scheme/tricircle.h"
 #include "krado/exception.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
