@@ -599,7 +599,6 @@ GeomModel::build_1d_elements()
 
     std::vector<Element> elems;
     for (auto & [id, curve] : this->mcrvs_) {
-        auto & verts = curve.all_vertices();
         std::array<gidx_t, Line2::N_VERTICES> line;
         for (auto & local_elem : curve.segments()) {
             for (int i = 0; i < Line2::N_VERTICES; ++i) {
@@ -619,7 +618,6 @@ GeomModel::build_2d_elements()
 
     std::vector<Element> elems;
     for (auto & [id, surface] : this->msurfs_) {
-        auto & verts = surface.all_vertices();
         auto & tris = surface.triangles();
         std::array<gidx_t, Tri3::N_VERTICES> tri;
         for (auto & local_elem : tris) {

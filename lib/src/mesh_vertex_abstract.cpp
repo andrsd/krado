@@ -59,10 +59,10 @@ std::tuple<double, bool>
 reparam_mesh_vertex_on_curve(const MeshVertexAbstract * v, const GeomCurve & gcurve)
 {
     double param = 1.e6;
-    auto [t_lo, t_hi] = gcurve.param_range();
     bool ok = true;
 
 #if 0
+    auto [t_lo, t_hi] = gcurve.param_range();
     if (gcurve.has_first_vertex() && gcurve.first_vertex()->mesh_vertices[0] == v)
         param = t_lo;
     else if (gcurve.has_last_vertex() && gcurve.last_vertex()->mesh_vertices[0] == v)

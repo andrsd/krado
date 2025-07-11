@@ -48,7 +48,6 @@ private:
     int gid_;
     /// Geometrical shape associated with this vertex
     const GeomShape & geom_shape_;
-    int idx_;
     int num_;
 
 public:
