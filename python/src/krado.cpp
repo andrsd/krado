@@ -26,6 +26,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
+#include "krado/linear_pattern.h"
 #include "krado/element.h"
 #include "krado/scheme.h"
 #include "krado/point.h"
@@ -452,6 +453,19 @@ PYBIND11_MODULE(krado, m)
     py::class_<DAGMCFile>(m, "DAGMCFile")
         .def(py::init<const std::string &>())
         .def("write", &DAGMCFile::write)
+    ;
+
+    py::class_<Pattern>(m, "Pattern")
+        .def("points", &Pattern::points)
+    ;
+
+    py::class_<LinearPattern, Pattern>(m, "LinearPattern")
+        .def(py::init<const Axis2 &, int, double>())
+        .def(py::init<const Axis2 &, int, int, double, double>())
+        .def("nx", &LinearPattern::nx)
+        .def("ny", &LinearPattern::ny)
+        .def("dx", &LinearPattern::dx)
+        .def("dy", &LinearPattern::dy)
     ;
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
