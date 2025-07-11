@@ -22,7 +22,7 @@ LinearPattern::LinearPattern(const Axis2 & ax2, int nx, double dx) :
         auto pt = origin + x_ofst;
         points.emplace_back(pt);
     }
-    set_points(points);
+    set_points(std::move(points));
 }
 
 LinearPattern::LinearPattern(const Axis2 & ax2, int nx, int ny, double dx, double dy) :
@@ -45,7 +45,7 @@ LinearPattern::LinearPattern(const Axis2 & ax2, int nx, int ny, double dx, doubl
             points.emplace_back(pt);
         }
     }
-    set_points(points);
+    set_points(std::move(points));
 }
 
 double

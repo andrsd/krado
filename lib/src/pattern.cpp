@@ -7,6 +7,8 @@ namespace krado {
 
 Pattern::Pattern() {}
 
+Pattern::Pattern(const std::vector<Point> & points) : pts_(points) {}
+
 const std::vector<Point> &
 Pattern::points() const
 {
@@ -14,9 +16,9 @@ Pattern::points() const
 }
 
 void
-Pattern::set_points(const std::vector<Point> & points)
+Pattern::set_points(std::vector<Point> && points)
 {
-    this->pts_ = points;
+    this->pts_ = std::move(points);
 }
 
 } // namespace krado
