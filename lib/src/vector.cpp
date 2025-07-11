@@ -4,6 +4,7 @@
 #include "krado/vector.h"
 #include "krado/point.h"
 #include "krado/exception.h"
+#include "krado/axis1.h"
 
 namespace krado {
 
@@ -49,6 +50,25 @@ Vector::normalized() const
     Vector v = *this;
     v.normalize();
     return v;
+}
+
+void
+Vector::rotate(const Axis1 & axis, double angle)
+{
+    *this = this->rotated(axis, angle);
+}
+
+Vector
+Vector::rotated(const Axis1 & axis, double angle) const
+{
+    Vector k = axis.direction().normalized();
+    const Vector & v = *this;
+
+    double cos_theta = std::cos(angle);
+    double sin_theta = std::sin(angle);
+
+    return v * cos_theta + cross_product(k, v) * sin_theta +
+           k * (dot_product(k, v)) * (1.0 - cos_theta);
 }
 
 Vector

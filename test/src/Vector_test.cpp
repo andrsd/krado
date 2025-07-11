@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/vector.h"
 #include "krado/exception.h"
+#include "krado/axis1.h"
 
 using namespace krado;
 
@@ -132,4 +133,16 @@ TEST(VectorTest, dot_product)
     Vector b(2, -1, 3);
     auto c = dot_product(a, b);
     EXPECT_DOUBLE_EQ(c, 9.);
+}
+
+TEST(VectorTest, rotate_around_z_90deg)
+{
+    Vector v(1, 0, 0); // X-axis
+    Axis1 axis(Point(0, 0, 0), Vector(0, 0, 1));
+
+    Vector v_rot = v.rotated(axis, M_PI / 2);
+
+    EXPECT_NEAR(v_rot.x, 0.0, 1e-12);
+    EXPECT_NEAR(v_rot.y, 1.0, 1e-12);
+    EXPECT_NEAR(v_rot.z, 0.0, 1e-12);
 }

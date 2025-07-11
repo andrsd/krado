@@ -9,6 +9,7 @@
 namespace krado {
 
 class Point;
+class Axis1;
 
 /// Vector in 3D space
 class Vector {
@@ -46,6 +47,19 @@ public:
     ///
     /// @return Normalized vector
     [[nodiscard]] Vector normalized() const;
+
+    /// Rotate vector around axis
+    ///
+    /// @param axis Axis of rotation
+    /// @param angle Angle of rotation
+    void rotate(const Axis1 & axis, double angle);
+
+    /// Rotate vector around axis
+    ///
+    /// @param axis Axis of rotation
+    /// @param angle Angle of rotation
+    /// @return Rotated vector
+    Vector rotated(const Axis1 & axis, double angle) const;
 
     /// X-component
     double x;
