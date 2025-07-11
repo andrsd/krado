@@ -449,6 +449,7 @@ PYBIND11_MODULE(krado, m)
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
 
     auto log = m.def_submodule("log", "Submodule for logging");
+    log.def("set_verbosity", &Log::set_verbosity);
     log.def("log", &py_log_log, py::arg("level"), py::arg("msg"));
     log.def("info", &py_log_info, py::arg("level"), py::arg("msg"));
     log.def("warn", &py_log_warn, py::arg("level"), py::arg("msg"));

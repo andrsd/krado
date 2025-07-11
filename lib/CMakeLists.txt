@@ -49,6 +49,8 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
 )
 
+target_compile_definitions(${NAME} PRIVATE SPDLOG_HEADER_ONLY)
+
 if (KRADO_WITH_TRIANGLE)
     target_link_libraries(${NAME} PUBLIC triangle)
 endif()

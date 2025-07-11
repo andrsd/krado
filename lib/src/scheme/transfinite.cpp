@@ -7,6 +7,7 @@
 #include "krado/geom_curve.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/log.h"
 #include "krado/utils.h"
 #include <array>
 
@@ -58,10 +59,13 @@ SchemeTransfinite::SchemeTransfinite(const std::string & name) : Scheme(name) {}
 void
 SchemeTransfinite::mesh_curve(MeshCurve & curve)
 {
+    auto n_intervals = get<int>("intervals");
+
+    Log::info("Meshing curve {}: scheme='{}', intervals={}", curve.id(), name(), n_intervals);
+
     auto & geom_curve = curve.geom_curve();
     auto integral = compute_integral(curve);
 
-    auto n_intervals = get<int>("intervals");
     auto n_pts = n_intervals + 1;
     std::vector<MeshCurveVertex *> curve_vtxs = build_curve_vertices(geom_curve, integral, n_pts);
     auto & bnd_verts = curve.bounding_vertices();

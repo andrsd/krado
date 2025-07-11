@@ -8,6 +8,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/log.h"
 #include "BRepMesh_IncrementalMesh.hxx"
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
@@ -24,6 +25,8 @@ SchemeTriSurf::SchemeTriSurf() : Scheme(scheme_name), Scheme3D() {}
 void
 SchemeTriSurf::mesh_volume(MeshVolume & volume)
 {
+    Log::info("Meshing volume {}: scheme='trisurf'", volume.id());
+
     auto lin_deflection = get<double>("linear_deflection");
     auto angl_deflection = get<double>("angular_deflection");
     auto is_relative = get<bool>("is_relative");

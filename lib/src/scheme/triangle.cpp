@@ -186,6 +186,8 @@ void
 SchemeTriangle::mesh_surface(MeshSurface & surface)
 {
 #ifdef KRADO_WITH_TRIANGLE
+    Log::info("Meshing surface {}: scheme='triangle'", surface.id());
+
     bool has_region = has<std::tuple<double, double>>("region_point");
 
     triangulateio in, out;

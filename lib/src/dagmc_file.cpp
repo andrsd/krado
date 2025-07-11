@@ -364,6 +364,8 @@ DAGMCFile::DAGMCFile(const std::string & file_name) : file_name_(file_name) {}
 void
 DAGMCFile::write(const GeomModel & model)
 {
+    Log::info("Writing DAGMC file '{}'", this->file_name_);
+
     MOABFile file;
 
     for (auto [vol_id, volume] : model.volumes())

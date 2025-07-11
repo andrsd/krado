@@ -6,6 +6,7 @@
 #include "krado/element.h"
 #include "krado/hasse_diagram.h"
 #include "krado/vector.h"
+#include "krado/log.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <iostream>
@@ -231,6 +232,8 @@ Mesh::add(const Mesh & other)
 Mesh &
 Mesh::remove_duplicate_points(double tolerance)
 {
+    Log::info("Removing duplicates: tolerance={}", tolerance);
+
     PointCloud cloud(*this);
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
     this->pnts_ = unique_points;
@@ -452,6 +455,10 @@ Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_e
 Mesh &
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
+    Log::info("Remapping block IDs:");
+    for (auto & [block_id, new_block_id] : block_map)
+        Log::info("- {} -> {}", block_id, new_block_id);
+
     std::map<marker_t, std::string> new_cell_set_names;
     std::map<marker_t, std::vector<gidx_t>> new_cell_sets;
     for (auto & [block_id, cells] : this->cell_sets_) {
@@ -536,6 +543,8 @@ Mesh::set_up()
 void
 Mesh::build_hasse_diagram()
 {
+    Log::debug("Building Hasse diagram");
+
     auto n_cells = this->elems_.size();
     // Add Hasse nodes for cells
     for (std::size_t i = 0; i < n_cells; ++i) {

@@ -4,6 +4,7 @@
 #include "krado/element.h"
 #include "krado/config.h"
 #include "krado/utils.h"
+#include "krado/log.h"
 #include "exodusIIcpp/exception.h"
 #include "fmt/format.h"
 #include "fmt/chrono.h"
@@ -114,6 +115,8 @@ ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn_(file_name) {}
 Mesh
 ExodusIIFile::read()
 {
+    Log::info("Reading ExodusII file '{}'", this->fn_);
+
     this->exo_.open(this->fn_);
     this->exo_.init();
     auto pnts = read_points();
@@ -214,6 +217,8 @@ ExodusIIFile::read_side_sets()
 void
 ExodusIIFile::write(const Mesh & mesh)
 {
+    Log::info("Writing ExodusII file '{}'", this->fn_);
+
     this->exo_.create(this->fn_);
     this->dim_ = determine_spatial_dim(mesh);
 

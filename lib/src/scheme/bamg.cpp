@@ -7,6 +7,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
+#include "krado/log.h"
 #include "bamg/bamglib/Mesh2.h"
 #include "Eigen/Eigen"
 #include <array>
@@ -245,6 +246,8 @@ SchemeBAMG::SchemeBAMG() : Scheme("bamg") {}
 void
 SchemeBAMG::mesh_surface(MeshSurface & surface)
 {
+    Log::info("Meshing surface {}: scheme='bamg'", surface.id());
+
     Bamg mg(surface);
     mg.set_uniform_mesh_size(get<double>("max_area"));
 

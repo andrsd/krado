@@ -5,6 +5,7 @@
 #include "krado/element.h"
 #include "krado/mesh.h"
 #include "krado/point.h"
+#include "krado/log.h"
 
 namespace krado {
 
@@ -99,6 +100,8 @@ extrude_element_side<ElementType::QUAD4>(const Element & el, int side)
 Mesh
 extrude(const Mesh & mesh, const Vector & normal, int layers, double thickness)
 {
+    Log::info("Extruding mesh: normal={}, layers={}, thickness={}", normal, layers, thickness);
+
     std::vector<double> thicknesses(layers, thickness / layers);
     return extrude(mesh, normal, thicknesses);
 }

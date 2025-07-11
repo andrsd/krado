@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "fmt/format.h"
 #include <ostream>
 
 namespace krado {
@@ -88,3 +89,22 @@ operator<<(std::ostream & stream, const krado::Vector & vector)
     stream << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
     return stream;
 }
+
+// Custom formatter specialization
+template <>
+struct fmt::formatter<krado::Vector> {
+    // Parse format specifier (not used here, so just return the end)
+    constexpr auto
+    parse(format_parse_context & ctx)
+    {
+        return ctx.begin();
+    }
+
+    // Format the Vector
+    template <typename FormatContext>
+    auto
+    format(const krado::Vector & v, FormatContext & ctx)
+    {
+        return fmt::format_to(ctx.out(), "({}, {}, {})", v.x, v.y, v.z);
+    }
+};

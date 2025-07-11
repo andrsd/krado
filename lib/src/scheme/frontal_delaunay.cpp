@@ -609,6 +609,8 @@ SchemeFrontalDelaunay::select_curve_scheme(MeshCurve & curve)
 void
 SchemeFrontalDelaunay::mesh_surface(MeshSurface & surface)
 {
+    Log::info("Meshing surface {}: scheme='frontal-delaunay'", surface.id());
+
     mesh_generator(surface, 0, true, false, false);
 
     // fill in the vertices from curves (no need to go down to mesh vertices, they are included

@@ -110,6 +110,14 @@ public:
             spdlog::debug(fmt, std::forward<Args>(args)...);
     }
 
+    template <typename... Args>
+    static void
+    critical(fmt::format_string<Args...> fmt, Args &&... args)
+    {
+        if (verbosity_ >= 1)
+            spdlog::critical(fmt, std::forward<Args>(args)...);
+    }
+
 private:
     /// Verbosity level of the logger
     static int verbosity_;

@@ -4,6 +4,7 @@
 #include "krado/step_file.h"
 #include "krado/exception.h"
 #include "krado/geom_shape.h"
+#include "krado/log.h"
 #include "TDocStd_Document.hxx"
 #include "STEPCAFControl_Reader.hxx"
 #include "XCAFDoc.hxx"
@@ -19,6 +20,8 @@ STEPFile::STEPFile(const std::string & file_name) : file_name_(file_name) {}
 std::vector<GeomShape>
 STEPFile::load() const
 {
+    Log::info("Loading STEP file '{}'", this->file_name_);
+
     std::vector<GeomShape> shapes;
 
     TCollection_AsciiString fname(this->file_name_.c_str());

@@ -2,6 +2,7 @@
 #include "krado/exception.h"
 #include "krado/types.h"
 #include "krado/element.h"
+#include "krado/log.h"
 #include <vector>
 #include <array>
 
@@ -362,6 +363,8 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
 Mesh
 tetrahedralize(const Mesh & mesh)
 {
+    Log::info("Tetrahedralizing mesh");
+
     std::vector<Point> points = mesh.points();
 
     gid_t n_tets = 0;

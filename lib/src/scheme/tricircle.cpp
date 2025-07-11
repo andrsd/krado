@@ -8,6 +8,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/log.h"
 
 namespace krado {
 
@@ -27,6 +28,8 @@ SchemeTriCircle::select_curve_scheme(MeshCurve & curve)
 void
 SchemeTriCircle::mesh_surface(MeshSurface & surface)
 {
+    Log::info("Meshing surface {}: scheme='tricircle'", surface.id());
+
     const auto & gsurf = surface.geom_surface();
     if (!is_circular_face(gsurf))
         throw Exception("Surface {} is not a circle", gsurf.id());
