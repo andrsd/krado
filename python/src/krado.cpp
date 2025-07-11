@@ -127,6 +127,12 @@ PYBIND11_MODULE(krado, m)
         .def_readwrite("x", &Point::x)
         .def_readwrite("y", &Point::y)
         .def_readwrite("z", &Point::z)
+        .def("__add__", [](const Point& a, const Point& b) {
+            return a + b;
+        }, py::is_operator())
+        .def("__add__", [](const Point& p, const Vector& v) {
+            return p + v;
+        }, py::is_operator())
         .def("__repr__", [](const Point &pt) {
             return "<Point x=" + std::to_string(pt.x) + " y=" + std::to_string(pt.y) + ", z=" + std::to_string(pt.z) + ">";
         })
