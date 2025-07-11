@@ -4,6 +4,7 @@
 #include "krado/dagmc_file.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
+#include "krado/log.h"
 #ifdef KRADO_WITH_MOAB
     #include "MBTagConventions.hpp"
     #include "moab/Core.hpp"
