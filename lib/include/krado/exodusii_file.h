@@ -40,8 +40,10 @@ private:
 
     /// Read side sets
     ///
+    /// @param elems Vector of elements
     /// @return Vector of side set entries
-    [[nodiscard]] std::map<int, std::vector<side_set_entry_t>> read_side_sets();
+    [[nodiscard]] std::map<int, std::vector<side_set_entry_t>>
+    read_side_sets(const std::vector<Element> & elems);
 
     /// Determine mesh spatial dimension
     ///
