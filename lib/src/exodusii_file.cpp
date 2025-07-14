@@ -178,6 +178,7 @@ ExodusIIFile::read()
     auto [elems, cell_sets] = read_elements();
     auto side_sets = read_side_sets(elems);
     auto cell_set_names = this->exo_.read_block_names();
+    auto side_set_names = this->exo_.read_side_set_names();
     this->exo_.close();
 
     Mesh mesh(pnts, elems);
@@ -188,6 +189,8 @@ ExodusIIFile::read()
 
     for (auto & [id, ss] : side_sets)
         mesh.set_side_set(id, ss);
+    for (auto [id, name] : side_set_names)
+        mesh.set_side_set_name(id, side_set_names[id]);
 
     return mesh;
 }

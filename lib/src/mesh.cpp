@@ -183,6 +183,7 @@ Mesh::transformed(const Trsf & tr) const
     mesh.cell_sets_ = this->cell_sets_;
     mesh.cell_set_names_ = this->cell_set_names_;
     mesh.side_sets_ = this->side_sets_;
+    mesh.side_set_names_ = this->side_set_names_;
     return mesh;
 }
 
@@ -234,6 +235,15 @@ Mesh::add(const Mesh & other)
             auto cell_id = entry.elem + n_elem_ofst;
             this->side_sets_[id].emplace_back(cell_id, entry.side);
         }
+
+        auto name = other.side_set_name(id);
+        auto my_name = this->side_set_names_[id];
+        if (my_name.empty())
+            this->side_set_names_[id] = name;
+        else if (name != my_name)
+            Log::warn("Side set with id={} already exists, but with a different name '{}'",
+                      id,
+                      name);
     }
 
     return *this;
