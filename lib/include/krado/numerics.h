@@ -5,7 +5,7 @@
 
 #include "krado/point.h"
 #include "krado/uv_param.h"
-#include <Eigen/Eigen>
+// #include <Eigen/Eigen>
 
 namespace krado {
 
@@ -31,7 +31,9 @@ double triangle_area(const Point & p0, const Point & p1, const Point & p2);
 
 Vector normal3points(const Point & a, const Point & b, const Point & c);
 
+#if 0
 Eigen::Vector2d sys2x2(const Eigen::Matrix2d & mat, const Eigen::Vector2d & rhs);
+#endif
 
 int intersection_segments(const Point & p1,
                           const Point & p2,
@@ -45,10 +47,12 @@ int intersection_segments(const UVParam & p1,
                           const UVParam & q2,
                           UVParam & x);
 
+#if 0
 bool newton_fd(bool (*func)(Eigen::VectorXd &, Eigen::VectorXd &, void *),
                Eigen::VectorXd & x,
                void * data,
                double relax = 1.,
                double tolx = 1.e-6);
+#endif
 
 } // namespace krado

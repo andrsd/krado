@@ -51,6 +51,7 @@ circum_center_xyz(Point p1, Point p2, Point p3, std::tuple<double, double> * uv)
     }
 
     if (uv) {
+#if 0
         Eigen::Matrix2d mat;
         mat(0, 0) = p2P.u - p1P.u;
         mat(0, 1) = p3P.u - p1P.u;
@@ -61,6 +62,8 @@ circum_center_xyz(Point p1, Point p2, Point p3, std::tuple<double, double> * uv)
         rhs(1) = resP.v - p1P.v;
         auto sln = sys2x2(mat, rhs);
         *uv = { sln[0], sln[1] };
+#endif
+        *uv = { 0., 0. };
     }
 
     return p1 + resP.u * vx + resP.v * vy;
@@ -85,6 +88,7 @@ normal3points(const Point & a, const Point & b, const Point & c)
     return n;
 }
 
+#if 0
 Eigen::Vector2d
 sys2x2(const Eigen::Matrix2d & mat, const Eigen::Vector2d & rhs)
 {
@@ -100,6 +104,7 @@ det2x2(const Eigen::Matrix2d & mat)
 {
     return mat(0, 0) * mat(1, 1) - mat(1, 0) * mat(0, 1);
 }
+#endif
 
 int
 intersection_segments(const UVParam & p1,
@@ -121,6 +126,7 @@ intersection_segments(const UVParam & p1,
         return 0;
     }
     else {
+#if 0
         Eigen::Matrix2d A;
         A(0, 0) = p2.u - p1.u;
         A(0, 1) = q1.u - q2.u;
@@ -131,6 +137,8 @@ intersection_segments(const UVParam & p1,
         b[1] = q1.v - p1.v;
         auto x = sys2x2(A, b);
         return (x[0] >= 0.0 && x[0] <= 1. && x[1] >= 0.0 && x[1] <= 1.);
+#endif
+        return 0;
     }
 }
 
@@ -141,6 +149,7 @@ intersection_segments(const Point & p1,
                       const Point & q2,
                       UVParam & x)
 {
+#if 0
     auto v1 = p1 - p2;
     auto v2 = q1 - q2;
     auto n1 = v1.magnitude();
@@ -199,9 +208,11 @@ intersection_segments(const Point & p1,
         }
         return true;
     }
+#endif
     return false;
 }
 
+#if 0
 bool
 newton_fd(bool (*func)(Eigen::VectorXd &, Eigen::VectorXd &, void *),
           Eigen::VectorXd & x,
@@ -262,5 +273,6 @@ newton_fd(bool (*func)(Eigen::VectorXd &, Eigen::VectorXd &, void *),
     }
     return false;
 }
+#endif
 
 } // namespace krado

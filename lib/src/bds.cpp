@@ -6,7 +6,7 @@
 #include "krado/uv_param.h"
 #include "krado/consts.h"
 #include "krado/log.h"
-#include "Eigen/Eigen"
+// #include "Eigen/Eigen"
 #include "robust_predicates/robust_predicates.h"
 #include <cassert>
 #include <stack>
@@ -543,6 +543,7 @@ intersect_edges_2d(double x1,
                    double y4,
                    double x[2])
 {
+#if 0
     Eigen::Matrix<double, 2, 2> mat;
     mat(0, 0) = (x2 - x1);
     mat(0, 1) = -(x4 - x3);
@@ -561,6 +562,8 @@ intersect_edges_2d(double x1,
     }
     else
         return false;
+#endif
+    return false;
 }
 
 BDS_Edge *
@@ -1774,6 +1777,7 @@ getCentroidUV(const std::vector<UVParam> & kernel, const std::vector<double> & l
 static inline std::array<double, 2>
 getIntersection(const UVParam & p1, const UVParam & p2, const UVParam & q1, const UVParam & q2)
 {
+#if 0
     Eigen::Matrix2d A;
     A(0, 0) = p2.u - p1.u;
     A(0, 1) = q1.u - q2.u;
@@ -1784,6 +1788,8 @@ getIntersection(const UVParam & p1, const UVParam & p2, const UVParam & q1, cons
     b[1] = q1.v - p1.v;
     auto sln = sys2x2(A, b);
     return { sln[0], sln[1] };
+#endif
+    return { 0., 0. };
 }
 
 static inline std::tuple<std::vector<UVParam>, std::vector<double>>
