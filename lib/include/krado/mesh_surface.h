@@ -3,12 +3,10 @@
 
 #pragma once
 
-#include "krado/element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_element.h"
 #include "krado/meshing_parameters.h"
 #include <vector>
-#include <set>
 
 namespace krado {
 
@@ -56,12 +54,6 @@ public:
 
     [[nodiscard]] std::vector<MeshElement> & triangles();
 
-    /// Get embedded vertices
-    [[nodiscard]] const std::set<MeshVertex *, MeshVertex::PtrLessThan> & embedded_vertices() const;
-
-    /// Get embedded curves
-    [[nodiscard]] const std::vector<MeshCurve *> & embedded_curves() const;
-
     /// Add vertex
     ///
     /// @param vertex Vertex to add
@@ -90,8 +82,6 @@ public:
 
     void remove_all_triangles();
 
-    int mesh_size_from_boundary() const;
-
     void delete_mesh();
 
 private:
@@ -106,10 +96,6 @@ private:
     std::vector<MeshElement> tris_;
     /// Quadrangles
     std::vector<MeshElement> quads_;
-    /// Embedded curves
-    std::vector<MeshCurve *> embedded_crvs_;
-    /// Embedded vertices
-    std::set<MeshVertex *, MeshVertex::PtrLessThan> embedded_vtxs_;
 };
 
 } // namespace krado

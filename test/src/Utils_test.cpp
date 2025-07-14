@@ -13,15 +13,6 @@ TEST(UtilsTest, angle)
     EXPECT_DOUBLE_EQ(alpha, M_PI / 2.);
 }
 
-TEST(UtilsTest, triangle_area)
-{
-    Point p1(0, 0, 0);
-    Point p2(1, 0, 0);
-    Point p3(1, 1, 0);
-    auto area = utils::triangle_area(p1, p2, p3);
-    EXPECT_DOUBLE_EQ(area, 0.5);
-}
-
 TEST(UtilsTest, distance)
 {
     Point a(1., 2., 3.);

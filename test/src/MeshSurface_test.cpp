@@ -3,7 +3,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_curve.h"
-#include "krado/scheme/equal.h"
+#include "krado/scheme.h"
 #include "builder.h"
 #include <array>
 

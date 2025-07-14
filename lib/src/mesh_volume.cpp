@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh_volume.h"
-#include "krado/exception.h"
-#include "krado/scheme.h"
 
 namespace krado {
 

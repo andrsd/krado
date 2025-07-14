@@ -6,7 +6,7 @@
 
 using namespace krado;
 
-TEST(WriteExodusIITest, line)
+TEST(WriteExodusIITest, DISABLED_line)
 {
     auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);

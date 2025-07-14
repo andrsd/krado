@@ -79,12 +79,6 @@ public:
     /// @return `true` if the point is on the curve, `false` otherwise
     [[nodiscard]] bool contains_point(const Point & pt) const;
 
-    /// Get embedded vertices
-    const std::set<GeomVertex *> & embedded_vertices() const;
-
-    /// Get embedded curves
-    const std::vector<GeomCurve *> & embedded_curves() const;
-
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Face &() const;
@@ -98,18 +92,10 @@ private:
     double surf_area_;
     double umin_, umax_;
     double vmin_, vmax_;
-    /// Embedded curves
-    std::vector<GeomCurve *> embedded_crvs_;
-    /// Embedded vertices
-    std::set<GeomVertex * /*, GEntityPtrLessThan*/> embedded_vtxs_;
 
     /// Needs to be a pointer, because GeomSurface must be movable
     mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface_;
 };
-
-// TODO: move this somewhere else
-bool
-point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam & out, int & N);
 
 /// Check that the surface is circular
 ///

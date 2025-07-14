@@ -89,9 +89,4 @@ private:
     bool too_smoll;
 };
 
-/// TODO: move this to mesh_element.h
-struct MEdgeLessThan {
-    bool operator()(const MeshElement & e1, const MeshElement & e2) const;
-};
-
 } // namespace krado

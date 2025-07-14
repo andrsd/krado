@@ -3,7 +3,6 @@
 
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
-#include "krado/predicates.h"
 #include "krado/geom_shape.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
@@ -184,40 +183,6 @@ GeomSurface::contains_point(const Point & pt) const
         return true;
     else
         return false;
-}
-
-const std::set<GeomVertex *> &
-GeomSurface::embedded_vertices() const
-{
-    return this->embedded_vtxs_;
-}
-
-const std::vector<GeomCurve *> &
-GeomSurface::embedded_curves() const
-{
-    return this->embedded_crvs_;
-}
-
-bool
-point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam & p, UVParam & out, int & N)
-{
-    int count = 0;
-    for (size_t i = 0; i < bnd.size(); i += 2) {
-        UVParam p1 = bnd[i];
-        UVParam p2 = bnd[i + 1];
-        double a = orient2d(p1, p2, p);
-        double b = orient2d(p1, p2, out);
-        if (a * b < 0) {
-            a = orient2d(p, out, p1);
-            b = orient2d(p, out, p2);
-            if (a * b < 0)
-                count++;
-        }
-    }
-    N = count;
-    if (count % 2 == 0)
-        return false;
-    return true;
 }
 
 // - - -

@@ -75,18 +75,6 @@ MeshSurface::triangles()
     return this->tris_;
 }
 
-const std::set<MeshVertex *, MeshVertex::PtrLessThan> &
-MeshSurface::embedded_vertices() const
-{
-    return this->embedded_vtxs_;
-}
-
-const std::vector<MeshCurve *> &
-MeshSurface::embedded_curves() const
-{
-    return this->embedded_crvs_;
-}
-
 void
 MeshSurface::add_vertex(MeshVertex * vertex)
 {
@@ -152,16 +140,6 @@ void
 MeshSurface::remove_all_triangles()
 {
     this->tris_.clear();
-}
-
-int
-MeshSurface::mesh_size_from_boundary() const
-{
-    // if (meshAttributes.meshSizeFromBoundary >= 0)
-    //     return meshAttributes.meshSizeFromBoundary;
-    // else
-    //     return CTX::instance()->mesh.lcExtendFromBoundary;
-    return 0;
 }
 
 void

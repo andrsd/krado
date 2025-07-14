@@ -45,15 +45,6 @@ private:
     const GeomVertex & gvtx_;
     /// Mesh size at the vertex.
     double mesh_size_;
-
-public:
-    struct PtrLessThan {
-        bool
-        operator()(const MeshVertex * v1, const MeshVertex * v2) const
-        {
-            return v1->id() < v2->id();
-        }
-    };
 };
 
 } // namespace krado

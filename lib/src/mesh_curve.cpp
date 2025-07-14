@@ -126,25 +126,4 @@ MeshCurve::mesh_size_at_param(double u) const
         return MAX_LC;
 }
 
-//
-
-bool
-MEdgeLessThan::operator()(const MeshElement & e1, const MeshElement & e2) const
-{
-    auto vtx1 = e1.vertices();
-    if (vtx1[0]->num() > vtx1[1]->num())
-        std::swap(vtx1[0], vtx1[1]);
-    auto vtx2 = e2.vertices();
-    if (vtx2[0]->num() > vtx2[1]->num())
-        std::swap(vtx2[0], vtx2[1]);
-
-    if (vtx1[0]->num() < vtx2[0]->num())
-        return true;
-    if (vtx1[0]->num() > vtx2[0]->num())
-        return false;
-    if (vtx1[1]->num() < vtx2[1]->num())
-        return true;
-    return false;
-}
-
 } // namespace krado

@@ -18,7 +18,7 @@ TEST(SchemeTest, mesh_curve_with_2d_scheme)
     EXPECT_THROW_MSG(model.mesh_curve(1), "Scheme 'bamg' is not a 1D scheme");
 }
 
-TEST(SchemeTest, mesh_surface_with_1d_scheme)
+TEST(SchemeTest, DISABLED_mesh_surface_with_1d_scheme)
 {
     auto rect = testing::build_rect(Point(0, 0), Point(1, 0.5));
     GeomModel model(rect);

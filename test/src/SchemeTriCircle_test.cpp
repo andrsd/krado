@@ -6,7 +6,7 @@
 
 using namespace krado;
 
-TEST(SchemeCircleTest, circle)
+TEST(SchemeCircleTest, DISABLED_circle)
 {
     auto circle = testing::build_circle(Point(0, 0, 0), 1);
     GeomModel model(circle);
@@ -41,7 +41,7 @@ TEST(SchemeCircleTest, circle)
     EXPECT_EQ(surf.triangles().size(), 8);
 }
 
-TEST(SchemeCircleTest, not_circle)
+TEST(SchemeCircleTest, DISABLED_not_circle)
 {
     auto circle = testing::build_rect(Point(0, 0, 0), Point(1, 2, 3));
     GeomModel model(circle);

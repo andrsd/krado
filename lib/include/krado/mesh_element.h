@@ -36,12 +36,6 @@ public:
     /// @return Vertex
     [[nodiscard]] MeshVertexAbstract * vertex(int idx) const;
 
-    /// FIXME: DA
-    Point barycenter() const;
-
-    /// FIXME: DA
-    double volume() const;
-
     const std::vector<MeshVertexAbstract *> & vertices() const;
 
     MeshElement get_edge(int i) const;
