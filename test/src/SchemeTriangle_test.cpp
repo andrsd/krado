@@ -51,7 +51,7 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
 
 #else
 
-TEST(SchemeTriangleTest, DISABLED_mesh)
+TEST(SchemeTriangleTest, mesh)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
     STEPFile file(input_file.string());

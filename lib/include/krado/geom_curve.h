@@ -10,6 +10,7 @@
 #include "TopoDS_Edge.hxx"
 #include "Geom_Curve.hxx"
 #include "GeomAPI_ProjectPointOnCurve.hxx"
+#include <Standard_Handle.hxx>
 
 namespace krado {
 
@@ -93,6 +94,8 @@ public:
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Edge &() const;
+
+    const Handle(Geom_Curve) & curve_handle() const;
 
 private:
     TopoDS_Edge edge_;

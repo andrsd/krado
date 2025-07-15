@@ -172,6 +172,11 @@ GeomCurve::operator const TopoDS_Edge &() const
     return this->edge_;
 }
 
+const Handle(Geom_Curve) & GeomCurve::curve_handle() const
+{
+    return this->curve_;
+}
+
 // - - -
 
 Point
