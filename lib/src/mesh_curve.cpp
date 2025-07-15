@@ -99,6 +99,19 @@ MeshCurve::is_mesh_degenerated() const
                                this->vtxs_.size() < 2);
 }
 
+double
+MeshCurve::mesh_size() const
+{
+    assert(this->mesh_size_.has_value());
+    return this->mesh_size_.value();
+}
+
+void
+MeshCurve::set_mesh_size(double size)
+{
+    this->mesh_size_ = size;
+}
+
 void
 MeshCurve::set_too_small(bool value)
 {
@@ -109,7 +122,10 @@ double
 MeshCurve::mesh_size_at_param(double u) const
 {
     auto [u_lo, u_hi] = this->gcurve_.param_range();
-    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[1]) {
+    if (this->mesh_size_.has_value()) {
+        return this->mesh_size_.value();
+    }
+    else if (this->bnd_vtxs_[0] && this->bnd_vtxs_[1]) {
         // 2 bounding vertices => interpolate the size
         double lc1 = this->bnd_vtxs_[0]->mesh_size();
         double lc2 = this->bnd_vtxs_[1]->mesh_size();

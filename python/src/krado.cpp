@@ -394,6 +394,8 @@ PYBIND11_MODULE(krado, m)
         .def("segments", &MeshCurve::segments, py::return_value_policy::reference)
         .def("is_mesh_degenerated", &MeshCurve::is_mesh_degenerated)
         .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
+        .def("mesh_size", &MeshCurve::mesh_size)
+        .def("set_mesh_size", &MeshCurve::set_mesh_size)
     ;
 
     py::class_<MeshSurface, MeshingParameters>(m, "MeshSurface")

@@ -69,6 +69,16 @@ public:
 
     void set_too_small(bool value);
 
+    /// Get the mesh size at the vertex.
+    ///
+    /// @return The mesh size at the vertex.
+    double mesh_size() const;
+
+    /// Set the mesh size at the vertex.
+    ///
+    /// @param size The new mesh size.
+    void set_mesh_size(double size);
+
     /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
     ///
     /// @param u Parameter value
@@ -87,6 +97,8 @@ private:
     std::vector<MeshElement> segs_;
     ///
     bool too_smoll;
+    /// Mesh size for the edge.
+    std::optional<double> mesh_size_;
 };
 
 } // namespace krado
