@@ -39,6 +39,7 @@ target_link_libraries(
     PRIVATE
         Eigen3::Eigen
         libbamg
+        robust_predicates
     PUBLIC
         fmt::fmt
         spdlog::spdlog

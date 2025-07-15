@@ -40,6 +40,7 @@ if (KRADO_WITH_TRIANGLE)
     add_subdirectory(contrib/triangle)
 endif()
 add_subdirectory(contrib/bamg)
+add_subdirectory(contrib/robust_predicates)
 
 add_subdirectory(lib)
 add_subdirectory(src)
