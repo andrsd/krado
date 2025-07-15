@@ -9,6 +9,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/log.h"
+#include "krado/predicates.h"
 
 namespace krado {
 
@@ -26,34 +27,41 @@ SchemeTriCircle::select_curve_scheme(MeshCurve & curve)
 }
 
 void
-SchemeTriCircle::mesh_surface(MeshSurface & surface)
+SchemeTriCircle::mesh_surface(MeshSurface & mesh_surface)
 {
-    Log::info("Meshing surface {}: scheme='tricircle'", surface.id());
+    Log::info("Meshing surface {}: scheme='tricircle'", mesh_surface.id());
 
-    const auto & gsurf = surface.geom_surface();
+    const auto & gsurf = mesh_surface.geom_surface();
     if (!is_circular_face(gsurf))
         throw Exception("Surface {} is not a circle", gsurf.id());
 
     auto geom_crv = gsurf.curves()[0];
     auto ctr_pnt = get_circle_center(geom_crv);
-    auto uv = gsurf.parameter_from_point(ctr_pnt);
-    auto ctr = new MeshSurfaceVertex(gsurf, uv);
-    surface.add_vertex(ctr);
-    auto nrm = gsurf.normal(uv);
+    auto uv_ctr = gsurf.parameter_from_point(ctr_pnt);
+    auto ctr = new MeshSurfaceVertex(gsurf, uv_ctr);
+    mesh_surface.add_vertex(ctr);
 
-    auto & mesh_crv = surface.curves()[0];
+    auto & mesh_crv = mesh_surface.curves()[0];
+    for (auto & vtx : mesh_crv->bounding_vertices())
+        mesh_surface.add_vertex(vtx);
+    for (auto & vtx : mesh_crv->curve_vertices())
+        mesh_surface.add_vertex(vtx);
+
     auto & circum_verts = mesh_crv->all_vertices();
     for (std::size_t i = 0; i < circum_verts.size(); ++i) {
         std::size_t j = (i + 1) % circum_verts.size();
-        auto t = utils::ccw_triangle(ctr, circum_verts[i], circum_verts[j], nrm);
-        surface.add_triangle(t);
-    }
 
-    //
-    for (auto & vtx : mesh_crv->bounding_vertices())
-        surface.add_vertex(vtx);
-    for (auto & vtx : mesh_crv->curve_vertices())
-        surface.add_vertex(vtx);
+        auto uv_i = gsurf.parameter_from_point(circum_verts[i]->point());
+        auto uv_j = gsurf.parameter_from_point(circum_verts[j]->point());
+        auto orientation = orient2d(uv_ctr, uv_i, uv_j);
+
+        if (orientation > 0)
+            mesh_surface.add_triangle({ ctr, circum_verts[i], circum_verts[j] });
+        else if (orientation < 0)
+            mesh_surface.add_triangle({ ctr, circum_verts[j], circum_verts[i] });
+        else
+            Log::error("Degenerate triangle detected. Points are collinear.");
+    }
 }
 
 } // namespace krado

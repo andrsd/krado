@@ -107,19 +107,4 @@ distance(const UVParam & p1, const UVParam & p2)
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);
 }
 
-std::array<MeshVertexAbstract *, 3>
-ccw_triangle(MeshVertexAbstract * v1,
-             MeshVertexAbstract * v2,
-             MeshVertexAbstract * v3,
-             const Vector & normal)
-{
-    Vector ab = v2->point() - v1->point();
-    Vector ac = v3->point() - v1->point();
-    auto tri_normal = cross_product(ab, ac);
-    if (dot_product(tri_normal, normal) < 0)
-        return { v1, v3, v2 };
-    else
-        return { v1, v2, v3 };
-}
-
 } // namespace krado::utils
