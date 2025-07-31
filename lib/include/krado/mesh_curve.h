@@ -6,6 +6,7 @@
 #include "krado/mesh_element.h"
 #include "krado/meshing_parameters.h"
 #include <vector>
+#include <optional>
 
 namespace krado {
 

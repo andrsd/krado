@@ -5,6 +5,7 @@
 #include "krado/geom_vertex.h"
 #include "BRepLib_MakeVertex.hxx"
 #include "TopoDS.hxx"
+#include <filesystem>
 
 using namespace krado;
 namespace fs = std::filesystem;
