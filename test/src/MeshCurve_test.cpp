@@ -3,7 +3,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
-#include "krado/scheme.h"
+#include "krado/scheme/equal.h"
 #include "builder.h"
 
 using namespace krado;
@@ -36,7 +36,6 @@ TEST(MeshCurveTest, mesh)
     MeshVertex v2(gvtx2);
     MeshCurve mcurve(edge, &v1, &v2);
 
-#if 0
     SchemeEqual equal;
     equal.set("intervals", 4);
     equal.mesh_curve(mcurve);
@@ -61,5 +60,4 @@ TEST(MeshCurveTest, mesh)
 
     EXPECT_EQ(segs[3].type(), ElementType::LINE2);
     EXPECT_EQ(segs[3].num_vertices(), 2);
-#endif
 }
