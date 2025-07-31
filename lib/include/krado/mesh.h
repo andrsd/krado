@@ -242,6 +242,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
 
+    /// Remove edge sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_edge_sets();
+
     /// Set side set name
     ///
     /// @param id Side set ID
