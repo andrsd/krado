@@ -369,6 +369,14 @@ Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
 }
 
 Mesh &
+Mesh::remove_face_sets()
+{
+    this->face_sets_.clear();
+    this->face_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
 {
     this->edge_set_names_[edge_set_id] = name;

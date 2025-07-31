@@ -213,6 +213,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
 
+    /// Remove face sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_face_sets();
+
     /// Set edge set name
     ///
     /// @param edge_set_id Edge set ID (marker)
