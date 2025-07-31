@@ -278,6 +278,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
 
+    /// Remove side sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_side_sets();
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs

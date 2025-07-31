@@ -472,6 +472,14 @@ Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_e
 }
 
 Mesh &
+Mesh::remove_side_sets()
+{
+    this->side_sets_.clear();
+    this->side_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     Log::info("Remapping block IDs:");
