@@ -184,6 +184,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
 
+    /// Remove cell sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_cell_sets();
+
     /// Set face set name
     ///
     /// @param face_set_id Face set ID (marker)

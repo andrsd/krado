@@ -327,6 +327,14 @@ Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
 }
 
 Mesh &
+Mesh::remove_cell_sets()
+{
+    this->cell_sets_.clear();
+    this->cell_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
 {
     this->face_set_names_[face_set_id] = name;
