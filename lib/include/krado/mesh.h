@@ -184,6 +184,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
 
+    /// Remove cell sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_cell_sets();
+
     /// Set face set name
     ///
     /// @param face_set_id Face set ID (marker)
@@ -213,6 +218,11 @@ public:
     /// @return Reference to this mesh
     Mesh & set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
 
+    /// Remove face sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_face_sets();
+
     /// Set edge set name
     ///
     /// @param edge_set_id Edge set ID (marker)
@@ -241,6 +251,11 @@ public:
     /// @param edge_ids Edge IDs
     /// @return Reference to this mesh
     Mesh & set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
+
+    /// Remove edge sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_edge_sets();
 
     /// Set side set name
     ///
@@ -277,6 +292,11 @@ public:
     /// @param side_set_entries Side set entries
     /// @return Reference to this mesh
     Mesh & set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
+
+    /// Remove side sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_side_sets();
 
     /// Remap block IDs
     ///

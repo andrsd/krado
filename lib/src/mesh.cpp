@@ -327,6 +327,14 @@ Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
 }
 
 Mesh &
+Mesh::remove_cell_sets()
+{
+    this->cell_sets_.clear();
+    this->cell_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
 {
     this->face_set_names_[face_set_id] = name;
@@ -369,6 +377,14 @@ Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
 }
 
 Mesh &
+Mesh::remove_face_sets()
+{
+    this->face_sets_.clear();
+    this->face_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
 {
     this->edge_set_names_[edge_set_id] = name;
@@ -407,6 +423,14 @@ Mesh &
 Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids)
 {
     this->edge_sets_[id] = edge_ids;
+    return *this;
+}
+
+Mesh &
+Mesh::remove_edge_sets()
+{
+    this->edge_sets_.clear();
+    this->edge_set_names_.clear();
     return *this;
 }
 
@@ -468,6 +492,14 @@ Mesh &
 Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
 {
     this->side_sets_[id] = side_set_entries;
+    return *this;
+}
+
+Mesh &
+Mesh::remove_side_sets()
+{
+    this->side_sets_.clear();
+    this->side_set_names_.clear();
     return *this;
 }
 

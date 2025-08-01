@@ -507,3 +507,12 @@ TEST(MeshTest, outward_normal_3d)
     EXPECT_EQ(mesh.outward_normal(13), Vector(0, 0, -1));
     EXPECT_EQ(mesh.outward_normal(14), Vector(0, 0, 1));
 }
+
+TEST(MeshTest, remove_side_sets)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read();
+    mesh.remove_side_sets();
+    auto side_set_ids = mesh.side_set_ids();
+    EXPECT_EQ(side_set_ids.size(), 0);
+}
