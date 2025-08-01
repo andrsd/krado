@@ -1,13 +1,13 @@
 {
-    "lib/src/*.cpp": [
+    "lib/**/*.cpp": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],
-    "lib/include/krado/*.h": [
+    "lib/**/*.h": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],
-    "src/*.cpp": [
+    "src/**/*.cpp": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ]

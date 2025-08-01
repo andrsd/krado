@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/point.h"
