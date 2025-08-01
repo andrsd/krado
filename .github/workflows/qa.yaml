@@ -1,0 +1,32 @@
+name: qa
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  formatting-check:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clang-format style check
+        uses: jidicula/clang-format-action@v4.13.0
+        with:
+          clang-format-version: "14"
+          check-path: .
+
+  check-spdx-tags:
+    name: check spdx tags
+    defaults:
+      run:
+        shell: bash -el {0}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: kt3k/license_checker@v1.0.6

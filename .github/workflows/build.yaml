@@ -1,0 +1,89 @@
+name: build
+
+on: [push]
+
+jobs:
+  build:
+    name: "${{ matrix.os }}, ${{ matrix.build-type }}, py-${{ matrix.python-version }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            build-type: Release
+            python-version: "3.10"
+          - os: ubuntu-22.04
+            build-type: Release
+            python-version: "3.11"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Set up miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: false
+          channels: andrsd,defaults
+
+      - name: Install conda packages
+        shell: bash -l {0}
+        run: |
+          conda install \
+            cmake \
+            make \
+            gcc_linux-64 \
+            gxx_linux-64 \
+            occt=7.9.* \
+            spdlog \
+            fmt=9.1 \
+            pybind11 \
+            pytest \
+            flake8 \
+            lcov
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S . -B ${{ github.workspace }}/build \
+            -DGCOV_PATH=`which x86_64-conda-linux-gnu-gcov` \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
+            -DBUILD_SHARED_LIBS=ON \
+            -DKRADO_BUILD_TESTS=ON \
+            -DKRADO_CODE_COVERAGE=ON \
+            -DGCOV=x86_64-conda-linux-gnu-gcov
+
+      - name: Build
+        run: make -C ${{ github.workspace }}/build
+
+      - name: Run tests
+        run: make -C ${{ github.workspace }}/build test
+
+      - name: Generate code coverage
+        run: make -C ${{ github.workspace }}/build coverage
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}-${{ matrix.build-type }}-${{ matrix.python-version }}
+          path: ${{ github.workspace }}/build/coverage.info
+
+  upload-to-codecov:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: andrsd/krado
