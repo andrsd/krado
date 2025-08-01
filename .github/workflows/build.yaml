@@ -36,9 +36,12 @@ jobs:
             make \
             gcc_linux-64 \
             gxx_linux-64 \
+            exodusiicpp=2.0.* \
             occt=7.9.* \
             spdlog \
             fmt=9.1 \
+            eigen=3.* \
+            boost>=1.70 \
             pybind11 \
             pytest \
             flake8 \
