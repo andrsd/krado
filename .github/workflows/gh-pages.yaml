@@ -43,6 +43,7 @@ jobs:
             sphinx \
             sphinx_rtd_theme \
             breathe==4.35.0 \
+            sphinx-book-theme \
             sphinx-design
 
       - name: Build doco
