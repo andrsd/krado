@@ -190,8 +190,7 @@ Mesh::transformed(const Trsf & tr) const
 Mesh &
 Mesh::transform(const Trsf & tr)
 {
-    auto pts = points();
-    for (auto & p : pts)
+    for (auto & p : this->pnts_)
         p = tr * p;
     return *this;
 }

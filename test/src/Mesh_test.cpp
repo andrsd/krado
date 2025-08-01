@@ -46,10 +46,66 @@ TEST(MeshTest, scaled)
     EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
 }
 
+TEST(MeshTest, scale)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read();
+    mesh.scale(0.25);
+    auto & pnts = mesh.points();
+    EXPECT_EQ(pnts.size(), 4);
+    EXPECT_EQ(pnts[0], Point(0, 0));
+    EXPECT_EQ(pnts[1], Point(0.5, 0));
+    EXPECT_EQ(pnts[2], Point(0, 0.5));
+    EXPECT_EQ(pnts[3], Point(0.5, 0.5));
+
+    auto cell_set_ids = mesh.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = mesh.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
+
+    auto ss_ids = mesh.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = mesh.side_set(10);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
+
+    auto & ss1 = mesh.side_set(11);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
+}
+
 TEST(MeshTest, translated)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
     auto mesh = f.read().translated(2, 3);
+    auto & pnts = mesh.points();
+    EXPECT_EQ(pnts.size(), 4);
+    EXPECT_EQ(pnts[0], Point(2, 3));
+    EXPECT_EQ(pnts[1], Point(4, 3));
+    EXPECT_EQ(pnts[2], Point(2, 5));
+    EXPECT_EQ(pnts[3], Point(4, 5));
+
+    auto cell_set_ids = mesh.cell_set_ids();
+    EXPECT_THAT(cell_set_ids, ElementsAre(0));
+
+    auto & cs0 = mesh.cell_set(0);
+    EXPECT_THAT(cs0, ElementsAre(0, 1));
+
+    auto ss_ids = mesh.side_set_ids();
+    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+
+    auto & ss0 = mesh.side_set(10);
+    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
+
+    auto & ss1 = mesh.side_set(11);
+    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
+}
+
+TEST(MeshTest, translate)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    auto mesh = f.read();
+    mesh.translate(2, 3);
     auto & pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(2, 3));
