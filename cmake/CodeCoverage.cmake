@@ -163,7 +163,7 @@ if(KRADO_CODE_COVERAGE)
         endfunction()
 
     else()
-        message(STATUS, "Code coverage for your compiler (${CMAKE_C_COMPILER_ID}) is not supported.")
+        message(STATUS "Code coverage for your compiler (${CMAKE_C_COMPILER_ID}) is not supported.")
     endif()
 
 else()
