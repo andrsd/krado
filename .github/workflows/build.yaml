@@ -57,8 +57,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
             -DBUILD_SHARED_LIBS=ON \
             -DKRADO_BUILD_TESTS=ON \
-            -DKRADO_CODE_COVERAGE=ON \
-            -DGCOV=x86_64-conda-linux-gnu-gcov
+            -DKRADO_CODE_COVERAGE=ON
 
       - name: Build
         run: make -C ${{ github.workspace }}/build
