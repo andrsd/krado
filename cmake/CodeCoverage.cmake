@@ -93,12 +93,6 @@ if(KRADO_CODE_COVERAGE)
             target_link_options(${TARGET_NAME} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
         endfunction()
 
-        function(add_test_with_coverage)
-            # TODO: wrap add_test so it does this:
-            #   add_test(${TEST_NAME} ARGS)
-            #   set_tests_properties(${TEST_NAME} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${TEST_NAME}.profraw)
-        endfunction()
-
     elseif(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         find_program(GCOV_PATH NAMES gcov)
         if (NOT GCOV_PATH)
@@ -164,9 +158,6 @@ if(KRADO_CODE_COVERAGE)
             target_link_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
         endfunction()
 
-        function(add_test_with_coverage)
-        endfunction()
-
     else()
         message(STATUS, "Code coverage for your compiler (${CMAKE_C_COMPILER_ID}) is not supported.")
     endif()
@@ -174,9 +165,6 @@ if(KRADO_CODE_COVERAGE)
 else()
 
     function(target_code_coverage TARGET_NAME)
-    endfunction()
-
-    function(add_test_with_coverage)
     endfunction()
 
 endif()
