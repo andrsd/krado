@@ -1,35 +1,27 @@
-A simple library for mesh manipulation
-======================================
-
-**Mesh format**
-
-The primary mesh format is ExodusII.
-This format is used for import and export of meshes.
-The library design allows to add other mesh formats in future if needed.
-
-**Simplicity**
+krado: A Mesh Manipulation Package
+==================================
 
 *krado* is designed to be simple and easy to use.
 
-**Performance**
+The library is capable of handling very large meshes.
+It uses 64-bit integers for indexing nodes and elements internally.
 
-The library should be able handle very large meshes.
-It uses 64-bit integers for indexing nodes and elements.
-However, ExodusII support is currently limited to 32-bit signed integers, which allows
-for meshes with up to 2 billion nodes and elements only.
-The internals of the library are **not** parallelized.
+The primary mesh format supported by *krado* is **ExodusII**.
+It is used for both importing and exporting meshes.
+However, ExodusII currently supports only 32-bit signed integers, which limits mesh size to approximately **2 billion** nodes and elements.
+The library is designed to be extensible, so additional mesh formats can be added in the future if needed.
 
-**Languages**
+The internal implementation is **not** parallelized.
 
-The core of the library is written in C++17 and the Python API is generated using pybind11.
-This allows for great flexibility that comes with the power of Python.
-
+The core of the library is written in **C++17**, and the **Python API** is generated using **pybind11**.
+This provides the performance of C++ with the flexibility and ease of use of Python.
 
 
 .. toctree::
+   :caption: Gettting started
    :hidden:
 
-   getting_started
+   install
 
 .. toctree::
    :maxdepth: 1
