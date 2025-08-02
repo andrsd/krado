@@ -27,12 +27,17 @@ This allows for great flexibility that comes with the power of Python.
 
 
 .. toctree::
-   :maxdepth: 1
    :hidden:
-   :caption: Topic areas
 
    getting_started
-   cook_book/index
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Cook book
+   :glob:
+
+   cook_book/*
 
 .. toctree::
    :maxdepth: 1
