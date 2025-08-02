@@ -14,7 +14,15 @@ if(KRADO_CODE_COVERAGE)
 
     if(CMAKE_C_COMPILER_ID MATCHES "(Apple)?[Cc]lang" OR CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?[Cc]lang")
         find_program(LLVM_COV_PATH NAMES llvm-cov)
+        if (NOT LLVM_COV_PATH)
+            message(FATAL_ERROR "llvm-cov not found!")
+        endif()
+
         find_program(LLVM_PROFDATA_PATH NAMES llvm-profdata)
+        if (NOT LLVM_PROFDATA_PATH)
+            message(FATAL_ERROR "llvm-profdata not found!")
+        endif()
+
         mark_as_advanced(FORCE LLVM_COV_PATH LLVM_PROFDATA_PATH)
 
         set(CODE_COVERAGE_PROFRAWS
@@ -109,11 +117,7 @@ if(KRADO_CODE_COVERAGE)
             message(FATAL_ERROR "genhtml not found!")
         endif()
 
-        mark_as_advanced(FORCE
-            GCOV_PATH
-            LCOV_PATH
-            GENHTML_PATH
-        )
+        mark_as_advanced(FORCE GCOV_PATH LCOV_PATH GENHTML_PATH)
 
         set(EXCLUDE_REGEX
             --exclude=*/contrib/*
