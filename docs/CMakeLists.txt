@@ -3,7 +3,7 @@
 find_package(Doxygen QUIET)
 find_program(SPHINX_BUILD sphinx-build)
 
-if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
+if (DOXYGEN_FOUND AND SPHINX_BUILD)
     find_program(SPHINX_BUILD sphinx-build)
     mark_as_advanced(FORCE SPHINX_BUILD)
 
@@ -40,23 +40,16 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     )
 
 else()
-    add_custom_target(doc)
-
-    add_custom_command(
-        TARGET doc
-        COMMAND echo "Unable to generate documentation:"
-    )
+    set(DOC_FAIL_MSG "Unable to generate documentation:")
     if (NOT DOXYGEN_FOUND)
-        add_custom_command(
-            TARGET doc
-            COMMAND echo "- 'doxygen' is not installed."
-        )
+        string(APPEND DOC_FAIL_MSG "\n- 'doxygen' is not installed.")
+    endif()
+    if (${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
+        string(APPEND DOC_FAIL_MSG "\n- 'sphinx-build' is not installed.")
     endif()
 
-    if (${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
-        add_custom_command(
-            TARGET doc
-            COMMAND echo "- 'sphinx-build' is not installed."
-        )
-    endif()
+    # Echo it all at once using CMake command
+    add_custom_target(doc
+        COMMAND ${CMAKE_COMMAND} -E echo "${DOC_FAIL_MSG}"
+    )
 endif()
