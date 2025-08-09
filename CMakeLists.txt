@@ -43,7 +43,7 @@ add_subdirectory(contrib/bamg)
 add_subdirectory(contrib/robust_predicates)
 
 add_subdirectory(lib)
-add_subdirectory(src)
+add_subdirectory(utils)
 add_subdirectory(python)
 
 if(KRADO_BUILD_TESTS)
