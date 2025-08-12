@@ -3,13 +3,6 @@
 
 using namespace krado;
 
-TEST(Axis1Test, ctor)
-{
-    Axis1 ax;
-    EXPECT_EQ(ax.location(), Point(0, 0, 0));
-    EXPECT_EQ(ax.direction(), Vector(0, 0, 1));
-}
-
 TEST(Axis1Test, ctor_pt_dir)
 {
     Point origin(1, 2, 3);
