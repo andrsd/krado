@@ -2,29 +2,31 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/axis1.h"
+#include "krado/occ.h"
 
 namespace krado {
 
-Axis1::Axis1() : loc_ { 0.0, 0.0, 0.0 }, dir_ { 0.0, 0.0, 1.0 } {}
+Axis1::Axis1(const Point & pt, const Vector & dir) : ax1_(occ::to_pnt(pt), occ::to_dir(dir)) {}
 
-Axis1::Axis1(const Point & loc, const Vector & dir) : loc_(loc), dir_(dir.normalized()) {}
-
-const Point &
+Point
 Axis1::location() const
 {
-    return this->loc_;
+    auto pnt = this->ax1_.Location();
+    return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
-const Vector &
+Vector
 Axis1::direction() const
 {
-    return this->dir_;
+    auto dir = this->ax1_.Direction();
+    return Vector(dir.X(), dir.Y(), dir.Z());
 }
 
 bool
 Axis1::is_equal(const Axis1 & other, double tol) const
 {
-    return this->loc_.is_equal(other.loc_, tol) && (this->dir_ - other.dir_).magnitude() <= tol;
+    return location().is_equal(other.location(), tol) &&
+           (direction() - other.direction()).magnitude() <= tol;
 }
 
 } // namespace krado

@@ -98,7 +98,6 @@ PYBIND11_MODULE(krado, m)
     // clang-format off
 
     py::class_<Axis1>(m, "Axis1")
-        .def(py::init())
         .def(py::init<const Point &, const Vector &>())
         .def("location", &Axis1::location)
         .def("direction", &Axis1::direction)
@@ -106,15 +105,12 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Axis2>(m, "Axis2")
-        .def(py::init())
         .def(py::init<const Point &, const Vector &>())
         .def(py::init<const Point &, const Vector &, const Vector &>())
         .def("location", &Axis2::location)
         .def("x_direction", &Axis2::x_direction)
         .def("y_direction", &Axis2::y_direction)
         .def("direction", &Axis2::direction)
-        .def("local_to_world", &Axis2::local_to_world)
-        .def("world_to_local", &Axis2::world_to_local)
     ;
 
     py::class_<STEPFile>(m, "STEPFile")

@@ -23,4 +23,7 @@ TEST(CircularPatternTest, points)
     EXPECT_TRUE(points[5].is_equal(Point(2, -h, 0), 2e-15));
 
     EXPECT_DOUBLE_EQ(cp.radius(), 2.);
+    for (auto & pt : points) {
+        std::cerr << "pt = " << pt << std::endl;
+    }
 }

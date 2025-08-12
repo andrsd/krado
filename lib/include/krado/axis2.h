@@ -6,51 +6,49 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/axis1.h"
+#include "gp_Ax2.hxx"
 
 namespace krado {
 
 class Axis2 {
 public:
-    /// Default constructor: (0,0,0) with XYZ basis
-    Axis2();
+    Axis2(const Point & pt, const Vector & direction);
 
-    /// Constructor: origin + main direction
+    /// Creates an axis placement with an origin `pt` such that:
+    /// - `n` is the Direction, and
+    /// - the "X direction" is normal to `n`, in the plane defined by the vectors (`n`, `v_x`):
+    ///   "X Direction" = (n ^ v_x) ^ n,
     ///
-    /// @param pt Origin point
-    /// @param v Main direction vector
-    Axis2(const Point & pt, const Vector & v);
-
-    /// Constructor: origin + normal + X-like vector (like gp_Ax2(P, N, Vx))
-    ///
-    /// @param pt Origin point
-    /// @param n Normal vector
-    /// @param v_x X-like vector
+    /// Raises `Exception` if N and Vx are parallel (same or opposite orientation).
     Axis2(const Point & pt, const Vector & n, const Vector & v_x);
 
-    const Point & location() const;
-
-    const Vector & x_direction() const;
-
-    const Vector & y_direction() const;
-
-    const Vector & direction() const;
+    /// Get location
+    ///
+    /// @return Location
+    Point location() const;
 
     /// Returns the main axis
     ///
     /// @return The main location point and the main direction
     Axis1 axis() const;
 
-    /// Transform local (u,v) coords in XY plane to 3D point
-    Point local_to_world(double u, double v) const;
+    /// Get direction
+    ///
+    /// @return Direction
+    Vector direction() const;
 
-    /// (Optional) World → local in Axis2 frame
-    Vector world_to_local(const Point & pt) const;
+    /// Get x-direction
+    ///
+    /// @return x-direction
+    Vector x_direction() const;
+
+    /// Get y-direction
+    ///
+    /// @return x-direction
+    Vector y_direction() const;
 
 private:
-    Point loc_;
-    Vector x_dir_;
-    Vector y_dir_;
-    Vector z_dir_;
+    gp_Ax2 ax2_;
 };
 
 } // namespace krado

@@ -5,23 +5,30 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "gp_Ax1.hxx"
 
 namespace krado {
 
 class Axis1 {
 public:
-    Axis1();
-    Axis1(const Point & loc, const Vector & dir);
+    /// @param pt `Point` the location point
+    /// @param direction `Vector` the direction of the axis
+    Axis1(const Point & pt, const Vector & dir);
 
-    const Point & location() const;
+    /// Get location
+    ///
+    /// @return Location
+    Point location() const;
 
-    const Vector & direction() const;
+    /// Get direction
+    ///
+    /// @return Direction
+    Vector direction() const;
 
     bool is_equal(const Axis1 & other, double tol) const;
 
 private:
-    Point loc_;
-    Vector dir_;
+    gp_Ax1 ax1_;
 };
 
 } // namespace krado
