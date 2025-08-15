@@ -80,6 +80,12 @@ jobs:
           name: test-results-${{ matrix.os }}-${{ matrix.build-type }}-py-${{ matrix.python-version }}
           path: ${{ github.workspace }}/build/Testing/Temporary/LastTest.log
 
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: "${{ github.workspace }}/build/gtest_results.xml"
+        if: always()
+
       - name: Generate code coverage
         run: make -C ${{ github.workspace }}/build coverage
 
