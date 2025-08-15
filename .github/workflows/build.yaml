@@ -73,12 +73,13 @@ jobs:
           awk 's;/^\[HANDLER_OUTPUT\]/{s=1}' test.log >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload test result
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.build-type }}-py-${{ matrix.python-version }}
-          path: ${{ github.workspace }}/build/Testing/Temporary/LastTest.log
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ${{ github.workspace }}/build/gtest_results.xml
+          name: ${{ matrix.os }}-${{ matrix.build-type }}-py-${{ matrix.python-version }}
 
       - name: Test Summary
         uses: test-summary/action@v2
