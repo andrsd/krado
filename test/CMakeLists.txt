@@ -37,9 +37,8 @@ target_link_libraries(
 
 add_test(
     NAME krado-test
-    COMMAND
-        ${PROJECT_NAME}
-        --gtest_output=xml:${CMAKE_BINARY_DIR}/gtest_results.xml
+    COMMAND ${PROJECT_NAME}
+
 )
 if(KRADO_CODE_COVERAGE)
     set_tests_properties(

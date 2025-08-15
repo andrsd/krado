@@ -67,25 +67,23 @@ jobs:
 
       - name: Run tests
         run: |
-          echo "### Test results" >> $GITHUB_STEP_SUMMARY
-          ctest --test-dir ${{ github.workspace }}/build -O test.log
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          awk 's;/^\[HANDLER_OUTPUT\]/{s=1}' test.log >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ${{ github.workspace }}/build/test/krado-test \
+            --gtest_output=xml:${{ github.workspace }}/build/gtest-results.xml
 
-      - name: Upload test results to Codecov
+      - name: Test summary
+        uses: test-summary/action@v2
+        if: always()
+        with:
+          paths: ${{ github.workspace }}/build/gtest-results.xml
+          show: "fail, skip"
+
+      - name: Upload test results to codecov.io
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ${{ github.workspace }}/build/gtest_results.xml
+          file: ${{ github.workspace }}/build/gtest-results.xml
           name: ${{ matrix.os }}-${{ matrix.build-type }}-py-${{ matrix.python-version }}
-
-      - name: Test Summary
-        uses: test-summary/action@v2
-        with:
-          paths: "${{ github.workspace }}/build/gtest_results.xml"
-        if: always()
 
       - name: Generate code coverage
         run: make -C ${{ github.workspace }}/build coverage
@@ -106,7 +104,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
 
-      - name: Upload to Codecov
+      - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
