@@ -5,6 +5,7 @@
 #include "krado/bounding_box_3d.h"
 #include "krado/element.h"
 #include "krado/hasse_diagram.h"
+#include "krado/utils.h"
 #include "krado/vector.h"
 #include "krado/log.h"
 #include "nanoflann/nanoflann.hpp"
@@ -52,6 +53,35 @@ struct PointCloud {
     }
 };
 
+template <int N>
+void
+print_histogram(const std::array<std::size_t, N> & histogram)
+{
+    // Find the maximum bin count for scaling
+    std::size_t max_count = *std::max_element(histogram.begin(), histogram.end());
+    int max_bar_width = 50;
+
+    std::size_t max_count_wd = 0;
+    for (int b = 0; b < N; ++b) {
+        std::size_t count = histogram[b];
+        max_count_wd = std::max(max_count_wd, utils::human_number(count).size());
+    }
+
+    for (int b = 0; b < N; ++b) {
+        double low = static_cast<double>(b) / N;
+        double high = static_cast<double>(b + 1) / N;
+        std::size_t count = histogram[b];
+
+        int bar_len = (max_count > 0)
+                          ? static_cast<int>(static_cast<double>(count) / max_count * max_bar_width)
+                          : 0;
+
+        std::string bar(bar_len, '+');
+        auto count_str = utils::human_number(count);
+        Log::info(2, "  {:.1f} – {:.1f} | {:>{}} {}", low, high, count_str, max_count_wd, bar);
+    }
+}
+
 /// Find dupllicate points (i.e. points that are closer than a threshold distance)
 ///
 /// @return Tuple where the first element is a vector of unique points and the second element is a
@@ -76,6 +106,10 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     std::map<std::size_t, std::size_t> point_remap;
     std::vector<bool> processed(cloud.points.size(), false);
     nanoflann::SearchParameters params;
+    std::size_t close_pairs_count = 0;
+    double min_dist2 = std::numeric_limits<double>::max();
+    const int BINS = 10;
+    std::array<std::size_t, BINS> histogram {};
 
     for (std::size_t i = 0; i < cloud.points.size(); ++i) {
         if (!processed[i]) {
@@ -90,12 +124,33 @@ remove_duplicates(const PointCloud & cloud, double threshold)
             tree.radiusSearch(query_point, search_radius, matches, params);
 
             for (const auto & match : matches) {
+                // skip self
+                if (match.first == i)
+                    continue;
+                ++close_pairs_count;
+                min_dist2 = std::min(min_dist2, match.second);
+
+                // optional: histogram by fraction of tolerance
+                double dist = std::sqrt(match.second);
+                int bin =
+                    std::min<int>((dist / threshold) * histogram.size(), histogram.size() - 1);
+                histogram[bin]++;
+            }
+
+            for (const auto & match : matches) {
                 processed[match.first] = true;
                 point_remap[match.first] = unique_points.size();
             }
             unique_points.push_back(cloud.points[i]);
         }
     }
+
+    Log::info(2, "Diagnostics:");
+    Log::info(2, "  Total close pairs: {} ", utils::human_number(close_pairs_count));
+    Log::info(2, "  Histogram (0.0 = identical, 1.0 = exactly at tolerance)");
+    print_histogram<BINS>(histogram);
+    if (close_pairs_count > 0)
+        Log::info(2, "  Smallest separation: {:.6g}", std::sqrt(min_dist2));
 
     return { unique_points, point_remap };
 }
