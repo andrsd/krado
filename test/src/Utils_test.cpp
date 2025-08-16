@@ -19,3 +19,13 @@ TEST(UtilsTest, distance)
     Point b(2., -1., 4.);
     EXPECT_NEAR(utils::distance(a, b), std::sqrt(11), 1e-15);
 }
+
+TEST(UtilsTest, human_number)
+{
+    EXPECT_EQ(utils::human_number(0), "0");
+    EXPECT_EQ(utils::human_number(10), "10");
+    EXPECT_EQ(utils::human_number(999), "999");
+    EXPECT_EQ(utils::human_number(1234), "1,234");
+    EXPECT_EQ(utils::human_number(12345), "12,345");
+    EXPECT_EQ(utils::human_number(1234567), "1,234,567");
+}
