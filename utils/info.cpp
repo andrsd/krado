@@ -28,25 +28,6 @@ build_options()
     return options;
 }
 
-std::string
-human_number(std::size_t value)
-{
-    std::string num_str = std::to_string(value);
-    std::string result;
-
-    int count = 0;
-    for (auto it = num_str.rbegin(); it != num_str.rend(); ++it) {
-        if (count && count % 3 == 0) {
-            result += ',';
-        }
-        result += *it;
-        ++count;
-    }
-
-    std::reverse(result.begin(), result.end());
-    return result;
-}
-
 krado::Mesh
 load_exodus_file(const std::string & filename)
 {
@@ -83,7 +64,9 @@ print_cell_set_info(const krado::Mesh & mesh)
                 name = "<no name>";
             wd_name = std::max(wd_name, fmt::format("{}", name).size());
             const auto & cell_set = mesh.cell_set(id);
-            wd_num = std::max(wd_num, fmt::format("{}", human_number(cell_set.size())).size());
+            wd_num =
+                std::max(wd_num,
+                         fmt::format("{}", krado::utils::human_number(cell_set.size())).size());
         }
         wd_name++;
 
@@ -98,7 +81,9 @@ print_cell_set_info(const krado::Mesh & mesh)
             fmt::print("{:<{}} ", name, wd_name);
 
             const auto & cell_set = mesh.cell_set(id);
-            fmt::print("{:>{}} elements total", human_number(cell_set.size()), wd_num);
+            fmt::print("{:>{}} elements total",
+                       krado::utils::human_number(cell_set.size()),
+                       wd_num);
             fmt::print(" (");
             if (elem_counts.size() == 1) {
                 auto etyp = elem_counts.begin()->first;
@@ -109,7 +94,9 @@ print_cell_set_info(const krado::Mesh & mesh)
                 for (auto & [etyp, cnt] : elem_counts) {
                     if (i > 0)
                         fmt::print(", ");
-                    fmt::print("{}: {}", krado::utils::to_str(etyp), human_number(cnt));
+                    fmt::print("{}: {}",
+                               krado::utils::to_str(etyp),
+                               krado::utils::human_number(cnt));
                     i++;
                 }
             }
@@ -135,7 +122,9 @@ print_side_set_info(const krado::Mesh & mesh)
                 name = "<no name>";
             wd_name = std::max(wd_name, fmt::format("{}", name).size());
             const auto & side_set = mesh.side_set(id);
-            wd_num = std::max(wd_num, fmt::format("{}", human_number(side_set.size())).size());
+            wd_num =
+                std::max(wd_num,
+                         fmt::format("{}", krado::utils::human_number(side_set.size())).size());
         }
         wd_name++;
 
@@ -150,7 +139,7 @@ print_side_set_info(const krado::Mesh & mesh)
             fmt::print("{:<{}} ", name, wd_name);
 
             const auto & side_set = mesh.side_set(id);
-            fmt::print("{:>{}} sides\n", human_number(side_set.size()), wd_num);
+            fmt::print("{:>{}} sides\n", krado::utils::human_number(side_set.size()), wd_num);
         }
     }
 }
@@ -165,8 +154,8 @@ print_mesh_info(const std::string & filename)
 
     fmt::print("\n");
     fmt::print("Global:\n");
-    fmt::print("- {} elements\n", human_number(mesh.elements().size()));
-    fmt::print("- {} nodes\n", human_number(mesh.points().size()));
+    fmt::print("- {} elements\n", krado::utils::human_number(mesh.elements().size()));
+    fmt::print("- {} nodes\n", krado::utils::human_number(mesh.points().size()));
 
     print_cell_set_info(mesh);
     print_side_set_info(mesh);

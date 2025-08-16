@@ -148,4 +148,28 @@ std::string to_str(T val);
 
 [[nodiscard]] double distance(const UVParam & p1, const UVParam & p2);
 
+/// Print number in human readable format
+///
+/// @param value Value to conert into humna-readable string
+/// @return Human-readable string
+template <typename T>
+inline std::string
+human_number(T value)
+{
+    std::string num_str = std::to_string(value);
+    std::string result;
+
+    int count = 0;
+    for (auto it = num_str.rbegin(); it != num_str.rend(); ++it) {
+        if (count && count % 3 == 0) {
+            result += ',';
+        }
+        result += *it;
+        ++count;
+    }
+
+    std::reverse(result.begin(), result.end());
+    return result;
+}
+
 } // namespace krado::utils
