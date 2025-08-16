@@ -65,7 +65,7 @@ operator<<(std::ostream & stream, const krado::MeshElement & el)
 {
     stream << "(" << krado::utils::to_str(el.type()) << ":";
     for (auto & vtx : el.vertices())
-        stream << " " << vtx;
+        stream << " " << vtx->global_id();
     stream << ")";
     return stream;
 }
