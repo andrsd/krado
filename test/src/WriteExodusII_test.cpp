@@ -1,6 +1,11 @@
 #include "gmock/gmock.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "krado/io.h"
 #include "builder.h"
 
@@ -11,9 +16,9 @@ TEST(WriteExodusIITest, DISABLED_line)
     auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
-    auto & line = model.curve(1);
+    auto line = model.curve(1);
     // clang-format off
-    line.set_scheme("bias")
+    line->set_scheme("bias")
         .set("intervals", 5)
         .set("coef", 1.2);
     // clang-format on

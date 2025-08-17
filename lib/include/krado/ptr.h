@@ -16,6 +16,9 @@ class Ptr {
 public:
     Ptr() : ptr_(nullptr), ref_count_(nullptr), weak_count_(nullptr) {}
 
+    // Construct from `nullptr`
+    Ptr(std::nullptr_t) : ptr_(nullptr), ref_count_(nullptr), weak_count_(nullptr) {}
+
     Ptr(const Ptr & other) :
         ptr_(other.ptr_),
         ref_count_(other.ref_count_),
@@ -63,6 +66,15 @@ public:
             if (this->ptr_)
                 ++(*this->ref_count_);
         }
+        return *this;
+    }
+
+    // Assignment from `nullptr`
+    Ptr & operator=(std::nullptr_t) {
+        this->release();
+        this->ptr_ = nullptr;
+        this->ref_count_ = nullptr;
+        this->weak_count_ = nullptr;
         return *this;
     }
 

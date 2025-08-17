@@ -6,16 +6,16 @@
 #include "krado/exception.h"
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
-#include "krado/scheme.h"
 #include <array>
 #include <cassert>
 
 namespace krado {
 
 MeshSurface::MeshSurface(const GeomSurface & gsurface,
-                         const std::vector<MeshCurve *> & mesh_curves) :
+                         const std::vector<Ptr<MeshCurve>> & mesh_curves) :
     gsurface_(gsurface),
     mesh_curves_(mesh_curves)
 {
@@ -33,31 +33,31 @@ MeshSurface::geom_surface() const
     return this->gsurface_;
 }
 
-const std::vector<MeshCurve *> &
+const std::vector<Ptr<MeshCurve>> &
 MeshSurface::curves() const
 {
     return this->mesh_curves_;
 }
 
-const std::vector<MeshVertexAbstract *> &
+const std::vector<Ptr<MeshVertexAbstract>> &
 MeshSurface::all_vertices() const
 {
     return this->vtxs_;
 }
 
-std::vector<MeshVertexAbstract *> &
+std::vector<Ptr<MeshVertexAbstract>> &
 MeshSurface::all_vertices()
 {
     return this->vtxs_;
 }
 
-const std::vector<MeshSurfaceVertex *> &
+const std::vector<Ptr<MeshSurfaceVertex>> &
 MeshSurface::surface_vertices() const
 {
     return this->surf_vtxs_;
 }
 
-std::vector<MeshSurfaceVertex *> &
+std::vector<Ptr<MeshSurfaceVertex>> &
 MeshSurface::surface_vertices()
 {
     return this->surf_vtxs_;
@@ -76,33 +76,33 @@ MeshSurface::triangles()
 }
 
 void
-MeshSurface::add_vertex(MeshVertex * vertex)
+MeshSurface::add_vertex(Ptr<MeshVertex> vertex)
 {
     this->vtxs_.push_back(vertex);
 }
 
 void
-MeshSurface::add_vertex(MeshCurveVertex * vertex)
+MeshSurface::add_vertex(Ptr<MeshCurveVertex> vertex)
 {
     this->vtxs_.push_back(vertex);
 }
 
 void
-MeshSurface::add_vertex(MeshSurfaceVertex * vertex)
+MeshSurface::add_vertex(Ptr<MeshSurfaceVertex> vertex)
 {
     this->vtxs_.push_back(vertex);
     this->surf_vtxs_.push_back(vertex);
 }
 
 void
-MeshSurface::add_triangle(const std::array<MeshVertexAbstract *, 3> & tri)
+MeshSurface::add_triangle(const std::array<Ptr<MeshVertexAbstract>, 3> & tri)
 {
     MeshElement tri3(ElementType::TRI3, { tri[0], tri[1], tri[2] });
     this->tris_.emplace_back(tri3);
 }
 
 void
-MeshSurface::add_quadrangle(const std::array<MeshVertexAbstract *, 4> & quad)
+MeshSurface::add_quadrangle(const std::array<Ptr<MeshVertexAbstract>, 4> & quad)
 {
     MeshElement quad4(ElementType::QUAD4, { quad[0], quad[1], quad[2], quad[3] });
     this->quads_.emplace_back(quad4);
@@ -145,7 +145,7 @@ MeshSurface::remove_all_triangles()
 void
 MeshSurface::delete_mesh()
 {
-    // this->vtxs_.clear();
+    this->vtxs_.clear();
     this->surf_vtxs_.clear();
     this->tris_.clear();
 }

@@ -6,8 +6,6 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_element.h"
-#include "krado/exception.h"
-#include "krado/scheme.h"
 #include "krado/types.h"
 #include "krado/log.h"
 #include "krado/consts.h"
@@ -15,7 +13,7 @@
 
 namespace krado {
 
-MeshCurve::MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2) :
+MeshCurve::MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2) :
     gcurve_(gcurve),
     too_smoll(false)
 {
@@ -38,45 +36,45 @@ MeshCurve::geom_curve() const
     return this->gcurve_;
 }
 
-const std::vector<MeshVertexAbstract *> &
+const std::vector<Ptr<MeshVertexAbstract>> &
 MeshCurve::all_vertices() const
 {
     return this->vtxs_;
 }
 
-const std::vector<MeshVertex *> &
+const std::vector<Ptr<MeshVertex>> &
 MeshCurve::bounding_vertices() const
 {
     return this->bnd_vtxs_;
 }
 
 void
-MeshCurve::add_vertex(MeshVertex * vertex)
+MeshCurve::add_vertex(Ptr<MeshVertex> vertex)
 {
     this->vtxs_.push_back(vertex);
 }
 
 void
-MeshCurve::add_vertex(MeshCurveVertex * curve_vertex)
+MeshCurve::add_vertex(Ptr<MeshCurveVertex> curve_vertex)
 {
     this->curve_vtx_.push_back(curve_vertex);
     this->vtxs_.push_back(curve_vertex);
 }
 
-const std::vector<MeshCurveVertex *> &
+const std::vector<Ptr<MeshCurveVertex>> &
 MeshCurve::curve_vertices() const
 {
     return this->curve_vtx_;
 }
 
-std::vector<MeshCurveVertex *> &
+std::vector<Ptr<MeshCurveVertex>> &
 MeshCurve::curve_vertices()
 {
     return this->curve_vtx_;
 }
 
 void
-MeshCurve::add_segment(const std::array<MeshVertexAbstract *, 2> & seg)
+MeshCurve::add_segment(const std::array<Ptr<MeshVertexAbstract>, 2> & seg)
 {
     MeshElement line2(ElementType::LINE2, { seg[0], seg[1] });
     this->segs_.emplace_back(line2);

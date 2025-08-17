@@ -183,7 +183,7 @@ get_point(double * pts, int idx)
 #endif
 
 void
-SchemeTriangle::mesh_surface(MeshSurface & surface)
+SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
 {
 #ifdef KRADO_WITH_TRIANGLE
     Log::info("Meshing surface {}: scheme='triangle'", surface.id());

@@ -6,6 +6,7 @@
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/types.h"
 #include "krado/utils.h"
+#include "krado/ptr.h"
 #include <array>
 #include <iostream>
 
@@ -18,7 +19,7 @@ public:
     ///
     /// @param type Element type
     /// @param vtx Vertices composing the element
-    MeshElement(ElementType type, const std::vector<MeshVertexAbstract *> & vtx);
+    MeshElement(ElementType type, const std::vector<Ptr<MeshVertexAbstract>> & vtx);
 
     /// Get element type
     ///
@@ -34,9 +35,9 @@ public:
     ///
     /// @param idx Local vertex index
     /// @return Vertex
-    [[nodiscard]] MeshVertexAbstract * vertex(int idx) const;
+    [[nodiscard]] Ptr<MeshVertexAbstract> vertex(int idx) const;
 
-    const std::vector<MeshVertexAbstract *> & vertices() const;
+    const std::vector<Ptr<MeshVertexAbstract>> & vertices() const;
 
     MeshElement get_edge(int i) const;
 
@@ -50,12 +51,12 @@ public:
 
 private:
     ElementType type_;
-    std::vector<MeshVertexAbstract *> vtx_;
+    std::vector<Ptr<MeshVertexAbstract>> vtx_;
 
 public:
-    static MeshElement Line2(const std::array<MeshVertexAbstract *, 2> & vtx);
-    static MeshElement Tri3(const std::array<MeshVertexAbstract *, 3> & vtx);
-    static MeshElement Quad4(const std::array<MeshVertexAbstract *, 4> & vtx);
+    static MeshElement Line2(const std::array<Ptr<MeshVertexAbstract>, 2> & vtx);
+    static MeshElement Tri3(const std::array<Ptr<MeshVertexAbstract>, 3> & vtx);
+    static MeshElement Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx);
 };
 
 } // namespace krado

@@ -58,6 +58,12 @@ create_objs()
 
 } // namespace
 
+TEST(PtrTest, nullptr_is_null)
+{
+    Ptr<MyBigObj> obj = nullptr;
+    EXPECT_TRUE(obj.is_null());
+}
+
 TEST(PtrTest, allocate)
 {
     auto obj = Ptr<MyBigObj>::alloc(10000);
@@ -100,6 +106,7 @@ TEST(PtrTest, circular_dependency)
         bool * deleted;
     };
 
+    Ptr<A> glob;
     {
         auto a = Ptr<A>::alloc(&a_deleted);
         auto b = Ptr<B>::alloc(&b_deleted);
@@ -109,10 +116,14 @@ TEST(PtrTest, circular_dependency)
 
         EXPECT_EQ(a.ref_count(), 2);
         EXPECT_EQ(b.ref_count(), 2);
+
+        glob = a;
     }
 
     EXPECT_FALSE(a_deleted);
     EXPECT_FALSE(b_deleted);
+
+    glob->b_ptr = nullptr;
 }
 
 TEST(PtrTest, copy)
@@ -168,4 +179,11 @@ TEST(PtrTest, copy_ctors2)
         der_vec.push_back(v);
     }
     EXPECT_EQ(base_vec.size(), 2);
+}
+
+TEST(PtrTest, deallocate_via_nullptr)
+{
+    auto ptr = Ptr<Derived>::alloc();
+    ptr = nullptr;
+    EXPECT_EQ(ptr.ref_count(), 0);
 }
