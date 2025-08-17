@@ -8,8 +8,7 @@
 namespace krado {
 
 MeshingParameters::MeshingParameters() :
-    scheme_factory_(SchemeFactory::instance()),
-    scheme_(this->scheme_factory_.create("auto")),
+    scheme_(SchemeFactory::instance().create("auto")),
     meshed_(false)
 {
 }
@@ -17,7 +16,7 @@ MeshingParameters::MeshingParameters() :
 Scheme &
 MeshingParameters::set_scheme(const std::string & name)
 {
-    this->scheme_ = this->scheme_factory_.create(name);
+    this->scheme_ = SchemeFactory::instance().create(name);
     return *this->scheme_;
 }
 

@@ -8,7 +8,6 @@
 namespace krado {
 
 class Scheme;
-class SchemeFactory;
 
 class MeshingParameters {
 public:
@@ -70,7 +69,6 @@ public:
     void set_meshed();
 
 private:
-    SchemeFactory & scheme_factory_;
     Scheme * scheme_;
     Parameters mparams_;
     /// Flag indicating if the entity is meshed
