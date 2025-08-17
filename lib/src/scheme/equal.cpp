@@ -49,16 +49,27 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 
     Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_intervals);
 
-    auto bnd_verts = curve->bounding_vertices();
-    auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
-    curve->add_vertex(bnd_verts[0]);
-    for (auto & cv : curve_vtxs)
-        curve->add_vertex(cv);
-    if (bnd_verts.size() == 2)
+    if (geom_curve.type() == GeomCurve::CurveType::Circle) {
+        auto bnd_verts = curve->bounding_vertices();
+        auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
+        curve->add_vertex(bnd_verts[0]);
+        for (auto & cv : curve_vtxs)
+            curve->add_vertex(cv);
+
+        for (std::size_t i = 0; i < n_intervals - 1; ++i)
+            curve->add_segment({ curve->all_vertices()[i], curve->all_vertices()[i + 1] });
+        curve->add_segment({ curve->all_vertices()[n_intervals - 1], bnd_verts[0] });
+    }
+    else {
+        auto bnd_verts = curve->bounding_vertices();
+        auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
+        curve->add_vertex(bnd_verts[0]);
+        for (auto & cv : curve_vtxs)
+            curve->add_vertex(cv);
         curve->add_vertex(bnd_verts[1]);
 
-    for (std::size_t i = 0; i < n_intervals; ++i) {
-        curve->add_segment({ curve->all_vertices()[i], curve->all_vertices()[i + 1] });
+        for (std::size_t i = 0; i < n_intervals; ++i)
+            curve->add_segment({ curve->all_vertices()[i], curve->all_vertices()[i + 1] });
     }
 }
 
