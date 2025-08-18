@@ -214,6 +214,24 @@ public:
     }
 
     template <typename U>
+    static Ptr<T>
+    cast(const Ptr<U> & other)
+    {
+        T * casted = static_cast<T *>(other.get());
+        return Ptr<T>(other, casted);
+    }
+
+    template <typename U>
+    static Ptr<T>
+    downcast(const Ptr<U> & other)
+    {
+        T * casted = dynamic_cast<T *>(other.get());
+        if (casted)
+            return Ptr<T>(other, casted);
+        return nullptr;
+    }
+
+    template <typename U>
     friend class Ptr;
 };
 

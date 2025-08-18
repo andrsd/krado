@@ -221,6 +221,9 @@ TEST(PtrTest, op_static_cast)
     Ptr<Base> a = Ptr<Derived>::alloc();
     Ptr<Derived> b = static_ptr_cast<Derived>(a);
     EXPECT_EQ(b->value(), 2);
+
+    auto c = Ptr<Derived>::cast(a);
+    EXPECT_EQ(c->value(), 2);
 }
 
 TEST(PtrTest, op_dynamic_cast)
@@ -229,4 +232,7 @@ TEST(PtrTest, op_dynamic_cast)
     Ptr<Derived> b = dynamic_ptr_cast<Derived>(a);
     EXPECT_EQ(b->value(), 2);
     EXPECT_EQ(a->value(), 2);
+
+    auto c = Ptr<Derived>::downcast(a);
+    EXPECT_EQ(c->value(), 2);
 }
