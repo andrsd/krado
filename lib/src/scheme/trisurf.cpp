@@ -82,28 +82,28 @@ SchemeTriSurf::mesh_curve(Ptr<MeshCurve> mcurve)
 void
 SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
 {
-    if (surface->scheme().name() != scheme_name) {
-        if (surface->scheme().name() == "auto") {
+    if (surface->scheme()->name() != scheme_name) {
+        if (surface->scheme()->name() == "auto") {
             surface->set_scheme(scheme_name);
         }
         else
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
-                            surface->scheme().name());
+                            surface->scheme()->name());
     }
 }
 
 void
 SchemeTriSurf::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() != scheme_name) {
-        if (curve->scheme().name() == "auto") {
+    if (curve->scheme()->name() != scheme_name) {
+        if (curve->scheme()->name() == "auto") {
             curve->set_scheme(scheme_name);
         }
         else
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
-                            curve->scheme().name());
+                            curve->scheme()->name());
     }
 }
 

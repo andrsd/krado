@@ -24,9 +24,9 @@ SchemeTriCircle::SchemeTriCircle() : Scheme(scheme_name), Scheme2D() {}
 void
 SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() == "auto") {
+    if (curve->scheme()->name() == "auto") {
         // minimum of 4 intervals
-        curve->set_scheme("equal").set("intervals", 4);
+        curve->set_scheme("equal")->set("intervals", 4);
     }
 }
 

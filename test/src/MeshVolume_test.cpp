@@ -27,7 +27,7 @@ TEST(MeshVolumeTest, api)
     auto mvol = Ptr<MeshVolume>::alloc(gvol, msurfs);
     EXPECT_EQ(&mvol->geom_volume(), &gvol);
 
-    EXPECT_EQ(mvol->scheme().name(), "auto");
+    EXPECT_EQ(mvol->scheme()->name(), "auto");
 
     auto mss = mvol->surfaces();
     ASSERT_EQ(mss.size(), 6);

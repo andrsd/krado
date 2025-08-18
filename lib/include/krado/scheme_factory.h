@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/ptr.h"
 #include "krado/parameters.h"
 #include "krado/scheme.h"
 #include <list>
@@ -11,7 +12,7 @@ namespace krado {
 
 class Scheme;
 
-using SchemePtr = Scheme *;
+using SchemePtr = Ptr<Scheme>;
 
 using BuildPtr = SchemePtr (*)();
 
@@ -19,7 +20,7 @@ template <typename T>
 SchemePtr
 build_scheme()
 {
-    return new T();
+    return Ptr<T>::alloc();
 }
 
 class SchemeFactory {
@@ -34,11 +35,11 @@ public:
         this->classes_[class_name] = entry;
     }
 
-    [[nodiscard]] Scheme *
+    [[nodiscard]] Ptr<Scheme>
     create(const std::string & scheme_name)
     {
         auto entry = get_entry(scheme_name);
-        auto * object = entry.build_ptr();
+        auto object = entry.build_ptr();
         this->objects_.push_back(object);
         return object;
     }
@@ -47,10 +48,7 @@ public:
     void
     destroy()
     {
-        while (!this->objects_.empty()) {
-            delete this->objects_.front();
-            this->objects_.pop_front();
-        }
+        this->objects_.clear();
     }
 
 private:
@@ -75,7 +73,7 @@ private:
     /// All registered classes that we can build
     std::map<std::string, Entry> classes_;
     /// All objects built by this factory
-    std::list<Scheme *> objects_;
+    std::list<Ptr<Scheme>> objects_;
 };
 
 } // namespace krado

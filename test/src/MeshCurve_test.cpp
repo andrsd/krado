@@ -19,7 +19,7 @@ TEST(MeshCurveTest, DISABLED_api)
 
     EXPECT_EQ(&mcurve.geom_curve(), &edge);
 
-    EXPECT_EQ(mcurve.scheme().name(), "auto");
+    EXPECT_EQ(mcurve.scheme()->name(), "auto");
 
     auto & vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);

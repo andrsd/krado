@@ -16,7 +16,7 @@ TEST(SchemeTriSurfTest, cylinder)
 
     // clang-format off
     model.volume(1)->set_scheme("trisurf")
-         .set<bool>("is_relative", true)
+         ->set<bool>("is_relative", true)
          .set<double>("linear_deflection", 1.)
          .set<double>("angular_deflection", 1.)
     ;

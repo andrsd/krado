@@ -26,7 +26,7 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
     model.surface(1)
         ->set("marker", 10)
         .set_scheme("bamg")
-        .set("max_area", 0.9);
+        ->set("max_area", 0.9);
     model.mesh_surface(1);
     // clang-format on
 

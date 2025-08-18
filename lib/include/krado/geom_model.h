@@ -135,10 +135,10 @@ protected:
     [[nodiscard]] int volume_id(const GeomVolume & volume) const;
 
     template <typename T, typename U>
-    [[nodiscard]] T &
+    [[nodiscard]] Ptr<T>
     get_scheme(U entity) const
     {
-        return dynamic_cast<T &>(entity->scheme());
+        return dynamic_ptr_cast<T>(entity->scheme());
     }
 
 private:

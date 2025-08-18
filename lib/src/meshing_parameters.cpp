@@ -13,19 +13,19 @@ MeshingParameters::MeshingParameters() :
 {
 }
 
-Scheme &
+Ptr<Scheme>
 MeshingParameters::set_scheme(const std::string & name)
 {
     this->scheme_ = SchemeFactory::instance().create(name);
-    return *this->scheme_;
+    return this->scheme_;
 }
 
-Scheme &
+Ptr<Scheme>
 MeshingParameters::scheme() const
 {
     if (this->scheme_ == nullptr)
         throw Exception("Scheme is null");
-    return *this->scheme_;
+    return this->scheme_;
 }
 
 bool

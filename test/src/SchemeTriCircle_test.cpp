@@ -19,7 +19,7 @@ TEST(SchemeCircleTest, circle)
     // clang-format off
     model.curve(1)
         ->set_scheme("equal")
-        .set("intervals", 8)
+        ->set("intervals", 8)
     ;
     // clang-format on
     model.mesh_curve(1);

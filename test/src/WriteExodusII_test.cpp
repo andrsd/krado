@@ -19,7 +19,7 @@ TEST(WriteExodusIITest, DISABLED_line)
     auto line = model.curve(1);
     // clang-format off
     line->set_scheme("bias")
-        .set("intervals", 5)
+        ->set("intervals", 5)
         .set("coef", 1.2);
     // clang-format on
     model.mesh_curve(1);

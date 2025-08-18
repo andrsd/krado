@@ -13,6 +13,8 @@ class MeshCurve;
 /// Base class for 2-dimensional mesh generation schemes
 class Scheme2D {
 public:
+    virtual ~Scheme2D() = default;
+
     /// Mesh surface
     ///
     /// @param surface Surface to mesh

@@ -13,6 +13,8 @@ class MeshSurface;
 /// Base class for 3-dimensional mesh generation schemes
 class Scheme3D {
 public:
+    virtual ~Scheme3D() = default;
+
     /// Mesh a volume
     ///
     /// @param volume Volume to mesh

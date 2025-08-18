@@ -3,11 +3,11 @@
 
 #pragma once
 
+#include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/parameters.h"
 
 namespace krado {
-
-class Scheme;
 
 class MeshingParameters {
 public:
@@ -17,10 +17,10 @@ public:
     ///
     /// @param name Name od the scheme to assign
     /// @return Pointer to the scheme
-    Scheme & set_scheme(const std::string & name);
+    Ptr<Scheme> set_scheme(const std::string & name);
 
     /// Get meshing scheme
-    Scheme & scheme() const;
+    Ptr<Scheme> scheme() const;
 
     /// Set parameter value
     ///
@@ -69,7 +69,7 @@ public:
     void set_meshed();
 
 private:
-    Scheme * scheme_;
+    Ptr<Scheme> scheme_;
     Parameters mparams_;
     /// Flag indicating if the entity is meshed
     bool meshed_;

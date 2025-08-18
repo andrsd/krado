@@ -23,7 +23,7 @@ TEST(MeshSurfaceTest, api)
     auto msurface = Ptr<MeshSurface>::alloc(gsurf, c);
     EXPECT_EQ(&msurface->geom_surface(), &gsurf);
 
-    EXPECT_EQ(msurface->scheme().name(), "auto");
+    EXPECT_EQ(msurface->scheme()->name(), "auto");
 
     auto mcs = msurface->curves();
     EXPECT_EQ(mcs.size(), 1);

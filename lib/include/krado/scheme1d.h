@@ -12,6 +12,8 @@ class MeshCurve;
 /// Base class for 1-dimensional mesh generation schemes
 class Scheme1D {
 public:
+    virtual ~Scheme1D() = default;
+
     virtual void mesh_curve(Ptr<MeshCurve> mcurve) = 0;
 };
 

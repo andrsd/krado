@@ -11,10 +11,10 @@ namespace krado {
 void
 Scheme2D::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() == "auto") {
+    if (curve->scheme()->name() == "auto") {
         Log::info("Selecting curve scheme 'auto' for curve {}", curve->id());
 
-        curve->set_scheme("equal").set("intervals", 1);
+        curve->set_scheme("equal")->set("intervals", 1);
     }
 }
 
