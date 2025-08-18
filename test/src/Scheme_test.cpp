@@ -3,6 +3,11 @@
 #include "ExceptionTestMacros.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 
 using namespace krado;
 
@@ -12,8 +17,7 @@ TEST(SchemeTest, mesh_curve_with_2d_scheme)
     GeomModel model(line);
 
     // clang-format off
-    model.curve(1)
-        .set_scheme("bamg");
+    model.curve(1)->set_scheme("bamg");
     // clang-format on
     EXPECT_THROW_MSG(model.mesh_curve(1), "Scheme 'bamg' is not a 1D scheme");
 }
@@ -24,8 +28,7 @@ TEST(SchemeTest, mesh_surface_with_1d_scheme)
     GeomModel model(rect);
 
     // clang-format off
-    model.surface(1)
-        .set_scheme("equal");
+    model.surface(1)->set_scheme("equal");
     // clang-format on
     EXPECT_THROW_MSG(model.mesh_surface(1), "Scheme 'equal' is not a 2D scheme");
 }
@@ -36,8 +39,7 @@ TEST(SchemeTest, mesh_volume_with_1d_scheme)
     GeomModel model(box);
 
     // clang-format off
-    model.volume(1)
-        .set_scheme("bamg");
+    model.volume(1)->set_scheme("bamg");
     // clang-format on
     EXPECT_THROW_MSG(model.mesh_volume(1), "Scheme 'bamg' is not a 3D scheme");
 }

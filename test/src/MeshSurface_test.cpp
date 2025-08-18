@@ -3,6 +3,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/scheme.h"
 #include "builder.h"
 #include <array>
@@ -16,26 +17,27 @@ TEST(MeshSurfaceTest, api)
     GeomSurface gsurf(circ);
     auto crvs = gsurf.curves();
     ASSERT_EQ(crvs.size(), 1);
-    MeshCurve mcurve(crvs[0], nullptr, nullptr);
+    auto mcurve = Ptr<MeshCurve>::alloc(crvs[0], Ptr<MeshVertex>(), Ptr<MeshVertex>());
 
-    MeshSurface msurface(gsurf, { &mcurve });
-    EXPECT_EQ(&msurface.geom_surface(), &gsurf);
+    std::vector<Ptr<MeshCurve>> c = { mcurve };
+    auto msurface = Ptr<MeshSurface>::alloc(gsurf, c);
+    EXPECT_EQ(&msurface->geom_surface(), &gsurf);
 
-    EXPECT_EQ(msurface.scheme().name(), "auto");
+    EXPECT_EQ(msurface->scheme().name(), "auto");
 
-    auto mcs = msurface.curves();
+    auto mcs = msurface->curves();
     EXPECT_EQ(mcs.size(), 1);
-    EXPECT_EQ(mcs[0], &mcurve);
+    EXPECT_EQ(mcs[0], mcurve);
 
-    auto mvtx0 = new MeshSurfaceVertex(gsurf, 0., 0.);
-    msurface.add_vertex(mvtx0);
-    auto mvtx1 = new MeshSurfaceVertex(gsurf, 0.1, 0.);
-    msurface.add_vertex(mvtx1);
-    auto mvtx2 = new MeshSurfaceVertex(gsurf, 0., 0.1);
-    msurface.add_vertex(mvtx2);
+    auto mvtx0 = Ptr<MeshSurfaceVertex>::alloc(gsurf, 0., 0.);
+    msurface->add_vertex(mvtx0);
+    auto mvtx1 = Ptr<MeshSurfaceVertex>::alloc(gsurf, 0.1, 0.);
+    msurface->add_vertex(mvtx1);
+    auto mvtx2 = Ptr<MeshSurfaceVertex>::alloc(gsurf, 0., 0.1);
+    msurface->add_vertex(mvtx2);
 
-    msurface.add_triangle({ mvtx2, mvtx0, mvtx1 });
-    auto & triangles = msurface.triangles();
+    msurface->add_triangle({ mvtx2, mvtx0, mvtx1 });
+    auto & triangles = msurface->triangles();
     ASSERT_EQ(triangles.size(), 1);
     EXPECT_EQ(triangles[0].vertex(0), mvtx2);
     EXPECT_EQ(triangles[0].vertex(1), mvtx0);

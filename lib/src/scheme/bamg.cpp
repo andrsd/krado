@@ -22,7 +22,7 @@ static const bamg::Direction NoDirOfSearch = bamg::Direction();
 
 class Bamg {
 public:
-    Bamg(const MeshSurface & surface) :
+    Bamg(Ptr<MeshSurface> surface) :
         surface(surface),
         Hmin(std::numeric_limits<bamg::Real8>::max()),
         len(nullptr),
@@ -100,7 +100,7 @@ private:
     build_local_vertex_map()
     {
         this->local_vtx_id.clear();
-        for (auto & curve : this->surface.curves()) {
+        for (auto & curve : this->surface->curves()) {
             for (auto & vtx : curve->all_vertices()) {
                 int id = this->local_vtx_id.size();
                 this->local_vtx_id.try_emplace(vtx, id);
@@ -131,8 +131,8 @@ private:
     get_number_of_edges()
     {
         int n_edges = 0;
-        for (auto & curve : this->surface.curves()) {
-            assert(curve != nullptr);
+        for (auto & curve : this->surface->curves()) {
+            assert(!curve.is_null());
             if (curve->is_meshed())
                 n_edges += curve->segments().size();
             else
@@ -155,11 +155,10 @@ private:
         this->Gh.nbe = get_number_of_edges();
         this->Gh.edges = new bamg::GeometricalEdge[Gh.nbe];
 
-        for (int curve_idx = 0, eidx = 0; curve_idx < this->surface.curves().size(); curve_idx++) {
-            auto & curve = this->surface.curves()[curve_idx];
-            assert(curve != nullptr);
+        for (int curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size(); curve_idx++) {
+            auto & curve = this->surface->curves()[curve_idx];
+            assert(!curve.is_null());
             if (curve->is_meshed()) {
-                auto & curve_vtxs = curve->all_vertices();
                 for (auto & segs : curve->segments()) {
                     std::array<int, 2> edge = { this->local_vtx_id[segs.vertex(0)],
                                                 this->local_vtx_id[segs.vertex(1)] };
@@ -229,10 +228,10 @@ private:
         this->len = nullptr;
     }
 
-    const MeshSurface & surface;
+    Ptr<MeshSurface> surface;
     bamg::Geometry Gh;
     bamg::Real8 Hmin;
-    std::map<MeshVertexAbstract *, int> local_vtx_id;
+    std::map<Ptr<MeshVertexAbstract>, int> local_vtx_id;
     bamg::Real4 * len;
     bamg::Triangles * Th;
     bamg::Int4 * reft;
@@ -244,9 +243,9 @@ private:
 SchemeBAMG::SchemeBAMG() : Scheme("bamg") {}
 
 void
-SchemeBAMG::mesh_surface(MeshSurface & surface)
+SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
 {
-    Log::info("Meshing surface {}: scheme='bamg'", surface.id());
+    Log::info("Meshing surface {}: scheme='bamg'", surface->id());
 
     Bamg mg(surface);
     mg.set_uniform_mesh_size(get<double>("max_area"));
@@ -257,21 +256,21 @@ SchemeBAMG::mesh_surface(MeshSurface & surface)
     for (int i = 0; i < mg.num_of_edges(); i++) {
         auto & edge = mg.edge(i);
         auto crv_idx = edge.ref;
-        auto curve = surface.curves()[crv_idx];
-        assert(curve != nullptr);
+        auto curve = surface->curves()[crv_idx];
+        assert(!curve.is_null());
         curve->add_segment({ im.curve_vertex(crv_idx, edge[0].r.x, edge[0].r.y),
                              im.curve_vertex(crv_idx, edge[1].r.x, edge[1].r.y) });
     }
 
     for (int i = 0; i < mg.num_of_triangles(); i++) {
         if (mg.is_triangle_active(i)) {
-            std::array<MeshVertexAbstract *, 3> tri;
+            std::array<Ptr<MeshVertexAbstract>, 3> tri;
             for (int j = 0; j < 3; j++) {
                 auto vtx = mg.triangle(i)[j];
                 auto idx = im.surface_vertex(vtx.r.x, vtx.r.y);
                 tri[j] = idx;
             }
-            surface.add_triangle(tri);
+            surface->add_triangle(tri);
         }
     }
 }

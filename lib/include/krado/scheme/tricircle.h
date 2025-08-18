@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/ptr.h"
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
 
@@ -15,8 +16,8 @@ class SchemeTriCircle : public Scheme, public Scheme2D {
 public:
     SchemeTriCircle();
 
-    void mesh_surface(MeshSurface & surface) override;
-    void select_curve_scheme(MeshCurve & curve) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
+    void select_curve_scheme(Ptr<MeshCurve> curve) override;
 };
 
 } // namespace krado

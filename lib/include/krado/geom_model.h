@@ -3,16 +3,13 @@
 
 #pragma once
 
+#include "krado/ptr.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
 #include "krado/mesh.h"
-#include "krado/mesh_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_volume.h"
 #include "krado/scheme.h"
 #include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
@@ -20,6 +17,11 @@
 #include <map>
 
 namespace krado {
+
+class MeshVertex;
+class MeshCurve;
+class MeshSurface;
+class MeshVolume;
 
 class GeomModel {
 public:
@@ -54,56 +56,52 @@ public:
     [[nodiscard]] GeomVolume & geom_volume(int id);
 
     /// Vertex
-    [[nodiscard]] const MeshVertex & vertex(int id) const;
-    [[nodiscard]] MeshVertex & vertex(int id);
+    [[nodiscard]] Ptr<MeshVertex> vertex(int id);
 
     /// Get model vertices
     ///
     /// @return Vertices
-    [[nodiscard]] const std::map<int, MeshVertex> & vertices() const;
+    [[nodiscard]] const std::map<int, Ptr<MeshVertex>> & vertices() const;
 
     /// Curve
-    [[nodiscard]] const MeshCurve & curve(int id) const;
-    [[nodiscard]] MeshCurve & curve(int id);
+    [[nodiscard]] Ptr<MeshCurve> curve(int id);
 
     /// Get model curves
     ///
     /// @return Curves
-    [[nodiscard]] const std::map<int, MeshCurve> & curves() const;
+    [[nodiscard]] const std::map<int, Ptr<MeshCurve>> & curves() const;
 
     /// Surface
-    [[nodiscard]] const MeshSurface & surface(int id) const;
-    [[nodiscard]] MeshSurface & surface(int id);
+    [[nodiscard]] Ptr<MeshSurface> surface(int id);
 
     /// Get model surfaces
     ///
     /// @return Surfaces
-    [[nodiscard]] const std::map<int, MeshSurface> & surfaces() const;
+    [[nodiscard]] const std::map<int, Ptr<MeshSurface>> & surfaces() const;
 
     /// Volume
-    [[nodiscard]] const MeshVolume & volume(int id) const;
-    [[nodiscard]] MeshVolume & volume(int id);
+    [[nodiscard]] Ptr<MeshVolume> volume(int id);
 
     /// Get model volume
     ///
     /// @return Volume
-    [[nodiscard]] const std::map<int, MeshVolume> & volumes() const;
+    [[nodiscard]] const std::map<int, Ptr<MeshVolume>> & volumes() const;
 
     /// Create vertex mesh
     void mesh_vertex(int id);
-    void mesh_vertex(MeshVertex & vertex);
+    void mesh_vertex(Ptr<MeshVertex> vertex);
 
     /// Create curve mesh
     void mesh_curve(int id);
-    void mesh_curve(MeshCurve & curve);
+    void mesh_curve(Ptr<MeshCurve> curve);
 
     /// Create surface mesh
     void mesh_surface(int id);
-    void mesh_surface(MeshSurface & surface);
+    void mesh_surface(Ptr<MeshSurface> surface);
 
     /// Create volume mesh
     void mesh_volume(int id);
-    void mesh_volume(MeshVolume & volume);
+    void mesh_volume(Ptr<MeshVolume> volume);
 
     /// Build the mesh from meshed entities
     [[nodiscard]] Mesh build_mesh();
@@ -140,7 +138,7 @@ protected:
     [[nodiscard]] T &
     get_scheme(U entity) const
     {
-        return dynamic_cast<T &>(entity.scheme());
+        return dynamic_cast<T &>(entity->scheme());
     }
 
 private:
@@ -170,10 +168,10 @@ private:
     TopTools_DataMapOfShapeInteger srf_id_;
     TopTools_DataMapOfShapeInteger vol_id_;
 
-    std::map<int, MeshVertex> mvtxs_;
-    std::map<int, MeshCurve> mcrvs_;
-    std::map<int, MeshSurface> msurfs_;
-    std::map<int, MeshVolume> mvols_;
+    std::map<int, Ptr<MeshVertex>> mvtxs_;
+    std::map<int, Ptr<MeshCurve>> mcrvs_;
+    std::map<int, Ptr<MeshSurface>> msurfs_;
+    std::map<int, Ptr<MeshVolume>> mvols_;
     /// Mesh points
     std::vector<Point> pnts_;
     /// Mesh elements

@@ -2,6 +2,11 @@
 #include "krado/config.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "ExceptionTestMacros.h"
 #include <filesystem>
 
@@ -59,8 +64,8 @@ TEST(SchemeTriangleTest, mesh)
     auto shape = shapes[0];
     GeomModel model(shape);
 
-    auto & qcirc = model.surface(1);
-    qcirc.set_scheme("triangle");
+    auto qcirc = model.surface(1);
+    qcirc->set_scheme("triangle");
     EXPECT_THROW_MSG({ model.mesh_surface(1); }, "krado was not built with triangle support.");
 }
 

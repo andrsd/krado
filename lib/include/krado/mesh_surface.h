@@ -18,7 +18,7 @@ class MeshCurve;
 
 class MeshSurface : public MeshingParameters {
 public:
-    MeshSurface(const GeomSurface & gcurve, const std::vector<MeshCurve *> & mesh_curves);
+    MeshSurface(const GeomSurface & gcurve, const std::vector<Ptr<MeshCurve>> & mesh_curves);
 
     /// Get the unique identifier of the surface.
     ///
@@ -31,21 +31,21 @@ public:
     [[nodiscard]] const GeomSurface & geom_surface() const;
 
     /// Get curves bounding this surface
-    [[nodiscard]] const std::vector<MeshCurve *> & curves() const;
+    [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
 
     /// Get vertices on this surface
     ///
     /// @return Surface vertices
-    [[nodiscard]] const std::vector<MeshVertexAbstract *> & all_vertices() const;
+    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
 
-    [[nodiscard]] std::vector<MeshVertexAbstract *> & all_vertices();
+    [[nodiscard]] std::vector<Ptr<MeshVertexAbstract>> & all_vertices();
 
     /// Get (internal) vertices on the surface
     ///
     /// @return Vertices on the surface
-    [[nodiscard]] const std::vector<MeshSurfaceVertex *> & surface_vertices() const;
+    [[nodiscard]] const std::vector<Ptr<MeshSurfaceVertex>> & surface_vertices() const;
 
-    [[nodiscard]] std::vector<MeshSurfaceVertex *> & surface_vertices();
+    [[nodiscard]] std::vector<Ptr<MeshSurfaceVertex>> & surface_vertices();
 
     /// Get triangles on this surface
     ///
@@ -57,19 +57,19 @@ public:
     /// Add vertex
     ///
     /// @param vertex Vertex to add
-    void add_vertex(MeshVertex * vertex);
-    void add_vertex(MeshCurveVertex * vertex);
-    void add_vertex(MeshSurfaceVertex * vertex);
+    void add_vertex(Ptr<MeshVertex> vertex);
+    void add_vertex(Ptr<MeshCurveVertex> vertex);
+    void add_vertex(Ptr<MeshSurfaceVertex> vertex);
 
     /// Add new triangle
     ///
     /// @param tri Local vertex indices
-    void add_triangle(const std::array<MeshVertexAbstract *, 3> & tri);
+    void add_triangle(const std::array<Ptr<MeshVertexAbstract>, 3> & tri);
 
     /// Add new quadrangle
     ///
     /// @param quad Local vertices
-    void add_quadrangle(const std::array<MeshVertexAbstract *, 4> & quad);
+    void add_quadrangle(const std::array<Ptr<MeshVertexAbstract>, 4> & quad);
 
     void add_element(MeshElement tri);
 
@@ -87,11 +87,11 @@ public:
 private:
     const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
-    std::vector<MeshCurve *> mesh_curves_;
+    std::vector<Ptr<MeshCurve>> mesh_curves_;
     /// All vertices on this surface
-    std::vector<MeshVertexAbstract *> vtxs_;
+    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
     /// Surface vertices
-    std::vector<MeshSurfaceVertex *> surf_vtxs_;
+    std::vector<Ptr<MeshSurfaceVertex>> surf_vtxs_;
     /// Triangles
     std::vector<MeshElement> tris_;
     /// Quadrangles

@@ -2,6 +2,12 @@
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include <filesystem>
 
 using namespace krado;
@@ -16,12 +22,12 @@ TEST(GeomModelTest, load)
     GeomModel model(shapes[0]);
 
     auto v1 = model.vertex(1);
-    EXPECT_EQ(v1.point(), Point(0., 0., 0.));
+    EXPECT_EQ(v1->point(), Point(0., 0., 0.));
 
     auto v2 = model.vertex(2);
-    EXPECT_EQ(v2.point(), Point(1., 0., 0.));
+    EXPECT_EQ(v2->point(), Point(1., 0., 0.));
 
-    EXPECT_THROW({ auto & v = model.vertex(0); }, Exception);
+    EXPECT_THROW({ auto v = model.vertex(0); }, Exception);
 }
 
 TEST(GeomModelTest, load_quad)
@@ -35,7 +41,7 @@ TEST(GeomModelTest, load_quad)
     EXPECT_EQ(model.curves().size(), 4);
 
     EXPECT_EQ(model.surfaces().size(), 1);
-    EXPECT_THROW({ auto & s = model.surface(1000); }, Exception);
+    EXPECT_THROW({ auto s = model.surface(1000); }, Exception);
 }
 
 TEST(GeomModelTest, load_box)
@@ -50,5 +56,5 @@ TEST(GeomModelTest, load_box)
     EXPECT_EQ(model.surfaces().size(), 6);
 
     EXPECT_EQ(model.volumes().size(), 1);
-    EXPECT_THROW({ auto & v = model.volume(1000); }, Exception);
+    EXPECT_THROW({ auto v = model.volume(1000); }, Exception);
 }
