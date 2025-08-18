@@ -19,6 +19,17 @@ public:
     // Construct from `nullptr`
     Ptr(std::nullptr_t) : ptr_(nullptr), ref_count_(nullptr), weak_count_(nullptr) {}
 
+    // Cross-type constructor (Ptr<U> -> Ptr<T>)
+    template <typename U>
+    Ptr(const Ptr<U> & other, T * casted) :
+        ptr_(casted),
+        ref_count_(other.ref_count_),
+        weak_count_(other.weak_count_)
+    {
+        if (this->ptr_)
+            ++(*this->ref_count_);
+    }
+
     Ptr(const Ptr & other) :
         ptr_(other.ptr_),
         ref_count_(other.ref_count_),
@@ -26,6 +37,17 @@ public:
     {
         if (this->ptr_)
             ++(*this->ref_count_);
+    }
+
+    // Move constructor
+    Ptr(Ptr && other) noexcept :
+        ptr_(other.ptr_),
+        ref_count_(other.ref_count_),
+        weak_count_(other.weak_count_)
+    {
+        other.ptr_ = nullptr;
+        other.ref_count_ = nullptr;
+        other.weak_count_ = nullptr;
     }
 
     // Converting copy constructor
@@ -70,11 +92,31 @@ public:
     }
 
     // Assignment from `nullptr`
-    Ptr & operator=(std::nullptr_t) {
+    Ptr &
+    operator=(std::nullptr_t)
+    {
         this->release();
         this->ptr_ = nullptr;
         this->ref_count_ = nullptr;
         this->weak_count_ = nullptr;
+        return *this;
+    }
+
+    // Move assignment
+    Ptr &
+    operator=(Ptr && other) noexcept
+    {
+        if (this != &other) {
+            release();
+
+            this->ptr_ = other.ptr_;
+            this->ref_count_ = other.ref_count_;
+            this->weak_count_ = other.weak_count_;
+
+            other.ptr_ = nullptr;
+            other.ref_count_ = nullptr;
+            other.weak_count_ = nullptr;
+        }
         return *this;
     }
 
@@ -174,5 +216,23 @@ public:
     template <typename U>
     friend class Ptr;
 };
+
+template <typename T, typename U>
+Ptr<T>
+static_ptr_cast(const Ptr<U> & other)
+{
+    T * casted = static_cast<T *>(other.get());
+    return Ptr<T>(other, casted);
+}
+
+template <typename T, typename U>
+Ptr<T>
+dynamic_ptr_cast(const Ptr<U> & other)
+{
+    T * casted = dynamic_cast<T *>(other.get());
+    if (casted)
+        return Ptr<T>(other, casted);
+    return nullptr;
+}
 
 } // namespace krado

@@ -35,6 +35,12 @@ class Base {
 public:
     Base() : a(1) {}
 
+    virtual int
+    value() const
+    {
+        return this->a;
+    }
+
 private:
     int a;
 };
@@ -42,6 +48,12 @@ private:
 class Derived : public Base {
 public:
     Derived() : Base(), b(2) {}
+
+    int
+    value() const override
+    {
+        return this->b;
+    }
 
 private:
     int b;
@@ -62,6 +74,7 @@ TEST(PtrTest, nullptr_is_null)
 {
     Ptr<MyBigObj> obj = nullptr;
     EXPECT_TRUE(obj.is_null());
+    EXPECT_TRUE(obj == nullptr);
 }
 
 TEST(PtrTest, allocate)
@@ -186,4 +199,34 @@ TEST(PtrTest, deallocate_via_nullptr)
     auto ptr = Ptr<Derived>::alloc();
     ptr = nullptr;
     EXPECT_EQ(ptr.ref_count(), 0);
+}
+
+TEST(PtrTest, move_operators)
+{
+    auto a = Ptr<int>::alloc(5);
+    // move ctor
+    Ptr<int> b = std::move(a);
+    EXPECT_EQ(a.ref_count(), 0);
+    EXPECT_EQ(b.ref_count(), 1);
+
+    Ptr<int> c;
+    // move assigment
+    c = std::move(b);
+    EXPECT_EQ(b.ref_count(), 0);
+    EXPECT_EQ(c.ref_count(), 1);
+}
+
+TEST(PtrTest, op_static_cast)
+{
+    Ptr<Base> a = Ptr<Derived>::alloc();
+    Ptr<Derived> b = static_ptr_cast<Derived>(a);
+    EXPECT_EQ(b->value(), 2);
+}
+
+TEST(PtrTest, op_dynamic_cast)
+{
+    Ptr<Base> a = Ptr<Derived>::alloc();
+    Ptr<Derived> b = dynamic_ptr_cast<Derived>(a);
+    EXPECT_EQ(b->value(), 2);
+    EXPECT_EQ(a->value(), 2);
 }
