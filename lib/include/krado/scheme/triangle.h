@@ -3,18 +3,16 @@
 
 #pragma once
 
-#include "krado/config.h"
+#include "krado/ptr.h"
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
-#include "krado/mesh_curve.h"
-#include "krado/point.h"
 
 namespace krado {
 
 class SchemeTriangle : public Scheme, public Scheme2D {
 public:
     SchemeTriangle();
-    void mesh_surface(MeshSurface & surface) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
 };
 
 } // namespace krado

@@ -5,18 +5,20 @@
 
 #include "krado/mesh_element.h"
 #include "krado/meshing_parameters.h"
+#include "krado/ptr.h"
 #include <vector>
 #include <optional>
 
 namespace krado {
 
+class GeomVertex;
 class GeomCurve;
 class MeshVertex;
 class MeshCurveVertex;
 
 class MeshCurve : public MeshingParameters {
 public:
-    MeshCurve(const GeomCurve & gcurve, MeshVertex * v1, MeshVertex * v2);
+    MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
 
     /// Get the unique identifier of the curve.
     ///
@@ -31,35 +33,35 @@ public:
     /// Get vertices on this curve
     ///
     /// @return Curve vertices
-    [[nodiscard]] const std::vector<MeshVertexAbstract *> & all_vertices() const;
+    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
 
     ///
-    [[nodiscard]] const std::vector<MeshVertex *> & bounding_vertices() const;
+    [[nodiscard]] const std::vector<Ptr<MeshVertex>> & bounding_vertices() const;
 
     /// Add vertex
     ///
     /// @param vertex Vertex to add
-    void add_vertex(MeshVertex * vertex);
+    void add_vertex(Ptr<MeshVertex> vertex);
 
     /// Add curve vertex
     ///
     /// @param vertex Curve vertex to add
-    void add_vertex(MeshCurveVertex * vertex);
+    void add_vertex(Ptr<MeshCurveVertex> vertex);
 
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    [[nodiscard]] const std::vector<MeshCurveVertex *> & curve_vertices() const;
+    [[nodiscard]] const std::vector<Ptr<MeshCurveVertex>> & curve_vertices() const;
 
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    [[nodiscard]] std::vector<MeshCurveVertex *> & curve_vertices();
+    [[nodiscard]] std::vector<Ptr<MeshCurveVertex>> & curve_vertices();
 
     /// Add new curve segment
     ///
     /// @param seg Local vertex indices
-    void add_segment(const std::array<MeshVertexAbstract *, 2> & seg);
+    void add_segment(const std::array<Ptr<MeshVertexAbstract>, 2> & seg);
 
     /// Get curve segments
     ///
@@ -89,11 +91,11 @@ public:
 private:
     const GeomCurve & gcurve_;
     /// All vertices on this curve
-    std::vector<MeshVertexAbstract *> vtxs_;
+    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
     /// Bounding vertices
-    std::vector<MeshVertex *> bnd_vtxs_;
+    std::vector<Ptr<MeshVertex>> bnd_vtxs_;
     /// Vertices on the curve (excluding the bounding vertices)
-    std::vector<MeshCurveVertex *> curve_vtx_;
+    std::vector<Ptr<MeshCurveVertex>> curve_vtx_;
     /// Segments of this curve, using vertex indexing local to this edge
     std::vector<MeshElement> segs_;
     ///

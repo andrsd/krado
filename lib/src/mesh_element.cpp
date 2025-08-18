@@ -11,7 +11,7 @@
 
 namespace krado {
 
-MeshElement::MeshElement(ElementType type, const std::vector<MeshVertexAbstract *> & vtx) :
+MeshElement::MeshElement(ElementType type, const std::vector<Ptr<MeshVertexAbstract>> & vtx) :
     type_(type),
     vtx_(vtx)
 {
@@ -29,14 +29,14 @@ MeshElement::num_vertices() const
     return this->vtx_.size();
 }
 
-MeshVertexAbstract *
+Ptr<MeshVertexAbstract>
 MeshElement::vertex(int idx) const
 {
-    assert(this->vtx_[idx] != nullptr);
+    assert(!this->vtx_[idx].is_null());
     return this->vtx_[idx];
 }
 
-const std::vector<MeshVertexAbstract *> &
+const std::vector<Ptr<MeshVertexAbstract>> &
 MeshElement::vertices() const
 {
     return this->vtx_;
@@ -66,19 +66,19 @@ MeshElement::swap_vertices(int idx1, int idx2)
 }
 
 MeshElement
-MeshElement::Line2(const std::array<MeshVertexAbstract *, 2> & vtx)
+MeshElement::Line2(const std::array<Ptr<MeshVertexAbstract>, 2> & vtx)
 {
     return MeshElement(ElementType::LINE2, { vtx[0], vtx[1] });
 }
 
 MeshElement
-MeshElement::Tri3(const std::array<MeshVertexAbstract *, 3> & vtx)
+MeshElement::Tri3(const std::array<Ptr<MeshVertexAbstract>, 3> & vtx)
 {
     return MeshElement(ElementType::TRI3, { vtx[0], vtx[1], vtx[2] });
 }
 
 MeshElement
-MeshElement::Quad4(const std::array<MeshVertexAbstract *, 4> & vtx)
+MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
 {
     return MeshElement(ElementType::QUAD4, { vtx[0], vtx[1], vtx[2], vtx[3] });
 }

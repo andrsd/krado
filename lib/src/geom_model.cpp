@@ -6,8 +6,12 @@
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "krado/log.h"
 #include "krado/types.h"
 #include "TopExp_Explorer.hxx"
@@ -242,59 +246,48 @@ void
 GeomModel::initialize()
 {
     for (auto & [id, gvtx] : this->vtxs_) {
-        MeshVertex mvtx(gvtx);
+        auto mvtx = Ptr<MeshVertex>::alloc(gvtx);
         this->mvtxs_.emplace(id, mvtx);
     }
 
     for (auto & [id, geom_curve] : this->crvs_) {
         auto id1 = vertex_id(geom_curve.first_vertex());
         auto id2 = vertex_id(geom_curve.last_vertex());
-        auto & v1 = vertex(id1);
-        auto & v2 = vertex(id2);
+        auto v1 = vertex(id1);
+        auto v2 = vertex(id2);
 
-        MeshCurve mesh_crv(geom_curve, &v1, &v2);
+        auto mesh_crv = Ptr<MeshCurve>::alloc(geom_curve, v1, v2);
         this->mcrvs_.emplace(id, mesh_crv);
     }
 
     for (auto & [id, geom_surface] : this->srfs_) {
         auto surface_curves = geom_surface.curves();
-        std::vector<MeshCurve *> mesh_curves;
+        std::vector<Ptr<MeshCurve>> mesh_curves;
         for (auto & gcurve : surface_curves) {
             auto cid = curve_id(gcurve);
-            auto * mcurve = &curve(cid);
+            auto mcurve = curve(cid);
             mesh_curves.push_back(mcurve);
         }
 
-        MeshSurface mesh_surf(geom_surface, mesh_curves);
+        auto mesh_surf = Ptr<MeshSurface>::alloc(geom_surface, mesh_curves);
         this->msurfs_.emplace(id, mesh_surf);
     }
 
     for (auto & [id, geom_volume] : this->vols_) {
         auto volume_surfaces = geom_volume.surfaces();
-        std::vector<MeshSurface *> mesh_surfaces;
+        std::vector<Ptr<MeshSurface>> mesh_surfaces;
         for (auto & gsurface : volume_surfaces) {
             auto sid = surface_id(gsurface);
-            auto * msurface = &surface(sid);
+            auto msurface = surface(sid);
             mesh_surfaces.push_back(msurface);
         }
 
-        MeshVolume mesh_vol(geom_volume, mesh_surfaces);
+        auto mesh_vol = Ptr<MeshVolume>::alloc(geom_volume, mesh_surfaces);
         this->mvols_.emplace(id, mesh_vol);
     }
 }
 
-const MeshVertex &
-GeomModel::vertex(int id) const
-{
-    try {
-        return this->mvtxs_.at(id);
-    }
-    catch (...) {
-        throw Exception("No vertex with ID = {}", id);
-    }
-}
-
-MeshVertex &
+Ptr<MeshVertex>
 GeomModel::vertex(int id)
 {
     try {
@@ -305,24 +298,13 @@ GeomModel::vertex(int id)
     }
 }
 
-const std::map<int, MeshVertex> &
+const std::map<int, Ptr<MeshVertex>> &
 GeomModel::vertices() const
 {
     return this->mvtxs_;
 }
 
-const MeshCurve &
-GeomModel::curve(int id) const
-{
-    try {
-        return this->mcrvs_.at(id);
-    }
-    catch (...) {
-        throw Exception("No curve with ID = {}", id);
-    }
-}
-
-MeshCurve &
+Ptr<MeshCurve>
 GeomModel::curve(int id)
 {
     try {
@@ -333,24 +315,13 @@ GeomModel::curve(int id)
     }
 }
 
-const std::map<int, MeshCurve> &
+const std::map<int, Ptr<MeshCurve>> &
 GeomModel::curves() const
 {
     return this->mcrvs_;
 }
 
-const MeshSurface &
-GeomModel::surface(int id) const
-{
-    try {
-        return this->msurfs_.at(id);
-    }
-    catch (...) {
-        throw Exception("No surface with ID = {}", id);
-    }
-}
-
-MeshSurface &
+Ptr<MeshSurface>
 GeomModel::surface(int id)
 {
     try {
@@ -361,24 +332,13 @@ GeomModel::surface(int id)
     }
 }
 
-const std::map<int, MeshSurface> &
+const std::map<int, Ptr<MeshSurface>> &
 GeomModel::surfaces() const
 {
     return this->msurfs_;
 }
 
-const MeshVolume &
-GeomModel::volume(int id) const
-{
-    try {
-        return this->mvols_.at(id);
-    }
-    catch (...) {
-        throw Exception("No volume with ID = {}", id);
-    }
-}
-
-MeshVolume &
+Ptr<MeshVolume>
 GeomModel::volume(int id)
 {
     try {
@@ -389,7 +349,7 @@ GeomModel::volume(int id)
     }
 }
 
-const std::map<int, MeshVolume> &
+const std::map<int, Ptr<MeshVolume>> &
 GeomModel::volumes() const
 {
     return this->mvols_;
@@ -403,81 +363,81 @@ GeomModel::mesh_vertex(int id)
 }
 
 void
-GeomModel::mesh_vertex(MeshVertex & gvertex)
+GeomModel::mesh_vertex(Ptr<MeshVertex> gvertex)
 {
-    Log::debug("Meshing vertex: id={}", gvertex.id());
+    Log::debug("Meshing vertex: id={}", gvertex->id());
 
-    if (!gvertex.is_meshed()) {
-        gvertex.set_meshed();
+    if (!gvertex->is_meshed()) {
+        gvertex->set_meshed();
     }
 }
 
 void
 GeomModel::mesh_curve(int id)
 {
-    auto & curve = this->mcrvs_.at(id);
+    auto curve = this->mcrvs_.at(id);
     mesh_curve(curve);
 }
 
 void
-GeomModel::mesh_curve(MeshCurve & curve)
+GeomModel::mesh_curve(Ptr<MeshCurve> curve)
 {
-    if (!curve.is_meshed()) {
-        Log::debug("Meshing curve: id={}", curve.id());
+    if (!curve->is_meshed()) {
+        Log::debug("Meshing curve: id={}", curve->id());
 
         try {
-            auto & geom_curve = curve.geom_curve();
+            auto & geom_curve = curve->geom_curve();
             if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
                 return;
 
             auto & scheme1d = get_scheme<Scheme1D>(curve);
 
-            auto & bnd_vtxs = curve.bounding_vertices();
+            auto & bnd_vtxs = curve->bounding_vertices();
             for (auto & v : bnd_vtxs)
-                mesh_vertex(*v);
+                mesh_vertex(v);
 
             scheme1d.mesh_curve(curve);
-            curve.set_meshed();
+            curve->set_meshed();
         }
         catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 1D scheme", curve.scheme().name());
+            throw Exception("Scheme '{}' is not a 1D scheme", curve->scheme().name());
         }
     }
     else
-        Log::debug("Curve {} is already meshed", curve.id());
+        Log::debug("Curve {} is already meshed", curve->id());
 }
 
 void
 GeomModel::mesh_surface(int id)
 {
-    auto & surface = this->msurfs_.at(id);
+    auto surface = this->msurfs_.at(id);
     mesh_surface(surface);
 }
 
 void
-GeomModel::mesh_surface(MeshSurface & surface)
+GeomModel::mesh_surface(Ptr<MeshSurface> surface)
 {
-    if (!surface.is_meshed()) {
-        Log::debug("Meshing surface: id={}", surface.id());
+    if (!surface->is_meshed()) {
+        Log::debug("Meshing surface: id={}", surface->id());
 
         try {
             auto & scheme2d = get_scheme<Scheme2D>(surface);
 
-            auto & curves = surface.curves();
+            auto & curves = surface->curves();
             for (auto & crv : curves)
-                scheme2d.select_curve_scheme(*crv);
+                scheme2d.select_curve_scheme(crv);
             for (auto & crv : curves)
-                mesh_curve(*crv);
+                mesh_curve(crv);
 
             scheme2d.mesh_surface(surface);
-            surface.set_meshed();
+            surface->set_meshed();
         }
         catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 2D scheme", surface.scheme().name());
+            throw Exception("Scheme '{}' is not a 2D scheme", surface->scheme().name());
         }
     }
     else
-        Log::debug("Surface {} is already meshed", surface.id());
+        Log::debug("Surface {} is already meshed", surface->id());
 }
 
 void
@@ -488,29 +448,29 @@ GeomModel::mesh_volume(int id)
 }
 
 void
-GeomModel::mesh_volume(MeshVolume & volume)
+GeomModel::mesh_volume(Ptr<MeshVolume> volume)
 {
-    if (!volume.is_meshed()) {
-        Log::debug("Meshing volume: id={}", volume.id());
+    if (!volume->is_meshed()) {
+        Log::debug("Meshing volume: id={}", volume->id());
 
         try {
             auto & scheme3d = get_scheme<Scheme3D>(volume);
 
-            auto & surfaces = volume.surfaces();
+            auto & surfaces = volume->surfaces();
             for (auto & srf : surfaces)
-                scheme3d.select_surface_scheme(*srf);
+                scheme3d.select_surface_scheme(srf);
             for (auto & srf : surfaces)
-                mesh_surface(*srf);
+                mesh_surface(srf);
 
             scheme3d.mesh_volume(volume);
-            volume.set_meshed();
+            volume->set_meshed();
         }
         catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 3D scheme", volume.scheme().name());
+            throw Exception("Scheme '{}' is not a 3D scheme", volume->scheme().name());
         }
     }
     else
-        Log::debug("Volume {} is already meshed", volume.id());
+        Log::debug("Volume {} is already meshed", volume->id());
 }
 
 std::vector<Point>
@@ -520,18 +480,18 @@ GeomModel::build_points()
     gidx_t gid = 0;
 
     for (auto & [id, v] : this->mvtxs_) {
-        v.set_global_id(gid);
-        pnts.emplace_back(v.point());
+        v->set_global_id(gid);
+        pnts.emplace_back(v->point());
         gid++;
     }
     for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve.curve_vertices()) {
+        for (auto & v : curve->curve_vertices()) {
             v->set_global_id(gid);
             pnts.emplace_back(v->point());
             gid++;
         }
     for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface.surface_vertices()) {
+        for (auto & v : surface->surface_vertices()) {
             v->set_global_id(gid);
             pnts.emplace_back(v->point());
             gid++;
@@ -546,12 +506,12 @@ GeomModel::compute_mesh_bounding_box()
 
     BoundingBox3D bbox;
     for (auto & [id, v] : this->mvtxs_)
-        bbox += v.point();
+        bbox += v->point();
     for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve.curve_vertices())
+        for (auto & v : curve->curve_vertices())
             bbox += v->point();
     for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface.surface_vertices())
+        for (auto & v : surface->surface_vertices())
             bbox += v->point();
     return bbox;
 }
@@ -600,9 +560,9 @@ GeomModel::build_1d_elements()
     std::vector<Element> elems;
     for (auto & [id, curve] : this->mcrvs_) {
         std::array<gidx_t, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve.segments()) {
+        for (auto & local_elem : curve->segments()) {
             for (int i = 0; i < Line2::N_VERTICES; ++i) {
-                auto * vtx = local_elem.vertex(i);
+                auto vtx = local_elem.vertex(i);
                 line[i] = vtx->global_id();
             }
             elems.emplace_back(Element::Line2(line));
@@ -618,11 +578,11 @@ GeomModel::build_2d_elements()
 
     std::vector<Element> elems;
     for (auto & [id, surface] : this->msurfs_) {
-        auto & tris = surface.triangles();
+        auto & tris = surface->triangles();
         std::array<gidx_t, Tri3::N_VERTICES> tri;
         for (auto & local_elem : tris) {
             for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                auto * vtx = local_elem.vertex(i);
+                auto vtx = local_elem.vertex(i);
                 tri[i] = vtx->global_id();
             }
             elems.emplace_back(Element::Tri3(tri));

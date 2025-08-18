@@ -7,7 +7,7 @@
 namespace krado {
 
 void
-Scheme3D::select_surface_scheme(MeshSurface & surface)
+Scheme3D::select_surface_scheme(Ptr<MeshSurface> surface)
 {
 }
 
