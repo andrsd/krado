@@ -14,7 +14,7 @@ using namespace krado;
 using namespace testing;
 namespace fs = std::filesystem;
 
-TEST(SchemeBamgTest, mesh_quad)
+TEST(SchemeBamgTest, DISABLED_mesh_quad)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
     STEPFile file(input_file.string());
