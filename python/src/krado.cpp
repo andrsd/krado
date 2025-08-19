@@ -97,6 +97,17 @@ PYBIND11_MODULE(krado, m)
 
     // clang-format off
 
+    py::enum_<ElementType>(m, "ElementType")
+        .value("POINT", ElementType::POINT)
+        .value("LINE2", ElementType::LINE2)
+        .value("TRI3", ElementType::TRI3)
+        .value("QUAD4", ElementType::QUAD4)
+        .value("TETRA4", ElementType::TETRA4)
+        .value("PYRAMID5", ElementType::PYRAMID5)
+        .value("PRISM6", ElementType::PRISM6)
+        .value("HEX8", ElementType::HEX8)
+        .export_values();
+
     py::class_<Axis1>(m, "Axis1")
         .def(py::init<const Point &, const Vector &>())
         .def("location", &Axis1::location)
@@ -195,7 +206,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Element>(m, "Element")
-        .def(py::init<ElementType, const std::vector<std::size_t> &>())
+        .def(py::init<ElementType, const std::vector<gidx_t> &>())
         .def("type", py::overload_cast<>(&Element::type, py::const_))
         .def("num_vertices", &Element::num_vertices)
         .def("vertex_id", &Element::vertex_id)
@@ -281,6 +292,7 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
+        .def(py::init<std::vector<Point>, std::vector<Element>>())
         .def("points", &Mesh::points, py::return_value_policy::reference)
         .def("point", &Mesh::point, py::return_value_policy::reference)
         .def("elements", &Mesh::elements, py::return_value_policy::reference)
