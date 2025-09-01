@@ -315,7 +315,7 @@ void
 ExodusIIFile::write_info()
 {
     std::time_t now = std::time(nullptr);
-    std::string datetime = fmt::format("{:%d %b %Y, %H:%M:%S}", fmt::localtime(now));
+    std::string datetime = fmt::format("{:%d %b %Y, %H:%M:%S}", *std::localtime(&now));
 
     std::vector<std::string> info(1);
     info[0] = fmt::format("Created by krado v{} on {}", KRADO_VERSION, datetime);

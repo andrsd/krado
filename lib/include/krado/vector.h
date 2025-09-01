@@ -117,7 +117,7 @@ struct fmt::formatter<krado::Vector> {
     // Format the Vector
     template <typename FormatContext>
     auto
-    format(const krado::Vector & v, FormatContext & ctx)
+    format(const krado::Vector & v, FormatContext & ctx) const
     {
         return fmt::format_to(ctx.out(), "({}, {}, {})", v.x, v.y, v.z);
     }
