@@ -5,9 +5,9 @@ Prerequisites:
 
 - A C++17-compatible compiler (e.g., GCC >= 11, Clang >= 14)
 - `CMake <https://cmake.org/>`_ >= 3.15
-- `fmt <https://github.com/fmtlib/fmt>`_ >= 9.0
+- `fmt <https://github.com/fmtlib/fmt>`_ = 11.x
 - `spdlog <https://github.com/gabime/spdlog>`_
-- `exodusIIcpp <https://github.com/andrsd/exodusIIcpp>`_ >= 2.0
+- `exodusIIcpp <https://github.com/andrsd/exodusIIcpp>`_ = 3.x
 - `OpenCASCADE <https://www.opencascade.com/>`_ >= 7.6.0
 - `Eigen3 <https://eigen.tuxfamily.org/>`_ >= 3.4
 - `Boost <https://www.boost.org/>`_ >= 1.70

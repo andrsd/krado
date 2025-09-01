@@ -45,10 +45,10 @@ jobs:
             make \
             gcc_linux-64 \
             gxx_linux-64 \
-            exodusiicpp=2.0.* \
+            exodusiicpp=3.* \
             occt=7.9.* \
             spdlog \
-            fmt=9.1 \
+            fmt=11.* \
             eigen=3.* \
             boost>=1.70 \
             pybind11 \
