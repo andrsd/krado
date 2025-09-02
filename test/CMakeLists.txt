@@ -3,6 +3,8 @@ project(krado-test)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(GTest REQUIRED)
+
 file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS})
@@ -29,8 +31,7 @@ target_link_libraries(
     PRIVATE
         libkrado
         ${OpenCASCADE_DataExchange_LIBRARIES}
-        gtest_main
-        gmock_main
+        GTest::gmock_main
         fmt::fmt
         exodusIIcpp::exodusIIcpp
 )
@@ -38,8 +39,8 @@ target_link_libraries(
 add_test(
     NAME krado-test
     COMMAND ${PROJECT_NAME}
-
 )
+
 if(KRADO_CODE_COVERAGE)
     set_tests_properties(
         krado-test
