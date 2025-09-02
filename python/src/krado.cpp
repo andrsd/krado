@@ -57,37 +57,37 @@ public:
 void
 py_log_log(int level, const std::string & msg)
 {
-    Log::log(level, msg);
+    Log::log(level, "{}", msg);
 }
 
 void
 py_log_info(int level, const std::string & msg)
 {
-    Log::info(level, msg);
+    Log::info(level, "{}", msg);
 }
 
 void
 py_log_warn(int level, const std::string & msg)
 {
-    Log::warn(level, msg);
+    Log::warn(level, "{}", msg);
 }
 
 void
 py_log_error(int level, const std::string & msg)
 {
-    Log::error(level, msg);
+    Log::error(level, "{}", msg);
 }
 
 void
 py_log_trace(int level, const std::string & msg)
 {
-    Log::trace(level, msg);
+    Log::trace(level, "{}", msg);
 }
 
 void
 py_log_debug(int level, const std::string & msg)
 {
-    Log::debug(level, msg);
+    Log::debug(level, "{}", msg);
 }
 
 PYBIND11_MODULE(krado, m)
