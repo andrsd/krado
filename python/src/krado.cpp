@@ -11,6 +11,7 @@
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"
 #include "krado/exodusii_file.h"
+#include "krado/ops.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/geom_shape.h"
@@ -504,6 +505,8 @@ PYBIND11_MODULE(krado, m)
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
+
+    m.def("compute_volume", &compute_volume);
 
     m.def("tetrahedralize", &tetrahedralize);
 
