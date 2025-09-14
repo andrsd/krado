@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/ops.h"
+#include "krado/element.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_shell.h"
 #include "krado/geom_volume.h"
 #include "krado/exception.h"
 #include "krado/log.h"
+#include "krado/mesh.h"
+#include "krado/types.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
@@ -21,6 +24,7 @@
 #include "BRepAlgoAPI_Splitter.hxx"
 #include "TopoDS_Edge.hxx"
 #include "TopTools_DataMapOfShapeInteger.hxx"
+#include "krado/vector.h"
 
 namespace krado {
 
@@ -141,6 +145,57 @@ imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
 
     auto result = splitter.Shape();
     return GeomVolume(TopoDS::Solid(result));
+}
+
+std::map<marker_t, double>
+compute_volume(const Mesh & mesh)
+{
+    auto element_volume = [&](const Element & elem) {
+        switch (elem.type()) {
+        case ElementType::LINE2: {
+            auto idxs = elem.ids();
+            auto vec = mesh.point(idxs[1]) - mesh.point(idxs[0]);
+            return vec.magnitude();
+        }
+
+        case ElementType::TRI3: {
+            auto idxs = elem.ids();
+            auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
+            auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
+            return 0.5 * cross_product(va, vb).magnitude();
+        }
+
+        case ElementType::TETRA4: {
+            auto idxs = elem.ids();
+            auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
+            auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
+            auto vc = mesh.point(idxs[3]) - mesh.point(idxs[0]);
+            return std::abs(dot_product(va, cross_product(vb, vc))) / 6.;
+        }
+
+        default:
+            throw Exception("compute_volume: Unsupported element type {}", elem.type());
+        }
+    };
+
+    auto cellsets_ids = mesh.cell_set_ids();
+    if (cellsets_ids.empty()) {
+        double volume = 0.;
+        for (auto & elem : mesh.elements())
+            volume += element_volume(elem);
+        return { std::pair(0, volume) };
+    }
+    else {
+        std::map<marker_t, double> vols_per_cellset;
+        for (auto csid : cellsets_ids) {
+            auto & volume = vols_per_cellset[csid];
+            for (auto & cid : mesh.cell_set(csid)) {
+                auto & elem = mesh.element(cid);
+                volume += element_volume(elem);
+            }
+        }
+        return vols_per_cellset;
+    }
 }
 
 } // namespace krado
