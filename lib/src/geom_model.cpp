@@ -576,19 +576,23 @@ GeomModel::build_2d_elements()
 {
     Log::debug("Building 2D elements");
 
-    std::vector<Element> elems;
-    for (auto & [id, surface] : this->msurfs_) {
-        auto & tris = surface->triangles();
-        std::array<gidx_t, Tri3::N_VERTICES> tri;
-        for (auto & local_elem : tris) {
-            for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                auto vtx = local_elem.vertex(i);
-                tri[i] = vtx->global_id();
+    if (this->msurfs_.size() > 0) {
+        std::vector<Element> elems;
+        for (auto & [id, surface] : this->msurfs_) {
+            auto & tris = surface->triangles();
+            std::array<gidx_t, Tri3::N_VERTICES> tri;
+            for (auto & local_elem : tris) {
+                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                    auto vtx = local_elem.vertex(i);
+                    tri[i] = vtx->global_id();
+                }
+                elems.emplace_back(Element::Tri3(tri));
             }
-            elems.emplace_back(Element::Tri3(tri));
         }
+        return elems;
     }
-    return elems;
+    else
+        return build_1d_elements();
 }
 
 Mesh
