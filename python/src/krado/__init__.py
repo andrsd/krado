@@ -22,7 +22,7 @@ __all__ = [
     "LinearPattern",
     "Mesh",
     "MeshElement",
-    "MeshCurve"
+    "MeshCurve",
     "MeshCurveVertex",
     "MeshSurface",
     "MeshSurfaceVertex",
@@ -30,7 +30,7 @@ __all__ = [
     "MeshVolume",
     "Pattern",
     "Point",
-    "Scheme"
+    "Scheme",
     "STEPFile",
     "Trsf",
     "Vector",
