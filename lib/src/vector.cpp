@@ -73,6 +73,16 @@ Vector::rotated(const Axis1 & axis, double angle) const
     return Vector(v.X(), v.Y(), v.Z());
 }
 
+bool
+Vector::is_equal(const Vector & other, double tol) const
+{
+    if (std::abs(this->x - other.x) < tol && std::abs(this->y - other.y) < tol &&
+        std::abs(this->z - other.z) < tol)
+        return true;
+    else
+        return false;
+}
+
 Vector
 Vector::operator+(const Vector & other) const
 {

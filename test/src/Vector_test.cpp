@@ -146,3 +146,13 @@ TEST(VectorTest, rotate_around_z_90deg)
     EXPECT_NEAR(v_rot.y, 1.0, 1e-12);
     EXPECT_NEAR(v_rot.z, 0.0, 1e-12);
 }
+
+TEST(VectorTest, is_equal)
+{
+    Vector a(1, 0, 0);
+    Vector b(1, 0, 0);
+    Vector c(-1, 0, 0);
+
+    EXPECT_TRUE(a.is_equal(b));
+    EXPECT_FALSE(a.is_equal(c));
+}
