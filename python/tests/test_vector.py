@@ -76,3 +76,11 @@ def test_normalize():
     a = krado.Vector(2, 3, 5)
     a.normalize()
     assert a.norm() == 1.
+
+
+def test_is_equal():
+    a = krado.Vector(1, 0, 0)
+    b = krado.Vector(1, 0, 0)
+    c = krado.Vector(-1, 0, 0)
+    assert a.is_equal(b)
+    assert not a.is_equal(c)

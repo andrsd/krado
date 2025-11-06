@@ -61,6 +61,13 @@ public:
     /// @return Rotated vector
     Vector rotated(const Axis1 & axis, double angle) const;
 
+    /// Compare this vector with another one
+    ///
+    /// @param other Other vector to compare against
+    /// @param tol Absolute tolerance used in comparison
+    /// @return `true` if they are the same up to a tolerance `tol`
+    bool is_equal(const Vector & other, double tol = 1e-10) const;
+
     /// X-component
     double x;
     /// Y-component
