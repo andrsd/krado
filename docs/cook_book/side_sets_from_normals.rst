@@ -36,6 +36,12 @@ To give the side set a meaningful name, use:
 This links the numeric ID to a user-friendly label, making your mesh definition
 easier to read and maintain.
 
+.. note::
+
+   This capability is also supported in three dimensions.
+   Use ``Mesh.boundary_faces`` instead of ``Mesh.boundary_edges``, and ensure that
+   outward normals have **three components** instead of two.
+
 Example:
 
 .. code-block:: python
