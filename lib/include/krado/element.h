@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/types.h"
+#include "krado/utils.h"
 #include <fmt/format.h>
 #include <vector>
 #include <array>
@@ -233,5 +234,6 @@ struct fmt::formatter<krado::ElementType> {
         case krado::ElementType::PRISM6:
             return fmt::format_to(ctx.out(), "PRISM6");
         }
+        krado::utils::unreachable();
     }
 };
