@@ -64,7 +64,7 @@ configure_package_config_file(
 )
 write_basic_package_version_file(krado-config-version.cmake
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
+    COMPATIBILITY SameMajorVersion
 )
 
 install(
