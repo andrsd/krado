@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 project(libbamg LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 file(GLOB SRC bamglib/*.cpp *.cpp)
 list(REMOVE_ITEM SRC ${PROJECT_SOURCE_DIR}/bamglib/Meshgibbs.cpp)
 list(APPEND SRC bamg.cpp)
