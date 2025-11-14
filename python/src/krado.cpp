@@ -8,6 +8,7 @@
 #include "krado/axis2.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/config.h"
+#include "krado/classifier.h"
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"
 #include "krado/exodusii_file.h"
@@ -503,6 +504,12 @@ PYBIND11_MODULE(krado, m)
     py::class_<HexagonalPattern, Pattern>(m, "HexagonalPattern")
         .def(py::init<const Axis2 &, double, int>())
         .def("flat_to_flat", &HexagonalPattern::flat_to_flat)
+    ;
+
+    py::class_<SolidClassifier>(m, "SolidClassifier")
+        .def(py::init<const GeomShape &>())
+        .def("inside", &SolidClassifier::inside)
+        .def("outside", &SolidClassifier::outside)
     ;
 
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
