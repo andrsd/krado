@@ -146,19 +146,19 @@ local_side_index(ElementType et, int idx)
     if (utils::in(et, { ElementType::LINE2, ElementType::TRI3, ElementType::QUAD4 }))
         return idx - 1;
     else if (et == ElementType::TETRA4) {
-        std::array<int, 4> sides = { 1, 2, 3, 0 };
+        std::array<int, Tetra4::N_FACES> sides = { 1, 2, 3, 0 };
         return sides[idx - 1];
     }
     else if (et == ElementType::PYRAMID5) {
-        std::array<int, 5> sides = { 1, 2, 3, 4, 0 };
+        std::array<int, Pyramid5::N_FACES> sides = { 1, 2, 3, 4, 0 };
         return sides[idx - 1];
     }
     else if (et == ElementType::PRISM6) {
-        std::array<int, 5> sides = { 1, 2, 3, 0, 4 };
+        std::array<int, Prism6::N_FACES> sides = { 1, 2, 3, 0, 4 };
         return sides[idx - 1];
     }
     else if (et == ElementType::HEX8) {
-        std::array<int, 6> sides = { 0, 3, 1, 2, 4, 5 };
+        std::array<int, Hex8::N_FACES> sides = { 0, 3, 1, 2, 4, 5 };
         return sides[idx - 1];
     }
     else {
