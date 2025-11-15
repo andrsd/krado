@@ -304,10 +304,10 @@ public:
     /// @return Reference to this mesh
     Mesh & remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
-    /// Get mesh point IDs
+    /// Get mesh vertex IDs
     ///
     /// @return Mesh point IDs
-    [[nodiscard]] const Range & point_ids() const;
+    [[nodiscard]] const Range & vertex_ids() const;
 
     /// Get mesh edge IDs
     ///

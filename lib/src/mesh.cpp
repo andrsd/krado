@@ -578,7 +578,7 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 }
 
 const Range &
-Mesh::point_ids() const
+Mesh::vertex_ids() const
 {
     return this->hasse_.vertices();
 }
