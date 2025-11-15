@@ -285,7 +285,7 @@ ExodusIIFile::write(const Mesh & mesh)
     int n_nodes = (int) mesh.points().size();
     int n_elems = (int) mesh.elements().size();
     int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
-    int n_node_sets = 0;
+    int n_node_sets = mesh.vertex_ids().size();
     int n_side_sets = mesh.side_set_ids().size();
     this->exo_.init("", this->dim_, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
