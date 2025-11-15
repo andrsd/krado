@@ -42,7 +42,6 @@ add_subdirectory(contrib/bamg)
 add_subdirectory(contrib/robust_predicates)
 
 add_subdirectory(lib)
-add_subdirectory(utils)
 add_subdirectory(python)
 
 # Tests
