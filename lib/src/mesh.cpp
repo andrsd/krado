@@ -257,6 +257,12 @@ Mesh::transformed(const Trsf & tr) const
     Mesh mesh(pts, this->elems_);
     mesh.cell_sets_ = this->cell_sets_;
     mesh.cell_set_names_ = this->cell_set_names_;
+    mesh.face_sets_ = this->face_sets_;
+    mesh.face_set_names_ = this->face_set_names_;
+    mesh.edge_sets_ = this->edge_sets_;
+    mesh.edge_set_names_ = this->edge_set_names_;
+    mesh.vertex_sets_ = this->vertex_sets_;
+    mesh.vertex_set_names_ = this->vertex_set_names_;
     mesh.side_sets_ = this->side_sets_;
     mesh.side_set_names_ = this->side_set_names_;
     return mesh;
@@ -320,6 +326,9 @@ Mesh::add(const Mesh & other)
                       name);
     }
 
+    // TODO: merge face sets
+    // TODO: merge edge sets
+
     return *this;
 }
 
@@ -355,6 +364,9 @@ Mesh::duplicate() const
 {
     Mesh dup(this->pnts_, this->elems_);
     dup.cell_sets_ = this->cell_sets_;
+    dup.face_sets_ = this->face_sets_;
+    dup.edge_sets_ = this->edge_sets_;
+    dup.vertex_sets_ = this->vertex_sets_;
     dup.side_sets_ = this->side_sets_;
     return dup;
 }
