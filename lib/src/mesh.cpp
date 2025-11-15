@@ -155,6 +155,26 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     return { unique_points, point_remap };
 }
 
+std::vector<gidx_t>
+boundary_entities(const Mesh & mesh, const Range & range)
+{
+    std::size_t n = 0;
+    for (auto & id : range) {
+        auto supp = mesh.support(id);
+        if (supp.size() == 1)
+            n++;
+    }
+
+    std::vector<gidx_t> bnd_ents;
+    bnd_ents.reserve(n);
+    for (auto & id : range) {
+        auto supp = mesh.support(id);
+        if (supp.size() == 1)
+            bnd_ents.push_back(id);
+    }
+    return bnd_ents;
+}
+
 } // namespace
 
 Mesh::Mesh() {}
@@ -767,25 +787,13 @@ Mesh::build_hasse_diagram()
 std::vector<gidx_t>
 Mesh::boundary_edges() const
 {
-    std::vector<gidx_t> bnd_edges;
-    for (auto & edge : edge_ids()) {
-        auto supp = support(edge);
-        if (supp.size() == 1)
-            bnd_edges.push_back(edge);
-    }
-    return bnd_edges;
+    return boundary_entities(*this, edge_ids());
 }
 
 std::vector<gidx_t>
 Mesh::boundary_faces() const
 {
-    std::vector<gidx_t> bnd_faces;
-    for (auto & face : face_ids()) {
-        auto supp = support(face);
-        if (supp.size() == 1)
-            bnd_faces.push_back(face);
-    }
-    return bnd_faces;
+    return boundary_entities(*this, face_ids());
 }
 
 Point
