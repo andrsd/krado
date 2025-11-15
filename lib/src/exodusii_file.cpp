@@ -293,6 +293,7 @@ ExodusIIFile::write(const Mesh & mesh)
     write_coords(mesh);
     write_elements(mesh);
     write_side_sets(mesh);
+    write_node_sets(mesh);
 
     this->exo_.close();
 }
@@ -432,6 +433,26 @@ ExodusIIFile::write_side_sets(const Mesh & mesh)
     }
 
     this->exo_.write_side_set_names(side_sets_names);
+}
+
+void
+ExodusIIFile::write_node_sets(const Mesh & mesh)
+{
+    auto rng = mesh.vertex_ids();
+    std::vector<std::string> node_set_names;
+    auto set_ids = mesh.vertex_set_ids();
+    for (auto & id : set_ids) {
+        auto & vtx_ids = mesh.vertex_set(id);
+        auto n = vtx_ids.size();
+        std::vector<int> nodes;
+        nodes.reserve(n);
+        for (auto & v : vtx_ids)
+            nodes.push_back(v - rng.first() + 1);
+        this->exo_.write_node_set(id, nodes);
+        node_set_names.push_back(mesh.vertex_set_name(id));
+    }
+
+    this->exo_.write_node_set_names(node_set_names);
 }
 
 } // namespace krado

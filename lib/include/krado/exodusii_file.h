@@ -63,6 +63,9 @@ private:
     /// Write side sets
     void write_side_sets(const Mesh & mesh);
 
+    ///
+    void write_node_sets(const Mesh & mesh);
+
     /// File name
     std::string fn_;
     /// ExodusII file object

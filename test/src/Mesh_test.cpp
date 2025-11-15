@@ -271,7 +271,7 @@ TEST(MeshTest, element_ids_2d)
     mesh.set_up();
     EXPECT_EQ(mesh.cell_ids(), krado::Range(0, 1));
     EXPECT_EQ(mesh.edge_ids(), krado::Range(6, 10));
-    EXPECT_EQ(mesh.point_ids(), krado::Range(2, 5));
+    EXPECT_EQ(mesh.vertex_ids(), krado::Range(2, 5));
 }
 
 TEST(MeshTest, element_ids_3d)
@@ -297,7 +297,7 @@ TEST(MeshTest, element_ids_3d)
     EXPECT_EQ(mesh.cell_ids(), krado::Range(0, 0));
     EXPECT_EQ(mesh.face_ids(), krado::Range(9, 14));
     EXPECT_EQ(mesh.edge_ids(), krado::Range(15, 26));
-    EXPECT_EQ(mesh.point_ids(), krado::Range(1, 8));
+    EXPECT_EQ(mesh.vertex_ids(), krado::Range(1, 8));
 }
 
 TEST(MeshTest, element_ids_from_file_2d)
@@ -309,7 +309,7 @@ TEST(MeshTest, element_ids_from_file_2d)
     EXPECT_EQ(m.cell_ids(), krado::Range(0, 1));
     EXPECT_EQ(m.edge_ids(), krado::Range(6, 10));
     // EXPECT_EQ(m.face_ids(), krado::Range());
-    EXPECT_EQ(m.point_ids(), krado::Range(2, 5));
+    EXPECT_EQ(m.vertex_ids(), krado::Range(2, 5));
 
     EXPECT_THAT(m.support(0), ElementsAre());
     EXPECT_THAT(m.support(1), ElementsAre());
@@ -345,7 +345,7 @@ TEST(MeshTest, element_ids_from_file_3d)
     EXPECT_EQ(m.cell_ids(), krado::Range(0, 5));
     EXPECT_EQ(m.face_ids(), krado::Range(14, 31));
     EXPECT_EQ(m.edge_ids(), krado::Range(32, 50));
-    EXPECT_EQ(m.point_ids(), krado::Range(6, 13));
+    EXPECT_EQ(m.vertex_ids(), krado::Range(6, 13));
 
     ExodusIIFile out("a.e");
     out.write(m);

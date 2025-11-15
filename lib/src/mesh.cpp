@@ -559,6 +559,55 @@ Mesh::remove_side_sets()
 }
 
 Mesh &
+Mesh::set_vertex_set_name(marker_t id, const std::string & name)
+{
+    this->vertex_set_names_[id] = name;
+    return *this;
+}
+
+std::string
+Mesh::vertex_set_name(marker_t id) const
+{
+    auto it = this->vertex_set_names_.find(id);
+    if (it != this->vertex_set_names_.end())
+        return it->second;
+    else
+        return std::string("");
+}
+
+std::vector<marker_t>
+Mesh::vertex_set_ids() const
+{
+    return utils::map_keys(this->vertex_sets_);
+}
+
+const std::vector<gidx_t> &
+Mesh::vertex_set(marker_t id) const
+{
+    try {
+        return this->vertex_sets_.at(id);
+    }
+    catch (const std::out_of_range & e) {
+        throw Exception("Vertex set ID {} does not exist", id);
+    }
+}
+
+Mesh &
+Mesh::set_vertex_set(marker_t id, const std::vector<gidx_t> & vertex_ids)
+{
+    this->vertex_sets_[id] = vertex_ids;
+    return *this;
+}
+
+Mesh &
+Mesh::remove_vertex_sets()
+{
+    this->vertex_sets_.clear();
+    this->vertex_set_names_.clear();
+    return *this;
+}
+
+Mesh &
 Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 {
     Log::info("Remapping block IDs:");
@@ -578,7 +627,7 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 }
 
 const Range &
-Mesh::point_ids() const
+Mesh::vertex_ids() const
 {
     return this->hasse_.vertices();
 }
