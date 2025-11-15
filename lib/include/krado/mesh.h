@@ -10,6 +10,7 @@
 #include "krado/transform.h"
 #include "krado/range.h"
 #include "krado/hasse_diagram.h"
+#include "krado/types.h"
 #include "krado/utils.h"
 #include <cstdint>
 #include <map>
@@ -298,6 +299,42 @@ public:
     /// @return Reference to this mesh
     Mesh & remove_side_sets();
 
+    /// Set vertex set name
+    ///
+    /// @param id Vertex set ID
+    /// @param name Vertex set name
+    /// @return Reference to this mesh
+    Mesh & set_vertex_set_name(marker_t id, const std::string & name);
+
+    /// Get vertex set name
+    ///
+    /// @param id Vertex set ID
+    /// @return Vertex set name
+    [[nodiscard]] std::string vertex_set_name(marker_t id) const;
+
+    /// Get vertex set IDs
+    ///
+    /// @return Vertex set IDs
+    [[nodiscard]] std::vector<marker_t> vertex_set_ids() const;
+
+    /// Get vertex set
+    ///
+    /// @param id Vertex set ID
+    /// @return Vertex set
+    [[nodiscard]] const std::vector<gidx_t> & vertex_set(marker_t id) const;
+
+    /// Set vertex set
+    ///
+    /// @param id Vertex set ID
+    /// @param vertex_ids Vertex IDs
+    /// @return Reference to this mesh
+    Mesh & set_vertex_set(marker_t id, const std::vector<gidx_t> & vertex_ids);
+
+    /// Remove vertex sets
+    ///
+    /// @return Reference to this mesh
+    Mesh & remove_vertex_sets();
+
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
@@ -482,6 +519,10 @@ private:
     std::map<marker_t, std::string> edge_set_names_;
     /// Edge sets
     std::map<marker_t, std::vector<gidx_t>> edge_sets_;
+    /// Vertex set names
+    std::map<marker_t, std::string> vertex_set_names_;
+    /// Vertex sets
+    std::map<marker_t, std::vector<gidx_t>> vertex_sets_;
 
     /// Side set names
     std::map<marker_t, std::string> side_set_names_;
