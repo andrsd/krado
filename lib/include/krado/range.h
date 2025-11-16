@@ -93,7 +93,7 @@ public:
     expand(gidx_t v)
     {
         this->start_idx_ = std::min(this->start_idx_, v);
-        this->end_idx_ = std::max(this->end_idx_, v);
+        this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
 private:
