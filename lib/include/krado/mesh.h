@@ -323,25 +323,25 @@ public:
     /// @return Reference to this mesh
     Mesh & remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
-    /// Get mesh vertex IDs
+    /// Get mesh vertex ID range
     ///
-    /// @return Mesh point IDs
-    [[nodiscard]] const Range & vertex_ids() const;
+    /// @return Mesh point ID range
+    [[nodiscard]] const Range & vertex_range() const;
 
-    /// Get mesh edge IDs
+    /// Get mesh edge ID range
     ///
-    /// @return Mesh edge IDs
-    [[nodiscard]] const Range & edge_ids() const;
+    /// @return Mesh edge ID range
+    [[nodiscard]] const Range & edge_range() const;
 
-    /// Get mesh face IDs
+    /// Get mesh face ID range
     ///
-    /// @return Mesh face IDs
-    [[nodiscard]] const Range & face_ids() const;
+    /// @return Mesh face ID range
+    [[nodiscard]] const Range & face_range() const;
 
-    /// Get mesh cell IDs
+    /// Get mesh cell ID range
     ///
-    /// @return Mesh cell IDs
-    [[nodiscard]] const Range & cell_ids() const;
+    /// @return Mesh cell ID range
+    [[nodiscard]] const Range & cell_range() const;
 
     /// Get support of a mesh node
     ///
