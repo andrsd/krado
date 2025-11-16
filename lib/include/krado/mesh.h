@@ -240,47 +240,6 @@ public:
     /// @return Reference to this mesh
     Mesh & remove_edge_sets();
 
-    /// Set side set name
-    ///
-    /// @param id Side set ID
-    /// @param name Side set name
-    /// @return Reference to this mesh
-    Mesh & set_side_set_name(marker_t id, const std::string & name);
-
-    /// Get side set name
-    ///
-    /// @param id Side set ID
-    /// @return Side set name
-    [[nodiscard]] std::string side_set_name(marker_t id) const;
-
-    /// Get side set IDs
-    [[nodiscard]] std::vector<marker_t> side_set_ids() const;
-
-    /// Get side set
-    ///
-    /// @param id Side set ID
-    /// @return Side set
-    [[nodiscard]] const std::vector<side_set_entry_t> & side_set(marker_t id) const;
-
-    /// Set side set
-    ///
-    /// @param id Side set ID
-    /// @param elem_ids Element IDs
-    /// @return Reference to this mesh
-    Mesh & set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids);
-
-    /// Set side set
-    ///
-    /// @param id Side set ID
-    /// @param side_set_entries Side set entries
-    /// @return Reference to this mesh
-    Mesh & set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
-
-    /// Remove side sets
-    ///
-    /// @return Reference to this mesh
-    Mesh & remove_side_sets();
-
     /// Set vertex set name
     ///
     /// @param id Vertex set ID
@@ -505,11 +464,6 @@ private:
     std::map<marker_t, std::string> vertex_set_names_;
     /// Vertex sets
     std::map<marker_t, std::vector<gidx_t>> vertex_sets_;
-
-    /// Side set names
-    std::map<marker_t, std::string> side_set_names_;
-    /// Side sets
-    std::map<marker_t, std::vector<side_set_entry_t>> side_sets_;
 
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;
