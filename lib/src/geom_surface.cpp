@@ -17,7 +17,7 @@
 
 namespace krado {
 
-GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(2, face), face_(face)
+GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face), face_(face)
 {
     this->surface_ = BRep_Tool::Surface(this->face_);
 

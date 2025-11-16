@@ -26,6 +26,8 @@
 
 namespace krado {
 
+GeomShape::GeomShape(const TopoDS_Shape & shape) : dim_(-1), shape_(shape), id_(-1) {}
+
 GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) : dim_(dim), shape_(shape), id_(-1) {}
 
 int

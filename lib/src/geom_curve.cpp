@@ -18,7 +18,7 @@
 
 namespace krado {
 
-GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(1, edge), edge_(edge), umin_(0), umax_(0)
+GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(edge), edge_(edge), umin_(0), umax_(0)
 {
     // force orientation of internal/external edges, otherwise reverse will not produce the expected
     // result

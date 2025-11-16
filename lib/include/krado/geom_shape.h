@@ -13,9 +13,10 @@ public:
     enum HealFlag { FIX_DEGENERATED, FIX_SMALL_EDGES, FIX_SMALL_FACES, SEW_FACES, MAKE_SOLIDS };
 
     GeomShape() = default;
-    explicit GeomShape(int dim, const TopoDS_Shape & shape);
+    explicit GeomShape(const TopoDS_Shape & shape);
+    [[deprecated]] GeomShape(int dim, const TopoDS_Shape & shape);
 
-    int dim() const;
+    [[deprecated]] int dim() const;
 
     void clean();
     void heal(double tolerance,

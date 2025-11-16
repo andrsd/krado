@@ -39,7 +39,7 @@ STEPFile::load() const
     for (Standard_Integer i = 1; i <= shape_labels.Length(); ++i) {
         auto shape_label = shape_labels.Value(i);
         auto shape = XCAFDoc_ShapeTool::GetShape(shape_label);
-        GeomShape geom_shape(-1, shape);
+        GeomShape geom_shape(shape);
 
         Handle(TDataStd_TreeNode) node;
         if (shape_label.FindAttribute(XCAFDoc::MaterialRefGUID(), node) && node->HasFather()) {
