@@ -7,6 +7,7 @@
 #include "krado/element.h"
 #include "krado/config.h"
 #include "krado/mesh_element.h"
+#include "krado/types.h"
 #include "krado/utils.h"
 #include "krado/log.h"
 #include "fmt/format.h"
@@ -88,6 +89,71 @@ local_side_index(ElementType et, int idx)
     }
     else
         throw Exception("Unsupported element type {}", Element::type(et));
+}
+
+/// Convert local exodusII side index into local krado edge index
+int
+local_edge_index(ElementType et, int idx)
+{
+    if (utils::in(et, { ElementType::TRI3, ElementType::QUAD4 }))
+        return idx;
+    else
+        throw Exception("Not implemented");
+}
+
+/// Convert local exodusII side index into local krado face index
+int
+local_face_index(ElementType et, int idx)
+{
+    if (et == ElementType::TETRA4) {
+        std::array<int, Tetra4::N_FACES> face = { 1, 2, 3, 0 };
+        return face[idx - 1];
+    }
+    else if (et == ElementType::HEX8) {
+        std::array<int, Hex8::N_FACES> face = { 0, 3, 1, 2, 4, 5 };
+        return face[idx - 1];
+    }
+    else if (et == ElementType::PYRAMID5) {
+        std::array<int, Pyramid5::N_FACES> face = { 1, 2, 3, 4, 0 };
+        return face[idx - 1];
+    }
+    else if (et == ElementType::PRISM6) {
+        std::array<int, Prism6::N_FACES> face = { 1, 2, 3, 0, 4 };
+        return face[idx - 1];
+    }
+    else
+        throw Exception("Not implemented");
+}
+
+///
+///
+/// @param mesh Mesh object
+/// @param elem_ids Face or edge IDs
+/// @param exii_elem_ids Map that converts from krado cell IDs to exodus element numbers
+std::tuple<std::vector<int>, std::vector<int>>
+create_side_set(const Mesh & mesh,
+                const std::vector<gidx_t> & elem_ids,
+                const std::map<std::size_t, int> & exii_elem_ids)
+{
+    std::vector<int> elems;
+    std::vector<int> sides;
+    auto n = elem_ids.size();
+    elems.reserve(n);
+    sides.reserve(n);
+    for (auto & eid : elem_ids) {
+        auto supp = mesh.support(eid);
+        if (supp.size() == 2)
+            throw Exception("Internal side sets are not supported, yet");
+        if (supp.size() == 0)
+            throw Exception("Entity {} has no support", eid);
+        auto cell = supp[0];
+        auto cell_connect = mesh.cone(cell);
+        auto side = utils::index_of(cell_connect, eid);
+        elems.push_back(exii_elem_ids.at(cell));
+        auto et = mesh.element_type(cell);
+        sides.push_back(local_side_index(et, side));
+    }
+    return { elems, sides };
 }
 
 } // namespace exII
@@ -179,9 +245,23 @@ ExodusIIFile::read()
     this->exo_.init();
     auto pnts = read_points();
     auto [elems, cell_sets] = read_elements();
-    auto side_sets = read_side_sets(elems);
+
     auto cell_set_names = this->exo_.read_block_names();
-    auto side_set_names = this->exo_.read_side_set_names();
+
+    std::map<int, std::vector<side_set_entry_t>> side_sets;
+    std::map<int, std::string> side_set_names;
+    if (this->exo_.get_num_side_sets() > 0) {
+        side_sets = read_side_sets(elems);
+        side_set_names = this->exo_.read_side_set_names();
+    }
+
+    std::map<int, std::vector<int>> node_sets;
+    std::map<int, std::string> node_set_names;
+    if (this->exo_.get_num_node_sets() > 0) {
+        node_sets = read_node_sets();
+        node_set_names = this->exo_.read_node_set_names();
+    }
+
     this->exo_.close();
 
     Mesh mesh(pnts, elems);
@@ -190,10 +270,53 @@ ExodusIIFile::read()
     for (auto [id, name] : cell_set_names)
         mesh.set_cell_set_name(id, cell_set_names[id]);
 
-    for (auto & [id, ss] : side_sets)
-        mesh.set_side_set(id, ss);
-    for (auto [id, name] : side_set_names)
-        mesh.set_side_set_name(id, side_set_names[id]);
+    mesh.set_up();
+
+    // side sets
+    int dim = this->exo_.get_dim();
+    if (dim == 1) {
+    }
+    else if (dim == 2) {
+        for (auto & [id, sides] : side_sets) {
+            std::vector<gidx_t> edges;
+            edges.reserve(sides.size());
+            for (auto & ent : sides) {
+                auto cone = mesh.cone(ent.elem);
+                auto et = mesh.element_type(ent.elem);
+                auto lei = exII::local_edge_index(et, ent.side);
+                edges.push_back(cone[lei]);
+            }
+            mesh.set_edge_set(id, edges);
+        }
+        for (auto [id, name] : side_set_names)
+            mesh.set_edge_set_name(id, side_set_names[id]);
+    }
+    else if (dim == 3) {
+        for (auto & [id, sides] : side_sets) {
+            std::vector<gidx_t> faces;
+            faces.reserve(sides.size());
+            for (auto & ent : sides) {
+                auto cone = mesh.cone(ent.elem);
+                auto et = mesh.element_type(ent.elem);
+                auto lei = exII::local_face_index(et, ent.side);
+                faces.push_back(cone[lei]);
+            }
+            mesh.set_face_set(id, faces);
+        }
+        for (auto [id, name] : side_set_names)
+            mesh.set_face_set_name(id, side_set_names[id]);
+    }
+
+    // node sets
+    for (auto & [id, ns] : node_sets) {
+        std::vector<gidx_t> vertex_ids;
+        vertex_ids.reserve(ns.size());
+        for (auto & id : ns)
+            vertex_ids.push_back(id + elems.size());
+        mesh.set_vertex_set(id, vertex_ids);
+    }
+    for (auto [id, name] : node_set_names)
+        mesh.set_vertex_set_name(id, node_set_names[id]);
 
     return mesh;
 }
@@ -274,6 +397,18 @@ ExodusIIFile::read_side_sets(const std::vector<Element> & elems)
     return side_sets;
 }
 
+std::map<int, std::vector<int>>
+ExodusIIFile::read_node_sets()
+{
+    std::map<int, std::vector<int>> node_sets;
+    this->exo_.read_node_sets();
+    for (auto & ns : this->exo_.get_node_sets()) {
+        auto id = ns.get_id();
+        node_sets[id] = ns.get_node_ids();
+    }
+    return node_sets;
+}
+
 void
 ExodusIIFile::write(const Mesh & mesh)
 {
@@ -285,8 +420,12 @@ ExodusIIFile::write(const Mesh & mesh)
     int n_nodes = (int) mesh.points().size();
     int n_elems = (int) mesh.elements().size();
     int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
-    int n_node_sets = mesh.vertex_ids().size();
-    int n_side_sets = mesh.side_set_ids().size();
+    int n_node_sets = mesh.vertex_set_ids().size();
+    int n_side_sets = 0;
+    if (this->dim_ == 2)
+        n_side_sets = mesh.edge_set_ids().size();
+    else if (this->dim_ == 3)
+        n_side_sets = mesh.face_set_ids().size();
     this->exo_.init("", this->dim_, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
     write_info();
@@ -415,30 +554,31 @@ void
 ExodusIIFile::write_side_sets(const Mesh & mesh)
 {
     std::vector<std::string> side_sets_names;
-    auto set_ids = mesh.side_set_ids();
-    for (auto & sid : set_ids) {
-        std::vector<int> elems;
-        std::vector<int> sides;
-        auto & entries = mesh.side_set(sid);
-        auto n = entries.size();
-        elems.reserve(n);
-        sides.reserve(n);
-        for (auto & en : entries) {
-            elems.push_back(this->exii_elem_ids_.at(en.elem));
-            auto et = mesh.element_type(en.elem);
-            sides.push_back(exII::local_side_index(et, en.side));
+    if (this->dim_ == 2) {
+        for (auto & id : mesh.edge_set_ids()) {
+            auto [elems, sides] =
+                exII::create_side_set(mesh, mesh.edge_set(id), this->exii_elem_ids_);
+            this->exo_.write_side_set(id, elems, sides);
+            side_sets_names.push_back(mesh.edge_set_name(id));
         }
-        this->exo_.write_side_set(sid, elems, sides);
-        side_sets_names.push_back(mesh.side_set_name(sid));
+    }
+    else if (this->dim_ == 3) {
+        for (auto & id : mesh.face_set_ids()) {
+            auto [elems, sides] =
+                exII::create_side_set(mesh, mesh.face_set(id), this->exii_elem_ids_);
+            this->exo_.write_side_set(id, elems, sides);
+            side_sets_names.push_back(mesh.face_set_name(id));
+        }
     }
 
-    this->exo_.write_side_set_names(side_sets_names);
+    if (!side_sets_names.empty())
+        this->exo_.write_side_set_names(side_sets_names);
 }
 
 void
 ExodusIIFile::write_node_sets(const Mesh & mesh)
 {
-    auto rng = mesh.vertex_ids();
+    auto rng = mesh.vertex_range();
     std::vector<std::string> node_set_names;
     auto set_ids = mesh.vertex_set_ids();
     for (auto & id : set_ids) {
@@ -452,7 +592,8 @@ ExodusIIFile::write_node_sets(const Mesh & mesh)
         node_set_names.push_back(mesh.vertex_set_name(id));
     }
 
-    this->exo_.write_node_set_names(node_set_names);
+    if (!node_set_names.empty())
+        this->exo_.write_node_set_names(node_set_names);
 }
 
 } // namespace krado
