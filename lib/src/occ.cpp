@@ -5,6 +5,7 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/axis1.h"
+#include "krado/axis2.h"
 
 namespace krado {
 namespace occ {
@@ -32,6 +33,12 @@ gp_Ax1
 to_ax1(const Axis1 & ax1)
 {
     return gp_Ax1(to_pnt(ax1.location()), to_dir(ax1.direction()));
+}
+
+gp_Ax2
+to_ax2(const Axis2 & ax2)
+{
+    return gp_Ax2(to_pnt(ax2.location()), to_dir(ax2.direction()));
 }
 
 } // namespace occ

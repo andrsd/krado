@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/geom_shape.h"
 #include "krado/types.h"
 #include "Standard_TypeDef.hxx"
 #include <tuple>
@@ -50,5 +51,32 @@ class Mesh;
 /// @param mesh Mesh to compute volumes of blocks
 /// @return Computed
 std::map<marker_t, double> compute_volume(const Mesh & mesh);
+
+/// Fuse 2 shapes
+///
+/// @param shape Shape
+/// @param tool Tool
+/// @return Resulting fused shape
+GeomShape fuse(const GeomShape & shape, const GeomShape & tool, bool simplify = true);
+
+/// Fuse multiple shapes
+///
+/// @param tools Shapes to fuse
+/// @return Resulting fused shape
+GeomShape fuse(const std::vector<GeomShape> & tools, bool simplify = true);
+
+/// Cut a shape with a tool
+///
+/// @param shape Shape to cut
+/// @param tool Cutting tool
+/// @return Resulting shape
+GeomShape cut(const GeomShape & shape, const GeomShape & tool);
+
+/// Intersect 2 shapes
+///
+/// @param shape Shape
+/// @param tool Tool
+/// @return Resulting shape
+GeomShape intersect(const GeomShape & shape, const GeomShape & tool);
 
 } // namespace krado

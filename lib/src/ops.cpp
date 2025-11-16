@@ -15,6 +15,9 @@
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
 #include "BRep_Tool.hxx"
+#include "BRepAlgoAPI_Fuse.hxx"
+#include "BRepAlgoAPI_Cut.hxx"
+#include "BRepAlgoAPI_Common.hxx"
 #include "BRepAlgo_NormalProjection.hxx"
 #include "BRepFeat_SplitShape.hxx"
 #include "TopoDS_Wire.hxx"
@@ -196,6 +199,61 @@ compute_volume(const Mesh & mesh)
         }
         return vols_per_cellset;
     }
+}
+
+GeomShape
+fuse(const GeomShape & shape, const GeomShape & tool, bool simplify)
+{
+    BRepAlgoAPI_Fuse alg(shape, tool);
+    alg.Build();
+    if (simplify)
+        alg.SimplifyResult();
+    if (!alg.IsDone())
+        throw Exception("Objects were not fused");
+    return GeomShape(alg.Shape());
+}
+
+GeomShape
+fuse(const std::vector<GeomShape> & shapes, bool simplify)
+{
+    if (shapes.empty())
+        throw Exception("No shapes to fuse");
+
+    if (shapes.size() == 1)
+        throw Exception("Only one shape provided");
+
+    TopoDS_Shape sh = shapes[0];
+    for (std::size_t i = 1; i < shapes.size(); ++i) {
+        BRepAlgoAPI_Fuse alg(sh, shapes[i]);
+        alg.Build();
+        if (simplify)
+            alg.SimplifyResult();
+        if (!alg.IsDone())
+            throw Exception("Objects were not fused");
+        sh = alg.Shape();
+    }
+
+    return GeomShape(sh);
+}
+
+GeomShape
+cut(const GeomShape & shape, const GeomShape & tool)
+{
+    BRepAlgoAPI_Cut alg(shape, tool);
+    alg.Build();
+    if (!alg.IsDone())
+        throw Exception("Object was not cut");
+    return GeomShape(alg.Shape());
+}
+
+GeomShape
+intersect(const GeomShape & shape, const GeomShape & tool)
+{
+    BRepAlgoAPI_Common alg(shape, tool);
+    alg.Build();
+    if (!alg.IsDone())
+        throw Exception("Object was not intersected");
+    return GeomShape(alg.Shape());
 }
 
 } // namespace krado
