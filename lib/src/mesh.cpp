@@ -263,8 +263,6 @@ Mesh::transformed(const Trsf & tr) const
     mesh.edge_set_names_ = this->edge_set_names_;
     mesh.vertex_sets_ = this->vertex_sets_;
     mesh.vertex_set_names_ = this->vertex_set_names_;
-    mesh.side_sets_ = this->side_sets_;
-    mesh.side_set_names_ = this->side_set_names_;
     return mesh;
 }
 
@@ -518,75 +516,6 @@ Mesh::remove_edge_sets()
 {
     this->edge_sets_.clear();
     this->edge_set_names_.clear();
-    return *this;
-}
-
-Mesh &
-Mesh::set_side_set_name(marker_t id, const std::string & name)
-{
-    this->side_set_names_[id] = name;
-    return *this;
-}
-
-std::string
-Mesh::side_set_name(marker_t id) const
-{
-    try {
-        return this->side_set_names_.at(id);
-    }
-    catch (const std::out_of_range & e) {
-        return std::string("");
-    }
-}
-
-std::vector<marker_t>
-Mesh::side_set_ids() const
-{
-    return utils::map_keys(this->side_sets_);
-}
-
-const std::vector<side_set_entry_t> &
-Mesh::side_set(marker_t id) const
-{
-    try {
-        return this->side_sets_.at(id);
-    }
-    catch (const std::out_of_range & e) {
-        throw Exception("Side set ID {} does not exist", id);
-    }
-}
-
-Mesh &
-Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
-{
-    std::vector<side_set_entry_t> side_set;
-    for (auto & eid : elem_ids) {
-        auto supp = support(eid);
-        if (supp.size() == 2)
-            throw Exception("Internal side sets are not supported, yet");
-        if (supp.size() == 0)
-            throw Exception("Edge {} has no support", eid);
-        auto cell = supp[0];
-        auto cell_connect = cone(cell);
-        auto side = utils::index_of(cell_connect, eid);
-        side_set.emplace_back(cell, side);
-    }
-    this->side_sets_[id] = side_set;
-    return *this;
-}
-
-Mesh &
-Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
-{
-    this->side_sets_[id] = side_set_entries;
-    return *this;
-}
-
-Mesh &
-Mesh::remove_side_sets()
-{
-    this->side_sets_.clear();
-    this->side_set_names_.clear();
     return *this;
 }
 
