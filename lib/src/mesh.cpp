@@ -659,25 +659,25 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 }
 
 const Range &
-Mesh::vertex_ids() const
+Mesh::vertex_range() const
 {
     return this->hasse_.vertices();
 }
 
 const Range &
-Mesh::edge_ids() const
+Mesh::edge_range() const
 {
     return this->hasse_.edges();
 }
 
 const Range &
-Mesh::face_ids() const
+Mesh::face_range() const
 {
     return this->hasse_.faces();
 }
 
 const Range &
-Mesh::cell_ids() const
+Mesh::cell_range() const
 {
     return this->hasse_.cells();
 }
@@ -799,13 +799,13 @@ Mesh::build_hasse_diagram()
 std::vector<gidx_t>
 Mesh::boundary_edges() const
 {
-    return boundary_entities(*this, edge_ids());
+    return boundary_entities(*this, edge_range());
 }
 
 std::vector<gidx_t>
 Mesh::boundary_faces() const
 {
-    return boundary_entities(*this, face_ids());
+    return boundary_entities(*this, face_range());
 }
 
 Point
