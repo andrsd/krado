@@ -12,27 +12,9 @@
 #include "krado/hasse_diagram.h"
 #include "krado/types.h"
 #include "krado/utils.h"
-#include <cstdint>
 #include <map>
 
 namespace krado {
-
-/// Side set entry
-struct side_set_entry_t {
-    /// Element ID
-    gidx_t elem;
-    /// Local side number
-    std::size_t side;
-
-    side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
-};
-
-/// Equality operator for side set entry
-inline bool
-operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
-{
-    return lhs.elem == rhs.elem && lhs.side == rhs.side;
-}
 
 /// Class representing a mesh
 ///
