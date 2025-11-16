@@ -37,7 +37,7 @@ TEST(GeomShapeTest, scale)
     make_vtx.Build();
     auto vtx = make_vtx.Vertex();
 
-    GeomShape sh(1, vtx);
+    GeomShape sh(vtx);
     sh.scale(0.5);
 
     GeomVertex v(TopoDS::Vertex(sh));
