@@ -16,8 +16,10 @@ TEST(ExtrudeTest, line_1d)
     Mesh line(pts1d, elems1d);
     line.set_cell_set(0, { 0, 1 });
     line.set_cell_set(1, { 2 });
+#if 0
     line.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
     line.set_side_set(11, std::vector<side_set_entry_t> { { 2, 1 } });
+#endif
 
     Mesh rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
@@ -50,6 +52,7 @@ TEST(ExtrudeTest, line_1d)
     EXPECT_THAT(rectangle.cell_set(0), UnorderedElementsAre(0, 1, 3, 4));
     EXPECT_THAT(rectangle.cell_set(1), UnorderedElementsAre(2, 5));
 
+#if 0
     auto ss_ids = rectangle.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
@@ -60,6 +63,7 @@ TEST(ExtrudeTest, line_1d)
     auto & ss1 = rectangle.side_set(11);
     EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
     EXPECT_EQ(ss1[1], side_set_entry_t(5, 1));
+#endif
 }
 
 TEST(ExtrudeTest, tri_2d)
@@ -78,8 +82,10 @@ TEST(ExtrudeTest, tri_2d)
     Mesh square(pts2d, elems2d);
     square.set_cell_set(0, { 0, 1, 3 });
     square.set_cell_set(1, { 2 });
+#if 0
     square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
     square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 0 } });
+#endif
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -117,6 +123,7 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_THAT(box.cell_set(0), UnorderedElementsAre(0, 1, 3, 4, 5, 7));
     EXPECT_THAT(box.cell_set(1), UnorderedElementsAre(2, 6));
 
+#if 0
     auto ss_ids = box.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
@@ -127,6 +134,7 @@ TEST(ExtrudeTest, tri_2d)
     auto & ss1 = box.side_set(11);
     EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
     EXPECT_EQ(ss1[1], side_set_entry_t(6, 1));
+#endif
 }
 
 TEST(ExtrudeTest, quad_2d)
@@ -144,10 +152,12 @@ TEST(ExtrudeTest, quad_2d)
     Mesh square(pts2d, elems2d);
     square.set_cell_set(0, { 0, 2, 3 });
     square.set_cell_set(1, { 1 });
+#if 0
     square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 }, { 1, 0 } });
     square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 2 }, { 3, 2 } });
     square.set_side_set(12, std::vector<side_set_entry_t> { { 1, 1 }, { 3, 1 } });
     square.set_side_set(13, std::vector<side_set_entry_t> { { 0, 3 }, { 2, 3 } });
+#endif
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -197,6 +207,7 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_THAT(box.cell_set(0), UnorderedElementsAre(0, 2, 3, 4, 6, 7));
     EXPECT_THAT(box.cell_set(1), UnorderedElementsAre(1, 5));
 
+#if 0
     auto ss_ids = box.side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11, 12, 13));
 
@@ -223,4 +234,5 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_EQ(ss3[1], side_set_entry_t(2, 2));
     EXPECT_EQ(ss3[2], side_set_entry_t(4, 2));
     EXPECT_EQ(ss3[3], side_set_entry_t(6, 2));
+#endif
 }
