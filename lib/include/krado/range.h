@@ -67,7 +67,7 @@ public:
     Iterator
     end() const
     {
-        return Iterator(this->end_idx_ + 1);
+        return Iterator(this->end_idx_);
     }
 
     [[nodiscard]] gidx_t
@@ -86,14 +86,14 @@ public:
     [[nodiscard]] gidx_t
     size() const
     {
-        return this->end_idx_ - this->start_idx_ + 1;
+        return this->end_idx_ - this->start_idx_;
     }
 
     void
     expand(gidx_t v)
     {
         this->start_idx_ = std::min(this->start_idx_, v);
-        this->end_idx_ = std::max(this->end_idx_, v);
+        this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
 private:
