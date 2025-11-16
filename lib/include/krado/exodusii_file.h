@@ -45,6 +45,9 @@ private:
     [[nodiscard]] std::map<int, std::vector<side_set_entry_t>>
     read_side_sets(const std::vector<Element> & elems);
 
+    /// Read node sets
+    [[nodiscard]] std::map<int, std::vector<int>> read_node_sets();
+
     /// Determine mesh spatial dimension
     ///
     /// @param mesh Mesh object
@@ -65,6 +68,9 @@ private:
 
     ///
     void write_node_sets(const Mesh & mesh);
+
+    std::tuple<std::vector<int>, std::vector<int>>
+    create_side_set_from_face_set(const Mesh & mesh, const std::vector<gidx_t> & elem_ids);
 
     /// File name
     std::string fn_;

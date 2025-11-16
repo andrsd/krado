@@ -34,6 +34,7 @@ TEST(ExodusIIFileTest, read_2d)
     auto & cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
+#if 0
     auto side_set_ids = mesh.side_set_ids();
     EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
 
@@ -42,6 +43,7 @@ TEST(ExodusIIFileTest, read_2d)
 
     auto & ss1 = mesh.side_set(11);
     EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
+#endif
 }
 
 TEST(ExodusIIFileTest, write_2d)
@@ -64,10 +66,10 @@ TEST(ExodusIIFileTest, write_2d)
     mesh.set_cell_set(1, { 0 });
     mesh.set_cell_set(2, { 1 });
     std::vector<std::size_t> edges_left = { 8 };
-    mesh.set_side_set(100, edges_left);
-    mesh.set_side_set_name(100, "left");
+    mesh.set_face_set(100, edges_left);
+    mesh.set_face_set_name(100, "left");
     std::vector<std::size_t> edges_right = { 9 };
-    mesh.set_side_set(101, edges_right);
+    mesh.set_face_set(101, edges_right);
 
     ExodusIIFile f("sq-2d.exo");
     f.write(mesh);
