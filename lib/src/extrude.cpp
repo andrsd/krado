@@ -153,6 +153,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         extruded_mesh.set_cell_set(id, cell_set);
         extruded_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
     }
+#if 0
     // extrude side sets
     std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
     for (auto & id : mesh.side_set_ids()) {
@@ -183,6 +184,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         extruded_mesh.set_side_set(id, side_set);
         extruded_mesh.set_side_set_name(id, mesh.side_set_name(id));
     }
+#endif
     return extruded_mesh;
 }
 
