@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_shape.h"
+#include "krado/color_map.h"
 #include "BRepLib.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepTools.hxx"
@@ -25,6 +26,24 @@
 #include "BRepGProp.hxx"
 
 namespace krado {
+
+namespace {
+
+std::vector<Color> shape_color = { ColorMap::medium_blue, ColorMap::medium_grey,
+                                   ColorMap::dark_blue,   ColorMap::light_grey,
+                                   ColorMap::light_blue,  ColorMap::orange,
+                                   ColorMap::dark_grey,   ColorMap::yellow };
+
+Color
+get_next_color()
+{
+    static int color_index = 0;
+    Color clr = shape_color[color_index];
+    color_index = (color_index + 1) % shape_color.size();
+    return clr;
+}
+
+} // namespace
 
 GeomShape::GeomShape(const TopoDS_Shape & shape) : dim_(-1), shape_(shape), id_(-1) {}
 
@@ -278,6 +297,12 @@ GeomShape::make_solids(double tolerance)
 GeomShape::operator const TopoDS_Shape &() const
 {
     return this->shape_;
+}
+
+void
+GeomShape::assign_color()
+{
+    this->clr_ = get_next_color();
 }
 
 } // namespace krado

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/flags.h"
+#include "krado/color.h"
 #include "TopoDS_Shape.hxx"
 
 namespace krado {
@@ -50,12 +51,21 @@ public:
     /// @return Material name
     const std::string & material() const;
 
+    /// Get color
+    Color color() const;
+
+    /// Set color
+    void set_color(const Color & color);
+
     /// Return density
     ///
     /// @return Density [g/cm^3]
     double density() const;
 
     operator const TopoDS_Shape &() const;
+
+protected:
+    void assign_color();
 
 private:
     void remove_degenerated_edges();
@@ -71,6 +81,8 @@ private:
     int dim_;
     TopoDS_Shape shape_;
     int id_;
+    /// Color of this shape
+    Color clr_;
     /// Material name
     std::string material_name_;
     /// Material description

@@ -227,6 +227,8 @@ PYBIND11_MODULE(krado, m)
         .def("has_material", &GeomShape::has_material)
         .def("set_material", &GeomShape::set_material)
         .def("material", &GeomShape::material)
+        .def("color", &GeomShape::color)
+        .def("set_color", &GeomShape::set_color)
         .def("density", &GeomShape::density)
     ;
 
