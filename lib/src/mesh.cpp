@@ -190,24 +190,6 @@ expand_size(std::unordered_map<marker_t, std::size_t> & sizes,
     }
 }
 
-std::vector<side_set_entry_t>
-create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0)
-{
-    std::vector<side_set_entry_t> sset;
-    sset.reserve(facets.size());
-    for (auto & f : facets) {
-        auto support = mesh.support(f);
-        if (support.size() != 1)
-            throw Exception("Facet {} is not a boundary facet", f);
-
-        auto cell = support[0];
-        auto cell_connect = mesh.cone(cell);
-        auto lfi = utils::index_of(cell_connect, f);
-        sset.emplace_back(cell + ofst, lfi);
-    }
-    return sset;
-}
-
 void
 append(std::vector<side_set_entry_t> & dest, const std::vector<side_set_entry_t> & src)
 {
@@ -373,9 +355,9 @@ Mesh::add(const Mesh & other)
         for (auto & [id, n] : face_side_sets_size)
             face_side_sets[id].reserve(n);
         for (auto & [id, fs] : this->face_sets_)
-            append(face_side_sets[id], create_side_set(*this, fs));
+            append(face_side_sets[id], utils::create_side_set(*this, fs));
         for (auto & [id, fs] : other.face_sets_)
-            append(face_side_sets[id], create_side_set(other, fs, n_elem_ofst));
+            append(face_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
 
         for (auto & id : other.face_set_ids()) {
             auto name = other.face_set_name(id);
@@ -399,9 +381,9 @@ Mesh::add(const Mesh & other)
         for (auto & [id, n] : edge_side_sets_size)
             edge_side_sets[id].reserve(n);
         for (auto & [id, fs] : this->edge_sets_)
-            append(edge_side_sets[id], create_side_set(*this, fs));
+            append(edge_side_sets[id], utils::create_side_set(*this, fs));
         for (auto & [id, fs] : other.edge_sets_)
-            append(edge_side_sets[id], create_side_set(other, fs, n_elem_ofst));
+            append(edge_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
 
         for (auto & id : other.edge_set_ids()) {
             auto name = other.edge_set_name(id);

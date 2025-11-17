@@ -17,6 +17,7 @@ class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
+class Mesh;
 } // namespace krado
 
 namespace krado::utils {
@@ -188,5 +189,13 @@ unreachable()
     __builtin_unreachable();
 #endif
 }
+
+/// Create "side set"
+///
+/// @param mesh Mesh object
+/// @param facets Facets/edges
+/// @return Side set
+std::vector<side_set_entry_t>
+create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0);
 
 } // namespace krado::utils
