@@ -4,9 +4,11 @@
 #include "krado/utils.h"
 #include "krado/point.h"
 #include "krado/types.h"
+#include "krado/exception.h"
 #include "krado/uv_param.h"
 #include "krado/vector.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/mesh.h"
 #include "boost/functional/hash.hpp"
 #include <cstdint>
 
@@ -105,6 +107,24 @@ distance(const UVParam & p1, const UVParam & p2)
 {
     UVParam delta(p1.u - p2.u, p1.v - p2.v);
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);
+}
+
+std::vector<side_set_entry_t>
+create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst)
+{
+    std::vector<side_set_entry_t> sset;
+    sset.reserve(facets.size());
+    for (auto & f : facets) {
+        auto support = mesh.support(f);
+        if (support.size() != 1)
+            throw Exception("Facet {} is not a boundary facet", f);
+
+        auto cell = support[0];
+        auto cell_connect = mesh.cone(cell);
+        auto lfi = utils::index_of(cell_connect, f);
+        sset.emplace_back(cell + ofst, lfi);
+    }
+    return sset;
 }
 
 } // namespace krado::utils
