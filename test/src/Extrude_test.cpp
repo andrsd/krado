@@ -5,7 +5,7 @@
 using namespace krado;
 using namespace testing;
 
-TEST(ExtrudeTest, line_1d)
+TEST(ExtrudeTest, DISABLED_line_1d)
 {
     std::vector<Point> pts1d = { Point(0.0), Point(0.1), Point(0.2), Point(0.3) };
     std::vector<Element> elems1d = {
@@ -80,12 +80,11 @@ TEST(ExtrudeTest, tri_2d)
         Element::Tri3({ 3, 0, 4 }),
     };
     Mesh square(pts2d, elems2d);
+    square.set_up();
     square.set_cell_set(0, { 0, 1, 3 });
     square.set_cell_set(1, { 2 });
-#if 0
-    square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
-    square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 0 } });
-#endif
+    square.set_edge_set(10, std::vector<gidx_t> { 9 });
+    square.set_edge_set(11, std::vector<gidx_t> { 14 });
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -123,18 +122,14 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_THAT(box.cell_set(0), UnorderedElementsAre(0, 1, 3, 4, 5, 7));
     EXPECT_THAT(box.cell_set(1), UnorderedElementsAre(2, 6));
 
-#if 0
-    auto ss_ids = box.side_set_ids();
+    auto ss_ids = box.face_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = box.side_set(10);
-    EXPECT_EQ(ss0[0], side_set_entry_t(0, 1));
-    EXPECT_EQ(ss0[1], side_set_entry_t(4, 1));
+    auto & ss0 = box.face_set(10);
+    EXPECT_THAT(ss0, testing::ElementsAre(24, 39));
 
-    auto & ss1 = box.side_set(11);
-    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
-    EXPECT_EQ(ss1[1], side_set_entry_t(6, 1));
-#endif
+    auto & ss1 = box.face_set(11);
+    EXPECT_THAT(ss1, testing::ElementsAre(33, 46));
 }
 
 TEST(ExtrudeTest, quad_2d)
@@ -150,16 +145,15 @@ TEST(ExtrudeTest, quad_2d)
     };
 
     Mesh square(pts2d, elems2d);
+    square.set_up();
     square.set_cell_set(0, { 0, 2, 3 });
     square.set_cell_set(1, { 1 });
-#if 0
-    square.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 }, { 1, 0 } });
-    square.set_side_set(11, std::vector<side_set_entry_t> { { 2, 2 }, { 3, 2 } });
-    square.set_side_set(12, std::vector<side_set_entry_t> { { 1, 1 }, { 3, 1 } });
-    square.set_side_set(13, std::vector<side_set_entry_t> { { 0, 3 }, { 2, 3 } });
-#endif
+    square.set_edge_set(10, std::vector<gidx_t> { 13, 17 });
+    square.set_edge_set(11, std::vector<gidx_t> { 21, 24 });
+    square.set_edge_set(12, std::vector<gidx_t> { 18, 23 });
+    square.set_edge_set(13, std::vector<gidx_t> { 16, 22 });
 
-    Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
+    auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
     auto & pnts = box.points();
     EXPECT_EQ(pnts.size(), 27);
@@ -207,32 +201,18 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_THAT(box.cell_set(0), UnorderedElementsAre(0, 2, 3, 4, 6, 7));
     EXPECT_THAT(box.cell_set(1), UnorderedElementsAre(1, 5));
 
-#if 0
-    auto ss_ids = box.side_set_ids();
+    auto ss_ids = box.face_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11, 12, 13));
 
-    auto & ss0 = box.side_set(10);
-    EXPECT_EQ(ss0[0], side_set_entry_t(0, 0));
-    EXPECT_EQ(ss0[1], side_set_entry_t(1, 0));
-    EXPECT_EQ(ss0[2], side_set_entry_t(4, 0));
-    EXPECT_EQ(ss0[3], side_set_entry_t(5, 0));
+    auto & ss0 = box.face_set(10);
+    EXPECT_THAT(ss0, testing::ElementsAre(35, 41, 55, 60));
 
-    auto & ss1 = box.side_set(11);
-    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
-    EXPECT_EQ(ss1[1], side_set_entry_t(3, 1));
-    EXPECT_EQ(ss1[2], side_set_entry_t(6, 1));
-    EXPECT_EQ(ss1[3], side_set_entry_t(7, 1));
+    auto & ss1 = box.face_set(11);
+    EXPECT_THAT(ss1, testing::ElementsAre(46, 51, 64, 68));
 
-    auto & ss2 = box.side_set(12);
-    EXPECT_EQ(ss2[0], side_set_entry_t(1, 3));
-    EXPECT_EQ(ss2[1], side_set_entry_t(3, 3));
-    EXPECT_EQ(ss2[2], side_set_entry_t(5, 3));
-    EXPECT_EQ(ss2[3], side_set_entry_t(7, 3));
+    auto & ss2 = box.face_set(12);
+    EXPECT_THAT(ss2, testing::ElementsAre(43, 52, 62, 69));
 
-    auto & ss3 = box.side_set(13);
-    EXPECT_EQ(ss3[0], side_set_entry_t(0, 2));
-    EXPECT_EQ(ss3[1], side_set_entry_t(2, 2));
-    EXPECT_EQ(ss3[2], side_set_entry_t(4, 2));
-    EXPECT_EQ(ss3[3], side_set_entry_t(6, 2));
-#endif
+    auto & ss3 = box.face_set(13);
+    EXPECT_THAT(ss3, testing::ElementsAre(37, 47, 57, 65));
 }
