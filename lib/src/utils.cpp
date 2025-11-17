@@ -127,4 +127,17 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
     return sset;
 }
 
+std::vector<gidx_t>
+set_from_side_set(const Mesh & mesh, const std::vector<side_set_entry_t> & side_set)
+{
+    std::vector<gidx_t> sset;
+    sset.reserve(side_set.size());
+    for (auto & ent : side_set) {
+        auto cell_connect = mesh.cone(ent.elem);
+        auto facet = cell_connect[ent.side];
+        sset.push_back(facet);
+    }
+    return sset;
+}
+
 } // namespace krado::utils
