@@ -196,22 +196,6 @@ append(std::vector<side_set_entry_t> & dest, const std::vector<side_set_entry_t>
     dest.insert(dest.end(), src.begin(), src.end());
 }
 
-void
-reconstruct_from_side_set(const Mesh & mesh,
-                          std::map<marker_t, std::vector<gidx_t>> & sets,
-                          const std::map<marker_t, std::vector<side_set_entry_t>> & side_sets)
-{
-    for (auto & [id, sset] : side_sets) {
-        sets[id] = {};
-        sets[id].reserve(sset.size());
-        for (auto & ent : sset) {
-            auto cell_connect = mesh.cone(ent.elem);
-            auto facet = cell_connect[ent.side];
-            sets[id].push_back(facet);
-        }
-    }
-}
-
 } // namespace
 
 Mesh::Mesh() {}
@@ -401,11 +385,13 @@ Mesh::add(const Mesh & other)
 
     // reconstruct face sets
     this->face_sets_.clear();
-    reconstruct_from_side_set(*this, this->face_sets_, face_side_sets);
+    for (auto & [id, sset] : face_side_sets)
+        this->face_sets_[id] = utils::set_from_side_set(*this, sset);
 
     // reconstruct edge sets
     this->edge_sets_.clear();
-    reconstruct_from_side_set(*this, this->edge_sets_, edge_side_sets);
+    for (auto & [id, sset] : edge_side_sets)
+        this->edge_sets_[id] = utils::set_from_side_set(*this, sset);
 
     return *this;
 }
