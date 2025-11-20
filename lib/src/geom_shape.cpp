@@ -86,6 +86,18 @@ GeomShape::material() const
     return this->material_name_;
 }
 
+Color
+GeomShape::color() const
+{
+    return this->clr_;
+}
+
+void
+GeomShape::set_color(const Color & color)
+{
+    this->clr_ = color;
+}
+
 double
 GeomShape::density() const
 {
