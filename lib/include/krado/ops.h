@@ -49,7 +49,7 @@ class Mesh;
 /// Compute volume of blocks
 ///
 /// @param mesh Mesh to compute volumes of blocks
-/// @return Computed
+/// @return Computed volumes
 std::map<marker_t, double> compute_volume(const Mesh & mesh);
 
 /// Fuse 2 shapes
