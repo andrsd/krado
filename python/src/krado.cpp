@@ -521,6 +521,7 @@ PYBIND11_MODULE(krado, m)
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
 
     m.def("compute_volume", &compute_volume);
+    m.def("combine", &combine);
 
     m.def("tetrahedralize", &tetrahedralize);
 

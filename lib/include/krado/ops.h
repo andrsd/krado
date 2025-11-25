@@ -52,6 +52,12 @@ class Mesh;
 /// @return Computed volumes
 std::map<marker_t, double> compute_volume(const Mesh & mesh);
 
+/// Combine mesh part into one large mesh
+///
+/// @param parts Mesh parts to combine
+/// @return Resulting mesh
+Mesh combine(const std::vector<Mesh> & parts);
+
 /// Fuse 2 shapes
 ///
 /// @param shape Shape

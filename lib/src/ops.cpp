@@ -201,6 +201,80 @@ compute_volume(const Mesh & mesh)
     }
 }
 
+Mesh
+combine(const std::vector<Mesh> & parts)
+{
+    auto n_total_elems = 0;
+    auto n_total_points = 0;
+    // how much we shift element and point indices per mesh part
+    std::vector<std::size_t> elem_shift;
+    std::vector<std::size_t> pts_shift;
+    for (auto & p : parts) {
+        elem_shift.push_back(n_total_elems);
+        pts_shift.push_back(n_total_points);
+        n_total_elems += p.num_elements();
+        n_total_points += p.num_points();
+    }
+
+    // combine points and elements
+    std::vector<Point> points;
+    std::vector<Element> elements;
+    points.reserve(n_total_points);
+    elements.reserve(n_total_elems);
+    for (auto & p : parts) {
+        points.insert(points.end(), p.points().begin(), p.points().end());
+        elements.insert(elements.end(), p.elements().begin(), p.elements().end());
+    }
+    // shift points
+    for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {
+        auto & p = parts[i];
+        for (std::size_t j = 0; j < p.num_elements(); ++j, ++k) {
+            auto & elem = elements[k];
+            auto ids = elem.ids();
+            for (auto & id : ids)
+                id += pts_shift[i];
+            elem.set_ids(ids);
+        }
+    }
+
+    // merge cell sets
+    std::unordered_map<marker_t, std::size_t> cell_sets_size;
+    for (auto & p : parts) {
+        for (auto id : p.cell_set_ids()) {
+            auto & cell_set = p.cell_set(id);
+            auto it = cell_sets_size.find(id);
+            if (it == cell_sets_size.end())
+                cell_sets_size[id] = cell_set.size();
+            else
+                cell_sets_size[id] += cell_set.size();
+        }
+    }
+    std::map<marker_t, std::string> cell_set_names;
+    std::map<marker_t, std::vector<gidx_t>> cell_sets;
+    for (auto & [id, size] : cell_sets_size)
+        cell_sets[id].reserve(size);
+    for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {
+        auto & p = parts[i];
+        for (auto & id : p.cell_set_ids()) {
+            auto name = p.cell_set_name(id);
+            if (cell_set_names.find(id) == cell_set_names.end())
+                cell_set_names[id] = p.cell_set_name(id);
+
+            auto & cell_set = p.cell_set(id);
+            for (auto & c : cell_set)
+                cell_sets[id].push_back(c + elem_shift[i]);
+        }
+    }
+
+    Mesh mesh(points, elements);
+    mesh.set_up();
+    for (auto & [id, name] : cell_set_names) {
+        mesh.set_cell_set(id, cell_sets[id]);
+        mesh.set_cell_set_name(id, name);
+    }
+    return mesh;
+}
+
 GeomShape
 fuse(const GeomShape & shape, const GeomShape & tool, bool simplify)
 {

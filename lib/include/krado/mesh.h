@@ -39,6 +39,16 @@ public:
     /// @param elements Elements
     Mesh(std::vector<Point> points, std::vector<Element> elements);
 
+    /// Get number of points
+    ///
+    /// @return Number of points
+    std::size_t num_points() const;
+
+    /// Get number of elements
+    ///
+    /// @return Number of elements
+    std::size_t num_elements() const;
+
     /// Get mesh points
     ///
     /// @return Mesh points
