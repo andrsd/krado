@@ -9,6 +9,7 @@
 #include "krado/utils.h"
 #include "krado/vector.h"
 #include "krado/log.h"
+#include "krado/scope_timer.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <iostream>
@@ -408,7 +409,7 @@ Mesh::add(const Mesh & other)
 Mesh &
 Mesh::remove_duplicate_points(double tolerance)
 {
-    Log::info("Removing duplicates: tolerance={}", tolerance);
+    ScopeTimer timer("Removing duplicates: tolerance={}", tolerance);
 
     PointCloud cloud(*this);
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
@@ -735,7 +736,7 @@ Mesh::set_up()
 void
 Mesh::build_hasse_diagram()
 {
-    Log::debug("Building Hasse diagram");
+    ScopeTimer timer(9, "Building Hasse diagram");
 
     auto n_cells = this->elems_.size();
     auto n_pnts = this->pnts_.size();

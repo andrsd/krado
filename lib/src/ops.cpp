@@ -10,6 +10,7 @@
 #include "krado/exception.h"
 #include "krado/log.h"
 #include "krado/mesh.h"
+#include "krado/scope_timer.h"
 #include "krado/types.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
@@ -204,6 +205,8 @@ compute_volume(const Mesh & mesh)
 Mesh
 combine(const std::vector<Mesh> & parts)
 {
+    ScopeTimer timer(2, "Combining meshes");
+
     auto n_total_elems = 0;
     auto n_total_points = 0;
     // how much we shift element and point indices per mesh part

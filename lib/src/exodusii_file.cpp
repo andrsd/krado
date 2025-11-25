@@ -10,6 +10,7 @@
 #include "krado/types.h"
 #include "krado/utils.h"
 #include "krado/log.h"
+#include "krado/scope_timer.h"
 #include "fmt/format.h"
 #include "fmt/chrono.h"
 
@@ -239,7 +240,7 @@ ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn_(file_name) {}
 Mesh
 ExodusIIFile::read()
 {
-    Log::info("Reading ExodusII file '{}'", this->fn_);
+    ScopeTimer timer("Reading ExodusII file '{}'", this->fn_);
 
     this->exo_.open(this->fn_);
     this->exo_.init();
@@ -412,7 +413,7 @@ ExodusIIFile::read_node_sets()
 void
 ExodusIIFile::write(const Mesh & mesh)
 {
-    Log::info("Writing ExodusII file '{}'", this->fn_);
+    ScopeTimer timer("Writing ExodusII file '{}'", this->fn_);
 
     this->exo_.create(this->fn_);
     this->dim_ = determine_spatial_dim(mesh);
