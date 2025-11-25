@@ -75,6 +75,8 @@ public:
     [[nodiscard]] static Element Pyramid5(const std::array<gidx_t, 5> & ids);
     [[nodiscard]] static Element Prism6(const std::array<gidx_t, 6> & ids);
     [[nodiscard]] static Element Hex8(const std::array<gidx_t, 8> & ids);
+
+    friend class Mesh;
 };
 
 class Line2 {

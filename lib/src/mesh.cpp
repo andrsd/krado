@@ -284,7 +284,7 @@ Mesh::transformed(const Trsf & tr) const
     mesh.edge_set_names_ = this->edge_set_names_;
     mesh.vertex_sets_ = this->vertex_sets_;
     mesh.vertex_set_names_ = this->vertex_set_names_;
-    mesh.set_up();
+    mesh.hasse_ = this->hasse_;
     return mesh;
 }
 
@@ -304,13 +304,11 @@ Mesh::add(const Mesh & other)
     // merge points
     this->pnts_.insert(this->pnts_.end(), other.pnts_.begin(), other.pnts_.end());
     // merge elements
-    this->elems_.reserve(this->elems_.size() + other.elems_.size());
-    for (auto & elem : other.elems_) {
-        auto ids = elem.ids();
+    this->elems_.insert(this->elems_.end(), other.elems_.begin(), other.elems_.end());
+    for (std::size_t i = n_elem_ofst; i < this->elems_.size(); ++i) {
+        auto & ids = this->elems_[i].vtx_id_;
         for (auto & id : ids)
             id += n_pt_ofst;
-        auto new_elem = Element(elem.type(), ids);
-        this->elems_.emplace_back(new_elem);
     }
 
     // merge cell sets
@@ -354,7 +352,6 @@ Mesh::add(const Mesh & other)
                           name);
         }
     }
-
     // merge edge sets
     std::map<marker_t, std::vector<side_set_entry_t>> edge_side_sets;
     {
@@ -405,10 +402,9 @@ Mesh::remove_duplicate_points(double tolerance)
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
     this->pnts_ = unique_points;
     for (auto & elem : this->elems_) {
-        auto ids = elem.ids();
+        auto & ids = elem.vtx_id_;
         for (auto & id : ids)
             id = point_map[id];
-        elem.set_ids(ids);
     }
 
     return *this;
@@ -431,7 +427,7 @@ Mesh::duplicate() const
     dup.face_sets_ = this->face_sets_;
     dup.edge_sets_ = this->edge_sets_;
     dup.vertex_sets_ = this->vertex_sets_;
-    dup.set_up();
+    dup.hasse_ = this->hasse_;
     return dup;
 }
 
