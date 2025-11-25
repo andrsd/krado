@@ -125,7 +125,7 @@ public:
     }
 
     void
-    print()
+    print() const
     {
         for (std::size_t i = 0; i < num_vertices(this->grph_); ++i) {
             std::cout << "Node " << i << " (): ";
