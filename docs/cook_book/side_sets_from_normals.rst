@@ -1,5 +1,5 @@
-Create Side Sets from Outward Normals
-=====================================
+Create Edge/Face Sets from Outward Normals
+==========================================
 
 For some meshes, side sets can be generated based on **outward normals**,
 especially when the boundary sides have well-defined directions.
@@ -23,15 +23,15 @@ Once the buckets are created, you can register each one as a side set by calling
 
 .. code-block::
 
-   Mesh.set_side_set(id, edges)
+   Mesh.set_edge_set(id, edges)
 
 Here, ``id`` must be a **positive integer**.
 
-To give the side set a meaningful name, use:
+To give the edge set a meaningful name, use:
 
 .. code-block::
 
-   Mesh.set_side_set_name(id, name)
+   Mesh.set_edge_set_name(id, name)
 
 This links the numeric ID to a user-friendly label, making your mesh definition
 easier to read and maintain.
@@ -40,7 +40,8 @@ easier to read and maintain.
 
    This capability is also supported in three dimensions.
    Use ``Mesh.boundary_faces`` instead of ``Mesh.boundary_edges``, and ensure that
-   outward normals have **three components** instead of two.
+   outward normals have **three components** instead of two. Then, use ``set_face_set``
+   and ``set_face_set_name`` to set the face set and its name.
 
 Example:
 
@@ -76,7 +77,7 @@ Example:
    for (idx, name) in enumerate(face_sets):
        # pick some ID
        id = 1000 + idx
-       mesh.set_side_set(id, face_sets[name])
-       mesh.set_side_set_name(id, name)
+       mesh.set_edge_set(id, face_sets[name])
+       mesh.set_edge_set_name(id, name)
 
    # export mesh here

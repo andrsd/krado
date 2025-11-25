@@ -75,13 +75,15 @@ public:
     [[nodiscard]] static Element Pyramid5(const std::array<gidx_t, 5> & ids);
     [[nodiscard]] static Element Prism6(const std::array<gidx_t, 6> & ids);
     [[nodiscard]] static Element Hex8(const std::array<gidx_t, 8> & ids);
+
+    friend class Mesh;
 };
 
 class Line2 {
 public:
     static constexpr ElementType TYPE = ElementType::LINE2;
     static constexpr int N_VERTICES = 2;
-    static const std::vector<int> EDGE_VERTICES;
+    static const std::array<int, 2> EDGE_VERTICES;
 };
 
 class Tri3 {
@@ -90,7 +92,7 @@ public:
     static constexpr int N_VERTICES = 3;
     static constexpr int N_EDGES = 3;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
 };
 
 class Quad4 {
@@ -99,7 +101,7 @@ public:
     static constexpr int N_VERTICES = 4;
     static constexpr int N_EDGES = 4;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
 };
 
 class Tetra4 {
@@ -109,7 +111,7 @@ public:
     static constexpr int N_EDGES = 6;
     static constexpr int N_FACES = 4;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };
@@ -121,7 +123,7 @@ public:
     static constexpr int N_EDGES = 8;
     static constexpr int N_FACES = 5;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };
@@ -133,7 +135,7 @@ public:
     static constexpr int N_EDGES = 9;
     static constexpr int N_FACES = 5;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };
@@ -145,7 +147,7 @@ public:
     static constexpr int N_EDGES = 12;
     static constexpr int N_FACES = 6;
     static const std::vector<int> EDGES;
-    static const std::vector<std::vector<int>> EDGE_VERTICES;
+    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
     static const std::vector<std::vector<int>> FACE_VERTICES;
 };

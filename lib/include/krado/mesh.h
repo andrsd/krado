@@ -12,27 +12,10 @@
 #include "krado/hasse_diagram.h"
 #include "krado/types.h"
 #include "krado/utils.h"
-#include <cstdint>
 #include <map>
+#include <unordered_map>
 
 namespace krado {
-
-/// Side set entry
-struct side_set_entry_t {
-    /// Element ID
-    gidx_t elem;
-    /// Local side number
-    std::size_t side;
-
-    side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
-};
-
-/// Equality operator for side set entry
-inline bool
-operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
-{
-    return lhs.elem == rhs.elem && lhs.side == rhs.side;
-}
 
 /// Class representing a mesh
 ///
@@ -258,47 +241,6 @@ public:
     /// @return Reference to this mesh
     Mesh & remove_edge_sets();
 
-    /// Set side set name
-    ///
-    /// @param id Side set ID
-    /// @param name Side set name
-    /// @return Reference to this mesh
-    Mesh & set_side_set_name(marker_t id, const std::string & name);
-
-    /// Get side set name
-    ///
-    /// @param id Side set ID
-    /// @return Side set name
-    [[nodiscard]] std::string side_set_name(marker_t id) const;
-
-    /// Get side set IDs
-    [[nodiscard]] std::vector<marker_t> side_set_ids() const;
-
-    /// Get side set
-    ///
-    /// @param id Side set ID
-    /// @return Side set
-    [[nodiscard]] const std::vector<side_set_entry_t> & side_set(marker_t id) const;
-
-    /// Set side set
-    ///
-    /// @param id Side set ID
-    /// @param elem_ids Element IDs
-    /// @return Reference to this mesh
-    Mesh & set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids);
-
-    /// Set side set
-    ///
-    /// @param id Side set ID
-    /// @param side_set_entries Side set entries
-    /// @return Reference to this mesh
-    Mesh & set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries);
-
-    /// Remove side sets
-    ///
-    /// @return Reference to this mesh
-    Mesh & remove_side_sets();
-
     /// Set vertex set name
     ///
     /// @param id Vertex set ID
@@ -341,25 +283,25 @@ public:
     /// @return Reference to this mesh
     Mesh & remap_block_ids(const std::map<marker_t, marker_t> & block_map);
 
-    /// Get mesh vertex IDs
+    /// Get mesh vertex ID range
     ///
-    /// @return Mesh point IDs
-    [[nodiscard]] const Range & vertex_ids() const;
+    /// @return Mesh point ID range
+    [[nodiscard]] const Range & vertex_range() const;
 
-    /// Get mesh edge IDs
+    /// Get mesh edge ID range
     ///
-    /// @return Mesh edge IDs
-    [[nodiscard]] const Range & edge_ids() const;
+    /// @return Mesh edge ID range
+    [[nodiscard]] const Range & edge_range() const;
 
-    /// Get mesh face IDs
+    /// Get mesh face ID range
     ///
-    /// @return Mesh face IDs
-    [[nodiscard]] const Range & face_ids() const;
+    /// @return Mesh face ID range
+    [[nodiscard]] const Range & face_range() const;
 
-    /// Get mesh cell IDs
+    /// Get mesh cell ID range
     ///
-    /// @return Mesh cell IDs
-    [[nodiscard]] const Range & cell_ids() const;
+    /// @return Mesh cell ID range
+    [[nodiscard]] const Range & cell_range() const;
 
     /// Get support of a mesh node
     ///
@@ -412,7 +354,7 @@ private:
     void build_hasse_diagram();
 
     void
-    hasse_add_edge(gidx_t parent_node_id, const std::vector<gidx_t> & edge_connect)
+    hasse_add_edge(gidx_t parent_node_id, const std::array<gidx_t, 2> & edge_connect)
     {
         auto k = utils::key(edge_connect);
         if (this->key_map_.find(k) == this->key_map_.end()) {
@@ -463,7 +405,7 @@ private:
             for (std::size_t j = 0; j < ELEMENT_TYPE::FACE_EDGES[i].size(); ++j) {
                 auto edge = ELEMENT_TYPE::FACE_EDGES[i][j];
                 auto edge_connect =
-                    utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
+                    utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
                 hasse_add_edge(face_node_id, edge_connect);
             }
         }
@@ -478,7 +420,7 @@ private:
 
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
-            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             hasse_add_edge(elem_node_id, edge_connect);
         }
     }
@@ -489,7 +431,7 @@ private:
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
-            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             auto edge_node_id = this->key_map_[utils::key(edge_connect)];
             for (auto & vtx : edge_connect) {
                 auto vtx_id = utils::key(vtx);
@@ -524,15 +466,10 @@ private:
     /// Vertex sets
     std::map<marker_t, std::vector<gidx_t>> vertex_sets_;
 
-    /// Side set names
-    std::map<marker_t, std::string> side_set_names_;
-    /// Side sets
-    std::map<marker_t, std::vector<side_set_entry_t>> side_sets_;
-
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;
     /// Map of keys to node IDs
-    std::map<std::size_t, gidx_t> key_map_;
+    std::unordered_map<std::size_t, gidx_t> key_map_;
 };
 
 } // namespace krado

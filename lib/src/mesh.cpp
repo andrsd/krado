@@ -5,12 +5,14 @@
 #include "krado/bounding_box_3d.h"
 #include "krado/element.h"
 #include "krado/hasse_diagram.h"
+#include "krado/types.h"
 #include "krado/utils.h"
 #include "krado/vector.h"
 #include "krado/log.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <iostream>
+#include <unordered_map>
 
 namespace krado {
 
@@ -175,6 +177,25 @@ boundary_entities(const Mesh & mesh, const Range & range)
     return bnd_ents;
 }
 
+void
+expand_size(std::unordered_map<marker_t, std::size_t> & sizes,
+            const std::map<marker_t, std::vector<gidx_t>> & face_sets)
+{
+    for (const auto & [id, fs] : face_sets) {
+        auto it = sizes.find(id);
+        if (it == sizes.end())
+            sizes[id] = fs.size();
+        else
+            sizes[id] += fs.size();
+    }
+}
+
+void
+append(std::vector<side_set_entry_t> & dest, const std::vector<side_set_entry_t> & src)
+{
+    dest.insert(dest.end(), src.begin(), src.end());
+}
+
 } // namespace
 
 Mesh::Mesh() {}
@@ -263,8 +284,7 @@ Mesh::transformed(const Trsf & tr) const
     mesh.edge_set_names_ = this->edge_set_names_;
     mesh.vertex_sets_ = this->vertex_sets_;
     mesh.vertex_set_names_ = this->vertex_set_names_;
-    mesh.side_sets_ = this->side_sets_;
-    mesh.side_set_names_ = this->side_set_names_;
+    mesh.hasse_ = this->hasse_;
     return mesh;
 }
 
@@ -284,12 +304,11 @@ Mesh::add(const Mesh & other)
     // merge points
     this->pnts_.insert(this->pnts_.end(), other.pnts_.begin(), other.pnts_.end());
     // merge elements
-    for (auto & elem : other.elems_) {
-        auto ids = elem.ids();
+    this->elems_.insert(this->elems_.end(), other.elems_.begin(), other.elems_.end());
+    for (std::size_t i = n_elem_ofst; i < this->elems_.size(); ++i) {
+        auto & ids = this->elems_[i].vtx_id_;
         for (auto & id : ids)
             id += n_pt_ofst;
-        auto new_elem = Element(elem.type(), ids);
-        this->elems_.emplace_back(new_elem);
     }
 
     // merge cell sets
@@ -308,26 +327,68 @@ Mesh::add(const Mesh & other)
                       name);
     }
 
-    // merge side sets
-    for (auto & id : other.side_set_ids()) {
-        auto & ss = other.side_set(id);
-        for (auto & entry : ss) {
-            auto cell_id = entry.elem + n_elem_ofst;
-            this->side_sets_[id].emplace_back(cell_id, entry.side);
-        }
+    // merge face sets
+    std::map<marker_t, std::vector<side_set_entry_t>> face_side_sets;
+    {
+        std::unordered_map<marker_t, std::size_t> face_side_sets_size;
+        expand_size(face_side_sets_size, this->face_sets_);
+        expand_size(face_side_sets_size, other.face_sets_);
 
-        auto name = other.side_set_name(id);
-        auto my_name = this->side_set_names_[id];
-        if (my_name.empty())
-            this->side_set_names_[id] = name;
-        else if (name != my_name)
-            Log::warn("Side set with id={} already exists, but with a different name '{}'",
-                      id,
-                      name);
+        for (auto & [id, n] : face_side_sets_size)
+            face_side_sets[id].reserve(n);
+        for (auto & [id, fs] : this->face_sets_)
+            append(face_side_sets[id], utils::create_side_set(*this, fs));
+        for (auto & [id, fs] : other.face_sets_)
+            append(face_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
+
+        for (auto & id : other.face_set_ids()) {
+            auto name = other.face_set_name(id);
+            auto my_name = this->face_set_names_[id];
+            if (my_name.empty())
+                this->face_set_names_[id] = name;
+            else if (name != my_name)
+                Log::warn("Face set with id={} already exists, but with a different name '{}'",
+                          id,
+                          name);
+        }
+    }
+    // merge edge sets
+    std::map<marker_t, std::vector<side_set_entry_t>> edge_side_sets;
+    {
+        std::unordered_map<marker_t, std::size_t> edge_side_sets_size;
+        expand_size(edge_side_sets_size, this->edge_sets_);
+        expand_size(edge_side_sets_size, other.edge_sets_);
+
+        for (auto & [id, n] : edge_side_sets_size)
+            edge_side_sets[id].reserve(n);
+        for (auto & [id, fs] : this->edge_sets_)
+            append(edge_side_sets[id], utils::create_side_set(*this, fs));
+        for (auto & [id, fs] : other.edge_sets_)
+            append(edge_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
+
+        for (auto & id : other.edge_set_ids()) {
+            auto name = other.edge_set_name(id);
+            auto my_name = this->edge_set_names_[id];
+            if (my_name.empty())
+                this->edge_set_names_[id] = name;
+            else if (name != my_name)
+                Log::warn("Edge set with id={} already exists, but with a different name '{}'",
+                          id,
+                          name);
+        }
     }
 
-    // TODO: merge face sets
-    // TODO: merge edge sets
+    set_up();
+
+    // reconstruct face sets
+    this->face_sets_.clear();
+    for (auto & [id, sset] : face_side_sets)
+        this->face_sets_[id] = utils::set_from_side_set(*this, sset);
+
+    // reconstruct edge sets
+    this->edge_sets_.clear();
+    for (auto & [id, sset] : edge_side_sets)
+        this->edge_sets_[id] = utils::set_from_side_set(*this, sset);
 
     return *this;
 }
@@ -341,10 +402,9 @@ Mesh::remove_duplicate_points(double tolerance)
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
     this->pnts_ = unique_points;
     for (auto & elem : this->elems_) {
-        auto ids = elem.ids();
+        auto & ids = elem.vtx_id_;
         for (auto & id : ids)
             id = point_map[id];
-        elem.set_ids(ids);
     }
 
     return *this;
@@ -367,7 +427,7 @@ Mesh::duplicate() const
     dup.face_sets_ = this->face_sets_;
     dup.edge_sets_ = this->edge_sets_;
     dup.vertex_sets_ = this->vertex_sets_;
-    dup.side_sets_ = this->side_sets_;
+    dup.hasse_ = this->hasse_;
     return dup;
 }
 
@@ -522,75 +582,6 @@ Mesh::remove_edge_sets()
 }
 
 Mesh &
-Mesh::set_side_set_name(marker_t id, const std::string & name)
-{
-    this->side_set_names_[id] = name;
-    return *this;
-}
-
-std::string
-Mesh::side_set_name(marker_t id) const
-{
-    try {
-        return this->side_set_names_.at(id);
-    }
-    catch (const std::out_of_range & e) {
-        return std::string("");
-    }
-}
-
-std::vector<marker_t>
-Mesh::side_set_ids() const
-{
-    return utils::map_keys(this->side_sets_);
-}
-
-const std::vector<side_set_entry_t> &
-Mesh::side_set(marker_t id) const
-{
-    try {
-        return this->side_sets_.at(id);
-    }
-    catch (const std::out_of_range & e) {
-        throw Exception("Side set ID {} does not exist", id);
-    }
-}
-
-Mesh &
-Mesh::set_side_set(marker_t id, const std::vector<gidx_t> & elem_ids)
-{
-    std::vector<side_set_entry_t> side_set;
-    for (auto & eid : elem_ids) {
-        auto supp = support(eid);
-        if (supp.size() == 2)
-            throw Exception("Internal side sets are not supported, yet");
-        if (supp.size() == 0)
-            throw Exception("Edge {} has no support", eid);
-        auto cell = supp[0];
-        auto cell_connect = cone(cell);
-        auto side = utils::index_of(cell_connect, eid);
-        side_set.emplace_back(cell, side);
-    }
-    this->side_sets_[id] = side_set;
-    return *this;
-}
-
-Mesh &
-Mesh::set_side_set(marker_t id, const std::vector<side_set_entry_t> & side_set_entries)
-{
-    this->side_sets_[id] = side_set_entries;
-    return *this;
-}
-
-Mesh &
-Mesh::remove_side_sets()
-{
-    this->side_sets_.clear();
-    this->side_set_names_.clear();
-    return *this;
-}
-
-Mesh &
 Mesh::set_vertex_set_name(marker_t id, const std::string & name)
 {
     this->vertex_set_names_[id] = name;
@@ -659,25 +650,25 @@ Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
 }
 
 const Range &
-Mesh::vertex_ids() const
+Mesh::vertex_range() const
 {
     return this->hasse_.vertices();
 }
 
 const Range &
-Mesh::edge_ids() const
+Mesh::edge_range() const
 {
     return this->hasse_.edges();
 }
 
 const Range &
-Mesh::face_ids() const
+Mesh::face_range() const
 {
     return this->hasse_.faces();
 }
 
 const Range &
-Mesh::cell_ids() const
+Mesh::cell_range() const
 {
     return this->hasse_.cells();
 }
@@ -724,7 +715,9 @@ Mesh::element_type(gidx_t index) const
 void
 Mesh::set_up()
 {
+    this->hasse_.clear();
     build_hasse_diagram();
+    this->key_map_.clear();
 }
 
 void
@@ -733,6 +726,11 @@ Mesh::build_hasse_diagram()
     Log::debug("Building Hasse diagram");
 
     auto n_cells = this->elems_.size();
+    auto n_pnts = this->pnts_.size();
+    this->hasse_.reserve(n_cells, n_pnts);
+    this->key_map_.clear();
+    this->key_map_.reserve(3 * n_cells + n_pnts);
+
     // Add Hasse nodes for cells
     for (std::size_t i = 0; i < n_cells; ++i) {
         auto id = utils::key(-(i + 1));
@@ -744,7 +742,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add Hasse nodes for points
-    for (std::size_t i = 0; i < this->pnts_.size(); ++i) {
+    for (std::size_t i = 0; i < n_pnts; ++i) {
         auto vtx_id = utils::key(i);
         if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
             gidx_t vtx_node_id = this->hasse_.size();
@@ -793,19 +791,33 @@ Mesh::build_hasse_diagram()
             hasse_add_face_edges<Hex8>(i, cell);
             hasse_add_edge_vertices<Hex8>(i, cell);
         }
+        else if (cell.type() == ElementType::LINE2) {
+            auto elem_node_id = i;
+            const auto & connect = cell.ids();
+            for (int j = 0; j < Line2::N_VERTICES; ++j) {
+                auto vtx = connect[Line2::EDGE_VERTICES[j]];
+                auto vtx_id = utils::key(vtx);
+                if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
+                    auto vtx_node_id = this->key_map_[vtx_id];
+                    this->hasse_.add_edge(elem_node_id, vtx_node_id);
+                }
+                else
+                    throw Exception("Vertex not found in key map");
+            }
+        }
     }
 }
 
 std::vector<gidx_t>
 Mesh::boundary_edges() const
 {
-    return boundary_entities(*this, edge_ids());
+    return boundary_entities(*this, edge_range());
 }
 
 std::vector<gidx_t>
 Mesh::boundary_faces() const
 {
-    return boundary_entities(*this, face_ids());
+    return boundary_entities(*this, face_range());
 }
 
 Point

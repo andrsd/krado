@@ -8,20 +8,20 @@
 
 namespace krado {
 
-const std::vector<int> Line2::EDGE_VERTICES = { 0, 1 };
+const std::array<int, 2> Line2::EDGE_VERTICES = { 0, 1 };
 
 const std::vector<int> Tri3::EDGES = { 0, 1, 2 };
-const std::vector<std::vector<int>> Tri3::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
+const std::vector<std::array<int, 2>> Tri3::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
 
 const std::vector<int> Quad4::EDGES = { 0, 1, 2, 3 };
-const std::vector<std::vector<int>> Quad4::EDGE_VERTICES = { { 0, 1 },
-                                                             { 1, 2 },
-                                                             { 2, 3 },
-                                                             { 3, 0 } };
+const std::vector<std::array<int, 2>> Quad4::EDGE_VERTICES = { { 0, 1 },
+                                                               { 1, 2 },
+                                                               { 2, 3 },
+                                                               { 3, 0 } };
 
 const std::vector<int> Tetra4::EDGES = { 0, 1, 2, 3, 4, 5 };
-const std::vector<std::vector<int>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
-                                                              { 0, 3 }, { 1, 3 }, { 2, 3 } };
+const std::vector<std::array<int, 2>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
+                                                                { 0, 3 }, { 1, 3 }, { 2, 3 } };
 const std::vector<std::vector<int>> Tetra4::FACE_EDGES = { { 0, 1, 2 },
                                                            { 0, 4, 3 },
                                                            { 1, 5, 4 },
@@ -32,9 +32,9 @@ const std::vector<std::vector<int>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
                                                               { 2, 0, 3 } };
 
 const std::vector<int> Pyramid5::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7 };
-const std::vector<std::vector<int>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
-                                                                { 3, 0 }, { 0, 4 }, { 1, 4 },
-                                                                { 2, 4 }, { 3, 4 } };
+const std::vector<std::array<int, 2>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
+                                                                  { 3, 0 }, { 0, 4 }, { 1, 4 },
+                                                                  { 2, 4 }, { 3, 4 } };
 const std::vector<std::vector<int>> Pyramid5::FACE_EDGES = { { 0, 1, 2, 3 },
                                                              { 0, 3, 4 },
                                                              { 1, 6, 5 },
@@ -47,9 +47,9 @@ const std::vector<std::vector<int>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
                                                                 { 3, 0, 4 } };
 
 const std::vector<int> Prism6::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-const std::vector<std::vector<int>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
-                                                              { 0, 3 }, { 1, 4 }, { 2, 5 },
-                                                              { 3, 4 }, { 4, 5 }, { 5, 3 } };
+const std::vector<std::array<int, 2>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
+                                                                { 0, 3 }, { 1, 4 }, { 2, 5 },
+                                                                { 3, 4 }, { 4, 5 }, { 5, 3 } };
 const std::vector<std::vector<int>> Prism6::FACE_EDGES = { { 2, 1, 0 },
                                                            { 0, 4, 6, 3 },
                                                            { 1, 5, 7, 4 },
@@ -62,10 +62,10 @@ const std::vector<std::vector<int>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
                                                               { 3, 4, 5 } };
 
 const std::vector<int> Hex8::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-const std::vector<std::vector<int>> Hex8::EDGE_VERTICES = {
-    { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 0, 4 }, { 1, 5 },
-    { 2, 6 }, { 3, 7 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }
-};
+const std::vector<std::array<int, 2>> Hex8::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
+                                                              { 3, 0 }, { 0, 4 }, { 1, 5 },
+                                                              { 2, 6 }, { 3, 7 }, { 4, 5 },
+                                                              { 5, 6 }, { 6, 7 }, { 7, 4 } };
 const std::vector<std::vector<int>> Hex8::FACE_EDGES = { { 0, 5, 8, 4 },  { 2, 7, 10, 6 },
                                                          { 3, 4, 11, 7 }, { 1, 6, 9, 5 },
                                                          { 3, 2, 1, 0 },  { 8, 9, 10, 11 } };

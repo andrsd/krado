@@ -6,6 +6,7 @@
 #include "krado/range.h"
 #include "boost/graph/adjacency_list.hpp"
 #include "boost/graph/graph_traits.hpp"
+#include <cstddef>
 #include <limits>
 #include <set>
 #include <map>
@@ -124,7 +125,7 @@ public:
     }
 
     void
-    print()
+    print() const
     {
         for (std::size_t i = 0; i < num_vertices(this->grph_); ++i) {
             std::cout << "Node " << i << " (): ";
@@ -139,6 +140,12 @@ public:
                 std::cout << v << " ";
             std::cout << std::endl;
         }
+    }
+
+    void
+    reserve(std::size_t n_cells, std::size_t n_pts)
+    {
+        this->grph_.m_vertices.reserve(3 * n_cells + n_pts);
     }
 
 private:

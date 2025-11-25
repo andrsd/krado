@@ -5,6 +5,7 @@
 
 #include "krado/types.h"
 #include "krado/uv_param.h"
+#include "boost/functional/hash.hpp"
 #include <cstdint>
 #include <string>
 #include <algorithm>
@@ -17,6 +18,7 @@ class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
+class Mesh;
 } // namespace krado
 
 namespace krado::utils {
@@ -73,11 +75,46 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 [[nodiscard]] std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
                                               const std::vector<int> & idxs);
 
+[[nodiscard]] inline std::array<gidx_t, 2>
+edge_connect(const std::vector<gidx_t> & element_connect, const std::array<int, 2> & idxs)
+{
+    std::array<gidx_t, 2> econ;
+    econ[0] = element_connect[idxs[0]];
+    econ[1] = element_connect[idxs[1]];
+    return econ;
+}
+
 /// Create a key from the supplied index. Use this to construct keys for cells
 ///
 /// @param id The index to create a key from
 /// @return The key
-[[nodiscard]] std::size_t key(const std::size_t id);
+[[nodiscard]] inline std::size_t
+key(const std::size_t id)
+{
+    std::size_t hash_value = 0;
+    boost::hash_combine(hash_value, id);
+    return hash_value;
+}
+
+[[nodiscard]] inline std::size_t
+key(const std::array<gidx_t, 2> & idxs)
+{
+    std::array<gidx_t, 2> vertices;
+    if (idxs[0] <= idxs[1]) {
+        vertices[0] = idxs[0];
+        vertices[1] = idxs[1];
+    }
+    else {
+        vertices[0] = idxs[1];
+        vertices[1] = idxs[0];
+    }
+
+    std::size_t hash_value = 0;
+    boost::hash_combine(hash_value, vertices[0]);
+    boost::hash_combine(hash_value, vertices[1]);
+
+    return hash_value;
+}
 
 /// Create a key from the supplied indices. Use this to construct keys for edges and faces
 ///
@@ -188,5 +225,21 @@ unreachable()
     __builtin_unreachable();
 #endif
 }
+
+/// Create "side set"
+///
+/// @param mesh Mesh object
+/// @param facets Facets/edges
+/// @return Side set
+std::vector<side_set_entry_t>
+create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0);
+
+/// Create an edge/face set from a side set
+///
+/// @param mesh Mesh object
+/// @param side_set Side set
+/// @return Edge/face set
+std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
+                                      const std::vector<side_set_entry_t> & side_set);
 
 } // namespace krado::utils
