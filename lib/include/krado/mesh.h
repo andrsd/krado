@@ -44,6 +44,11 @@ public:
     /// @return Number of points
     std::size_t num_points() const;
 
+    /// Get number of elements
+    ///
+    /// @return Number of elements
+    std::size_t num_elements() const;
+
     /// Get mesh points
     ///
     /// @return Mesh points

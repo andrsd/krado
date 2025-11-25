@@ -208,6 +208,12 @@ Mesh::num_points() const
     return this->pnts_.size();
 }
 
+std::size_t
+Mesh::num_elements() const
+{
+    return this->elems_.size();
+}
+
 const std::vector<Point> &
 Mesh::points() const
 {
