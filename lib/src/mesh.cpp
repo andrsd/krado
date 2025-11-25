@@ -790,6 +790,20 @@ Mesh::build_hasse_diagram()
             hasse_add_face_edges<Hex8>(i, cell);
             hasse_add_edge_vertices<Hex8>(i, cell);
         }
+        else if (cell.type() == ElementType::LINE2) {
+            auto elem_node_id = i;
+            const auto & connect = cell.ids();
+            for (int j = 0; j < Line2::N_VERTICES; ++j) {
+                auto vtx = connect[Line2::EDGE_VERTICES[j]];
+                auto vtx_id = utils::key(vtx);
+                if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
+                    auto vtx_node_id = this->key_map_[vtx_id];
+                    this->hasse_.add_edge(elem_node_id, vtx_node_id);
+                }
+                else
+                    throw Exception("Vertex not found in key map");
+            }
+        }
     }
 }
 
