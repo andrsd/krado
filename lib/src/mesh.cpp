@@ -202,6 +202,12 @@ Mesh::Mesh() {}
 
 Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) : pnts_(points), elems_(elems) {}
 
+std::size_t
+Mesh::num_points() const
+{
+    return this->pnts_.size();
+}
+
 const std::vector<Point> &
 Mesh::points() const
 {
