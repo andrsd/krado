@@ -13,6 +13,7 @@
 #include "krado/types.h"
 #include "krado/utils.h"
 #include <map>
+#include <unordered_map>
 
 namespace krado {
 
@@ -353,7 +354,7 @@ private:
     void build_hasse_diagram();
 
     void
-    hasse_add_edge(gidx_t parent_node_id, const std::vector<gidx_t> & edge_connect)
+    hasse_add_edge(gidx_t parent_node_id, const std::array<gidx_t, 2> & edge_connect)
     {
         auto k = utils::key(edge_connect);
         if (this->key_map_.find(k) == this->key_map_.end()) {
@@ -404,7 +405,7 @@ private:
             for (std::size_t j = 0; j < ELEMENT_TYPE::FACE_EDGES[i].size(); ++j) {
                 auto edge = ELEMENT_TYPE::FACE_EDGES[i][j];
                 auto edge_connect =
-                    utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
+                    utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
                 hasse_add_edge(face_node_id, edge_connect);
             }
         }
@@ -419,7 +420,7 @@ private:
 
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
-            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             hasse_add_edge(elem_node_id, edge_connect);
         }
     }
@@ -430,7 +431,7 @@ private:
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
-            auto edge_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
+            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             auto edge_node_id = this->key_map_[utils::key(edge_connect)];
             for (auto & vtx : edge_connect) {
                 auto vtx_id = utils::key(vtx);
@@ -468,7 +469,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;
     /// Map of keys to node IDs
-    std::map<std::size_t, gidx_t> key_map_;
+    std::unordered_map<std::size_t, gidx_t> key_map_;
 };
 
 } // namespace krado

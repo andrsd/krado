@@ -9,7 +9,6 @@
 #include "krado/vector.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh.h"
-#include "boost/functional/hash.hpp"
 #include <cstdint>
 
 namespace krado::utils {
@@ -37,14 +36,6 @@ sub_connect(const std::vector<gidx_t> & element_connect, const std::vector<int> 
     for (auto i : idxs)
         connect.emplace_back(element_connect[i]);
     return connect;
-}
-
-std::size_t
-key(const std::size_t id)
-{
-    std::size_t hash_value = 0;
-    boost::hash_combine(hash_value, id);
-    return hash_value;
 }
 
 std::size_t

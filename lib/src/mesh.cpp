@@ -732,6 +732,7 @@ Mesh::build_hasse_diagram()
     auto n_cells = this->elems_.size();
     auto n_pnts = this->pnts_.size();
     this->hasse_.reserve(n_cells, n_pnts);
+    this->key_map_.reserve(3 * n_cells + n_pnts);
 
     // Add Hasse nodes for cells
     for (std::size_t i = 0; i < n_cells; ++i) {
