@@ -1,11 +1,12 @@
 #include "gmock/gmock.h"
 #include "krado/extrude.h"
 #include "krado/mesh.h"
+#include "krado/types.h"
 
 using namespace krado;
 using namespace testing;
 
-TEST(ExtrudeTest, DISABLED_line_1d)
+TEST(ExtrudeTest, line_1d)
 {
     std::vector<Point> pts1d = { Point(0.0), Point(0.1), Point(0.2), Point(0.3) };
     std::vector<Element> elems1d = {
@@ -14,14 +15,13 @@ TEST(ExtrudeTest, DISABLED_line_1d)
         Element::Line2({ 2, 3 }),
     };
     Mesh line(pts1d, elems1d);
+    line.set_up();
     line.set_cell_set(0, { 0, 1 });
     line.set_cell_set(1, { 2 });
-#if 0
-    line.set_side_set(10, std::vector<side_set_entry_t> { { 0, 0 } });
-    line.set_side_set(11, std::vector<side_set_entry_t> { { 2, 1 } });
-#endif
+    line.set_vertex_set(10, std::vector<gidx_t> { 3 });
+    line.set_vertex_set(11, std::vector<gidx_t> { 6 });
 
-    Mesh rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
+    auto rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
     auto & pnts = rectangle.points();
     EXPECT_EQ(pnts.size(), 12);
@@ -52,18 +52,14 @@ TEST(ExtrudeTest, DISABLED_line_1d)
     EXPECT_THAT(rectangle.cell_set(0), UnorderedElementsAre(0, 1, 3, 4));
     EXPECT_THAT(rectangle.cell_set(1), UnorderedElementsAre(2, 5));
 
-#if 0
-    auto ss_ids = rectangle.side_set_ids();
+    auto ss_ids = rectangle.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = rectangle.side_set(10);
-    EXPECT_EQ(ss0[0], side_set_entry_t(0, 3));
-    EXPECT_EQ(ss0[1], side_set_entry_t(3, 3));
+    auto & ss0 = rectangle.edge_set(10);
+    EXPECT_THAT(ss0, ElementsAre(21, 30));
 
-    auto & ss1 = rectangle.side_set(11);
-    EXPECT_EQ(ss1[0], side_set_entry_t(2, 1));
-    EXPECT_EQ(ss1[1], side_set_entry_t(5, 1));
-#endif
+    auto & ss1 = rectangle.edge_set(11);
+    EXPECT_THAT(ss1, ElementsAre(26, 33));
 }
 
 TEST(ExtrudeTest, tri_2d)

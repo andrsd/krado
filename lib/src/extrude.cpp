@@ -150,7 +150,8 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
 
     std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
     if (dim == 1) {
-        // TODO: do we somehow "extrude" vertex sets?
+        for (const auto & id : mesh.vertex_set_ids())
+            side_sets[id] = utils::create_side_set(mesh, mesh.vertex_set(id));
     }
     else if (dim == 2) {
         for (const auto & id : mesh.edge_set_ids())
@@ -174,8 +175,27 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
 
     // extrude side sets
     if (dim == 1) {
-        // TODO: something must happen here
-        // like build edge sets
+        for (auto & [id, ss] : side_sets) {
+            std::vector<side_set_entry_t> extruded_side_sets;
+            extruded_side_sets.reserve(ss.size() * thicknesses.size());
+            for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+                for (auto & entry : ss) {
+                    auto cell_id = entry.elem + elem_stride * i;
+                    auto & cell = mesh.element(entry.elem);
+                    if (cell.type() == ElementType::LINE2) {
+                        extruded_side_sets.emplace_back(
+                            cell_id,
+                            extrude_element_side<ElementType::LINE2>(cell, entry.side));
+                    }
+                    else
+                        throw Exception("Extrusion of element type '{}' not supported in 1D",
+                                        Element::type(cell.type()));
+                }
+            }
+            extruded_mesh.set_edge_set(id,
+                                       utils::set_from_side_set(extruded_mesh, extruded_side_sets));
+            extruded_mesh.set_edge_set_name(id, mesh.vertex_set_name(id));
+        }
     }
     else if (dim == 2) {
         for (auto & [id, ss] : side_sets) {
