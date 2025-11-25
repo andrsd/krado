@@ -29,3 +29,14 @@ TEST(UtilsTest, human_number)
     EXPECT_EQ(utils::human_number(12345), "12,345");
     EXPECT_EQ(utils::human_number(1234567), "1,234,567");
 }
+
+TEST(UtilsTest, human_time)
+{
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::micro>(10)), "10.00 µs");
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::micro>(2340)), "2.34 ms");
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::milli>(2)), "2.00 ms");
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::milli>(5670)), "5.67 s");
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::milli>(64120)), "1 min 4 s");
+    EXPECT_EQ(utils::human_time(std::chrono::duration<double, std::milli>(7'386'000)),
+              "2 h 3 min 6 s");
+}

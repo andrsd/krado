@@ -209,6 +209,50 @@ human_number(T value)
     return result;
 }
 
+/// Print time in a human-friendly way
+///
+/// @tparam DURATION duration type
+/// @param d Duration
+/// @return String in human-readable form
+template <class DURATION>
+std::string
+human_time(DURATION d)
+{
+    using namespace std::chrono;
+
+    // Convert everything to whole microseconds for easy math
+    auto us_total = duration_cast<microseconds>(d).count();
+    double us = static_cast<double>(us_total);
+
+    // < 1 millisecond -> show microseconds
+    if (us < 1000.0) {
+        return std::format("{:.2f} µs", us);
+    }
+
+    double ms = us / 1000.0;
+    if (ms < 1000.0) { // < 1 second
+        return std::format("{:.2f} ms", ms);
+    }
+
+    double sec = ms / 1000.0;
+    if (sec < 60.0) {
+        return std::format("{:.2f} s", sec);
+    }
+
+    long total_seconds = static_cast<long>(sec);
+    long minutes = total_seconds / 60;
+    long seconds = total_seconds % 60;
+
+    if (minutes < 60) { // < 1 hour
+        return std::format("{} min {} s", minutes, seconds);
+    }
+
+    long hours = minutes / 60;
+    long rem_minutes = minutes % 60;
+
+    return std::format("{} h {} min {} s", hours, rem_minutes, seconds);
+}
+
 /// Mark for unreachable code
 ///
 /// This is defined as `std::unreachable` in C++23, so we need this ATM.
