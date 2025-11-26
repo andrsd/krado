@@ -6,6 +6,7 @@
 #include "krado/types.h"
 #include "krado/uv_param.h"
 #include "boost/functional/hash.hpp"
+#include "krado/ptr.h"
 #include <cstdint>
 #include <string>
 #include <algorithm>
@@ -19,9 +20,11 @@ class UVParam;
 class MeshVertexAbstract;
 class Vector;
 class Mesh;
+class GeomSurface;
 } // namespace krado
 
-namespace krado::utils {
+namespace krado {
+namespace utils {
 
 /// Convert supplied string to upper case.
 ///
@@ -242,4 +245,20 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
 std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
                                       const std::vector<side_set_entry_t> & side_set);
 
-} // namespace krado::utils
+} // namespace utils
+
+/// Create a counter-clock-wise triangle
+///
+/// @param gsurf Geomterical surface
+/// @param a Vertex A
+/// @param b Vertex B
+/// @param c Vertex C
+/// @return Counter-clockwise triangle
+///
+/// NOTE: this should end up in some kind of triangularization module
+std::array<Ptr<MeshVertexAbstract>, 3> ccw_triangle(const GeomSurface & gsurf,
+                                                    Ptr<MeshVertexAbstract> a,
+                                                    Ptr<MeshVertexAbstract> b,
+                                                    Ptr<MeshVertexAbstract> c);
+
+} // namespace krado
