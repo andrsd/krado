@@ -9,9 +9,13 @@
 #include "krado/vector.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh.h"
+#include "boost/functional/hash.hpp"
+#include "krado/geom_surface.h"
+#include "krado/predicates.h"
 #include <cstdint>
 
-namespace krado::utils {
+namespace krado {
+namespace utils {
 
 std::string
 to_upper(const std::string & text)
@@ -131,4 +135,25 @@ set_from_side_set(const Mesh & mesh, const std::vector<side_set_entry_t> & side_
     return sset;
 }
 
-} // namespace krado::utils
+} // namespace utils
+
+std::array<Ptr<MeshVertexAbstract>, 3>
+ccw_triangle(const GeomSurface & gsurf,
+             Ptr<MeshVertexAbstract> a,
+             Ptr<MeshVertexAbstract> b,
+             Ptr<MeshVertexAbstract> c)
+{
+    auto uv_a = gsurf.parameter_from_point(a->point());
+    auto uv_b = gsurf.parameter_from_point(b->point());
+    auto uv_c = gsurf.parameter_from_point(c->point());
+
+    auto orientation = orient2d(uv_a, uv_b, uv_c);
+    if (orientation > 0)
+        return std::array<Ptr<MeshVertexAbstract>, 3> { a, b, c };
+    else if (orientation < 0)
+        return std::array<Ptr<MeshVertexAbstract>, 3> { a, c, b };
+    else
+        throw Exception("Degenerate triangle detected. Points are collinear.");
+}
+
+} // namespace krado

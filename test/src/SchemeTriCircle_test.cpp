@@ -27,6 +27,7 @@ TEST(SchemeCircleTest, circle)
     auto surf = model.surface(1);
     // clang-format off
     surf->set_scheme("tricircle")
+        .set<int>("radial_intervals", 1)
     ;
     // clang-format on
     model.mesh_surface(1);

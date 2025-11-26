@@ -12,7 +12,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/log.h"
-#include "krado/predicates.h"
+#include "krado/utils.h"
 #include <memory>
 
 namespace krado {
@@ -39,32 +39,75 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     if (!is_circular_face(gsurf))
         throw Exception("Surface {} is not a circle", gsurf.id());
 
+    auto n_radial = get<int>("radial_intervals");
+    if (n_radial <= 0)
+        throw Exception("Parameter 'radial_intervals' must be a positive number");
+
+    // Center vertex
     auto geom_crv = gsurf.curves()[0];
     auto ctr_pnt = get_circle_center(geom_crv);
     auto uv_ctr = gsurf.parameter_from_point(ctr_pnt);
     auto ctr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv_ctr);
     mesh_surface->add_vertex(ctr);
 
+    // Outer ring vertices (existing)
     auto & mesh_crv = mesh_surface->curves()[0];
     for (auto & vtx : mesh_crv->bounding_vertices())
         mesh_surface->add_vertex(vtx);
     for (auto & vtx : mesh_crv->curve_vertices())
         mesh_surface->add_vertex(vtx);
 
-    auto & circum_verts = mesh_crv->all_vertices();
-    for (std::size_t i = 0; i < circum_verts.size(); ++i) {
-        std::size_t j = (i + 1) % circum_verts.size();
+    std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings;
+    rings.resize(n_radial + 1);
 
-        auto uv_i = gsurf.parameter_from_point(circum_verts[i]->point());
-        auto uv_j = gsurf.parameter_from_point(circum_verts[j]->point());
-        auto orientation = orient2d(uv_ctr, uv_i, uv_j);
+    // ring `0` contains only center
+    rings.push_back({ ctr });
 
-        if (orientation > 0)
-            mesh_surface->add_triangle({ ctr, circum_verts[i], circum_verts[j] });
-        else if (orientation < 0)
-            mesh_surface->add_triangle({ ctr, circum_verts[j], circum_verts[i] });
-        else
-            Log::error("Degenerate triangle detected. Points are collinear.");
+    // ring `n_radial` contains full boundary
+    auto circum_verts = mesh_crv->all_vertices();
+    rings[n_radial] = circum_verts;
+
+    // Generate intermediate rings
+    for (int r = 1; r < n_radial; ++r) {
+        auto alpha = static_cast<double>(r) / static_cast<double>(n_radial);
+
+        for (auto & bv : circum_verts) {
+            // Linear interpolation of points on the surface along chord direction
+            auto p = ctr_pnt + (bv->point() - ctr_pnt) * alpha;
+
+            auto uv = gsurf.parameter_from_point(p);
+            auto vr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
+            mesh_surface->add_vertex(vr);
+
+            rings[r].push_back(vr);
+        }
+    }
+
+    // Create triangles
+
+    // center fan (ring 0 -> ring 1)
+    for (size_t i = 0; i < rings[1].size(); ++i) {
+        size_t j = (i + 1) % rings[1].size();
+        mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, rings[1][i], rings[1][j]));
+    }
+
+    // ring-to-ring tessellation
+    for (int r = 1; r < n_radial; ++r) {
+        auto & inner = rings[r];
+        auto & outer = rings[r + 1];
+
+        for (size_t i = 0; i < inner.size(); ++i) {
+            size_t j = (i + 1) % inner.size();
+
+            auto a = inner[i];
+            auto b = inner[j];
+            auto c = outer[i];
+            auto d = outer[j];
+
+            // split the quad into 2 triangles
+            mesh_surface->add_triangle(ccw_triangle(gsurf, a, c, d));
+            mesh_surface->add_triangle(ccw_triangle(gsurf, a, d, b));
+        }
     }
 }
 
