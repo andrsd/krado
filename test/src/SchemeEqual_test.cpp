@@ -7,9 +7,12 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "krado/scheme/equal.h"
+#include "krado/step_file.h"
 #include "builder.h"
+#include <filesystem>
 
 using namespace krado;
+namespace fs = std::filesystem;
 
 TEST(SchemeEqualTest, line)
 {
@@ -63,4 +66,28 @@ TEST(SchemeEqualTest, circle)
     EXPECT_EQ(all_vtxs[7]->point(), Point(SQRT2_2, -SQRT2_2, 0));
 
     EXPECT_EQ(curv->segments().size(), 8);
+}
+
+TEST(SchemeEqualTest, quarter_circle)
+{
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
+    STEPFile file(input_file.string());
+    auto shapes = file.load();
+    auto shape = shapes[0];
+    GeomModel model(shape);
+
+    SchemeEqual::Options opts1;
+    opts1.intervals = 4;
+    model.curve(1)->set_scheme<SchemeEqual>(opts1);
+    model.mesh_curve(1);
+
+    auto curv = model.curve(1);
+    auto & all_vtxs = curv->all_vertices();
+    ASSERT_EQ(all_vtxs.size(), 5);
+
+    EXPECT_EQ(all_vtxs[0]->point(), Point(-1., 0, 0));
+    EXPECT_EQ(all_vtxs[1]->point(), Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0));
+    EXPECT_EQ(all_vtxs[2]->point(), Point(-std::cos(M_PI / 4.), std::sin(M_PI / 4.), 0));
+    EXPECT_EQ(all_vtxs[3]->point(), Point(-std::cos(3 * M_PI / 8.), std::sin(3. * M_PI / 8.), 0));
+    EXPECT_EQ(all_vtxs[4]->point(), Point(0., 1., 0));
 }
