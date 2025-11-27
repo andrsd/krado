@@ -1,5 +1,4 @@
 #include "gmock/gmock.h"
-#include "krado/config.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_curve.h"
