@@ -15,6 +15,8 @@
 #include <cassert>
 
 #ifdef KRADO_WITH_TRIANGLE
+    #include "krado/log.h"
+
 extern "C" {
     #define REAL double
     #define VOID void
@@ -57,10 +59,10 @@ init_io(triangulateio & io)
 }
 
 std::map<Point, int>
-build_point_map(const MeshSurface & surface)
+build_point_map(Ptr<MeshSurface> surface)
 {
     std::map<Point, int> pt_id;
-    auto & curves = surface.curves();
+    auto & curves = surface->curves();
     for (auto & c : curves) {
         auto & verts = c->all_vertices();
         for (auto & vtx : verts) {
@@ -86,13 +88,13 @@ create_point_list(const std::map<Point, int> & pt_id, triangulateio & io)
 }
 
 void
-create_segment_list(const MeshSurface & surface,
+create_segment_list(Ptr<MeshSurface> surface,
                     const std::map<Point, int> & pt_id,
                     triangulateio & io)
 {
     // segments
     int n_segments = 0;
-    auto & curves = surface.curves();
+    auto & curves = surface->curves();
     for (auto & c : curves) {
         assert(c != nullptr);
         n_segments += (int) c->segments().size();
@@ -120,16 +122,16 @@ create_segment_list(const MeshSurface & surface,
 }
 
 void
-create_pslg(const MeshSurface & surface, const std::map<Point, int> & pt_id, triangulateio & io)
+create_pslg(Ptr<MeshSurface> surface, const std::map<Point, int> & pt_id, triangulateio & io)
 {
     create_point_list(pt_id, io);
     create_segment_list(surface, pt_id, io);
 }
 
 void
-create_regions(const MeshSurface & surface, triangulateio & io)
+create_regions(Ptr<MeshSurface> surface, const SchemeTriangle::Options & opts, triangulateio & io)
 {
-    auto & scheme = surface.scheme();
+    auto & scheme = surface->scheme();
     io.numberofregions = 1;
     io.regionlist = new double[io.numberofregions * 4];
     auto [x, y] = scheme.get<std::tuple<double, double>>("region_point");
@@ -186,7 +188,7 @@ void
 SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
 {
 #ifdef KRADO_WITH_TRIANGLE
-    Log::info("Meshing surface {}: scheme='triangle'", surface.id());
+    Log::info("Meshing surface {}: scheme='triangle'", surface->id());
 
     bool has_region = has<std::tuple<double, double>>("region_point");
 
@@ -212,13 +214,13 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
 
     SurfaceIndexMapper im(surface);
     for (int i = 0; i < out.numberoftriangles; i++) {
-        std::array<MeshVertexAbstract *, 3> tri;
+        std::array<Ptr<MeshVertexAbstract>, 3> tri;
         for (int j = 0; j < 3; j++) {
             auto vtx_id = out.trianglelist[i * 3 + j];
             auto pt = tri::get_point(out.pointlist, vtx_id);
             tri[j] = im.surface_vertex(pt.x, pt.y);
         }
-        surface.add_triangle(tri);
+        surface->add_triangle(tri);
     }
 
     tri::destroy_io(in);
