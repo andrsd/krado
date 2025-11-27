@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <optional>
 
 namespace krado {
 
@@ -13,6 +14,9 @@ using lidx_t = unsigned int;
 using gidx_t = std::size_t;
 /// Marker type
 using marker_t = int;
+///
+template <typename T>
+using Optional = std::optional<T>;
 
 enum class ElementType {
     /// 0-D element

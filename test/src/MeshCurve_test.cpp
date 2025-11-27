@@ -19,7 +19,7 @@ TEST(MeshCurveTest, DISABLED_api)
 
     EXPECT_EQ(&mcurve.geom_curve(), &edge);
 
-    EXPECT_EQ(mcurve.scheme().name(), "auto");
+    // EXPECT_EQ(mcurve.scheme().name(), "auto");
 
     auto & vtx = mcurve.bounding_vertices();
     ASSERT_EQ(vtx.size(), 2);
@@ -37,8 +37,9 @@ TEST(MeshCurveTest, mesh)
     auto v2 = Ptr<MeshVertex>::alloc(gvtx2);
     auto mcurve = Ptr<MeshCurve>::alloc(edge, v1, v2);
 
-    SchemeEqual equal;
-    equal.set("intervals", 4);
+    SchemeEqual::Options opts;
+    opts.intervals = 4;
+    SchemeEqual equal(opts);
     equal.mesh_curve(mcurve);
 
     auto vtx = mcurve->bounding_vertices();

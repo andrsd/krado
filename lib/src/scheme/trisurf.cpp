@@ -13,6 +13,7 @@
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
 #include "Poly_Triangulation.hxx"
+#include "krado/scheme2d.h"
 #include <array>
 #include <cassert>
 
@@ -20,16 +21,22 @@ namespace krado {
 
 static const std::string scheme_name = "trisurf";
 
-SchemeTriSurf::SchemeTriSurf() : Scheme(scheme_name), Scheme3D() {}
+SchemeTriSurf::SchemeTriSurf(Options options) :
+    Scheme3D(scheme_name),
+    Scheme2D(scheme_name),
+    Scheme1D(scheme_name),
+    opts_(options)
+{
+}
 
 void
 SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 {
     Log::info("Meshing volume {}: scheme='trisurf'", volume->id());
 
-    auto lin_deflection = get<double>("linear_deflection");
-    auto angl_deflection = get<double>("angular_deflection");
-    auto is_relative = get<bool>("is_relative");
+    auto lin_deflection = this->opts_.linear_deflection;
+    auto angl_deflection = this->opts_.angular_deflection;
+    auto is_relative = this->opts_.is_relative;
 
     const TopoDS_Shape & shape = volume->geom_volume();
 
@@ -82,11 +89,11 @@ SchemeTriSurf::mesh_curve(Ptr<MeshCurve> mcurve)
 void
 SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
 {
-    if (surface->scheme().name() != scheme_name) {
-        if (surface->scheme().name() == "auto") {
-            surface->set_scheme(scheme_name);
-        }
-        else
+    if (!surface->has_scheme())
+        surface->set_scheme<SchemeTriSurf>(this->opts_);
+    else {
+        auto scheme = dynamic_cast<SchemeTriSurf *>(&surface->scheme());
+        if (scheme == nullptr)
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
                             surface->scheme().name());
@@ -96,11 +103,12 @@ SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
 void
 SchemeTriSurf::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() != scheme_name) {
-        if (curve->scheme().name() == "auto") {
-            curve->set_scheme(scheme_name);
-        }
-        else
+    if (!curve->has_scheme()) {
+        curve->set_scheme<SchemeTriSurf>(this->opts_);
+    }
+    else {
+        auto scheme = dynamic_cast<SchemeTriSurf *>(&curve->scheme());
+        if (scheme == nullptr)
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
                             curve->scheme().name());

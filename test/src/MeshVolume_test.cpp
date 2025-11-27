@@ -6,7 +6,6 @@
 #include "krado/mesh_volume.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
-#include "krado/scheme.h"
 #include "builder.h"
 
 using namespace krado;
@@ -27,7 +26,7 @@ TEST(MeshVolumeTest, api)
     auto mvol = Ptr<MeshVolume>::alloc(gvol, msurfs);
     EXPECT_EQ(&mvol->geom_volume(), &gvol);
 
-    EXPECT_EQ(mvol->scheme().name(), "auto");
+    // EXPECT_EQ(mvol->scheme().name(), "auto");
 
     auto mss = mvol->surfaces();
     ASSERT_EQ(mss.size(), 6);

@@ -6,6 +6,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "builder.h"
+#include "krado/scheme/trisurf.h"
 
 using namespace krado;
 
@@ -14,13 +15,11 @@ TEST(SchemeTriSurfTest, cylinder)
     auto cyl = testing::build_cylinder(Point(0, 0, 0), 0.75, 1.25);
     GeomModel model(cyl);
 
-    // clang-format off
-    model.volume(1)->set_scheme("trisurf")
-         .set<bool>("is_relative", true)
-         .set<double>("linear_deflection", 1.)
-         .set<double>("angular_deflection", 1.)
-    ;
-    // clang-format on
+    SchemeTriSurf::Options opts;
+    opts.is_relative = true;
+    opts.linear_deflection = 1.;
+    opts.angular_deflection = 1.;
+    model.volume(1)->set_scheme<SchemeTriSurf>(opts);
     model.mesh_volume(1);
 
     auto surf1 = model.surface(1);

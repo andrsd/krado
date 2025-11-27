@@ -11,6 +11,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/scheme/equal.h"
 #include "krado/log.h"
 #include "krado/utils.h"
 #include <memory>
@@ -19,14 +20,16 @@ namespace krado {
 
 static const std::string scheme_name = "tricircle";
 
-SchemeTriCircle::SchemeTriCircle() : Scheme(scheme_name), Scheme2D() {}
+SchemeTriCircle::SchemeTriCircle(Options options) : Scheme2D(scheme_name), opts_(options) {}
 
 void
 SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() == "auto") {
+    if (!curve->has_scheme()) {
         // minimum of 4 intervals
-        curve->set_scheme("equal").set("intervals", 4);
+        SchemeEqual::Options opts;
+        opts.intervals = 4;
+        curve->set_scheme<SchemeEqual>(opts);
     }
 }
 
@@ -39,7 +42,7 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     if (!is_circular_face(gsurf))
         throw Exception("Surface {} is not a circle", gsurf.id());
 
-    auto n_radial = get<int>("radial_intervals");
+    auto n_radial = this->opts_.radial_intervals;
     if (n_radial <= 0)
         throw Exception("Parameter 'radial_intervals' must be a positive number");
 

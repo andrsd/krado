@@ -385,23 +385,18 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
     if (!curve->is_meshed()) {
         Log::debug("Meshing curve: id={}", curve->id());
 
-        try {
-            auto & geom_curve = curve->geom_curve();
-            if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
-                return;
+        auto & geom_curve = curve->geom_curve();
+        if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
+            return;
 
-            auto & scheme1d = get_scheme<Scheme1D>(curve);
+        auto & scheme = curve->scheme();
 
-            auto & bnd_vtxs = curve->bounding_vertices();
-            for (auto & v : bnd_vtxs)
-                mesh_vertex(v);
+        auto & bnd_vtxs = curve->bounding_vertices();
+        for (auto & v : bnd_vtxs)
+            mesh_vertex(v);
 
-            scheme1d.mesh_curve(curve);
-            curve->set_meshed();
-        }
-        catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 1D scheme", curve->scheme().name());
-        }
+        scheme.mesh_curve(curve);
+        curve->set_meshed();
     }
     else
         Log::debug("Curve {} is already meshed", curve->id());
@@ -420,21 +415,16 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
     if (!surface->is_meshed()) {
         Log::debug("Meshing surface: id={}", surface->id());
 
-        try {
-            auto & scheme2d = get_scheme<Scheme2D>(surface);
+        auto & scheme = surface->scheme();
 
-            auto & curves = surface->curves();
-            for (auto & crv : curves)
-                scheme2d.select_curve_scheme(crv);
-            for (auto & crv : curves)
-                mesh_curve(crv);
+        auto & curves = surface->curves();
+        for (auto & crv : curves)
+            scheme.select_curve_scheme(crv);
+        for (auto & crv : curves)
+            mesh_curve(crv);
 
-            scheme2d.mesh_surface(surface);
-            surface->set_meshed();
-        }
-        catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 2D scheme", surface->scheme().name());
-        }
+        scheme.mesh_surface(surface);
+        surface->set_meshed();
     }
     else
         Log::debug("Surface {} is already meshed", surface->id());
@@ -453,21 +443,16 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
     if (!volume->is_meshed()) {
         Log::debug("Meshing volume: id={}", volume->id());
 
-        try {
-            auto & scheme3d = get_scheme<Scheme3D>(volume);
+        auto & scheme = volume->scheme();
 
-            auto & surfaces = volume->surfaces();
-            for (auto & srf : surfaces)
-                scheme3d.select_surface_scheme(srf);
-            for (auto & srf : surfaces)
-                mesh_surface(srf);
+        auto & surfaces = volume->surfaces();
+        for (auto & srf : surfaces)
+            scheme.select_surface_scheme(srf);
+        for (auto & srf : surfaces)
+            mesh_surface(srf);
 
-            scheme3d.mesh_volume(volume);
-            volume->set_meshed();
-        }
-        catch (const std::bad_cast & e) {
-            throw Exception("Scheme '{}' is not a 3D scheme", volume->scheme().name());
-        }
+        scheme.mesh_volume(volume);
+        volume->set_meshed();
     }
     else
         Log::debug("Volume {} is already meshed", volume->id());

@@ -5,13 +5,14 @@
 
 #include "krado/ptr.h"
 #include "krado/geom_volume.h"
-#include "krado/meshing_parameters.h"
+#include "krado/meshable.h"
+#include "krado/scheme3d.h"
 
 namespace krado {
 
 class MeshSurface;
 
-class MeshVolume : public MeshingParameters {
+class MeshVolume : public Meshable {
 public:
     MeshVolume(const GeomVolume & gvolume, const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
 
@@ -28,10 +29,32 @@ public:
     /// Get surfaces bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshSurface>> & surfaces() const;
 
+    /// Set meshing scheme
+    ///
+    /// @param name Name od the scheme to assign
+    /// @return Pointer to the scheme
+    template <typename SCHEME>
+    SCHEME &
+    set_scheme(SCHEME::Options options)
+    {
+        auto sch = std::make_unique<SCHEME>(options);
+        auto sch_ptr = sch.get();
+        this->scheme_ = std::move(sch);
+        return *sch_ptr;
+    }
+
+    Scheme3D &
+    scheme()
+    {
+        return *this->scheme_.get();
+    }
+
 private:
     const GeomVolume & gvolume_;
     /// Mesh surfaces bounding this surface
     std::vector<Ptr<MeshSurface>> mesh_surfaces_;
+    ///
+    std::unique_ptr<Scheme3D> scheme_;
 };
 
 } // namespace krado

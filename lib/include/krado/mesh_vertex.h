@@ -4,7 +4,7 @@
 #pragma once
 
 #include "krado/mesh_vertex_abstract.h"
-#include "krado/meshing_parameters.h"
+#include "krado/meshable.h"
 
 namespace krado {
 
@@ -12,7 +12,7 @@ class GeomEntity;
 class GeomVertex;
 class Point;
 
-class MeshVertex : public MeshVertexAbstract, public MeshingParameters {
+class MeshVertex : public MeshVertexAbstract, public Meshable {
 public:
     MeshVertex(const GeomVertex & geom_vertex);
 

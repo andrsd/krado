@@ -14,7 +14,6 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"
 #include "krado/mesh.h"
-#include "krado/scheme.h"
 #include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <Standard_TypeDef.hxx>
@@ -137,13 +136,6 @@ protected:
     /// @param volume Volume
     /// @return Volume ID
     [[nodiscard]] int volume_id(const GeomVolume & volume) const;
-
-    template <typename T, typename U>
-    [[nodiscard]] T &
-    get_scheme(U entity) const
-    {
-        return dynamic_cast<T &>(entity->scheme());
-    }
 
 private:
     void bind_shape(const GeomShape & shape);

@@ -13,6 +13,9 @@ class MeshCurve;
 /// Base class for 2-dimensional mesh generation schemes
 class Scheme2D {
 public:
+    Scheme2D(const std::string & name) : name_(name) {}
+    virtual ~Scheme2D() = default;
+
     /// Mesh surface
     ///
     /// @param surface Surface to mesh
@@ -22,6 +25,15 @@ public:
     ///
     /// @param curve Curve to select the scheme for
     virtual void select_curve_scheme(Ptr<MeshCurve> curve);
+
+    const std::string
+    name() const
+    {
+        return this->name_;
+    }
+
+private:
+    std::string name_;
 };
 
 } // namespace krado

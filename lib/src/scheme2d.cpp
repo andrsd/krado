@@ -2,19 +2,21 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme2d.h"
-#include "krado/scheme.h"
 #include "krado/mesh_curve.h"
 #include "krado/log.h"
+#include "krado/scheme/equal.h"
 
 namespace krado {
 
 void
 Scheme2D::select_curve_scheme(Ptr<MeshCurve> curve)
 {
-    if (curve->scheme().name() == "auto") {
-        Log::info("Selecting curve scheme 'auto' for curve {}", curve->id());
+    if (!curve->has_scheme()) {
+        Log::info("Selecting curve scheme 'equal' for curve {}", curve->id());
 
-        curve->set_scheme("equal").set("intervals", 1);
+        SchemeEqual::Options opt;
+        opt.intervals = 1;
+        curve->set_scheme<SchemeEqual>(opt);
     }
 }
 

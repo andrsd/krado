@@ -6,7 +6,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
-#include "krado/log.h"
+#include "krado/scheme/equal.h"
 #include "builder.h"
 
 using namespace krado;
@@ -16,11 +16,9 @@ TEST(SchemeEqualTest, line)
     auto shape = testing::build_line(Point(0, 0, 0), Point(1, 0, 0));
     GeomModel model(shape);
 
-    // clang-format off
-    model.curve(1)
-         ->set_scheme("equal")
-         .set("intervals", 5);
-    // clang-format on
+    SchemeEqual::Options opts;
+    opts.intervals = 5;
+    model.curve(1)->set_scheme<SchemeEqual>(opts);
     model.mesh_curve(1);
 
     auto line = model.curve(1);
@@ -44,12 +42,9 @@ TEST(SchemeEqualTest, circle)
     auto circle = testing::build_circle(Point(0, 0, 0), 1);
     GeomModel model(circle);
 
-    // clang-format off
-    model.curve(1)
-        ->set_scheme("equal")
-        .set("intervals", 8)
-    ;
-    // clang-format on
+    SchemeEqual::Options opts;
+    opts.intervals = 8;
+    model.curve(1)->set_scheme<SchemeEqual>(opts);
     model.mesh_curve(1);
 
     auto curv = model.curve(1);

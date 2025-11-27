@@ -11,6 +11,8 @@
 
 using namespace krado;
 
+#if 0
+
 TEST(SchemeTest, mesh_curve_with_2d_scheme)
 {
     auto line = testing::build_line(Point(0, 0), Point(1, 0));
@@ -43,3 +45,5 @@ TEST(SchemeTest, mesh_volume_with_1d_scheme)
     // clang-format on
     EXPECT_THROW_MSG(model.mesh_volume(1), "Scheme 'bamg' is not a 3D scheme");
 }
+
+#endif

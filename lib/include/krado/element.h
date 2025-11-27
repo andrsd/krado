@@ -19,7 +19,6 @@ public:
     ///
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
-    /// @param marker Element marker
     Element(ElementType type, const std::vector<gidx_t> & vtx_ids);
 
     /// Get element type

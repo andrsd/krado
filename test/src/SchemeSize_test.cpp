@@ -7,6 +7,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "builder.h"
+#include "krado/scheme/size.h"
 
 using namespace krado;
 
@@ -18,10 +19,8 @@ TEST(SchemeSizeTest, line_with_vertex_sizes)
     model.vertex(1)->set_mesh_size(0.3);
     model.vertex(2)->set_mesh_size(0.2);
 
-    // clang-format off
-    model.curve(1)
-        ->set_scheme("size");
-    // clang-format on
+    SchemeSize::Options opts;
+    model.curve(1)->set_scheme<SchemeSize>(opts);
     model.mesh_curve(1);
 
     auto line = model.curve(1);

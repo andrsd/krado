@@ -240,7 +240,7 @@ private:
 
 } // namespace
 
-SchemeBAMG::SchemeBAMG() : Scheme("bamg") {}
+SchemeBAMG::SchemeBAMG(Options options) : Scheme2D("bamg"), opts_(options) {}
 
 void
 SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
@@ -248,7 +248,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
     Log::info("Meshing surface {}: scheme='bamg'", surface->id());
 
     Bamg mg(surface);
-    mg.set_uniform_mesh_size(get<double>("max_area"));
+    mg.set_uniform_mesh_size(this->opts_.max_area);
 
     mg.triangularize();
 

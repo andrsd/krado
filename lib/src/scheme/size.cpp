@@ -12,7 +12,7 @@
 
 namespace krado {
 
-SchemeSize::SchemeSize() : Scheme("size"), Scheme1D() {}
+SchemeSize::SchemeSize(Options options) : Scheme1D("size"), opts_(options) {}
 
 void
 SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
