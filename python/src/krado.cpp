@@ -7,7 +7,6 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/bounding_box_3d.h"
-#include "krado/config.h"
 #include "krado/classifier.h"
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"

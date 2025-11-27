@@ -23,12 +23,17 @@ target_compile_definitions(
     ${NAME}
     PRIVATE
         SPDLOG_FMT_EXTERNAL
+    PUBLIC
+        KRADO_VERSION="${PROJECT_VERSION}"
 )
+
+if (KRADO_WITH_TRIANGLE)
+    target_compile_definitions(${NAME} PUBLIC KRADO_WITH_TRIANGLE)
+endif()
 
 target_include_directories(
     ${NAME}
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib/include>
         $<INSTALL_INTERFACE:include>
         ${OpenCASCADE_INCLUDE_DIR}
     PRIVATE
@@ -62,5 +67,3 @@ if (KRADO_WITH_MOAB)
     target_link_libraries(${NAME} PRIVATE MOAB)
     target_compile_definitions(${NAME} PRIVATE KRADO_WITH_MOAB)
 endif()
-
-configure_file(include/config.h.in include/krado/config.h)

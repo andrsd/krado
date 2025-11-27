@@ -5,7 +5,6 @@
 #include "krado/exception.h"
 #include "krado/mesh.h"
 #include "krado/element.h"
-#include "krado/config.h"
 #include "krado/mesh_element.h"
 #include "krado/types.h"
 #include "krado/utils.h"
