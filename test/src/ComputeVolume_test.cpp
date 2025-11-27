@@ -5,6 +5,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/ops.h"
 #include "krado/exodusii_file.h"
+#include "krado/scheme/equal.h"
 #include <filesystem>
 
 using namespace krado;
@@ -16,11 +17,10 @@ TEST(ComputeVolumeTest, length_of_a_line)
     auto ln = build_line(Point(0, 0, 0), Point(3, 4, 0));
     GeomModel model(ln);
 
-    // clang-format off
-    model.curve(1)
-         ->set_scheme("equal")
-         .set("intervals", 5);
-    // clang-format on
+    SchemeEqual::Options opts;
+    opts.intervals = 5;
+    model.curve(1)->set_scheme<SchemeEqual>(opts);
+
     model.mesh_curve(1);
     auto mesh = model.build_mesh();
 

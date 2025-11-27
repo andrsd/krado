@@ -11,6 +11,7 @@
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"
 #include "krado/exodusii_file.h"
+#include "krado/meshable.h"
 #include "krado/ops.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
@@ -32,7 +33,6 @@
 #include "krado/circular_pattern.h"
 #include "krado/hexagonal_pattern.h"
 #include "krado/element.h"
-#include "krado/scheme.h"
 #include "krado/point.h"
 #include "krado/tetrahedralize.h"
 #include "krado/transform.h"
@@ -352,17 +352,11 @@ PYBIND11_MODULE(krado, m)
         .def("outward_normal", &Mesh::outward_normal)
     ;
 
-    py::class_<MeshingParameters>(m, "MeshingParameters")
+    py::class_<Meshable>(m, "Meshable")
         .def(py::init<>())
-        .def("set_scheme", &MeshingParameters::set_scheme, py::return_value_policy::reference)
-        .def("scheme", &MeshingParameters::scheme, py::return_value_policy::reference)
-        .def("set", &MeshingParameters::set<int>, py::return_value_policy::reference)
-        .def("set", &MeshingParameters::set<double>, py::return_value_policy::reference)
-        .def("set", &MeshingParameters::set<std::string>, py::return_value_policy::reference)
-        .def("get", &MeshingParameters::get<int>)
-        .def("get", &MeshingParameters::get<double>)
-        .def("get", &MeshingParameters::get<std::string>)
-        .def("is_meshed", &MeshingParameters::is_meshed)
+        .def("is_meshed", &Meshable::is_meshed)
+        .def("set_marker", &Meshable::set_marker)
+        .def("marker", &Meshable::marker)
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
@@ -402,7 +396,7 @@ PYBIND11_MODULE(krado, m)
         .def("point", &MeshSurfaceVertex::point)
     ;
 
-    py::class_<MeshCurve, MeshingParameters>(m, "MeshCurve")
+    py::class_<MeshCurve, Meshable>(m, "MeshCurve")
         .def(py::init<const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
         .def("all_vertices", &MeshCurve::all_vertices, py::return_value_policy::reference)
@@ -418,7 +412,7 @@ PYBIND11_MODULE(krado, m)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
     ;
 
-    py::class_<MeshSurface, MeshingParameters>(m, "MeshSurface")
+    py::class_<MeshSurface, Meshable>(m, "MeshSurface")
         .def(py::init<const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
@@ -438,42 +432,10 @@ PYBIND11_MODULE(krado, m)
         .def("delete_mesh", &MeshSurface::delete_mesh)
     ;
 
-    py::class_<MeshVolume, MeshingParameters>(m, "MeshVolume")
+    py::class_<MeshVolume, Meshable>(m, "MeshVolume")
         .def(py::init<const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
-    ;
-
-    py::class_<Scheme>(m, "Scheme")
-        .def(py::init<const std::string &>())
-        .def("name", &Scheme::name)
-        .def("set", [](Scheme & scheme, const py::args &args, const py::kwargs & kwargs) {
-                for (auto & [name, value] : kwargs) {
-                    if (py::isinstance<py::int_>(value))
-                        scheme.set(py::str(name), value.cast<int>());
-                    else if (py::isinstance<py::float_>(value))
-                        scheme.set(py::str(name), value.cast<double>());
-                    else if (py::isinstance<py::str>(value))
-                        scheme.set(py::str(name), value.cast<std::string>());
-                    else
-                        throw krado::Exception("Unsupported type");
-                }
-            })
-        .def("get", [](Scheme & scheme) -> py::dict {
-                py::dict d;
-                auto & pars = scheme.parameters();
-                for (auto & [name, value] : pars) {
-                    if (pars.has<int>(name))
-                        d[name.c_str()] = py::cast(pars.get<int>(name), py::return_value_policy::reference);
-                    else if (pars.has<double>(name))
-                        d[name.c_str()] = py::cast(pars.get<double>(name), py::return_value_policy::reference);
-                    else if (pars.has<std::string>(name))
-                        d[name.c_str()] = py::cast(scheme.get<std::string>(name), py::return_value_policy::reference);
-                    else
-                        throw krado::Exception("Unsupported type");
-                }
-                return d;
-            })
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")

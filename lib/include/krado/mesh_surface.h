@@ -5,7 +5,8 @@
 
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_element.h"
-#include "krado/meshing_parameters.h"
+#include "krado/meshable.h"
+#include "krado/scheme2d.h"
 #include <vector>
 
 namespace krado {
@@ -16,7 +17,7 @@ class MeshCurveVertex;
 class MeshSurfaceVertex;
 class MeshCurve;
 
-class MeshSurface : public MeshingParameters {
+class MeshSurface : public Meshable {
 public:
     MeshSurface(const GeomSurface & gcurve, const std::vector<Ptr<MeshCurve>> & mesh_curves);
 
@@ -84,6 +85,32 @@ public:
 
     void delete_mesh();
 
+    /// Set meshing scheme
+    ///
+    /// @param name Name od the scheme to assign
+    /// @return Pointer to the scheme
+    template <typename SCHEME>
+    SCHEME &
+    set_scheme(SCHEME::Options options)
+    {
+        auto sch = std::make_unique<SCHEME>(options);
+        auto sch_ptr = sch.get();
+        this->scheme_ = std::move(sch);
+        return *sch_ptr;
+    }
+
+    bool
+    has_scheme() const
+    {
+        return this->scheme_.get() != nullptr;
+    }
+
+    Scheme2D &
+    scheme()
+    {
+        return *this->scheme_.get();
+    }
+
 private:
     const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
@@ -96,6 +123,8 @@ private:
     std::vector<MeshElement> tris_;
     /// Quadrangles
     std::vector<MeshElement> quads_;
+    ///
+    std::unique_ptr<Scheme2D> scheme_;
 };
 
 } // namespace krado

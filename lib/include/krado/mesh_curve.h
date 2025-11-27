@@ -4,10 +4,11 @@
 #pragma once
 
 #include "krado/mesh_element.h"
-#include "krado/meshing_parameters.h"
+#include "krado/meshable.h"
+#include "krado/scheme1d.h"
 #include "krado/ptr.h"
+#include "krado/types.h"
 #include <vector>
-#include <optional>
 
 namespace krado {
 
@@ -16,7 +17,7 @@ class GeomCurve;
 class MeshVertex;
 class MeshCurveVertex;
 
-class MeshCurve : public MeshingParameters {
+class MeshCurve : public Meshable {
 public:
     MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
 
@@ -88,6 +89,32 @@ public:
     /// @return Mesh size at parameter
     double mesh_size_at_param(double u) const;
 
+    /// Set meshing scheme
+    ///
+    /// @param name Name od the scheme to assign
+    /// @return Pointer to the scheme
+    template <typename SCHEME>
+    SCHEME &
+    set_scheme(SCHEME::Options options)
+    {
+        auto sch = std::make_unique<SCHEME>(options);
+        auto sch_ptr = sch.get();
+        this->scheme_ = std::move(sch);
+        return *sch_ptr;
+    }
+
+    bool
+    has_scheme() const
+    {
+        return this->scheme_.get() != nullptr;
+    }
+
+    Scheme1D &
+    scheme()
+    {
+        return *this->scheme_.get();
+    }
+
 private:
     const GeomCurve & gcurve_;
     /// All vertices on this curve
@@ -100,8 +127,10 @@ private:
     std::vector<MeshElement> segs_;
     ///
     bool too_smoll;
+    ///
+    std::unique_ptr<Scheme1D> scheme_;
     /// Mesh size for the edge.
-    std::optional<double> mesh_size_;
+    Optional<double> mesh_size_;
 };
 
 } // namespace krado

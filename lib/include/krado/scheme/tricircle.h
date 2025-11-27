@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/ptr.h"
-#include "krado/scheme.h"
 #include "krado/scheme2d.h"
 
 namespace krado {
@@ -12,12 +11,21 @@ namespace krado {
 class MeshSurface;
 class MeshCurve;
 
-class SchemeTriCircle : public Scheme, public Scheme2D {
+class SchemeTriCircle : public Scheme2D {
 public:
-    SchemeTriCircle();
+    struct Options {
+        /// Number of radial intervals
+        int radial_intervals = 0;
+    };
+
+public:
+    SchemeTriCircle(Options options);
 
     void mesh_surface(Ptr<MeshSurface> surface) override;
     void select_curve_scheme(Ptr<MeshCurve> curve) override;
+
+private:
+    Options opts_;
 };
 
 } // namespace krado

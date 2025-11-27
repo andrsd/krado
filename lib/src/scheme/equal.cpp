@@ -39,13 +39,13 @@ mesh_curve_by_count(const GeomCurve & curve, int n_segments, double tol = 1e-8)
 
 } // namespace
 
-SchemeEqual::SchemeEqual() : Scheme("equal"), Scheme1D() {}
+SchemeEqual::SchemeEqual(Options options) : Scheme1D("equal"), opts_(options) {}
 
 void
 SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
-    auto n_intervals = get<int>("intervals");
+    auto n_intervals = this->opts_.intervals;
 
     Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_intervals);
 

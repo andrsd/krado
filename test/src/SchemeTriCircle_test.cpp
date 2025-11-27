@@ -8,6 +8,8 @@
 #include "krado/mesh_volume.h"
 #include "ExceptionTestMacros.h"
 #include "builder.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/tricircle.h"
 
 using namespace krado;
 
@@ -16,20 +18,15 @@ TEST(SchemeCircleTest, circle)
     auto circle = testing::build_circle(Point(0, 0, 0), 1);
     GeomModel model(circle);
 
-    // clang-format off
-    model.curve(1)
-        ->set_scheme("equal")
-        .set("intervals", 8)
-    ;
-    // clang-format on
+    SchemeEqual::Options opts1;
+    opts1.intervals = 8;
+    model.curve(1)->set_scheme<SchemeEqual>(opts1);
     model.mesh_curve(1);
 
     auto surf = model.surface(1);
-    // clang-format off
-    surf->set_scheme("tricircle")
-        .set<int>("radial_intervals", 1)
-    ;
-    // clang-format on
+    SchemeTriCircle::Options opts;
+    opts.radial_intervals = 1;
+    surf->set_scheme<SchemeTriCircle>(opts);
     model.mesh_surface(1);
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
@@ -55,6 +52,7 @@ TEST(SchemeCircleTest, not_circle)
     GeomModel model(circle);
 
     auto surf = model.surface(1);
-    surf->set_scheme("tricircle");
+    SchemeTriCircle::Options opts;
+    surf->set_scheme<SchemeTriCircle>(opts);
     EXPECT_THROW_MSG(model.mesh_surface(1), "Surface 1 is not a circle");
 }

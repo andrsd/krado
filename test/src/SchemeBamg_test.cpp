@@ -6,6 +6,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
+#include "krado/scheme/bamg.h"
 #include "ExceptionTestMacros.h"
 #include <filesystem>
 
@@ -21,13 +22,11 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
     auto shape = shapes[0];
     GeomModel model(shape);
 
-    // clang-format off
-    model.surface(1)
-        ->set("marker", 10)
-        .set_scheme("bamg")
-        .set("max_area", 0.9);
+    SchemeBAMG::Options opts;
+    opts.max_area = 0.9;
+    model.surface(1)->set_scheme<SchemeBAMG>(opts);
+    model.surface(1)->set_marker(10);
     model.mesh_surface(1);
-    // clang-format on
 
     auto quad = model.surface(1);
     ASSERT_EQ(quad->all_vertices().size(), 10);

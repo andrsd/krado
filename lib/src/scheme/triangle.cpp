@@ -134,11 +134,11 @@ create_regions(Ptr<MeshSurface> surface, const SchemeTriangle::Options & opts, t
     auto & scheme = surface->scheme();
     io.numberofregions = 1;
     io.regionlist = new double[io.numberofregions * 4];
-    auto [x, y] = scheme.get<std::tuple<double, double>>("region_point");
+    auto [x, y] = opts.region_point.value();
     io.regionlist[0] = x;
     io.regionlist[1] = y;
-    io.regionlist[2] = surface.get<int>("marker");
-    io.regionlist[3] = scheme.get<double>("max_area");
+    io.regionlist[2] = surface->marker();
+    io.regionlist[3] = opts.max_area.value();
 }
 
 void
@@ -190,7 +190,8 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
 #ifdef KRADO_WITH_TRIANGLE
     Log::info("Meshing surface {}: scheme='triangle'", surface->id());
 
-    bool has_region = has<std::tuple<double, double>>("region_point");
+    auto has_region = this->opts_.region_point.has_value();
+    auto has_max_area = this->opts_.max_area.has_value();
 
     triangulateio in, out;
 
@@ -200,14 +201,14 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
     auto pt_id = tri::build_point_map(surface);
     tri::create_pslg(surface, pt_id, in);
     if (has_region)
-        tri::create_regions(surface, in);
+        tri::create_regions(surface, this->opts_, in);
 
     // p = triangulate planar straight line graph
     // z = zero-based indexing
     // Q = quiet
     auto switches = fmt::format("pzQ");
-    if (!has_region && has<double>("max_area"))
-        switches += fmt::format("a{}", get<double>("max_area"));
+    if (!has_region && has_max_area)
+        switches += fmt::format("a{}", this->opts_.max_area.value());
     else
         switches += fmt::format("a");
     triangulate((char *) switches.c_str(), &in, &out, nullptr);
@@ -233,6 +234,6 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
 #endif
 }
 
-SchemeTriangle::SchemeTriangle() : Scheme("triangle") {}
+SchemeTriangle::SchemeTriangle(Options options) : Scheme2D("triangle"), opts_(options) {}
 
 } // namespace krado
