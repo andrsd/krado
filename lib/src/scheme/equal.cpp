@@ -49,7 +49,9 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 
     Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_intervals);
 
-    if (geom_curve.type() == GeomCurve::CurveType::Circle) {
+    if (geom_curve.type() == GeomCurve::CurveType::Circle &&
+        std::abs(geom_curve.length() - 2. * M_PI) < 1e-10) {
+        // curve is a full circle
         auto bnd_verts = curve->bounding_vertices();
         auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
         curve->add_vertex(bnd_verts[0]);
