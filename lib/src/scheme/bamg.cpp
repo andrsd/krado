@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/bamg.h"
+#include "krado/element.h"
 #include "krado/mesh.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_surface_vertex.h"
@@ -265,7 +266,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
     for (int i = 0; i < bamg_session.num_of_triangles(); i++) {
         if (bamg_session.is_triangle_active(i)) {
             std::array<Ptr<MeshVertexAbstract>, 3> tri;
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < Tri3::N_VERTICES; j++) {
                 auto vtx = bamg_session.triangle(i)[j];
                 auto idx = im.surface_vertex(vtx.r.x, vtx.r.y);
                 tri[j] = idx;
