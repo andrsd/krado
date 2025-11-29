@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 
 namespace krado {
@@ -17,6 +18,12 @@ using marker_t = int;
 ///
 template <typename T>
 using Optional = std::optional<T>;
+
+/// 32-bit integer
+using int32 = std::int32_t;
+
+/// 64-bit integer
+using int64 = std::int64_t;
 
 enum class ElementType {
     /// 0-D element
