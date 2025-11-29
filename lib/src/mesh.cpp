@@ -200,7 +200,11 @@ append(std::vector<side_set_entry_t> & dest, const std::vector<side_set_entry_t>
 
 Mesh::Mesh() {}
 
-Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) : pnts_(points), elems_(elems) {}
+Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) :
+    pnts_(std::move(points)),
+    elems_(std::move(elems))
+{
+}
 
 std::size_t
 Mesh::num_points() const
