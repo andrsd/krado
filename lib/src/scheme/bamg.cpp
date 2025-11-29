@@ -20,9 +20,9 @@ namespace {
 
 static const bamg::Direction NoDirOfSearch = bamg::Direction();
 
-class Bamg {
+class BAMGSession {
 public:
-    Bamg(Ptr<MeshSurface> surface) :
+    BAMGSession(Ptr<MeshSurface> surface) :
         surface(surface),
         Hmin(std::numeric_limits<bamg::Real8>::max()),
         len(nullptr),
@@ -39,7 +39,7 @@ public:
         this->Gh.AfterRead();
     }
 
-    ~Bamg()
+    ~BAMGSession()
     {
         delete[] this->len;
         delete[] this->reft;
@@ -247,14 +247,14 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
 {
     Log::info("Meshing surface {}: scheme='bamg'", surface->id());
 
-    Bamg mg(surface);
-    mg.set_uniform_mesh_size(this->opts_.max_area);
+    BAMGSession bamg_session(surface);
+    bamg_session.set_uniform_mesh_size(this->opts_.max_area);
 
-    mg.triangularize();
+    bamg_session.triangularize();
 
     SurfaceIndexMapper im(surface);
-    for (int i = 0; i < mg.num_of_edges(); i++) {
-        auto & edge = mg.edge(i);
+    for (int i = 0; i < bamg_session.num_of_edges(); i++) {
+        auto & edge = bamg_session.edge(i);
         auto crv_idx = edge.ref;
         auto curve = surface->curves()[crv_idx];
         assert(!curve.is_null());
@@ -262,11 +262,11 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
                              im.curve_vertex(crv_idx, edge[1].r.x, edge[1].r.y) });
     }
 
-    for (int i = 0; i < mg.num_of_triangles(); i++) {
-        if (mg.is_triangle_active(i)) {
+    for (int i = 0; i < bamg_session.num_of_triangles(); i++) {
+        if (bamg_session.is_triangle_active(i)) {
             std::array<Ptr<MeshVertexAbstract>, 3> tri;
             for (int j = 0; j < 3; j++) {
-                auto vtx = mg.triangle(i)[j];
+                auto vtx = bamg_session.triangle(i)[j];
                 auto idx = im.surface_vertex(vtx.r.x, vtx.r.y);
                 tri[j] = idx;
             }
