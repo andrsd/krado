@@ -15,3 +15,7 @@ existing 3D mesh elements like hexahedras or pyramids into tetrahedras.
 
    mesh_tet.set_up()
    krado.export_mesh(mesh_tet, "path/to/tetrahedralized_mesh.exo")
+
+.. caution::
+
+   Vertex, side, and face sets are not preserved when using ``tetrahedralize``.
