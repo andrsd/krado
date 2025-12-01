@@ -17,6 +17,20 @@ combine meshes from different sources.
    merged_mesh.set_up()
    krado.export_mesh(merged_mesh, "path/to/merged_mesh.exo")
 
+If you have a larger number of blocks to merge, use
+
+.. code-block:: python
+
+   import krado
+
+   parts = []
+   parts.append(krado.import_mesh("path/to/mesh1.exo"))
+   parts.append(krado.import_mesh("path/to/mesh2.exo"))
+
+   merged_mesh = krado.combine(parts)
+
+   merged_mesh.set_up()
+   krado.export_mesh(merged_mesh, "path/to/merged_mesh.exo")
 
 Note that if the meshes share nodes, the nodes will be duplicated in the merged
 mesh. To remove duplicate nodes, you can use the :meth:`krado.Mesh.remove_duplicate_points`
