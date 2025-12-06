@@ -9,13 +9,16 @@
 namespace krado {
 
 class Cylinder : public GeomVolume {
+private:
+    Cylinder(const TopoDS_Solid & solid);
+
 public:
     /// Create a cylinder
     ///
     /// @param location Location in space
     /// @param radius Radius
     /// @param height Height
-    Cylinder(const Axis2 & location, double radius, double height);
+    static Cylinder create(const Axis2 & location, double radius, double height);
 };
 
 } // namespace krado
