@@ -9,12 +9,15 @@
 namespace krado {
 
 class Sphere : public GeomVolume {
+private:
+    explicit Sphere(const TopoDS_Solid & solid);
+
 public:
     /// Create a sphere
     ///
     /// @param center Location of the sphere center
     /// @param radius Radius of the sphere
-    Sphere(const Point & center, double radius);
+    static Sphere create(const Point & center, double radius);
 };
 
 } // namespace krado
