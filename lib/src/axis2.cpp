@@ -8,6 +8,8 @@
 
 namespace krado {
 
+Axis2::Axis2(const gp_Ax2 & ax2) : ax2_(ax2) {}
+
 Axis2::Axis2(const Point & pt, const Vector & direction) :
     ax2_(occ::to_pnt(pt), occ::to_dir(direction))
 {

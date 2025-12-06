@@ -12,6 +12,8 @@ namespace krado {
 
 class Axis2 {
 public:
+    explicit Axis2(const gp_Ax2 & ax2);
+
     Axis2(const Point & pt, const Vector & direction);
 
     /// Creates an axis placement with an origin `pt` such that:
