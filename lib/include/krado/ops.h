@@ -18,6 +18,7 @@ class GeomShell;
 class Mesh;
 class Point;
 class Vector;
+class Axis1;
 
 /// Translate a shape
 ///
@@ -40,6 +41,13 @@ GeomShape translate(const GeomShape & shape, const Point & p1, const Point & p2)
 /// @param s Scale factor
 /// @return Scaled shape
 GeomShape scale(const GeomShape & shape, double s);
+
+/// Mirror a shape about an axis
+///
+/// @param shape Shape to mirror
+/// @param axis Axis to mirror about
+/// @return Resulting shape
+GeomShape mirror(const GeomShape & shape, const Axis1 & axis);
 
 /// Split a curve at a given parameter
 ///

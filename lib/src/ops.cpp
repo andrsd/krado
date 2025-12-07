@@ -60,6 +60,15 @@ scale(const GeomShape & shape, double s)
     return GeomShape(brep_trsf.Shape());
 }
 
+GeomShape
+mirror(const GeomShape & shape, const Axis1 & axis)
+{
+    gp_Trsf trsf;
+    trsf.SetMirror(occ::to_ax1(axis));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
 {

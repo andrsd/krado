@@ -2,6 +2,7 @@
 #include "krado/ops.h"
 #include "krado/point.h"
 #include "krado/box.h"
+#include "krado/axis1.h"
 #include "krado/mesh.h"
 #include "krado/element.h"
 
@@ -25,6 +26,14 @@ TEST(OperationsTest, scale)
     auto box = Box::create(Point(0, 0, 0), Point(1, 2, 3));
     auto res = scale(box, 0.1);
     EXPECT_NEAR(res.volume(), 0.006, 1e-10);
+}
+
+TEST(OperationsTest, mirror)
+{
+    Axis1 ax(Point(5, 0, 0), Vector(1, 0, 0));
+    auto box = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto res = mirror(box, ax);
+    EXPECT_NEAR(std::abs(box.volume() - res.volume()), 0, 1e-10);
 }
 
 TEST(OperationsTest, fuse)
