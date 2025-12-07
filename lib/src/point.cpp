@@ -5,6 +5,7 @@
 #include "krado/exception.h"
 #include "krado/uv_param.h"
 #include "krado/vector.h"
+#include "gp_Pnt.hxx"
 #include <iostream>
 #include <iomanip>
 
@@ -176,6 +177,12 @@ operator==(const krado::Point & a, const krado::Point & b)
 {
     return (std::abs(a.x - b.x) < 1e-12) && (std::abs(a.y - b.y) < 1e-12) &&
            (std::abs(a.z - b.z) < 1e-12);
+}
+
+Point
+Point::create(const gp_Pnt & pt)
+{
+    return Point(pt.X(), pt.Y(), pt.Z());
 }
 
 } // namespace krado
