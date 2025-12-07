@@ -410,7 +410,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, const Vector & vec)
 {
-    BRepPrimAPI_MakePrism result(shape, vec);
+    BRepPrimAPI_MakePrism result(shape, (gp_Dir) vec);
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");
@@ -461,7 +461,7 @@ draft(const GeomShape & shape,
     auto dir = pln.axis().direction();
     BRepOffsetAPI_DraftAngle drft(shape);
     for (auto & f : faces) {
-        drft.Add(f, occ::to_dir(dir), angle, pln);
+        drft.Add(f, dir, angle, pln);
         if (!drft.AddDone())
             throw Exception("Faulty face was given");
     }

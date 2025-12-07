@@ -71,6 +71,8 @@ public:
 
     operator gp_Vec() const;
 
+    operator gp_Dir() const;
+
     /// X-component
     double x;
     /// Y-component

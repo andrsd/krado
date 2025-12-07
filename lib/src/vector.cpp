@@ -86,6 +86,11 @@ Vector::operator gp_Vec() const
     return gp_Vec(this->x, this->y, this->z);
 }
 
+Vector::operator gp_Dir() const
+{
+    return gp_Dir(this->x, this->y, this->z);
+}
+
 Vector
 Vector::operator+(const Vector & other) const
 {
