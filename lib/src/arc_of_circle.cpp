@@ -58,7 +58,7 @@ ArcOfCircle::create(const class Circle & circ, const Point & pt1, const Point & 
 ArcOfCircle
 ArcOfCircle::create(const Point & pt1, const Vector & tangent, const Point & pt2)
 {
-    GC_MakeArcOfCircle mk_circ(occ::to_pnt(pt1), occ::to_vec(tangent), occ::to_pnt(pt2));
+    GC_MakeArcOfCircle mk_circ(occ::to_pnt(pt1), tangent, occ::to_pnt(pt2));
     if (!mk_circ.IsDone())
         throw Exception("ArcOfCircle was not created");
     auto arc = mk_circ.Value();

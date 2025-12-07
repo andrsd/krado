@@ -21,9 +21,6 @@ namespace occ {
 /// Convert krado Point to OpenCASCADE gp_Pnt
 gp_Pnt to_pnt(const Point & pt);
 
-/// Convert krado Vector to OpenCASCADE gp_Vec
-gp_Vec to_vec(const Vector & vec);
-
 /// Convert krado Vector to OpenCASCADE gp_Dir
 gp_Dir to_dir(const Vector & vec);
 

@@ -56,7 +56,7 @@ Vector::normalized() const
 void
 Vector::rotate(const Axis1 & axis, double angle)
 {
-    auto v = occ::to_vec(*this);
+    gp_Vec v(this->x, this->y, this->z);
     v.Rotate(axis, angle);
     this->x = v.X();
     this->y = v.Y();
@@ -66,7 +66,7 @@ Vector::rotate(const Axis1 & axis, double angle)
 Vector
 Vector::rotated(const Axis1 & axis, double angle) const
 {
-    auto v = occ::to_vec(*this);
+    gp_Vec v(this->x, this->y, this->z);
     v.Rotate(axis, angle);
     return Vector(v.X(), v.Y(), v.Z());
 }
@@ -79,6 +79,11 @@ Vector::is_equal(const Vector & other, double tol) const
         return true;
     else
         return false;
+}
+
+Vector::operator gp_Vec() const
+{
+    return gp_Vec(this->x, this->y, this->z);
 }
 
 Vector

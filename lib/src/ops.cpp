@@ -49,7 +49,7 @@ GeomShape
 translate(const GeomShape & shape, const Vector & v)
 {
     gp_Trsf trsf;
-    trsf.SetTranslation(occ::to_vec(v));
+    trsf.SetTranslation(v);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -410,7 +410,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, const Vector & vec)
 {
-    BRepPrimAPI_MakePrism result(shape, occ::to_vec(vec));
+    BRepPrimAPI_MakePrism result(shape, vec);
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");

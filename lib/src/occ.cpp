@@ -17,12 +17,6 @@ to_pnt(const Point & pt)
     return gp_Pnt(pt.x, pt.y, pt.z);
 }
 
-gp_Vec
-to_vec(const Vector & vec)
-{
-    return gp_Vec(vec.x, vec.y, vec.z);
-}
-
 gp_Dir
 to_dir(const Vector & vec)
 {
