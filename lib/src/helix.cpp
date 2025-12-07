@@ -36,7 +36,7 @@ Helix::create(const Axis2 & ax2, double radius, double height, double turns, dou
     translate.SetTranslation(occ::to_vec(dh * axial_dir));
     // partial rotate transformation
     gp_Trsf rotate;
-    rotate.SetRotation(occ::to_ax1(ax1), dangle);
+    rotate.SetRotation(ax1, dangle);
 
     auto pt = occ::to_pnt(ax1.location());
     pt.Translate(occ::to_vec(radius * ax2.x_direction()));

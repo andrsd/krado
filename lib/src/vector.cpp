@@ -56,9 +56,8 @@ Vector::normalized() const
 void
 Vector::rotate(const Axis1 & axis, double angle)
 {
-    auto ax1 = occ::to_ax1(axis);
     auto v = occ::to_vec(*this);
-    v.Rotate(ax1, angle);
+    v.Rotate(axis, angle);
     this->x = v.X();
     this->y = v.Y();
     this->z = v.Z();
@@ -67,9 +66,8 @@ Vector::rotate(const Axis1 & axis, double angle)
 Vector
 Vector::rotated(const Axis1 & axis, double angle) const
 {
-    auto ax1 = occ::to_ax1(axis);
     auto v = occ::to_vec(*this);
-    v.Rotate(ax1, angle);
+    v.Rotate(axis, angle);
     return Vector(v.X(), v.Y(), v.Z());
 }
 

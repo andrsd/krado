@@ -31,4 +31,9 @@ Axis1::is_equal(const Axis1 & other, double tol) const
            (direction() - other.direction()).magnitude() <= tol;
 }
 
+Axis1::operator gp_Ax1() const
+{
+    return this->ax1_;
+}
+
 } // namespace krado

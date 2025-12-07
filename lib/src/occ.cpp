@@ -30,12 +30,6 @@ to_dir(const Vector & vec)
     return gp_Dir(dir.x, dir.y, dir.z);
 }
 
-gp_Ax1
-to_ax1(const Axis1 & ax1)
-{
-    return gp_Ax1(to_pnt(ax1.location()), to_dir(ax1.direction()));
-}
-
 gp_Ax2
 to_ax2(const Axis2 & ax2)
 {

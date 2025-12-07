@@ -76,7 +76,7 @@ GeomShape
 mirror(const GeomShape & shape, const Axis1 & axis)
 {
     gp_Trsf trsf;
-    trsf.SetMirror(occ::to_ax1(axis));
+    trsf.SetMirror(axis);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -420,7 +420,7 @@ extrude(const GeomShape & shape, const Vector & vec)
 GeomShape
 revolve(const GeomShape & shape, const Axis1 & axis, double angle)
 {
-    BRepPrimAPI_MakeRevol result(shape, occ::to_ax1(axis), angle);
+    BRepPrimAPI_MakeRevol result(shape, axis, angle);
     result.Build();
     if (!result.IsDone())
         throw Exception("revolve failed");
@@ -431,7 +431,7 @@ GeomShape
 rotate(const GeomShape & shape, const Axis1 & axis, double angle)
 {
     gp_Trsf trsf;
-    trsf.SetRotation(occ::to_ax1(axis), angle);
+    trsf.SetRotation(axis, angle);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -476,7 +476,7 @@ GeomShape
 hole(const GeomShape & shape, const Axis1 & axis, double diameter)
 {
     BRepFeat_MakeCylindricalHole h;
-    h.Init(shape, occ::to_ax1(axis));
+    h.Init(shape, axis);
     h.Perform(diameter / 2.);
     h.Build();
     if (h.Status() == BRepFeat_NoError)
@@ -489,7 +489,7 @@ GeomShape
 hole(const GeomShape & shape, const Axis1 & axis, double diameter, double length)
 {
     BRepFeat_MakeCylindricalHole h;
-    h.Init(shape, occ::to_ax1(axis));
+    h.Init(shape, axis);
     h.PerformBlind(diameter / 2., length);
     h.Build();
     if (h.Status() == BRepFeat_NoError)
