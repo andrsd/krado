@@ -32,6 +32,7 @@ TEST(OperationsTest, fuse)
     auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
     auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = fuse(box1, box2);
+    EXPECT_NEAR(res.volume(), 17.25, 1e-10);
 }
 
 TEST(OperationsTest, fuse_multiple)
@@ -40,6 +41,7 @@ TEST(OperationsTest, fuse_multiple)
     auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto box3 = Box::create(Point(1, 1, 0), Point(2, 2, -1));
     auto res = fuse({ box1, box2, box3 });
+    EXPECT_NEAR(res.volume(), 18.25, 1e-10);
 }
 
 TEST(OperationsTest, cut)
@@ -47,6 +49,7 @@ TEST(OperationsTest, cut)
     auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
     auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = cut(box1, box2);
+    EXPECT_NEAR(res.volume(), 4.125, 1e-10);
 }
 
 TEST(OperationsTest, intersect)
@@ -54,6 +57,7 @@ TEST(OperationsTest, intersect)
     auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
     auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = intersect(box1, box2);
+    EXPECT_NEAR(res.volume(), 1.875, 1e-10);
 }
 
 TEST(OperationsTest, combine_meshes)
