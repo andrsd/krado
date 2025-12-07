@@ -17,7 +17,7 @@ Cylinder::Cylinder(const TopoDS_Solid & solid) : GeomVolume(solid)
 Cylinder
 Cylinder::create(const Axis2 & axis, double radius, double height)
 {
-    BRepPrimAPI_MakeCylinder cyl(occ::to_ax2(axis), radius, height);
+    BRepPrimAPI_MakeCylinder cyl(axis, radius, height);
     cyl.Build();
     if (!cyl.IsDone())
         throw Exception("Cylinder was not created");

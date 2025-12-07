@@ -22,7 +22,7 @@ Spline::create(const std::vector<Point> & points)
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);
     for (std::size_t idx = 0; idx < n; idx++)
-        pnts->SetValue(idx + 1, occ::to_pnt(points[idx]));
+        pnts->SetValue(idx + 1, points[idx]);
     GeomAPI_Interpolate mk(pnts, false, 1e-8);
     mk.Perform();
     if (!mk.IsDone())
@@ -42,9 +42,9 @@ Spline::create(const std::vector<Point> & points,
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);
     for (int idx = 0; idx < n; idx++)
-        pnts->SetValue(idx + 1, occ::to_pnt(points[idx]));
+        pnts->SetValue(idx + 1, points[idx]);
     GeomAPI_Interpolate mk(pnts, false, 1e-8);
-    mk.Load(occ::to_vec(initial_tg), occ::to_vec(final_tg));
+    mk.Load(initial_tg, final_tg);
     mk.Perform();
     if (!mk.IsDone())
         throw Exception("Spline was not created");

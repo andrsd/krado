@@ -30,6 +30,8 @@ public:
     /// Get circle location
     Point location() const;
 
+    operator gp_Circ() const;
+
 private:
     Circle(const TopoDS_Edge &, const gp_Circ & circ);
 
@@ -64,8 +66,6 @@ public:
     /// @param pt2 Second point
     /// @param pt3 Third point
     static Circle create(const Point & pt1, const Point & pt2, const Point & pt3);
-
-    friend gp_Circ occ::to_circ(const Circle & circle);
 };
 
 } // namespace krado

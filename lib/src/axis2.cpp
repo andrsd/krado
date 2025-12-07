@@ -10,15 +10,12 @@ namespace krado {
 
 Axis2::Axis2(const gp_Ax2 & ax2) : ax2_(ax2) {}
 
-Axis2::Axis2(const Point & pt, const Vector & direction) :
-    ax2_(occ::to_pnt(pt), occ::to_dir(direction))
-{
-}
+Axis2::Axis2(const Point & pt, const Vector & direction) : ax2_(pt, direction) {}
 
 Axis2::Axis2(const Point & pt, const Vector & n, const Vector & v_x)
 {
     try {
-        this->ax2_ = gp_Ax2(occ::to_pnt(pt), occ::to_dir(n), occ::to_dir(v_x));
+        this->ax2_ = gp_Ax2(pt, n, v_x);
     }
     catch (const Standard_ConstructionError & e) {
         throw Exception("Axis2: `n` and `v_x` are parallel");
@@ -60,6 +57,11 @@ Axis2::y_direction() const
 {
     auto y_dir = this->ax2_.YDirection();
     return Vector(y_dir.X(), y_dir.Y(), y_dir.Z());
+}
+
+Axis2::operator gp_Ax2() const
+{
+    return this->ax2_;
 }
 
 } // namespace krado

@@ -13,7 +13,7 @@ SolidClassifier::SolidClassifier(const GeomShape & shape) : classifier_(shape) {
 bool
 SolidClassifier::inside(const Point & pt)
 {
-    this->classifier_.Perform(occ::to_pnt(pt), Precision::Confusion());
+    this->classifier_.Perform(pt, Precision::Confusion());
     auto state = this->classifier_.State();
     return (state == TopAbs_IN || state == TopAbs_ON);
 }
@@ -21,7 +21,7 @@ SolidClassifier::inside(const Point & pt)
 bool
 SolidClassifier::outside(const Point & pt)
 {
-    this->classifier_.Perform(occ::to_pnt(pt), Precision::Confusion());
+    this->classifier_.Perform(pt, Precision::Confusion());
     auto state = this->classifier_.State();
     return (state == TopAbs_OUT);
 }

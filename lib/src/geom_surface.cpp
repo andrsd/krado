@@ -151,7 +151,7 @@ GeomSurface::operator const TopoDS_Face &() const
 std::tuple<bool, UVParam>
 GeomSurface::project(const Point & pt) const
 {
-    this->proj_pt_on_surface_.Perform(occ::to_pnt(pt));
+    this->proj_pt_on_surface_.Perform(pt);
 
     if (this->proj_pt_on_surface_.NbPoints() > 0) {
         double u, v;
@@ -165,7 +165,7 @@ GeomSurface::project(const Point & pt) const
 Point
 GeomSurface::nearest_point(const Point & pt) const
 {
-    this->proj_pt_on_surface_.Perform(occ::to_pnt(pt));
+    this->proj_pt_on_surface_.Perform(pt);
     if (this->proj_pt_on_surface_.NbPoints())
         return Point::create(this->proj_pt_on_surface_.NearestPoint());
     else

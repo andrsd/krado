@@ -29,6 +29,8 @@ public:
 
     bool is_equal(const Axis1 & other, double tol) const;
 
+    operator gp_Ax1() const;
+
 private:
     gp_Ax1 ax1_;
 };

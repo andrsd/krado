@@ -32,7 +32,7 @@ Polygon::build_polygon(const std::vector<Point> & points, bool closed)
 {
     BRepBuilderAPI_MakePolygon polygon;
     for (auto & pt : points)
-        polygon.Add(occ::to_pnt(pt));
+        polygon.Add(pt);
     if (closed)
         polygon.Close();
     polygon.Build();

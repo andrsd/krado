@@ -49,7 +49,7 @@ GeomShape
 translate(const GeomShape & shape, const Vector & v)
 {
     gp_Trsf trsf;
-    trsf.SetTranslation(occ::to_vec(v));
+    trsf.SetTranslation(v);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -58,7 +58,7 @@ GeomShape
 translate(const GeomShape & shape, const Point & p1, const Point & p2)
 {
     gp_Trsf trsf;
-    trsf.SetTranslation(occ::to_pnt(p1), occ::to_pnt(p2));
+    trsf.SetTranslation(p1, p2);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -76,7 +76,7 @@ GeomShape
 mirror(const GeomShape & shape, const Axis1 & axis)
 {
     gp_Trsf trsf;
-    trsf.SetMirror(occ::to_ax1(axis));
+    trsf.SetMirror(axis);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -410,7 +410,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, const Vector & vec)
 {
-    BRepPrimAPI_MakePrism result(shape, occ::to_vec(vec));
+    BRepPrimAPI_MakePrism result(shape, (gp_Dir) vec);
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");
@@ -420,7 +420,7 @@ extrude(const GeomShape & shape, const Vector & vec)
 GeomShape
 revolve(const GeomShape & shape, const Axis1 & axis, double angle)
 {
-    BRepPrimAPI_MakeRevol result(shape, occ::to_ax1(axis), angle);
+    BRepPrimAPI_MakeRevol result(shape, axis, angle);
     result.Build();
     if (!result.IsDone())
         throw Exception("revolve failed");
@@ -431,7 +431,7 @@ GeomShape
 rotate(const GeomShape & shape, const Axis1 & axis, double angle)
 {
     gp_Trsf trsf;
-    trsf.SetRotation(occ::to_ax1(axis), angle);
+    trsf.SetRotation(axis, angle);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }
@@ -461,7 +461,7 @@ draft(const GeomShape & shape,
     auto dir = pln.axis().direction();
     BRepOffsetAPI_DraftAngle drft(shape);
     for (auto & f : faces) {
-        drft.Add(f, occ::to_dir(dir), angle, pln);
+        drft.Add(f, dir, angle, pln);
         if (!drft.AddDone())
             throw Exception("Faulty face was given");
     }
@@ -476,7 +476,7 @@ GeomShape
 hole(const GeomShape & shape, const Axis1 & axis, double diameter)
 {
     BRepFeat_MakeCylindricalHole h;
-    h.Init(shape, occ::to_ax1(axis));
+    h.Init(shape, axis);
     h.Perform(diameter / 2.);
     h.Build();
     if (h.Status() == BRepFeat_NoError)
@@ -489,7 +489,7 @@ GeomShape
 hole(const GeomShape & shape, const Axis1 & axis, double diameter, double length)
 {
     BRepFeat_MakeCylindricalHole h;
-    h.Init(shape, occ::to_ax1(axis));
+    h.Init(shape, axis);
     h.PerformBlind(diameter / 2., length);
     h.Build();
     if (h.Status() == BRepFeat_NoError)

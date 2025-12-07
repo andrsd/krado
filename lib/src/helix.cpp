@@ -33,13 +33,13 @@ Helix::create(const Axis2 & ax2, double radius, double height, double turns, dou
 
     // partial translate transformation
     gp_Trsf translate;
-    translate.SetTranslation(occ::to_vec(dh * axial_dir));
+    translate.SetTranslation(dh * axial_dir);
     // partial rotate transformation
     gp_Trsf rotate;
-    rotate.SetRotation(occ::to_ax1(ax1), dangle);
+    rotate.SetRotation(ax1, dangle);
 
-    auto pt = occ::to_pnt(ax1.location());
-    pt.Translate(occ::to_vec(radius * ax2.x_direction()));
+    gp_Pnt pt = ax1.location();
+    pt.Translate(radius * ax2.x_direction());
     TColgp_HArray1OfPnt pnts(0, n_pts);
     for (int idx = 0; idx < n_pts; idx++) {
         pnts.SetValue(idx, pt);

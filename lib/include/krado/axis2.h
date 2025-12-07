@@ -49,6 +49,8 @@ public:
     /// @return x-direction
     Vector y_direction() const;
 
+    operator gp_Ax2() const;
+
 private:
     gp_Ax2 ax2_;
 };
