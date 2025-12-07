@@ -16,6 +16,23 @@ class GeomSurface;
 class GeomCurve;
 class GeomShell;
 class Mesh;
+class Point;
+class Vector;
+
+/// Translate a shape
+///
+/// @param shape Shape to translate
+/// @param v Translation vector
+/// @return Translated shape
+GeomShape translate(const GeomShape & shape, const Vector & v);
+
+/// Translate a shape
+///
+/// @param shape Shape to translate
+/// @param p1 Point one of the translation vector
+/// @param p2 Point two of the translation vector
+/// @return Translated shape
+GeomShape translate(const GeomShape & shape, const Point & p1, const Point & p2);
 
 /// Split a curve at a given parameter
 ///

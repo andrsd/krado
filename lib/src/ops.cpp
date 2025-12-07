@@ -11,9 +11,12 @@
 #include "krado/log.h"
 #include "krado/mesh.h"
 #include "krado/types.h"
+#include "krado/vector.h"
+#include "krado/occ.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
+#include "BRepBuilderAPI_Transform.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"
 #include "BRepAlgoAPI_Cut.hxx"
@@ -27,9 +30,26 @@
 #include "BRepAlgoAPI_Splitter.hxx"
 #include "TopoDS_Edge.hxx"
 #include "TopTools_DataMapOfShapeInteger.hxx"
-#include "krado/vector.h"
 
 namespace krado {
+
+GeomShape
+translate(const GeomShape & shape, const Vector & v)
+{
+    gp_Trsf trsf;
+    trsf.SetTranslation(occ::to_vec(v));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
+GeomShape
+translate(const GeomShape & shape, const Point & p1, const Point & p2)
+{
+    gp_Trsf trsf;
+    trsf.SetTranslation(occ::to_pnt(p1), occ::to_pnt(p2));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
 
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)

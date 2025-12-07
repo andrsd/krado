@@ -8,6 +8,18 @@
 using namespace krado;
 using namespace testing;
 
+TEST(OperationsTest, translate_vec)
+{
+    auto box = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto res = translate(box, Vector(1, 0, 0));
+}
+
+TEST(OperationsTest, translate_pt)
+{
+    auto box = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto res = translate(box, Point(1, 0, 0), Point(2, 0, 0));
+}
+
 TEST(OperationsTest, fuse)
 {
     auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
