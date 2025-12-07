@@ -33,6 +33,11 @@ Circle::location() const
     return Point(pnt.X(), pnt.Y(), pnt.Z());
 }
 
+Circle::operator gp_Circ() const
+{
+    return this->circ_;
+}
+
 Circle
 Circle::create(const Axis2 & origin, double radius)
 {

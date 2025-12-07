@@ -44,7 +44,7 @@ ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 ArcOfCircle
 ArcOfCircle::create(const class Circle & circ, const Point & pt1, const Point & pt2, bool sense)
 {
-    GC_MakeArcOfCircle mk_circ(occ::to_circ(circ), occ::to_pnt(pt1), occ::to_pnt(pt2), sense);
+    GC_MakeArcOfCircle mk_circ(circ, occ::to_pnt(pt1), occ::to_pnt(pt2), sense);
     if (!mk_circ.IsDone())
         throw Exception("ArcOfCircle was not created");
     auto arc = mk_circ.Value();

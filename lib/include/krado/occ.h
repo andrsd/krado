@@ -27,8 +27,5 @@ gp_Vec to_vec(const Vector & vec);
 /// Convert krado Vector to OpenCASCADE gp_Dir
 gp_Dir to_dir(const Vector & vec);
 
-/// Convert krado Circle to OpenCASCADE gp_Circ
-gp_Circ to_circ(const Circle & circle);
-
 } // namespace occ
 } // namespace krado

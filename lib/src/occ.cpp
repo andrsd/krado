@@ -30,11 +30,5 @@ to_dir(const Vector & vec)
     return gp_Dir(dir.x, dir.y, dir.z);
 }
 
-gp_Circ
-to_circ(const Circle & circle)
-{
-    return circle.circ_;
-}
-
 } // namespace occ
 } // namespace krado
