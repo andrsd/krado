@@ -8,17 +8,18 @@
 
 namespace krado {
 
-class Cylinder : public GeomVolume {
+class Cone : public GeomVolume {
 private:
-    Cylinder(const TopoDS_Solid & solid);
+    Cone(const TopoDS_Solid & solid);
 
 public:
-    /// Create a cylinder
+    /// Create a cone
     ///
     /// @param location Location in space
-    /// @param radius Radius
+    /// @param radius1 First radius
+    /// @param radius2 Second radius
     /// @param height Height
-    static Cylinder create(const Axis2 & location, double radius, double height);
+    static Cone create(const Axis2 & location, double radius1, double radius2, double height);
 };
 
 } // namespace krado

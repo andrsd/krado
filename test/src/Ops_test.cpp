@@ -10,30 +10,30 @@ using namespace testing;
 
 TEST(OperationsTest, fuse)
 {
-    Box box1(Point(0, 0, 0), Point(1, 2, 3));
-    Box box2(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
+    auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = fuse(box1, box2);
 }
 
 TEST(OperationsTest, fuse_multiple)
 {
-    Box box1(Point(0, 0, 0), Point(1, 2, 3));
-    Box box2(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
-    Box box3(Point(1, 1, 0), Point(2, 2, -1));
+    auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
+    auto box3 = Box::create(Point(1, 1, 0), Point(2, 2, -1));
     auto res = fuse({ box1, box2, box3 });
 }
 
 TEST(OperationsTest, cut)
 {
-    Box box1(Point(0, 0, 0), Point(1, 2, 3));
-    Box box2(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
+    auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = cut(box1, box2);
 }
 
 TEST(OperationsTest, intersect)
 {
-    Box box1(Point(0, 0, 0), Point(1, 2, 3));
-    Box box2(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
+    auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto box2 = Box::create(Point(0.5, 0.5, 0.5), Point(2, 3, 4));
     auto res = intersect(box1, box2);
 }
 

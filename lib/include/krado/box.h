@@ -10,8 +10,11 @@ namespace krado {
 
 /// Box
 class Box : public GeomVolume {
+private:
+    Box(const TopoDS_Solid & solid);
+
 public:
-    Box(const Point & pt1, const Point & pt2);
+    static Box create(const Point & pt1, const Point & pt2);
 };
 
 } // namespace krado

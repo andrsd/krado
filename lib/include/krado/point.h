@@ -6,6 +6,8 @@
 #include <vector>
 #include <ostream>
 
+class gp_Pnt;
+
 namespace krado {
 
 class Vector;
@@ -66,6 +68,9 @@ public:
     double y;
     /// Z-component
     double z;
+
+public:
+    static Point create(const gp_Pnt & pt);
 };
 
 inline Point

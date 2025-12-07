@@ -6,6 +6,8 @@
 
 namespace krado {
 
+Axis1::Axis1(const gp_Ax1 & ax1) : ax1_(ax1) {}
+
 Axis1::Axis1(const Point & pt, const Vector & dir) : ax1_(occ::to_pnt(pt), occ::to_dir(dir)) {}
 
 Point

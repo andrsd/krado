@@ -11,6 +11,8 @@ namespace krado {
 
 class Axis1 {
 public:
+    explicit Axis1(const gp_Ax1 & ax1);
+
     /// @param pt `Point` the location point
     /// @param direction `Vector` the direction of the axis
     Axis1(const Point & pt, const Vector & dir);

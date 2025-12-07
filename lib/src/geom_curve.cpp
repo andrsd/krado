@@ -4,6 +4,7 @@
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
+#include "krado/occ.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -58,8 +59,7 @@ GeomCurve::is_degenerated() const
 Point
 GeomCurve::point(double u) const
 {
-    gp_Pnt pnt = this->curve_->Value(u);
-    return Point(pnt.X(), pnt.Y(), pnt.Z());
+    return Point::create(this->curve_->Value(u));
 }
 
 Vector
@@ -118,8 +118,7 @@ GeomCurve::parameter_from_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    gp_Pnt pnt(pt.x, pt.y, pt.z);
-    proj_pt_on_curve.Perform(pnt);
+    proj_pt_on_curve.Perform(occ::to_pnt(pt));
     if (proj_pt_on_curve.NbPoints() > 0) {
         auto u = proj_pt_on_curve.LowerDistanceParameter();
         return u;
@@ -133,12 +132,9 @@ GeomCurve::nearest_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    proj_pt_on_curve.Perform(gpnt);
-    if (proj_pt_on_curve.NbPoints()) {
-        gpnt = proj_pt_on_curve.NearestPoint();
-        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
-    }
+    proj_pt_on_curve.Perform(occ::to_pnt(pt));
+    if (proj_pt_on_curve.NbPoints())
+        return Point::create(proj_pt_on_curve.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
 }
@@ -186,8 +182,7 @@ get_circle_center(const GeomCurve & crv)
         throw Exception("Curve {} is not a circle", crv.id());
 
     const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
-    gp_Pnt center = circle->Location();
-    return Point(center.X(), center.Y(), center.Z());
+    return Point::create(circle->Location());
 }
 
 } // namespace krado
