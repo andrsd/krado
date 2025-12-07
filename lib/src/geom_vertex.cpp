@@ -9,8 +9,7 @@ namespace krado {
 GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex_(vertex)
 {
     if (!this->vertex_.IsNull()) {
-        gp_Pnt pnt = BRep_Tool::Pnt(this->vertex_);
-        this->pt_ = Point(pnt.X(), pnt.Y(), pnt.Z());
+        this->pt_ = Point::create(BRep_Tool::Pnt(this->vertex_));
     }
 }
 

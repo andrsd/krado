@@ -4,6 +4,7 @@
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
 #include "krado/geom_shape.h"
+#include "krado/occ.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -71,8 +72,7 @@ GeomSurface::GeomSurface(GeomSurface && other) :
 Point
 GeomSurface::point(const UVParam & param) const
 {
-    gp_Pnt pnt = this->surface_->Value(param.u, param.v);
-    return Point(pnt.X(), pnt.Y(), pnt.Z());
+    return Point::create(this->surface_->Value(param.u, param.v));
 }
 
 Vector
@@ -149,8 +149,7 @@ GeomSurface::operator const TopoDS_Face &() const
 std::tuple<bool, UVParam>
 GeomSurface::project(const Point & pt) const
 {
-    gp_Pnt pnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface_.Perform(pnt);
+    this->proj_pt_on_surface_.Perform(occ::to_pnt(pt));
 
     if (this->proj_pt_on_surface_.NbPoints() > 0) {
         double u, v;
@@ -164,12 +163,9 @@ GeomSurface::project(const Point & pt) const
 Point
 GeomSurface::nearest_point(const Point & pt) const
 {
-    gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface_.Perform(gpnt);
-    if (this->proj_pt_on_surface_.NbPoints()) {
-        gpnt = this->proj_pt_on_surface_.NearestPoint();
-        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
-    }
+    this->proj_pt_on_surface_.Perform(occ::to_pnt(pt));
+    if (this->proj_pt_on_surface_.NbPoints())
+        return Point::create(this->proj_pt_on_surface_.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
 }
