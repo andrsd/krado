@@ -34,6 +34,13 @@ GeomShape translate(const GeomShape & shape, const Vector & v);
 /// @return Translated shape
 GeomShape translate(const GeomShape & shape, const Point & p1, const Point & p2);
 
+/// Scale a shape
+///
+/// @param shape Shape to scale
+/// @param s Scale factor
+/// @return Scaled shape
+GeomShape scale(const GeomShape & shape, double s);
+
 /// Split a curve at a given parameter
 ///
 /// @param curve Curve to split

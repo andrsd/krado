@@ -51,6 +51,15 @@ translate(const GeomShape & shape, const Point & p1, const Point & p2)
     return GeomShape(brep_trsf.Shape());
 }
 
+GeomShape
+scale(const GeomShape & shape, double s)
+{
+    gp_Trsf trsf;
+    trsf.SetScaleFactor(s);
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
 {

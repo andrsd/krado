@@ -20,6 +20,13 @@ TEST(OperationsTest, translate_pt)
     auto res = translate(box, Point(1, 0, 0), Point(2, 0, 0));
 }
 
+TEST(OperationsTest, scale)
+{
+    auto box = Box::create(Point(0, 0, 0), Point(1, 2, 3));
+    auto res = scale(box, 0.1);
+    EXPECT_NEAR(res.volume(), 0.006, 1e-10);
+}
+
 TEST(OperationsTest, fuse)
 {
     auto box1 = Box::create(Point(0, 0, 0), Point(1, 2, 3));
