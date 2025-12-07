@@ -11,15 +11,30 @@
 #include "krado/log.h"
 #include "krado/mesh.h"
 #include "krado/types.h"
+#include "krado/vector.h"
+#include "krado/occ.h"
+#include "krado/wire.h"
+#include "krado/plane.h"
+#include "krado/axis1.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
+#include "BRepBuilderAPI_Transform.hxx"
+#include "BRepBuilderAPI_Sewing.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"
 #include "BRepAlgoAPI_Cut.hxx"
 #include "BRepAlgoAPI_Common.hxx"
+#include "BRepAlgoAPI_Section.hxx"
 #include "BRepAlgo_NormalProjection.hxx"
 #include "BRepFeat_SplitShape.hxx"
+#include "BRepFeat_MakeCylindricalHole.hxx"
+#include "BRepFilletAPI_MakeFillet.hxx"
+#include "BRepOffsetAPI_MakeThickSolid.hxx"
+#include "BRepOffsetAPI_DraftAngle.hxx"
+#include "BRepPrimAPI_MakePrism.hxx"
+#include "BRepPrimAPI_MakeRevol.hxx"
+#include "BRepOffsetAPI_MakePipe.hxx"
 #include "TopoDS_Wire.hxx"
 #include "TopoDS_Solid.hxx"
 #include "TopoDS.hxx"
@@ -27,9 +42,44 @@
 #include "BRepAlgoAPI_Splitter.hxx"
 #include "TopoDS_Edge.hxx"
 #include "TopTools_DataMapOfShapeInteger.hxx"
-#include "krado/vector.h"
 
 namespace krado {
+
+GeomShape
+translate(const GeomShape & shape, const Vector & v)
+{
+    gp_Trsf trsf;
+    trsf.SetTranslation(occ::to_vec(v));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
+GeomShape
+translate(const GeomShape & shape, const Point & p1, const Point & p2)
+{
+    gp_Trsf trsf;
+    trsf.SetTranslation(occ::to_pnt(p1), occ::to_pnt(p2));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
+GeomShape
+scale(const GeomShape & shape, double s)
+{
+    gp_Trsf trsf;
+    trsf.SetScaleFactor(s);
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
+GeomShape
+mirror(const GeomShape & shape, const Axis1 & axis)
+{
+    gp_Trsf trsf;
+    trsf.SetMirror(occ::to_ax1(axis));
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
 
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
@@ -328,6 +378,145 @@ intersect(const GeomShape & shape, const GeomShape & tool)
     if (!alg.IsDone())
         throw Exception("Object was not intersected");
     return GeomShape(alg.Shape());
+}
+
+GeomShape
+fillet(const GeomShape & shape, const std::vector<GeomCurve> & edges, double radius)
+{
+    BRepFilletAPI_MakeFillet flt(shape);
+    for (auto & e : edges)
+        flt.Add(radius, e);
+    return GeomShape(flt.Shape());
+}
+
+GeomShape
+hollow(const GeomShape & shape,
+       const std::vector<GeomSurface> & faces_to_remove,
+       double thickness,
+       double tolerance)
+{
+    TopTools_ListOfShape rem_faces;
+    for (auto & face : faces_to_remove)
+        rem_faces.Append(face);
+
+    BRepOffsetAPI_MakeThickSolid result;
+    result.MakeThickSolidByJoin(shape, rem_faces, thickness, tolerance);
+    result.Build();
+    if (!result.IsDone())
+        throw Exception("hollow failed");
+    return GeomShape(result.Shape());
+}
+
+GeomShape
+extrude(const GeomShape & shape, const Vector & vec)
+{
+    BRepPrimAPI_MakePrism result(shape, occ::to_vec(vec));
+    result.Build();
+    if (!result.IsDone())
+        throw Exception("extrude failed");
+    return GeomShape(result.Shape());
+}
+
+GeomShape
+revolve(const GeomShape & shape, const Axis1 & axis, double angle)
+{
+    BRepPrimAPI_MakeRevol result(shape, occ::to_ax1(axis), angle);
+    result.Build();
+    if (!result.IsDone())
+        throw Exception("revolve failed");
+    return GeomShape(result.Shape());
+}
+
+GeomShape
+rotate(const GeomShape & shape, const Axis1 & axis, double angle)
+{
+    gp_Trsf trsf;
+    trsf.SetRotation(occ::to_ax1(axis), angle);
+    BRepBuilderAPI_Transform brep_trsf(shape, trsf);
+    return GeomShape(brep_trsf.Shape());
+}
+
+Wire
+section(const GeomShape & shape, const Plane & plane)
+{
+    BRepAlgoAPI_Section result(shape, plane);
+    result.Build();
+    if (!result.IsDone())
+        throw Exception("Section operation failed");
+    auto & section_edges = result.SectionEdges();
+    BRepBuilderAPI_MakeWire wire;
+    wire.Add(section_edges);
+    wire.Build();
+    if (!wire.IsDone())
+        throw Exception("Wire was not created");
+    return Wire(wire.Wire());
+}
+
+GeomShape
+draft(const GeomShape & shape,
+      const Plane & pln,
+      const std::vector<GeomSurface> & faces,
+      double angle)
+{
+    auto dir = pln.axis().direction();
+    BRepOffsetAPI_DraftAngle drft(shape);
+    for (auto & f : faces) {
+        drft.Add(f, occ::to_dir(dir), angle, pln);
+        if (!drft.AddDone())
+            throw Exception("Faulty face was given");
+    }
+    drft.Build();
+    if (drft.IsDone())
+        return GeomShape(drft.Shape());
+    else
+        throw Exception("Draft was not constructed");
+}
+
+GeomShape
+hole(const GeomShape & shape, const Axis1 & axis, double diameter)
+{
+    BRepFeat_MakeCylindricalHole h;
+    h.Init(shape, occ::to_ax1(axis));
+    h.Perform(diameter / 2.);
+    h.Build();
+    if (h.Status() == BRepFeat_NoError)
+        return GeomShape(h.Shape());
+    else
+        throw Exception("Hole did not generate");
+}
+
+GeomShape
+hole(const GeomShape & shape, const Axis1 & axis, double diameter, double length)
+{
+    BRepFeat_MakeCylindricalHole h;
+    h.Init(shape, occ::to_ax1(axis));
+    h.PerformBlind(diameter / 2., length);
+    h.Build();
+    if (h.Status() == BRepFeat_NoError)
+        return GeomShape(h.Shape());
+    else
+        throw Exception("Hole did not generate");
+}
+
+GeomShape
+sweep(const GeomShape & profile, const Wire & spine)
+{
+    BRepOffsetAPI_MakePipe mk(spine, profile);
+    mk.Build();
+    if (mk.IsDone())
+        return GeomShape(mk.Shape());
+    else
+        throw Exception("Sweep was not constructed");
+}
+
+GeomShape
+sew(const std::vector<GeomShape> & faces, double tol)
+{
+    BRepBuilderAPI_Sewing sewing_tool(tol);
+    for (auto & face : faces)
+        sewing_tool.Add(face);
+    sewing_tool.Perform();
+    return GeomShape(sewing_tool.SewedShape());
 }
 
 } // namespace krado

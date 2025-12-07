@@ -10,12 +10,16 @@
 
 namespace krado {
 
+class Plane;
+
 class Wire : public GeomShape {
 public:
     /// Compute the length of the edge
     ///
     /// @return Length of the edge
     double length() const;
+
+    operator const TopoDS_Wire &() const;
 
 protected:
     explicit Wire(const TopoDS_Wire & wire);
@@ -25,6 +29,8 @@ private:
 
 public:
     static Wire create(const std::vector<GeomCurve> & curves);
+
+    friend Wire section(const GeomShape & shape, const Plane & plane);
 };
 
 } // namespace krado

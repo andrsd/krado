@@ -5,11 +5,13 @@
 #include "krado/exception.h"
 #include "krado/geom_shape.h"
 #include "krado/occ.h"
+#include "krado/wire.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
 #include "BRepLProp_SLProps.hxx"
 #include "BRepAdaptor_Surface.hxx"
+#include "BRepBuilderAPI_MakeFace.hxx"
 #include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
@@ -179,6 +181,16 @@ GeomSurface::contains_point(const Point & pt) const
         return true;
     else
         return false;
+}
+
+GeomSurface
+GeomSurface::create(const Wire & wire)
+{
+    BRepBuilderAPI_MakeFace make_face(wire);
+    make_face.Build();
+    if (!make_face.IsDone())
+        throw Exception("Face was not created");
+    return GeomSurface(make_face.Face());
 }
 
 // - - -

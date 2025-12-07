@@ -3,7 +3,9 @@
 
 #include "krado/plane.h"
 #include "krado/axis1.h"
+#include "krado/geom_surface.h"
 #include "krado/occ.h"
+#include "BRepAdaptor_Surface.hxx"
 
 namespace krado {
 
@@ -36,6 +38,18 @@ Axis1
 Plane::y_axis() const
 {
     return Axis1(this->pln_.YAxis());
+}
+
+Plane::operator gp_Pln() const
+{
+    return this->pln_;
+}
+
+Plane
+Plane::create(const GeomSurface & surface)
+{
+    BRepAdaptor_Surface pln(surface, true);
+    return Plane(pln.Plane());
 }
 
 } // namespace krado
