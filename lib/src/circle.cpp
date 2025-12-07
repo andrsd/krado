@@ -36,7 +36,7 @@ Circle::location() const
 Circle
 Circle::create(const Axis2 & origin, double radius)
 {
-    GC_MakeCircle make_circ(occ::to_ax2(origin), radius);
+    GC_MakeCircle make_circ(origin, radius);
     if (!make_circ.IsDone())
         throw Exception("Circle was not created");
     BRepBuilderAPI_MakeEdge maker(make_circ.Value());

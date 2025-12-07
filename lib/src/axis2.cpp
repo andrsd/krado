@@ -62,4 +62,9 @@ Axis2::y_direction() const
     return Vector(y_dir.X(), y_dir.Y(), y_dir.Z());
 }
 
+Axis2::operator gp_Ax2() const
+{
+    return this->ax2_;
+}
+
 } // namespace krado

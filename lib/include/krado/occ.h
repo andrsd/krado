@@ -27,9 +27,6 @@ gp_Vec to_vec(const Vector & vec);
 /// Convert krado Vector to OpenCASCADE gp_Dir
 gp_Dir to_dir(const Vector & vec);
 
-/// Convert krado Axis1 to OpenCASCADE gp_Ax1
-gp_Ax2 to_ax2(const Axis2 & ax2);
-
 /// Convert krado Circle to OpenCASCADE gp_Circ
 gp_Circ to_circ(const Circle & circle);
 

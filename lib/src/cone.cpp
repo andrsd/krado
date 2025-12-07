@@ -16,7 +16,7 @@ Cone::Cone(const TopoDS_Solid & solid) : GeomVolume(solid)
 Cone
 Cone::create(const Axis2 & location, double radius1, double radius2, double height)
 {
-    BRepPrimAPI_MakeCone cone(occ::to_ax2(location), radius1, radius2, height);
+    BRepPrimAPI_MakeCone cone(location, radius1, radius2, height);
     cone.Build();
     if (!cone.IsDone())
         throw Exception("Cone was not created");
