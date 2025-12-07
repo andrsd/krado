@@ -18,9 +18,6 @@ class Circle;
 
 namespace occ {
 
-/// Convert krado Point to OpenCASCADE gp_Pnt
-gp_Pnt to_pnt(const Point & pt);
-
 /// Convert krado Vector to OpenCASCADE gp_Dir
 gp_Dir to_dir(const Vector & vec);
 

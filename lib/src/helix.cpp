@@ -38,7 +38,7 @@ Helix::create(const Axis2 & ax2, double radius, double height, double turns, dou
     gp_Trsf rotate;
     rotate.SetRotation(ax1, dangle);
 
-    auto pt = occ::to_pnt(ax1.location());
+    gp_Pnt pt = ax1.location();
     pt.Translate(radius * ax2.x_direction());
     TColgp_HArray1OfPnt pnts(0, n_pts);
     for (int idx = 0; idx < n_pts; idx++) {

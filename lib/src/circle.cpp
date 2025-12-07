@@ -54,7 +54,7 @@ Circle::create(const Axis2 & origin, double radius)
 Circle
 Circle::create(const Point & center, double radius, const Vector & normal)
 {
-    GC_MakeCircle make_circ(occ::to_pnt(center), occ::to_dir(normal), radius);
+    GC_MakeCircle make_circ(center, occ::to_dir(normal), radius);
     if (!make_circ.IsDone())
         throw Exception("Circle was not created");
     BRepBuilderAPI_MakeEdge maker(make_circ.Value());
@@ -68,7 +68,7 @@ Circle
 Circle::create(const Point & center, const Point & pt, const Vector & normal)
 {
     auto radius = center.distance(pt);
-    GC_MakeCircle make_circ(occ::to_pnt(center), occ::to_dir(normal), radius);
+    GC_MakeCircle make_circ(center, occ::to_dir(normal), radius);
     if (!make_circ.IsDone())
         throw Exception("Circle was not created");
     BRepBuilderAPI_MakeEdge maker(make_circ.Value());
@@ -81,7 +81,7 @@ Circle::create(const Point & center, const Point & pt, const Vector & normal)
 Circle
 Circle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 {
-    GC_MakeCircle make_circ(occ::to_pnt(pt1), occ::to_pnt(pt2), occ::to_pnt(pt3));
+    GC_MakeCircle make_circ(pt1, pt2, pt3);
     if (!make_circ.IsDone())
         throw Exception("Circle was not created");
     BRepBuilderAPI_MakeEdge maker(make_circ.Value());

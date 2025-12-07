@@ -58,7 +58,7 @@ GeomShape
 translate(const GeomShape & shape, const Point & p1, const Point & p2)
 {
     gp_Trsf trsf;
-    trsf.SetTranslation(occ::to_pnt(p1), occ::to_pnt(p2));
+    trsf.SetTranslation(p1, p2);
     BRepBuilderAPI_Transform brep_trsf(shape, trsf);
     return GeomShape(brep_trsf.Shape());
 }

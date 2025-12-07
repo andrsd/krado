@@ -11,9 +11,7 @@ namespace krado {
 
 Plane::Plane(const gp_Pln & pln) : pln_(pln) {}
 
-Plane::Plane(const Point & pt, const Vector & normal) : pln_(occ::to_pnt(pt), occ::to_dir(normal))
-{
-}
+Plane::Plane(const Point & pt, const Vector & normal) : pln_(pt, occ::to_dir(normal)) {}
 
 Point
 Plane::location() const

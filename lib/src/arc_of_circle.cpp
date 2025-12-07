@@ -30,7 +30,7 @@ ArcOfCircle::end_point() const
 ArcOfCircle
 ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 {
-    GC_MakeArcOfCircle mk_circ(occ::to_pnt(pt1), occ::to_pnt(pt2), occ::to_pnt(pt3));
+    GC_MakeArcOfCircle mk_circ(pt1, pt2, pt3);
     if (!mk_circ.IsDone())
         throw Exception("ArcOfCircle was not created");
     auto arc = mk_circ.Value();
@@ -44,7 +44,7 @@ ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 ArcOfCircle
 ArcOfCircle::create(const class Circle & circ, const Point & pt1, const Point & pt2, bool sense)
 {
-    GC_MakeArcOfCircle mk_circ(circ, occ::to_pnt(pt1), occ::to_pnt(pt2), sense);
+    GC_MakeArcOfCircle mk_circ(circ, pt1, pt2, sense);
     if (!mk_circ.IsDone())
         throw Exception("ArcOfCircle was not created");
     auto arc = mk_circ.Value();
@@ -58,7 +58,7 @@ ArcOfCircle::create(const class Circle & circ, const Point & pt1, const Point & 
 ArcOfCircle
 ArcOfCircle::create(const Point & pt1, const Vector & tangent, const Point & pt2)
 {
-    GC_MakeArcOfCircle mk_circ(occ::to_pnt(pt1), tangent, occ::to_pnt(pt2));
+    GC_MakeArcOfCircle mk_circ(pt1, tangent, pt2);
     if (!mk_circ.IsDone())
         throw Exception("ArcOfCircle was not created");
     auto arc = mk_circ.Value();

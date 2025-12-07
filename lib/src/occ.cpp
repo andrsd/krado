@@ -11,12 +11,6 @@
 namespace krado {
 namespace occ {
 
-gp_Pnt
-to_pnt(const Point & pt)
-{
-    return gp_Pnt(pt.x, pt.y, pt.z);
-}
-
 gp_Dir
 to_dir(const Vector & vec)
 {

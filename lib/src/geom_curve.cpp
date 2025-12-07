@@ -118,7 +118,7 @@ GeomCurve::parameter_from_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    proj_pt_on_curve.Perform(occ::to_pnt(pt));
+    proj_pt_on_curve.Perform(pt);
     if (proj_pt_on_curve.NbPoints() > 0) {
         auto u = proj_pt_on_curve.LowerDistanceParameter();
         return u;
@@ -132,7 +132,7 @@ GeomCurve::nearest_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    proj_pt_on_curve.Perform(occ::to_pnt(pt));
+    proj_pt_on_curve.Perform(pt);
     if (proj_pt_on_curve.NbPoints())
         return Point::create(proj_pt_on_curve.NearestPoint());
     else

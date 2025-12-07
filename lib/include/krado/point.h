@@ -62,6 +62,8 @@ public:
     [[nodiscard]] bool operator<(const Point & p) const;
     void transform(const std::vector<double> & tfo);
 
+    operator gp_Pnt() const;
+
     /// X-component
     double x;
     /// Y-component
