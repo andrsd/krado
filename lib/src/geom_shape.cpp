@@ -99,6 +99,30 @@ GeomShape::set_color(const Color & color)
 }
 
 double
+GeomShape::length() const
+{
+    GProp_GProps props;
+    BRepGProp::LinearProperties(this->shape_, props);
+    return props.Mass();
+}
+
+double
+GeomShape::area() const
+{
+    GProp_GProps props;
+    BRepGProp::SurfaceProperties(this->shape_, props);
+    return props.Mass();
+}
+
+double
+GeomShape::volume() const
+{
+    GProp_GProps props;
+    BRepGProp::VolumeProperties(this->shape_, props);
+    return props.Mass();
+}
+
+double
 GeomShape::density() const
 {
     return this->density_;
