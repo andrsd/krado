@@ -6,6 +6,7 @@
 #include "gp_Vec.hxx"
 #include "gp_Ax1.hxx"
 #include "gp_Ax2.hxx"
+#include "gp_Circ.hxx"
 
 namespace krado {
 
@@ -13,6 +14,7 @@ class Point;
 class Vector;
 class Axis1;
 class Axis2;
+class Circle;
 
 namespace occ {
 
@@ -30,6 +32,9 @@ gp_Ax1 to_ax1(const Axis1 & ax1);
 
 /// Convert krado Axis1 to OpenCASCADE gp_Ax1
 gp_Ax2 to_ax2(const Axis2 & ax2);
+
+/// Convert krado Circle to OpenCASCADE gp_Circ
+gp_Circ to_circ(const Circle & circle);
 
 } // namespace occ
 } // namespace krado

@@ -5,7 +5,8 @@
 
 #include "krado/geom_curve.h"
 #include "krado/point.h"
-#include "formo/vector.h"
+#include "krado/vector.h"
+#include "krado/occ.h"
 #include "gp_Circ.hxx"
 
 namespace krado {
@@ -63,6 +64,8 @@ public:
     /// @param pt2 Second point
     /// @param pt3 Third point
     static Circle create(const Point & pt1, const Point & pt2, const Point & pt3);
+
+    friend gp_Circ occ::to_circ(const Circle & circle);
 };
 
 } // namespace krado
