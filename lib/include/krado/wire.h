@@ -4,21 +4,23 @@
 #pragma once
 
 #include "krado/geom_curve.h"
+#include "krado/geom_shape.h"
 #include "TopoDS_Wire.hxx"
 #include <vector>
 
 namespace krado {
 
-class Wire {
+class Wire : public GeomShape {
 public:
     /// Compute the length of the edge
     ///
     /// @return Length of the edge
     double length() const;
 
-private:
+protected:
     explicit Wire(const TopoDS_Wire & wire);
 
+private:
     TopoDS_Wire wire_;
 
 public:

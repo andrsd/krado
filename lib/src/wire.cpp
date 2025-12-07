@@ -7,10 +7,11 @@
 #include "TopoDS.hxx"
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
+#include "krado/geom_shape.h"
 
 namespace krado {
 
-Wire::Wire(const TopoDS_Wire & wire) : wire_(wire) {}
+Wire::Wire(const TopoDS_Wire & wire) : GeomShape(wire), wire_(wire) {}
 
 double
 Wire::length() const
