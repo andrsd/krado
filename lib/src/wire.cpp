@@ -21,6 +21,11 @@ Wire::length() const
     return props.Mass();
 }
 
+Wire::operator const TopoDS_Wire &() const
+{
+    return this->wire_;
+}
+
 Wire
 Wire::create(const std::vector<GeomCurve> & curves)
 {

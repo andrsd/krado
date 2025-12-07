@@ -5,10 +5,12 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/occ.h"
 #include "gp_Pln.hxx"
 
 namespace krado {
 
+class GeomSurface;
 class Axis1;
 
 /// Describes a plane.
@@ -48,8 +50,13 @@ public:
     /// Returns the Y axis of the plane
     Axis1 y_axis() const;
 
+    operator gp_Pln() const;
+
 private:
     gp_Pln pln_;
+
+public:
+    static Plane create(const GeomSurface & surface);
 };
 
 } // namespace krado

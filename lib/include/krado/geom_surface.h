@@ -18,6 +18,7 @@
 namespace krado {
 
 class GeomModel;
+class Wire;
 
 class GeomSurface : public GeomShape {
 public:
@@ -95,6 +96,9 @@ private:
 
     /// Needs to be a pointer, because GeomSurface must be movable
     mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface_;
+
+public:
+    static GeomSurface create(const Wire & wire);
 };
 
 /// Check that the surface is circular

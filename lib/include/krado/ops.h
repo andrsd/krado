@@ -19,6 +19,8 @@ class Mesh;
 class Point;
 class Vector;
 class Axis1;
+class Wire;
+class Plane;
 
 /// Translate a shape
 ///
@@ -116,5 +118,99 @@ GeomShape cut(const GeomShape & shape, const GeomShape & tool);
 /// @param tool Tool
 /// @return Resulting shape
 GeomShape intersect(const GeomShape & shape, const GeomShape & tool);
+
+/// Fillet
+///
+/// @param shape Shape to fillet
+/// @param curves List of curves to fillet
+/// @param radius Radius of the fillet
+/// @return Resulting shape
+GeomShape fillet(const GeomShape & shape, const std::vector<GeomCurve> & curves, double radius);
+
+/// Hollow the shape
+///
+/// @param shape Shape to hollow
+/// @param faces_to_remove Faces to open
+/// @param thickness Desired wall thickness
+/// @param tolerance Tolerance
+/// @return Hollowed out shape
+GeomShape hollow(const GeomShape & shape,
+                 const std::vector<GeomSurface> & faces_to_remove,
+                 double thickness,
+                 double tolerance);
+
+/// Extrude a shape
+///
+/// @param shape Shape to extrude
+/// @param vec Vector of extrusion
+/// @return Resulting shape
+GeomShape extrude(const GeomShape & shape, const Vector & vec);
+
+/// Revolve shape about an axis
+///
+/// @param shape Shape to revolve
+/// @param axis Axis to revolve about
+/// @param angle Angle to revolve
+/// @return Resulting shape
+GeomShape revolve(const GeomShape & shape, const Axis1 & axis, double angle = 2. * M_PI);
+
+/// Rotate a shape about an axis
+///
+/// @param shape Shape to rotate
+/// @param axis Axis to rotate about
+/// @param angle Rotation angle (in radians)
+/// @return Resulting `Shape`
+GeomShape rotate(const GeomShape & shape, const Axis1 & axis, double angle);
+
+/// Compute section between a shape and a plane
+///
+/// @param shape Shape
+/// @param plane Plane
+/// @return Wire that forms the computed section
+Wire section(const GeomShape & shape, const Plane & plane);
+
+/// Taper-adding transformations on a shape. The resulting shape is constructed by defining one face
+/// to be tapered after another one, as well as the geometric properties of their tapered
+/// transformation. Each tapered transformation is propagated along the series of faces which are
+/// tangential to one another and which contains the face to be tapered.
+///
+/// @param shape Shape to taper
+/// @param pln Neutral plane
+/// @param faces Faces to taper
+/// @param angle Tapering angle
+/// @return Tapered shape
+GeomShape draft(const GeomShape & shape,
+                const Plane & pln,
+                const std::vector<GeomSurface> & faces,
+                double angle);
+
+/// Make cylindrical hole on a shape
+///
+/// @param shape Shape on which hole will be performed
+/// @param axis Axis of the hole
+/// @param diameter Diameter of the hole
+GeomShape hole(const GeomShape & shape, const Axis1 & axis, double diameter);
+
+/// Make cylindrical hole on a shape with specified depth
+///
+/// @param shape Shape on which hole will be performed
+/// @param axis Axis of the hole
+/// @param diameter Diameter of the hole
+/// @param length Length of the hole
+GeomShape hole(const GeomShape & shape, const Axis1 & axis, double diameter, double length);
+
+/// Constructs a pipe by sweeping the `profile` along the `spine`
+///
+/// @param profile Profile to sweep
+/// @param spine Sweep path
+/// @return Resulting shape
+GeomShape sweep(const GeomShape & profile, const Wire & spine);
+
+/// Sew faces into a shell
+///
+/// @param faces Faces to sew
+/// @param tol Tolerance
+/// @return Resulting shell
+GeomShape sew(const std::vector<GeomShape> & faces, double tol = 1e-6);
 
 } // namespace krado
