@@ -12,15 +12,15 @@ const double PI = std::acos(-1);
 TEST(GeomCurveTest, curve_type)
 {
     auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
-    EXPECT_EQ(line.type(), GeomCurve::Line);
+    EXPECT_EQ(line.type(), GeomCurve::CurveType::Line);
 
     GeomCurve arc(testing::build_arc());
-    EXPECT_EQ(arc.type(), GeomCurve::Circle);
+    EXPECT_EQ(arc.type(), GeomCurve::CurveType::Circle);
 
     auto circ = testing::build_circle(Point(0, 0, 0), 2.);
     GeomSurface gsurf(circ);
     auto curves = gsurf.curves();
-    EXPECT_EQ(curves[0].type(), GeomCurve::Circle);
+    EXPECT_EQ(curves[0].type(), GeomCurve::CurveType::Circle);
 }
 
 TEST(GeomCurveTest, point)
@@ -92,7 +92,7 @@ TEST(GeomCurveTest, d1_arc)
 {
     auto arc = testing::build_arc();
     GeomCurve curve(arc);
-    EXPECT_EQ(curve.type(), GeomCurve::Circle);
+    EXPECT_EQ(curve.type(), GeomCurve::CurveType::Circle);
 
     auto [lo, hi] = curve.param_range();
 

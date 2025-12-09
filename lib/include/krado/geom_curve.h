@@ -19,7 +19,7 @@ class GeomSurface;
 
 class GeomCurve : public GeomShape {
 public:
-    enum CurveType { Line, Circle, BSpline, Bezier, Unknown };
+    enum class CurveType { Line, Circle, BSpline, Bezier, Unknown };
 
     explicit GeomCurve(const TopoDS_Edge & edge);
 
