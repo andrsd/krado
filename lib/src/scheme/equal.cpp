@@ -2,42 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/equal.h"
+#include "krado/scheme/integral.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/log.h"
 #include "krado/ptr.h"
-#include "GCPnts_AbscissaPoint.hxx"
 
 namespace krado {
-namespace {
-
-std::vector<Ptr<MeshCurveVertex>>
-mesh_curve_by_count(const GeomCurve & curve, int n_segments, double tol = 1e-8)
-{
-    std::vector<Ptr<MeshCurveVertex>> vertices;
-    vertices.reserve(n_segments - 1);
-
-    GeomAdaptor_Curve adaptor(curve.curve_handle());
-    auto [t0, t1] = curve.param_range();
-
-    Standard_Real length = GCPnts_AbscissaPoint::Length(adaptor, t0, t1, tol);
-    Standard_Real step = length / n_segments;
-    Standard_Real current_param = t0;
-    for (int i = 1; i < n_segments; ++i) {
-        GCPnts_AbscissaPoint abscissa(adaptor, step, current_param, tol);
-        if (!abscissa.IsDone())
-            throw Exception("Failed to compute abscissa point");
-
-        current_param = abscissa.Parameter();
-        vertices.push_back(Ptr<MeshCurveVertex>::alloc(curve, current_param));
-    }
-
-    return vertices;
-}
-
-} // namespace
 
 SchemeEqual::SchemeEqual(Options options) : Scheme1D("equal"), opts_(options) {}
 
@@ -45,32 +18,54 @@ void
 SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
-    auto n_intervals = this->opts_.intervals;
+    auto n_segs = this->opts_.intervals;
 
-    Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_intervals);
+    Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_segs);
 
-    if (geom_curve.type() == GeomCurve::CurveType::Circle &&
-        std::abs(geom_curve.length() - 2. * M_PI) < 1e-10) {
+    // compute arc length
+    Integral igrl;
+    igrl.integrate(geom_curve, [=](double t) {
+        auto der = geom_curve.d1(t);
+        return der.magnitude();
+    });
+
+    const double b = geom_curve.length() / static_cast<double>(n_segs);
+    std::vector<Ptr<MeshCurveVertex>> curve_vtxs;
+    for (int count = 1, num_pts = 1; num_pts < n_segs;) {
+        auto & pt1 = igrl.point(count - 1);
+        auto & pt2 = igrl.point(count);
+        const auto d = (double) num_pts * b;
+        if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
+            const auto dt = pt2.t - pt1.t;
+            const auto dlc = pt2.lc - pt1.lc;
+            const auto dp = pt2.p - pt1.p;
+            const auto t = pt1.t + dt / dp * (d - pt1.p);
+            curve_vtxs.push_back(Ptr<MeshCurveVertex>::alloc(geom_curve, t));
+            num_pts++;
+        }
+        else {
+            count++;
+        }
+    }
+
+    auto bnd_verts = curve->bounding_vertices();
+    if ((geom_curve.type() == GeomCurve::CurveType::Circle) && (bnd_verts.size() == 1)) {
         // curve is a full circle
-        auto bnd_verts = curve->bounding_vertices();
-        auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
         curve->add_vertex(bnd_verts[0]);
         for (auto & cv : curve_vtxs)
             curve->add_vertex(cv);
 
-        for (std::size_t i = 0; i < n_intervals - 1; ++i)
+        for (std::size_t i = 0; i < n_segs - 1; ++i)
             curve->add_segment({ curve->all_vertices()[i], curve->all_vertices()[i + 1] });
-        curve->add_segment({ curve->all_vertices()[n_intervals - 1], bnd_verts[0] });
+        curve->add_segment({ curve->all_vertices()[n_segs - 1], bnd_verts[0] });
     }
     else {
-        auto bnd_verts = curve->bounding_vertices();
-        auto curve_vtxs = mesh_curve_by_count(geom_curve, n_intervals);
         curve->add_vertex(bnd_verts[0]);
         for (auto & cv : curve_vtxs)
             curve->add_vertex(cv);
         curve->add_vertex(bnd_verts[1]);
 
-        for (std::size_t i = 0; i < n_intervals; ++i)
+        for (std::size_t i = 0; i < n_segs; ++i)
             curve->add_segment({ curve->all_vertices()[i], curve->all_vertices()[i + 1] });
     }
 }
