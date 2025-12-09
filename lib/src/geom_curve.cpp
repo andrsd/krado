@@ -28,15 +28,15 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(edge), edge_(edge), u
     }
     this->curve_ = BRep_Tool::Curve(this->edge_, this->umin_, this->umax_);
     if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve))
-        this->crv_type_ = BSpline;
+        this->crv_type_ = CurveType::BSpline;
     else if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_BezierCurve))
-        this->crv_type_ = Bezier;
+        this->crv_type_ = CurveType::Bezier;
     else if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_Line))
-        this->crv_type_ = Line;
+        this->crv_type_ = CurveType::Line;
     else if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_Circle))
-        this->crv_type_ = Circle;
+        this->crv_type_ = CurveType::Circle;
     else
-        this->crv_type_ = Unknown;
+        this->crv_type_ = CurveType::Unknown;
 
     GProp_GProps props;
     BRepGProp::LinearProperties(this->edge_, props);
@@ -182,7 +182,7 @@ const Handle(Geom_Curve) & GeomCurve::curve_handle() const
 Point
 get_circle_center(const GeomCurve & crv)
 {
-    if (crv.type() != GeomCurve::Circle)
+    if (crv.type() != GeomCurve::CurveType::Circle)
         throw Exception("Curve {} is not a circle", crv.id());
 
     const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
