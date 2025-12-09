@@ -42,7 +42,7 @@ ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 }
 
 ArcOfCircle
-ArcOfCircle::create(const class Circle & circ, const Point & pt1, const Point & pt2, bool sense)
+ArcOfCircle::create(const Circle & circ, const Point & pt1, const Point & pt2, bool sense)
 {
     GC_MakeArcOfCircle mk_circ(circ, pt1, pt2, sense);
     if (!mk_circ.IsDone())

@@ -40,7 +40,7 @@ public:
     /// @param pt2 Second point
     /// @param sense Sense of the circle
     static ArcOfCircle
-    create(const class Circle & circ, const Point & pt1, const Point & pt2, bool sense = true);
+    create(const Circle & circ, const Point & pt1, const Point & pt2, bool sense = true);
 
     /// Construct an arc of a circle from a point, tangent at the point, and another point.
     ///
