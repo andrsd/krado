@@ -4,8 +4,6 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
-#include "krado/mesh_volume.h"
 #include "krado/scheme/equal.h"
 #include "krado/step_file.h"
 #include "builder.h"
