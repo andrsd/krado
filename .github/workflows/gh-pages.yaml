@@ -37,7 +37,7 @@ jobs:
             spdlog \
             fmt=11.* \
             eigen=3.* \
-            boost>=1.70 \
+            libboost-devel>=1.88 \
             pybind11 \
             doxygen \
             sphinx \

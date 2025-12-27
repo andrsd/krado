@@ -24,6 +24,9 @@ jobs:
           - os: ubuntu-22.04
             build-type: Release
             python-version: "3.12"
+          - os: ubuntu-22.04
+            build-type: Release
+            python-version: "3.13"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,7 +53,7 @@ jobs:
             spdlog \
             fmt=11.* \
             eigen=3.* \
-            boost>=1.70 \
+            libboost-devel>=1.88 \
             gtest \
             pybind11 \
             pytest \
