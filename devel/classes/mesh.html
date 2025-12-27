@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mesh &mdash; krado</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Operations" href="operations.html" />
+    <link rel="prev" title="Input/Output" href="io.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            krado
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Gettting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cook book</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/compute_volume.html">Compute block volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/extrude.html">Mesh extrusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/import_mesh.html">Import/Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/merging.html">Merging meshes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/side_sets_from_normals.html">Create Edge/Face Sets from Outward Normals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/tetrahedralize.html">Tetrahedralize a mesh</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bounding_box_3d.html">BoundingBox3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classifier.html">SolidClassifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="element.html">Element</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exception.html">Exception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exodusii_file.html">ExodusIIFile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input/Output</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mesh</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N5krado4MeshE"><code class="docutils literal notranslate"><span class="pre">Mesh</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh4MeshEv"><code class="docutils literal notranslate"><span class="pre">Mesh::Mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh4MeshENSt6vectorI5PointEENSt6vectorI7ElementEE"><code class="docutils literal notranslate"><span class="pre">Mesh::Mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10num_pointsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::num_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12num_elementsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::num_elements()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh6pointsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh5pointE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::point()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh8elementsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::elements()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh7elementE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::element()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh6scaledEd"><code class="docutils literal notranslate"><span class="pre">Mesh::scaled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh5scaleEd"><code class="docutils literal notranslate"><span class="pre">Mesh::scale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh6scaledEddd"><code class="docutils literal notranslate"><span class="pre">Mesh::scaled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh5scaleEddd"><code class="docutils literal notranslate"><span class="pre">Mesh::scale()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10translatedEddd"><code class="docutils literal notranslate"><span class="pre">Mesh::translated()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh9translateEddd"><code class="docutils literal notranslate"><span class="pre">Mesh::translate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh11transformedERK4Trsf"><code class="docutils literal notranslate"><span class="pre">Mesh::transformed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh9transformERK4Trsf"><code class="docutils literal notranslate"><span class="pre">Mesh::transform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh3addERK4Mesh"><code class="docutils literal notranslate"><span class="pre">Mesh::add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh23remove_duplicate_pointsEd"><code class="docutils literal notranslate"><span class="pre">Mesh::remove_duplicate_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh20compute_bounding_boxEv"><code class="docutils literal notranslate"><span class="pre">Mesh::compute_bounding_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh9duplicateEv"><code class="docutils literal notranslate"><span class="pre">Mesh::duplicate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh17set_cell_set_nameE8marker_tRKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_cell_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh13cell_set_nameE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::cell_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12cell_set_idsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::cell_set_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh8cell_setE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::cell_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh12set_cell_setE8marker_tRKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_cell_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh16remove_cell_setsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::remove_cell_sets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh17set_face_set_nameE8marker_tRKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_face_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh13face_set_nameE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::face_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12face_set_idsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::face_set_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh8face_setE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::face_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh12set_face_setE8marker_tRKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_face_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh16remove_face_setsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::remove_face_sets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh17set_edge_set_nameE8marker_tRKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_edge_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh13edge_set_nameE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::edge_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12edge_set_idsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::edge_set_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh8edge_setE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::edge_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh12set_edge_setE8marker_tRKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_edge_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh16remove_edge_setsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::remove_edge_sets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh19set_vertex_set_nameE8marker_tRKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_vertex_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh15vertex_set_nameE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::vertex_set_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh14vertex_set_idsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::vertex_set_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10vertex_setE8marker_t"><code class="docutils literal notranslate"><span class="pre">Mesh::vertex_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh14set_vertex_setE8marker_tRKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Mesh::set_vertex_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh18remove_vertex_setsEv"><code class="docutils literal notranslate"><span class="pre">Mesh::remove_vertex_sets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh15remap_block_idsERKNSt3mapI8marker_t8marker_tEE"><code class="docutils literal notranslate"><span class="pre">Mesh::remap_block_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12vertex_rangeEv"><code class="docutils literal notranslate"><span class="pre">Mesh::vertex_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10edge_rangeEv"><code class="docutils literal notranslate"><span class="pre">Mesh::edge_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10face_rangeEv"><code class="docutils literal notranslate"><span class="pre">Mesh::face_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh10cell_rangeEv"><code class="docutils literal notranslate"><span class="pre">Mesh::cell_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh7supportE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::support()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh4coneE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::cone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh13cone_verticesE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::cone_vertices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh12element_typeE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::element_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado4Mesh6set_upEv"><code class="docutils literal notranslate"><span class="pre">Mesh::set_up()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh14boundary_edgesEv"><code class="docutils literal notranslate"><span class="pre">Mesh::boundary_edges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh14boundary_facesEv"><code class="docutils literal notranslate"><span class="pre">Mesh::boundary_faces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh16compute_centroidE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::compute_centroid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado4Mesh14outward_normalE6gidx_t"><code class="docutils literal notranslate"><span class="pre">Mesh::outward_normal()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Trsf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vector.html">Vector</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">krado</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mesh">
+<h1>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4MeshE">
+<span id="_CPPv3N5krado4MeshE"></span><span id="_CPPv2N5krado4MeshE"></span><span id="krado::Mesh"></span><span class="target" id="classkrado_1_1_mesh"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mesh</span></span></span><a class="headerlink" href="#_CPPv4N5krado4MeshE" title="Link to this definition"></a><br /></dt>
+<dd><p>Class representing a mesh. </p>
+<p>A mesh is a collection of points and elements. Each element is a collection of points. A point has 3 coordinates (x, y, z). Cell sets, face sets, and edge sets can be defined on the mesh. Boundary edges and faces can be computed and obtained via API. Simple operations like scaling, and translation are supported. General transformations can be applied to the mesh as well. They are based on homogeneous coordinates and supported by <code class="docutils literal notranslate"><a class="reference internal" href="transform.html#classkrado_1_1_trsf"><span class="std std-ref"><span class="pre">Trsf</span></span></a></code> class.</p>
+<p>This class should be used for procedural mesh generation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh4MeshEv">
+<span id="_CPPv3N5krado4Mesh4MeshEv"></span><span id="_CPPv2N5krado4Mesh4MeshEv"></span><span id="krado::Mesh::Mesh"></span><span class="target" id="classkrado_1_1_mesh_1a98819229ffa94d1e368d9e8cfc4c87ef"></span><span class="sig-name descname"><span class="n"><span class="pre">Mesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh4MeshEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Construct empty mesh. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh4MeshENSt6vectorI5PointEENSt6vectorI7ElementEE">
+<span id="_CPPv3N5krado4Mesh4MeshENSt6vectorI5PointEENSt6vectorI7ElementEE"></span><span id="_CPPv2N5krado4Mesh4MeshENSt6vectorI5PointEENSt6vectorI7ElementEE"></span><span id="krado::Mesh::Mesh__std::vector:Point:.std::vector:Element:"></span><span class="target" id="classkrado_1_1_mesh_1ad516b413b5a5d4cce3082aab2bb27bb7"></span><span class="sig-name descname"><span class="n"><span class="pre">Mesh</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="point.html#_CPPv4N5krado5PointE" title="krado::Point"><span class="n"><span class="pre">Point</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">points</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="element.html#_CPPv4N5krado7ElementE" title="krado::Element"><span class="n"><span class="pre">Element</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">elements</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh4MeshENSt6vectorI5PointEENSt6vectorI7ElementEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Construct mesh from set of points and elements (useful for reading meshes from files) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> – Points </p></li>
+<li><p><strong>elements</strong> – Elements </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10num_pointsEv">
+<span id="_CPPv3NK5krado4Mesh10num_pointsEv"></span><span id="_CPPv2NK5krado4Mesh10num_pointsEv"></span><span id="krado::Mesh::num_pointsC"></span><span class="target" id="classkrado_1_1_mesh_1a85e0d563a07a22313049b5e67e9a3c32"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_points</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10num_pointsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get number of points. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of points </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12num_elementsEv">
+<span id="_CPPv3NK5krado4Mesh12num_elementsEv"></span><span id="_CPPv2NK5krado4Mesh12num_elementsEv"></span><span id="krado::Mesh::num_elementsC"></span><span class="target" id="classkrado_1_1_mesh_1a9aa7d495863d81cc79b5aab919f7abe8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_elements</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12num_elementsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get number of elements. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of elements </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh6pointsEv">
+<span id="_CPPv3NK5krado4Mesh6pointsEv"></span><span id="_CPPv2NK5krado4Mesh6pointsEv"></span><span id="krado::Mesh::pointsC"></span><span class="target" id="classkrado_1_1_mesh_1ac2bc6df04c8289bf107175a385d0435d"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="point.html#_CPPv4N5krado5PointE" title="krado::Point"><span class="n"><span class="pre">Point</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">points</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh6pointsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get mesh points. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> points </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh5pointE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh5pointE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh5pointE6gidx_t"></span><span id="krado::Mesh::point__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1a77658cf60f943cfa6bfed1fdcb121901"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="point.html#_CPPv4N5krado5PointE" title="krado::Point"><span class="n"><span class="pre">Point</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">point</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh5pointE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get a point by index. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – Index of the point </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="point.html#classkrado_1_1_point"><span class="std std-ref">Point</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh8elementsEv">
+<span id="_CPPv3NK5krado4Mesh8elementsEv"></span><span id="_CPPv2NK5krado4Mesh8elementsEv"></span><span id="krado::Mesh::elementsC"></span><span class="target" id="classkrado_1_1_mesh_1ad67fa68858806f69efc2b650443c82ab"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="element.html#_CPPv4N5krado7ElementE" title="krado::Element"><span class="n"><span class="pre">Element</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">elements</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh8elementsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get elements. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> elements </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh7elementE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh7elementE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh7elementE6gidx_t"></span><span id="krado::Mesh::element__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1abff4ad08543548ba923678af99b8af7f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="element.html#_CPPv4N5krado7ElementE" title="krado::Element"><span class="n"><span class="pre">Element</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">element</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh7elementE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get element of the mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – Index of the element </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="element.html#classkrado_1_1_element"><span class="std std-ref">Element</span></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh6scaledEd">
+<span id="_CPPv3NK5krado4Mesh6scaledEd"></span><span id="_CPPv2NK5krado4Mesh6scaledEd"></span><span id="krado::Mesh::scaled__doubleC"></span><span class="target" id="classkrado_1_1_mesh_1a8f5eef3011a25075d906c126ded979cb"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scaled</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh6scaledEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Scale mesh by a factor (isotropic) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> – Scaling factor </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scaled mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh5scaleEd">
+<span id="_CPPv3N5krado4Mesh5scaleEd"></span><span id="_CPPv2N5krado4Mesh5scaleEd"></span><span id="krado::Mesh::scale__double"></span><span class="target" id="classkrado_1_1_mesh_1a81c5e8781bbfec89249f2ab52483393f"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">scale</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh5scaleEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Scale mesh by a factor (isotropic) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> – Scaling factor </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh which is scaled </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh6scaledEddd">
+<span id="_CPPv3NK5krado4Mesh6scaledEddd"></span><span id="_CPPv2NK5krado4Mesh6scaledEddd"></span><span id="krado::Mesh::scaled__double.double.doubleC"></span><span class="target" id="classkrado_1_1_mesh_1ae1d5435bb37ed7528d40acad3b773ea5"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scaled</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_x</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_y</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_z</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh6scaledEddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Scale mesh by a factor (unisotropic) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>factor_x</strong> – Scaling factor in x-direction </p></li>
+<li><p><strong>factor_y</strong> – Scaling factor in y-direction </p></li>
+<li><p><strong>factor_z</strong> – Scaling factor in z-direction </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scaled mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh5scaleEddd">
+<span id="_CPPv3N5krado4Mesh5scaleEddd"></span><span id="_CPPv2N5krado4Mesh5scaleEddd"></span><span id="krado::Mesh::scale__double.double.double"></span><span class="target" id="classkrado_1_1_mesh_1aa41f787638cdc19bf26ce1d3e54dc2f5"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">scale</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_x</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_y</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor_z</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh5scaleEddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Scale mesh by a factor (unisotropic) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>factor_x</strong> – Scaling factor in x-direction </p></li>
+<li><p><strong>factor_y</strong> – Scaling factor in y-direction </p></li>
+<li><p><strong>factor_z</strong> – Scaling factor in z-direction </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh which is scaled </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10translatedEddd">
+<span id="_CPPv3NK5krado4Mesh10translatedEddd"></span><span id="_CPPv2NK5krado4Mesh10translatedEddd"></span><span id="krado::Mesh::translated__double.double.doubleC"></span><span class="target" id="classkrado_1_1_mesh_1aee1b7a640b2ae9dc6a2726faba1ffbb3"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">translated</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tx</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ty</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tz</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10translatedEddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Translate mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tx</strong> – Translation in x-direction </p></li>
+<li><p><strong>ty</strong> – Translation in y-direction </p></li>
+<li><p><strong>tz</strong> – Translation in z-direction </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Translated mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh9translateEddd">
+<span id="_CPPv3N5krado4Mesh9translateEddd"></span><span id="_CPPv2N5krado4Mesh9translateEddd"></span><span id="krado::Mesh::translate__double.double.double"></span><span class="target" id="classkrado_1_1_mesh_1aaa56d2ce4d02a40bca98e88fabd3fa6d"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">translate</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tx</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ty</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tz</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh9translateEddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Translate mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tx</strong> – Translation in x-direction </p></li>
+<li><p><strong>ty</strong> – Translation in y-direction </p></li>
+<li><p><strong>tz</strong> – Translation in z-direction </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh which is translated </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh11transformedERK4Trsf">
+<span id="_CPPv3NK5krado4Mesh11transformedERK4Trsf"></span><span id="_CPPv2NK5krado4Mesh11transformedERK4Trsf"></span><span id="krado::Mesh::transformed__TrsfCRC"></span><span class="target" id="classkrado_1_1_mesh_1aab12811cea0b5543edddb974845d6f85"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transformed</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="transform.html#_CPPv4N5krado4TrsfE" title="krado::Trsf"><span class="n"><span class="pre">Trsf</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh11transformedERK4Trsf" title="Link to this definition"></a><br /></dt>
+<dd><p>Transform mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tr</strong> – Transformation </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh9transformERK4Trsf">
+<span id="_CPPv3N5krado4Mesh9transformERK4Trsf"></span><span id="_CPPv2N5krado4Mesh9transformERK4Trsf"></span><span id="krado::Mesh::transform__TrsfCR"></span><span class="target" id="classkrado_1_1_mesh_1acf58458e320e52347bd260f3716009a6"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">transform</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="transform.html#_CPPv4N5krado4TrsfE" title="krado::Trsf"><span class="n"><span class="pre">Trsf</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh9transformERK4Trsf" title="Link to this definition"></a><br /></dt>
+<dd><p>Transform mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tr</strong> – Transformation </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh which is transformed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh3addERK4Mesh">
+<span id="_CPPv3N5krado4Mesh3addERK4Mesh"></span><span id="_CPPv2N5krado4Mesh3addERK4Mesh"></span><span id="krado::Mesh::add__MeshCR"></span><span class="target" id="classkrado_1_1_mesh_1ae9ec473cc1ccab829a1ae02aab78a0d7"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh3addERK4Mesh" title="Link to this definition"></a><br /></dt>
+<dd><p>Add another mesh to this mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – <a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> to add </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh23remove_duplicate_pointsEd">
+<span id="_CPPv3N5krado4Mesh23remove_duplicate_pointsEd"></span><span id="_CPPv2N5krado4Mesh23remove_duplicate_pointsEd"></span><span id="krado::Mesh::remove_duplicate_points__double"></span><span class="target" id="classkrado_1_1_mesh_1a64260a2878cc0cb574bef1a45d01f177"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_duplicate_points</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1e-12</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh23remove_duplicate_pointsEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove duplicate points. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tolerance</strong> – Tolerance for point comparison </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh20compute_bounding_boxEv">
+<span id="_CPPv3NK5krado4Mesh20compute_bounding_boxEv"></span><span id="_CPPv2NK5krado4Mesh20compute_bounding_boxEv"></span><span id="krado::Mesh::compute_bounding_boxC"></span><span class="target" id="classkrado_1_1_mesh_1abd0b467fb5216261b20a78b7c08f1215"></span><a class="reference internal" href="bounding_box_3d.html#_CPPv4N5krado13BoundingBox3DE" title="krado::BoundingBox3D"><span class="n"><span class="pre">BoundingBox3D</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_bounding_box</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh20compute_bounding_boxEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Compute bounding box around the mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bounding box </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh9duplicateEv">
+<span id="_CPPv3NK5krado4Mesh9duplicateEv"></span><span id="_CPPv2NK5krado4Mesh9duplicateEv"></span><span id="krado::Mesh::duplicateC"></span><span class="target" id="classkrado_1_1_mesh_1a052c2aadc15be7937696c8aa7fbfb407"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">duplicate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh9duplicateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Duplicate mesh. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Duplicated mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh17set_cell_set_nameE8marker_tRKNSt6stringE">
+<span id="_CPPv3N5krado4Mesh17set_cell_set_nameE8marker_tRKNSt6stringE"></span><span id="_CPPv2N5krado4Mesh17set_cell_set_nameE8marker_tRKNSt6stringE"></span><span id="krado::Mesh::set_cell_set_name__marker_t.ssCR"></span><span class="target" id="classkrado_1_1_mesh_1a72e128dc3854405a5255e40b7220fd6c"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_cell_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_set_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh17set_cell_set_nameE8marker_tRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set cell set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cell_set_id</strong> – Cell set ID (marker) </p></li>
+<li><p><strong>name</strong> – Cell set name </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh13cell_set_nameE8marker_t">
+<span id="_CPPv3NK5krado4Mesh13cell_set_nameE8marker_t"></span><span id="_CPPv2NK5krado4Mesh13cell_set_nameE8marker_t"></span><span id="krado::Mesh::cell_set_name__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a80a0ece9d83be0cac04a72f49b1e6b17"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_set_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh13cell_set_nameE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get cell set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cell_set_id</strong> – Cell set ID (marker) </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cell set name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12cell_set_idsEv">
+<span id="_CPPv3NK5krado4Mesh12cell_set_idsEv"></span><span id="_CPPv2NK5krado4Mesh12cell_set_idsEv"></span><span id="krado::Mesh::cell_set_idsC"></span><span class="target" id="classkrado_1_1_mesh_1a57d82df3f9282bbd1ca73f5cff905bac"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_set_ids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12cell_set_idsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get cell set IDs. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh8cell_setE8marker_t">
+<span id="_CPPv3NK5krado4Mesh8cell_setE8marker_t"></span><span id="_CPPv2NK5krado4Mesh8cell_setE8marker_t"></span><span id="krado::Mesh::cell_set__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a0a0d2c241ba1a83a598c129499cbbeb5"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">cell_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh8cell_setE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get cell set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Cell set ID </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cell set </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh12set_cell_setE8marker_tRKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado4Mesh12set_cell_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado4Mesh12set_cell_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="krado::Mesh::set_cell_set__marker_t.std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_mesh_1ab973f180a7fc83a04c76a68c186c0fab"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_cell_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh12set_cell_setE8marker_tRKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set cell set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Cell set ID </p></li>
+<li><p><strong>cell_ids</strong> – Cell IDs </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh16remove_cell_setsEv">
+<span id="_CPPv3N5krado4Mesh16remove_cell_setsEv"></span><span id="_CPPv2N5krado4Mesh16remove_cell_setsEv"></span><span id="krado::Mesh::remove_cell_sets"></span><span class="target" id="classkrado_1_1_mesh_1a7ec6a53c640547c56545a66720ab9c78"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_cell_sets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh16remove_cell_setsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove cell sets. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh17set_face_set_nameE8marker_tRKNSt6stringE">
+<span id="_CPPv3N5krado4Mesh17set_face_set_nameE8marker_tRKNSt6stringE"></span><span id="_CPPv2N5krado4Mesh17set_face_set_nameE8marker_tRKNSt6stringE"></span><span id="krado::Mesh::set_face_set_name__marker_t.ssCR"></span><span class="target" id="classkrado_1_1_mesh_1a1d0182caaad616290451037abd925420"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_face_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_set_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh17set_face_set_nameE8marker_tRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set face set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>face_set_id</strong> – Face set ID (marker) </p></li>
+<li><p><strong>name</strong> – Face set name </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh13face_set_nameE8marker_t">
+<span id="_CPPv3NK5krado4Mesh13face_set_nameE8marker_t"></span><span id="_CPPv2NK5krado4Mesh13face_set_nameE8marker_t"></span><span id="krado::Mesh::face_set_name__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a7ad91742b6ef3930c008506cf5c25f99"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">face_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_set_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh13face_set_nameE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get face set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>face_set_id</strong> – Face set ID (marker) </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Face set name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12face_set_idsEv">
+<span id="_CPPv3NK5krado4Mesh12face_set_idsEv"></span><span id="_CPPv2NK5krado4Mesh12face_set_idsEv"></span><span id="krado::Mesh::face_set_idsC"></span><span class="target" id="classkrado_1_1_mesh_1a019d4a6ae9e20619fc4deb3dc28c57ea"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">face_set_ids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12face_set_idsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get face set IDs. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh8face_setE8marker_t">
+<span id="_CPPv3NK5krado4Mesh8face_setE8marker_t"></span><span id="_CPPv2NK5krado4Mesh8face_setE8marker_t"></span><span id="krado::Mesh::face_set__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a82155205baf422e46efd5402a382b791"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">face_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh8face_setE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get face set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Face set ID </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Face set </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh12set_face_setE8marker_tRKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado4Mesh12set_face_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado4Mesh12set_face_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="krado::Mesh::set_face_set__marker_t.std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_mesh_1a6e49c6d1ffc114197a8fa48a3a8cd9ed"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_face_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh12set_face_setE8marker_tRKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set face set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Face set ID </p></li>
+<li><p><strong>face_ids</strong> – Face IDs </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh16remove_face_setsEv">
+<span id="_CPPv3N5krado4Mesh16remove_face_setsEv"></span><span id="_CPPv2N5krado4Mesh16remove_face_setsEv"></span><span id="krado::Mesh::remove_face_sets"></span><span class="target" id="classkrado_1_1_mesh_1ab73c03ea51abd8bb5ee77e02c444b0de"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_face_sets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh16remove_face_setsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove face sets. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh17set_edge_set_nameE8marker_tRKNSt6stringE">
+<span id="_CPPv3N5krado4Mesh17set_edge_set_nameE8marker_tRKNSt6stringE"></span><span id="_CPPv2N5krado4Mesh17set_edge_set_nameE8marker_tRKNSt6stringE"></span><span id="krado::Mesh::set_edge_set_name__marker_t.ssCR"></span><span class="target" id="classkrado_1_1_mesh_1a79d141d31db84353a533483a2c98ecbc"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_edge_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge_set_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh17set_edge_set_nameE8marker_tRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set edge set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_set_id</strong> – Edge set ID (marker) </p></li>
+<li><p><strong>name</strong> – Edge set name </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh13edge_set_nameE8marker_t">
+<span id="_CPPv3NK5krado4Mesh13edge_set_nameE8marker_t"></span><span id="_CPPv2NK5krado4Mesh13edge_set_nameE8marker_t"></span><span id="krado::Mesh::edge_set_name__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a151b1799d0b44f954ee607256c90cceb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">edge_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge_set_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh13edge_set_nameE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get edge set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>edge_set_id</strong> – Edge set ID (marker) </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Edge set name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12edge_set_idsEv">
+<span id="_CPPv3NK5krado4Mesh12edge_set_idsEv"></span><span id="_CPPv2NK5krado4Mesh12edge_set_idsEv"></span><span id="krado::Mesh::edge_set_idsC"></span><span class="target" id="classkrado_1_1_mesh_1ae8e984e34502099ab6ec132201602d27"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">edge_set_ids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12edge_set_idsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get edge set IDs. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh8edge_setE8marker_t">
+<span id="_CPPv3NK5krado4Mesh8edge_setE8marker_t"></span><span id="_CPPv2NK5krado4Mesh8edge_setE8marker_t"></span><span id="krado::Mesh::edge_set__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1ad21a338a09bc6357229b8ab4a028cfd5"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">edge_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh8edge_setE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get edge set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Edge set ID </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Edge set </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh12set_edge_setE8marker_tRKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado4Mesh12set_edge_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado4Mesh12set_edge_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="krado::Mesh::set_edge_set__marker_t.std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_mesh_1a601f2f5e2f15be53a1b59c4f98fd3ca1"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_edge_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">edge_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh12set_edge_setE8marker_tRKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set edge set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Edge set ID </p></li>
+<li><p><strong>edge_ids</strong> – Edge IDs </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh16remove_edge_setsEv">
+<span id="_CPPv3N5krado4Mesh16remove_edge_setsEv"></span><span id="_CPPv2N5krado4Mesh16remove_edge_setsEv"></span><span id="krado::Mesh::remove_edge_sets"></span><span class="target" id="classkrado_1_1_mesh_1a8a730f11f37cd8ecd1cf268be34c87ef"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_edge_sets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh16remove_edge_setsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove edge sets. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh19set_vertex_set_nameE8marker_tRKNSt6stringE">
+<span id="_CPPv3N5krado4Mesh19set_vertex_set_nameE8marker_tRKNSt6stringE"></span><span id="_CPPv2N5krado4Mesh19set_vertex_set_nameE8marker_tRKNSt6stringE"></span><span id="krado::Mesh::set_vertex_set_name__marker_t.ssCR"></span><span class="target" id="classkrado_1_1_mesh_1a964409957728f921c60d607f9236a360"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_vertex_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh19set_vertex_set_nameE8marker_tRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set vertex set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Vertex set ID </p></li>
+<li><p><strong>name</strong> – Vertex set name </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh15vertex_set_nameE8marker_t">
+<span id="_CPPv3NK5krado4Mesh15vertex_set_nameE8marker_t"></span><span id="_CPPv2NK5krado4Mesh15vertex_set_nameE8marker_t"></span><span id="krado::Mesh::vertex_set_name__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1af5357e972af2a9402533535da00ba608"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh15vertex_set_nameE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex set name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Vertex set ID </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertex set name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh14vertex_set_idsEv">
+<span id="_CPPv3NK5krado4Mesh14vertex_set_idsEv"></span><span id="_CPPv2NK5krado4Mesh14vertex_set_idsEv"></span><span id="krado::Mesh::vertex_set_idsC"></span><span class="target" id="classkrado_1_1_mesh_1a965636cab1828b03ce0c92e7dc571d53"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_set_ids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh14vertex_set_idsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex set IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Vertex set IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10vertex_setE8marker_t">
+<span id="_CPPv3NK5krado4Mesh10vertex_setE8marker_t"></span><span id="_CPPv2NK5krado4Mesh10vertex_setE8marker_t"></span><span id="krado::Mesh::vertex_set__marker_tC"></span><span class="target" id="classkrado_1_1_mesh_1a2885c0a206c9ba4597d8660bddc40aa9"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">vertex_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10vertex_setE8marker_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Vertex set ID </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertex set </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh14set_vertex_setE8marker_tRKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado4Mesh14set_vertex_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado4Mesh14set_vertex_setE8marker_tRKNSt6vectorI6gidx_tEE"></span><span id="krado::Mesh::set_vertex_set__marker_t.std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_mesh_1a117eceaa270cce982f9d7da29af85215"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">set_vertex_set</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">marker_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vertex_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh14set_vertex_setE8marker_tRKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set vertex set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Vertex set ID </p></li>
+<li><p><strong>vertex_ids</strong> – Vertex IDs </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh18remove_vertex_setsEv">
+<span id="_CPPv3N5krado4Mesh18remove_vertex_setsEv"></span><span id="_CPPv2N5krado4Mesh18remove_vertex_setsEv"></span><span id="krado::Mesh::remove_vertex_sets"></span><span class="target" id="classkrado_1_1_mesh_1acf3ac25f395508540c7d26e8afcd8b7c"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_vertex_sets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh18remove_vertex_setsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove vertex sets. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh15remap_block_idsERKNSt3mapI8marker_t8marker_tEE">
+<span id="_CPPv3N5krado4Mesh15remap_block_idsERKNSt3mapI8marker_t8marker_tEE"></span><span id="_CPPv2N5krado4Mesh15remap_block_idsERKNSt3mapI8marker_t8marker_tEE"></span><span id="krado::Mesh::remap_block_ids__std::map:marker_t.marker_t:CR"></span><span class="target" id="classkrado_1_1_mesh_1a547adca595c2f1f95a95d6c8400b8f16"></span><a class="reference internal" href="#_CPPv4N5krado4MeshE" title="krado::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">remap_block_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">marker_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">block_map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh15remap_block_idsERKNSt3mapI8marker_t8marker_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Remap block IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block_map</strong> – Map of old block IDs to new block IDs </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference to this mesh </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12vertex_rangeEv">
+<span id="_CPPv3NK5krado4Mesh12vertex_rangeEv"></span><span id="_CPPv2NK5krado4Mesh12vertex_rangeEv"></span><span id="krado::Mesh::vertex_rangeC"></span><span class="target" id="classkrado_1_1_mesh_1a7bc71a197936032679b63aca687bc57e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Range</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">vertex_range</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12vertex_rangeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get mesh vertex ID range. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> point ID range </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10edge_rangeEv">
+<span id="_CPPv3NK5krado4Mesh10edge_rangeEv"></span><span id="_CPPv2NK5krado4Mesh10edge_rangeEv"></span><span id="krado::Mesh::edge_rangeC"></span><span class="target" id="classkrado_1_1_mesh_1af1246947179ff4d9a3cbc5772ba6c30f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Range</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">edge_range</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10edge_rangeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get mesh edge ID range. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> edge ID range </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10face_rangeEv">
+<span id="_CPPv3NK5krado4Mesh10face_rangeEv"></span><span id="_CPPv2NK5krado4Mesh10face_rangeEv"></span><span id="krado::Mesh::face_rangeC"></span><span class="target" id="classkrado_1_1_mesh_1aecbee51b4f02a536e7b58f70f32a4b6d"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Range</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">face_range</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10face_rangeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get mesh face ID range. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> face ID range </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh10cell_rangeEv">
+<span id="_CPPv3NK5krado4Mesh10cell_rangeEv"></span><span id="_CPPv2NK5krado4Mesh10cell_rangeEv"></span><span id="krado::Mesh::cell_rangeC"></span><span class="target" id="classkrado_1_1_mesh_1a70eb4edf4dd7ffb889d7de1d9bccfcf3"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Range</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">cell_range</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh10cell_rangeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get mesh cell ID range. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_mesh"><span class="std std-ref">Mesh</span></a> cell ID range </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh7supportE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh7supportE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh7supportE6gidx_t"></span><span id="krado::Mesh::support__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1add2e1128cf4f427996f4504759a3292d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">support</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh7supportE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get support of a mesh node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the node </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh4coneE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh4coneE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh4coneE6gidx_t"></span><span id="krado::Mesh::cone__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1a40d5f0f7bcc2608288b76364e8ae697b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cone</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh4coneE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get connectivity of a mesh node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the node </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh13cone_verticesE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh13cone_verticesE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh13cone_verticesE6gidx_t"></span><span id="krado::Mesh::cone_vertices__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1ab8e041caadde212baa0121e5eda08a56"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cone_vertices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh13cone_verticesE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get cone vertices of a mesh node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the node </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cone vertices </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh12element_typeE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh12element_typeE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh12element_typeE6gidx_t"></span><span id="krado::Mesh::element_type__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1a96e2a5852661d82b647ea59024a61e1a"></span><span class="n"><span class="pre">ElementType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">element_type</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh12element_typeE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get element type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the element </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="element.html#classkrado_1_1_element"><span class="std std-ref">Element</span></a> type </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado4Mesh6set_upEv">
+<span id="_CPPv3N5krado4Mesh6set_upEv"></span><span id="_CPPv2N5krado4Mesh6set_upEv"></span><span id="krado::Mesh::set_up"></span><span class="target" id="classkrado_1_1_mesh_1ab07e88870a4f20b2bb5f0855215e28b7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_up</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado4Mesh6set_upEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Prepare mesh. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh14boundary_edgesEv">
+<span id="_CPPv3NK5krado4Mesh14boundary_edgesEv"></span><span id="_CPPv2NK5krado4Mesh14boundary_edgesEv"></span><span id="krado::Mesh::boundary_edgesC"></span><span class="target" id="classkrado_1_1_mesh_1accc4b0a24685640a6756802dad602b1a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_edges</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh14boundary_edgesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get all boundary edge IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Boundary edge IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh14boundary_facesEv">
+<span id="_CPPv3NK5krado4Mesh14boundary_facesEv"></span><span id="_CPPv2NK5krado4Mesh14boundary_facesEv"></span><span id="krado::Mesh::boundary_facesC"></span><span class="target" id="classkrado_1_1_mesh_1af007183d31a13ff06e9f0b34dad9c359"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_faces</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh14boundary_facesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get all boundary face IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Boundary face IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh16compute_centroidE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh16compute_centroidE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh16compute_centroidE6gidx_t"></span><span id="krado::Mesh::compute_centroid__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1a2ede8e558c35a290fbcdd7b8d8274ab7"></span><a class="reference internal" href="point.html#_CPPv4N5krado5PointE" title="krado::Point"><span class="n"><span class="pre">Point</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_centroid</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh16compute_centroidE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Compute centroid. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the element </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Centroid </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado4Mesh14outward_normalE6gidx_t">
+<span id="_CPPv3NK5krado4Mesh14outward_normalE6gidx_t"></span><span id="_CPPv2NK5krado4Mesh14outward_normalE6gidx_t"></span><span id="krado::Mesh::outward_normal__gidx_tC"></span><span class="target" id="classkrado_1_1_mesh_1ae9f57df962fafdf560674289d5d675c6"></span><a class="reference internal" href="vector.html#_CPPv4N5krado6VectorE" title="krado::Vector"><span class="n"><span class="pre">Vector</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outward_normal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado4Mesh14outward_normalE6gidx_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Compute outward normal. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index of the edge/face </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Outward normal </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="io.html" class="btn btn-neutral float-left" title="Input/Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="operations.html" class="btn btn-neutral float-right" title="Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, David Andrs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

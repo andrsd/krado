@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merging meshes &mdash; krado</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Create Edge/Face Sets from Outward Normals" href="side_sets_from_normals.html" />
+    <link rel="prev" title="Import/Export" href="import_mesh.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            krado
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Gettting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cook book</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="compute_volume.html">Compute block volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extrude.html">Mesh extrusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_mesh.html">Import/Export</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Merging meshes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="side_sets_from_normals.html">Create Edge/Face Sets from Outward Normals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tetrahedralize.html">Tetrahedralize a mesh</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/bounding_box_3d.html">BoundingBox3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/classifier.html">SolidClassifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/element.html">Element</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/exception.html">Exception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/exodusii_file.html">ExodusIIFile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/io.html">Input/Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/mesh.html">Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/operations.html">Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/point.html">Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/transform.html">Trsf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devel/classes/vector.html">Vector</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">krado</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Merging meshes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="merging-meshes">
+<h1>Merging meshes<a class="headerlink" href="#merging-meshes" title="Link to this heading"></a></h1>
+<p>Merging meshes is a common operation in mesh processing. It is used to combine
+two or more meshes into a single one. This can be useful when you want to
+combine meshes from different sources.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">krado</span>
+
+<span class="n">mesh1</span> <span class="o">=</span> <span class="n">krado</span><span class="o">.</span><span class="n">import_mesh</span><span class="p">(</span><span class="s2">&quot;path/to/mesh1.exo&quot;</span><span class="p">)</span>
+<span class="n">mesh2</span> <span class="o">=</span> <span class="n">krado</span><span class="o">.</span><span class="n">import_mesh</span><span class="p">(</span><span class="s2">&quot;path/to/mesh2.exo&quot;</span><span class="p">)</span>
+
+<span class="n">merged_mesh</span> <span class="o">=</span> <span class="n">mesh1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh2</span><span class="p">)</span>
+
+<span class="n">merged_mesh</span><span class="o">.</span><span class="n">set_up</span><span class="p">()</span>
+<span class="n">krado</span><span class="o">.</span><span class="n">export_mesh</span><span class="p">(</span><span class="n">merged_mesh</span><span class="p">,</span> <span class="s2">&quot;path/to/merged_mesh.exo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you have a larger number of blocks to merge, use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">krado</span>
+
+<span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">krado</span><span class="o">.</span><span class="n">import_mesh</span><span class="p">(</span><span class="s2">&quot;path/to/mesh1.exo&quot;</span><span class="p">))</span>
+<span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">krado</span><span class="o">.</span><span class="n">import_mesh</span><span class="p">(</span><span class="s2">&quot;path/to/mesh2.exo&quot;</span><span class="p">))</span>
+
+<span class="n">merged_mesh</span> <span class="o">=</span> <span class="n">krado</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+<span class="n">merged_mesh</span><span class="o">.</span><span class="n">set_up</span><span class="p">()</span>
+<span class="n">krado</span><span class="o">.</span><span class="n">export_mesh</span><span class="p">(</span><span class="n">merged_mesh</span><span class="p">,</span> <span class="s2">&quot;path/to/merged_mesh.exo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that if the meshes share nodes, the nodes will be duplicated in the merged
+mesh. To remove duplicate nodes, you can use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">krado.Mesh.remove_duplicate_points()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">merged_mesh</span><span class="o">.</span><span class="n">remove_duplicate_points</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">)</span>
+
+<span class="n">merged_mesh</span><span class="o">.</span><span class="n">set_up</span><span class="p">()</span>
+<span class="n">krado</span><span class="o">.</span><span class="n">export_mesh</span><span class="p">(</span><span class="s2">&quot;path/to/merged_mesh.exo&quot;</span><span class="p">,</span> <span class="n">merged_mesh</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">1e-10</span></code> is the (absolute) tolerance that decides if two nodes are identical or not.
+To see if nodes were actaully merged, turn on diagnostic report:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">krado</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>      <span class="c1"># 2 or higher number will print the dianostic report</span>
+</pre></div>
+</div>
+<p>Then, you get a report like so:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>info<span class="o">]</span><span class="w"> </span>Diagnostics:
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span>Total<span class="w"> </span>close<span class="w"> </span>pairs:<span class="w"> </span><span class="m">2</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span>Histogram<span class="w"> </span><span class="o">(</span><span class="m">0</span>.0<span class="w"> </span><span class="o">=</span><span class="w"> </span>identical,<span class="w"> </span><span class="m">1</span>.0<span class="w"> </span><span class="o">=</span><span class="w"> </span>exactly<span class="w"> </span>at<span class="w"> </span>tolerance<span class="o">)</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.0<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>++++++++++++++++++++++++++++++++++++++++++++++++++
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.1<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.2<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.2<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.3<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.3<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.4<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.5<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.6<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.6<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.7<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.7<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.8<span class="w"> </span>–<span class="w"> </span><span class="m">0</span>.9<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span><span class="m">0</span>.9<span class="w"> </span>–<span class="w"> </span><span class="m">1</span>.0<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>
+<span class="o">[</span>info<span class="o">]</span><span class="w">   </span>Smallest<span class="w"> </span>separation:<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<p>Large counts in the first bins indicate tight node alignment.
+Large counts in the last bin suggest the tolerance may be too small.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="import_mesh.html" class="btn btn-neutral float-left" title="Import/Export" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="side_sets_from_normals.html" class="btn btn-neutral float-right" title="Create Edge/Face Sets from Outward Normals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, David Andrs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
