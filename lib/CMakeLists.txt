@@ -1,26 +1,35 @@
-set(NAME "libkrado")
-
 file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE HDRS CONFIGURE_DEPENDS include/krado/*.h)
 
-add_library(${NAME} SHARED ${SRCS})
+add_library(libkrado SHARED)
 
-target_compile_features(${NAME} PUBLIC cxx_std_20)
+target_sources(libkrado PRIVATE ${SRCS})
+
+target_sources(
+    libkrado
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/lib/include
+        FILES ${HDRS}
+)
+
+target_compile_features(libkrado PUBLIC cxx_std_20)
 
 if(NOT MSVC)
-    set_target_properties(${NAME} PROPERTIES OUTPUT_NAME krado)
+    set_target_properties(libkrado PROPERTIES OUTPUT_NAME krado)
 endif()
 
-target_code_coverage(${NAME})
+target_code_coverage(libkrado)
 
 set_target_properties(
-    ${NAME}
+    libkrado
     PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
 target_compile_definitions(
-    ${NAME}
+    libkrado
     PRIVATE
         SPDLOG_FMT_EXTERNAL
     PUBLIC
@@ -28,11 +37,11 @@ target_compile_definitions(
 )
 
 if (KRADO_WITH_TRIANGLE)
-    target_compile_definitions(${NAME} PUBLIC KRADO_WITH_TRIANGLE)
+    target_compile_definitions(libkrado PUBLIC KRADO_WITH_TRIANGLE)
 endif()
 
 target_include_directories(
-    ${NAME}
+    libkrado
     PUBLIC
         $<INSTALL_INTERFACE:include>
         ${OpenCASCADE_INCLUDE_DIR}
@@ -43,7 +52,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-    ${NAME}
+    libkrado
     PRIVATE
         Eigen3::Eigen
         libbamg
@@ -57,13 +66,21 @@ target_link_libraries(
         ${OpenCASCADE_DataExchange_LIBRARIES}
 )
 
-target_compile_definitions(${NAME} PRIVATE SPDLOG_HEADER_ONLY)
+target_compile_definitions(libkrado PRIVATE SPDLOG_HEADER_ONLY)
 
 if (KRADO_WITH_TRIANGLE)
-    target_link_libraries(${NAME} PUBLIC triangle)
+    target_link_libraries(libkrado PUBLIC triangle)
 endif()
 
 if (KRADO_WITH_MOAB)
-    target_link_libraries(${NAME} PRIVATE MOAB)
-    target_compile_definitions(${NAME} PRIVATE KRADO_WITH_MOAB)
+    target_link_libraries(libkrado PRIVATE MOAB)
+    target_compile_definitions(libkrado PRIVATE KRADO_WITH_MOAB)
 endif()
+
+# install
+
+install(
+    TARGETS libkrado
+    EXPORT krado-targets
+    FILE_SET HEADERS
+)

@@ -67,23 +67,7 @@ write_basic_package_version_file(krado-config-version.cmake
 )
 
 install(
-    TARGETS libkrado
-    EXPORT kradoTargets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/lib/include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    FILES_MATCHING PATTERN "*.h"
-)
-
-install(
-    EXPORT kradoTargets
+    EXPORT krado-targets
     FILE krado-targets.cmake
     NAMESPACE krado::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/krado
