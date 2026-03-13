@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Element &mdash; krado</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Exception" href="exception.html" />
+    <link rel="prev" title="SolidClassifier" href="classifier.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            krado
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Gettting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cook book</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/compute_volume.html">Compute block volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/extrude.html">Mesh extrusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/import_mesh.html">Import/Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/merging.html">Merging meshes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/side_sets_from_normals.html">Create Edge/Face Sets from Outward Normals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cook_book/tetrahedralize.html">Tetrahedralize a mesh</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bounding_box_3d.html">BoundingBox3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classifier.html">SolidClassifier</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Element</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N5krado7ElementE"><code class="docutils literal notranslate"><span class="pre">Element</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado7Element7ElementE11ElementTypeRKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Element::Element()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7Element4typeEv"><code class="docutils literal notranslate"><span class="pre">Element::type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7Element12num_verticesEv"><code class="docutils literal notranslate"><span class="pre">Element::num_vertices()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7Element9vertex_idEi"><code class="docutils literal notranslate"><span class="pre">Element::vertex_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7ElementclEi"><code class="docutils literal notranslate"><span class="pre">Element::operator()()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7Element3idsEv"><code class="docutils literal notranslate"><span class="pre">Element::ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK5krado7Element2idEi"><code class="docutils literal notranslate"><span class="pre">Element::id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N5krado7Element7set_idsERKNSt6vectorI6gidx_tEE"><code class="docutils literal notranslate"><span class="pre">Element::set_ids()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exception.html">Exception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exodusii_file.html">ExodusIIFile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input/Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mesh.html">Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Trsf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vector.html">Vector</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">krado</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Element</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="element">
+<h1>Element<a class="headerlink" href="#element" title="Link to this heading"></a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado7ElementE">
+<span id="_CPPv3N5krado7ElementE"></span><span id="_CPPv2N5krado7ElementE"></span><span id="krado::Element"></span><span class="target" id="classkrado_1_1_element"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Element</span></span></span><a class="headerlink" href="#_CPPv4N5krado7ElementE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado7Element7ElementE11ElementTypeRKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado7Element7ElementE11ElementTypeRKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado7Element7ElementE11ElementTypeRKNSt6vectorI6gidx_tEE"></span><span id="krado::Element::Element__ElementType.std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_element_1a5ce3883f59bf803391691bf57a26d23c"></span><span class="sig-name descname"><span class="n"><span class="pre">Element</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ElementType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vtx_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado7Element7ElementE11ElementTypeRKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Build an element. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> – <a class="reference internal" href="#classkrado_1_1_element"><span class="std std-ref">Element</span></a> type </p></li>
+<li><p><strong>vtx_ids</strong> – Vertex IDs composing the element </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7Element4typeEv">
+<span id="_CPPv3NK5krado7Element4typeEv"></span><span id="_CPPv2NK5krado7Element4typeEv"></span><span id="krado::Element::typeC"></span><span class="target" id="classkrado_1_1_element_1a384da492e0c7dcab14a7dd14e0b95877"></span><span class="n"><span class="pre">ElementType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7Element4typeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get element type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#classkrado_1_1_element"><span class="std std-ref">Element</span></a> type </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7Element12num_verticesEv">
+<span id="_CPPv3NK5krado7Element12num_verticesEv"></span><span id="_CPPv2NK5krado7Element12num_verticesEv"></span><span id="krado::Element::num_verticesC"></span><span class="target" id="classkrado_1_1_element_1ae589dfed34f62cb5a990362e352b2e63"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_vertices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7Element12num_verticesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get number of vertices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of vertices </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7Element9vertex_idEi">
+<span id="_CPPv3NK5krado7Element9vertex_idEi"></span><span id="_CPPv2NK5krado7Element9vertex_idEi"></span><span id="krado::Element::vertex_id__iC"></span><span class="target" id="classkrado_1_1_element_1ae71d16ee1b23061d1a7497fd7c77885e"></span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_id</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7Element9vertex_idEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex ID fom local index. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – Local vertex index </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertex ID </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7ElementclEi">
+<span id="_CPPv3NK5krado7ElementclEi"></span><span id="_CPPv2NK5krado7ElementclEi"></span><span id="krado::Element::call-operator__iC"></span><span class="target" id="classkrado_1_1_element_1a43a270a3b7c5e24c25b5e43751fba9da"></span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7ElementclEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Call operator to access vertex index. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – Vertex index </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertex ID </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7Element3idsEv">
+<span id="_CPPv3NK5krado7Element3idsEv"></span><span id="_CPPv2NK5krado7Element3idsEv"></span><span id="krado::Element::idsC"></span><span class="target" id="classkrado_1_1_element_1a3ff9d2c270cd8ebb2594fa0b74e1667e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">ids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7Element3idsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Vertex IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5krado7Element2idEi">
+<span id="_CPPv3NK5krado7Element2idEi"></span><span id="_CPPv2NK5krado7Element2idEi"></span><span id="krado::Element::id__iC"></span><span class="target" id="classkrado_1_1_element_1aa2bd1df281a75305cf5bc6c3d798d083"></span><span class="n"><span class="pre">gidx_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5krado7Element2idEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex IDs. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> – Local vertex index </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertex IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5krado7Element7set_idsERKNSt6vectorI6gidx_tEE">
+<span id="_CPPv3N5krado7Element7set_idsERKNSt6vectorI6gidx_tEE"></span><span id="_CPPv2N5krado7Element7set_idsERKNSt6vectorI6gidx_tEE"></span><span id="krado::Element::set_ids__std::vector:gidx_t:CR"></span><span class="target" id="classkrado_1_1_element_1a8ba8e01948fa305b7de427a7747ba0b4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">gidx_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5krado7Element7set_idsERKNSt6vectorI6gidx_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Set element connectivity. </p>
+<p>This is good for element renumbering. This cannot be used for changing element type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ids</strong> – Vertex IDs </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classifier.html" class="btn btn-neutral float-left" title="SolidClassifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="exception.html" class="btn btn-neutral float-right" title="Exception" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, David Andrs.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
