@@ -9,6 +9,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/consts.h"
 #include <array>
 #include <cassert>
 
@@ -39,6 +40,30 @@ const std::vector<Ptr<MeshCurve>> &
 MeshSurface::curves() const
 {
     return this->mesh_curves_;
+}
+
+double
+MeshSurface::mesh_size() const
+{
+    assert(this->mesh_size_.has_value());
+    return this->mesh_size_.value();
+}
+
+void
+MeshSurface::set_mesh_size(double size)
+{
+    this->mesh_size_ = size;
+}
+
+double
+MeshSurface::mesh_size_at_param(UVParam par) const
+{
+    if (this->mesh_size_.has_value())
+        return this->mesh_size_.value();
+
+    // TODO: if no surface size set, figure it out from edges and vertices
+
+    return MAX_LC;
 }
 
 const std::vector<Ptr<MeshVertexAbstract>> &

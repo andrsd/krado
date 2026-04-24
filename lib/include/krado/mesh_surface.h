@@ -36,6 +36,22 @@ public:
     /// Get curves bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
 
+    /// Get the mesh size for this surface
+    ///
+    /// @return The mesh size
+    [[nodiscard]] double mesh_size() const;
+
+    /// Set the mesh size for this surface
+    ///
+    /// @param size The new mesh size
+    void set_mesh_size(double size);
+
+    /// Get mesh size at given surface parameter
+    ///
+    /// @param par Surface parameter (u, v)
+    /// @return Mesh size at the parameter
+    [[nodiscard]] double mesh_size_at_param(UVParam par) const;
+
     /// Get vertices on this surface
     ///
     /// @return Surface vertices
@@ -128,6 +144,8 @@ private:
     std::vector<MeshElement> tris_;
     /// Quadrangles
     std::vector<MeshElement> quads_;
+    /// Mesh size for the surface
+    Optional<double> mesh_size_;
     ///
     std::unique_ptr<Scheme2D> scheme_;
 };
