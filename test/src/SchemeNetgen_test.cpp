@@ -5,6 +5,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme/netgen.h"
+#include "krado/scheme/equal.h"
 #include "krado/step_file.h"
 #include "builder.h"
 #include <filesystem>
@@ -105,5 +106,49 @@ TEST(SchemeNetgenTest, quarter_circle)
     for (auto & v : all_vtxs) {
         auto p = v->point();
         EXPECT_NEAR(p.distance(Point(0, 0, 0)), 1.0, 1e-6);
+    }
+}
+
+TEST(SchemeNetgenTest, disc)
+{
+    auto circle = testing::build_circle(Point(0, 0, 0), 1);
+    GeomModel model(circle);
+
+    {
+        SchemeEqual::Options opts;
+        opts.intervals = 8;
+        model.curve(1)->set_scheme<SchemeEqual>(opts);
+        model.mesh_curve(1);
+    }
+
+    auto surf = model.surface(1);
+    EXPECT_TRUE(surf != nullptr);
+    EXPECT_EQ(surf->curves().size(), 1);
+
+    {
+        SchemeNetgen::Options opts;
+        surf->set_scheme<SchemeNetgen>(opts);
+        surf->set_mesh_size(0.75);
+        model.mesh_surface(1);
+    }
+
+    auto & all_verts = surf->all_vertices();
+    EXPECT_GT(all_verts.size(), 0);
+
+    auto & triangles = surf->triangles();
+    EXPECT_GT(triangles.size(), 0);
+
+    // With mesh size 0.75 and 8 boundary vertices, we expect a fan triangulation
+    // with a central point
+    EXPECT_EQ(triangles.size(), 7);
+
+    // All triangles should share a common central vertex
+    auto central_vertex = triangles[0].vertices()[2];
+    for (const auto & tri : triangles) {
+        auto verts = tri.vertices();
+        // Each triangle should have the central vertex
+        bool has_central = (verts[0] == central_vertex || verts[1] == central_vertex ||
+                            verts[2] == central_vertex);
+        EXPECT_TRUE(has_central);
     }
 }
