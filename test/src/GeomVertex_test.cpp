@@ -32,3 +32,11 @@ TEST(GeomVertexTest, point)
     EXPECT_DOUBLE_EQ(pt.y, 2.);
     EXPECT_DOUBLE_EQ(pt.z, 3.);
 }
+
+TEST(GeomVertexTest, op_shl)
+{
+    auto vtx = testing::build_vertex(Point(1, 2, 3));
+    std::stringstream ss;
+    ss << vtx;
+    EXPECT_EQ(ss.str(), "Vertex -1: location=(x = 1, y = 2, z = 3)");
+}

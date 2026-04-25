@@ -180,3 +180,11 @@ TEST(GeomCurveTest, split)
     EXPECT_DOUBLE_EQ(lower.length(), 0.25);
     EXPECT_DOUBLE_EQ(upper.length(), 0.75);
 }
+
+TEST(GeomCurveTest, op_shl)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    std::stringstream ss;
+    ss << line;
+    EXPECT_EQ(ss.str(), "Curve -1: type=line, vertices=[-1, -1], u=[0, 5], length=5");
+}
