@@ -2,6 +2,9 @@
 #include "krado/point.h"
 #include "krado/geom_vertex.h"
 #include "krado/mesh_vertex.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/geom_model.h"
 #include "builder.h"
 
 using namespace krado;
@@ -18,4 +21,15 @@ TEST(MeshVertexTest, api)
 
     mvertex.set_global_id(123);
     EXPECT_EQ(mvertex.global_id(), 123);
+}
+
+TEST(MeshVertexTest, op_shl)
+{
+    auto vtx = testing::build_vertex(Point(1, 2, 3));
+    GeomModel model(vtx);
+
+    auto mvtx = model.vertex(1);
+    std::stringstream ss;
+    ss << *mvtx;
+    EXPECT_EQ(ss.str(), "Vertex 1: location=(x=1, y=2, z=3)");
 }

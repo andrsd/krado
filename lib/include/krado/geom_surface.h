@@ -116,8 +116,8 @@ operator<<(std::ostream & stream, const krado::GeomSurface & srf)
     stream << "Surface: ";
     auto [u_min, u_max] = srf.param_range(0);
     auto [v_min, v_max] = srf.param_range(1);
-    stream << "u=[" << u_min << ", " << u_max << "], ";
-    stream << "v=[" << v_min << ", " << v_max << "], ";
+    stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
+    stream << "[" << v_min << ", " << v_max << "], ";
     stream << "area=" << srf.area();
     return stream;
 }

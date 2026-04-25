@@ -4,6 +4,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/geom_model.h"
 #include "builder.h"
 #include <array>
 
@@ -41,4 +42,27 @@ TEST(MeshSurfaceTest, api)
     EXPECT_EQ(triangles[0].vertex(0), mvtx2);
     EXPECT_EQ(triangles[0].vertex(1), mvtx0);
     EXPECT_EQ(triangles[0].vertex(2), mvtx1);
+}
+
+TEST(MeshSurfaceTest, op_shl_circle)
+{
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
+    GeomModel model(circ);
+
+    auto surf = model.surface(1);
+    std::stringstream ss;
+    ss << *surf;
+    EXPECT_EQ(ss.str(), "Surface 1: curves=[1], (u, v)=[-2, 2]x[-2, 2], area=12.5664");
+}
+
+TEST(MeshSurfaceTest, op_shl_rect)
+{
+    auto rect = testing::build_rect(Point(1, -1, 0), Point(4, 1.5, 0));
+    GeomModel model(rect);
+
+    auto surf = model.surface(1);
+    std::stringstream ss;
+    ss << *surf;
+    EXPECT_EQ(ss.str(),
+              "Surface 1: curves=[1, 2, 3, 4], (u, v)=[-1.5, 1.5]x[-1.25, 1.25], area=7.5");
 }

@@ -142,3 +142,21 @@ MeshCurve::mesh_size_at_param(double u) const
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::MeshCurve & curve)
+{
+    stream << "Curve " << curve.id().value() << ": ";
+    auto & gcurve = curve.geom_curve();
+    stream << "type=" << gcurve.type() << ", ";
+    auto & bnd_vtxs = curve.bounding_vertices();
+    std::vector<krado::int32> vids;
+    vids.reserve(vids.size());
+    for (auto v : bnd_vtxs)
+        vids.push_back(v->id().value());
+    stream << "vertices=[" << krado::join(", ", vids) << "], ";
+    auto [umin, umax] = gcurve.param_range();
+    stream << "u=[" << umin << ", " << umax << "], ";
+    stream << "length=" << gcurve.length();
+    return stream;
+}
