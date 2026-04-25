@@ -14,12 +14,14 @@ class MeshSurface;
 
 class MeshVolume : public Meshable {
 public:
-    MeshVolume(const GeomVolume & gvolume, const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
+    MeshVolume(ShapeID id,
+               const GeomVolume & gvolume,
+               const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
 
     /// Get the unique identifier of the volume.
     ///
     /// @return The unique identifier of the volume.
-    int id() const;
+    ShapeID id() const;
 
     /// Get geometrical volume associated with this surface
     ///
@@ -50,6 +52,9 @@ public:
     }
 
 private:
+    ///
+    ShapeID id_;
+    ///
     const GeomVolume & gvolume_;
     /// Mesh surfaces bounding this surface
     std::vector<Ptr<MeshSurface>> mesh_surfaces_;

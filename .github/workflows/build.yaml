@@ -26,6 +26,9 @@ jobs:
           - os: ubuntu-22.04
             build-type: Release
             python-version: "3.12"
+          - os: ubuntu-22.04
+            build-type: Release
+            python-version: "3.13"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -52,7 +55,7 @@ jobs:
             spdlog \
             fmt=11.* \
             eigen=3.* \
-            boost>=1.70 \
+            libboost-devel>=1.88 \
             gtest \
             pybind11 \
             pytest \
@@ -60,7 +63,7 @@ jobs:
             lcov
 
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure
         run: |
@@ -98,7 +101,7 @@ jobs:
         run: make -C ${{ github.workspace }}/build coverage
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.os }}-${{ matrix.build-type }}-${{ matrix.python-version }}
           path: ${{ github.workspace }}/build/coverage.info
@@ -108,13 +111,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: andrsd/krado

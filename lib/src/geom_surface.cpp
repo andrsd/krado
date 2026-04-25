@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_surface.h"
-#include "krado/exception.h"
 #include "krado/geom_shape.h"
 #include "krado/occ.h"
 #include "krado/wire.h"
+#include "krado/geom_model.h"
+#include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"

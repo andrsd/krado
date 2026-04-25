@@ -119,3 +119,42 @@ private:
 Point get_circle_center(const GeomCurve & crv);
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type)
+{
+    switch (type) {
+    case krado::GeomCurve::CurveType::Line:
+        stream << "line";
+        break;
+
+    case krado::GeomCurve::CurveType::Circle:
+        stream << "circle";
+        break;
+
+    case krado::GeomCurve::CurveType::BSpline:
+        stream << "bspline";
+        break;
+
+    case krado::GeomCurve::CurveType::Bezier:
+        stream << "bezier";
+        break;
+
+    case krado::GeomCurve::CurveType::Unknown:
+    default:
+        stream << "unknown";
+        break;
+    }
+    return stream;
+}
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve & crv)
+{
+    stream << "Curve: ";
+    stream << "type=" << crv.type() << ", ";
+    auto [umin, umax] = crv.param_range();
+    stream << "u=[" << umin << ", " << umax << "], ";
+    stream << "length=" << crv.length();
+    return stream;
+}

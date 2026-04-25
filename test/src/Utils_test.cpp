@@ -29,3 +29,9 @@ TEST(UtilsTest, human_number)
     EXPECT_EQ(utils::human_number(12345), "12,345");
     EXPECT_EQ(utils::human_number(1234567), "1,234,567");
 }
+
+TEST(UtilsTest, join)
+{
+    EXPECT_EQ(join(",", std::vector<int> { 1 }), "1");
+    EXPECT_EQ(join(",", std::vector<int> { 3, 5 }), "3,5");
+}

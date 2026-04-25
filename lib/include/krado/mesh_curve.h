@@ -19,12 +19,12 @@ class MeshCurveVertex;
 
 class MeshCurve : public Meshable {
 public:
-    MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
+    MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
 
     /// Get the unique identifier of the curve.
     ///
     /// @return The unique identifier of the curve.
-    int id() const;
+    ShapeID id() const;
 
     /// Get geometrical curve associated with this curve
     ///
@@ -116,6 +116,9 @@ public:
     }
 
 private:
+    ///
+    ShapeID id_;
+    ///
     const GeomCurve & gcurve_;
     /// All vertices on this curve
     std::vector<Ptr<MeshVertexAbstract>> vtxs_;

@@ -13,9 +13,9 @@ TEST(MeshCurveTest, DISABLED_api)
 {
     auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
 
-    auto v1 = Ptr<MeshVertex>::alloc(edge.first_vertex());
-    auto v2 = Ptr<MeshVertex>::alloc(edge.last_vertex());
-    MeshCurve mcurve(edge, v1, v2);
+    auto v1 = Ptr<MeshVertex>::alloc(1, edge.first_vertex());
+    auto v2 = Ptr<MeshVertex>::alloc(2, edge.last_vertex());
+    MeshCurve mcurve(1, edge, v1, v2);
 
     EXPECT_EQ(&mcurve.geom_curve(), &edge);
 
@@ -33,9 +33,9 @@ TEST(MeshCurveTest, mesh)
     auto gvtx1 = edge.first_vertex();
     auto gvtx2 = edge.last_vertex();
 
-    auto v1 = Ptr<MeshVertex>::alloc(gvtx1);
-    auto v2 = Ptr<MeshVertex>::alloc(gvtx2);
-    auto mcurve = Ptr<MeshCurve>::alloc(edge, v1, v2);
+    auto v1 = Ptr<MeshVertex>::alloc(1, gvtx1);
+    auto v2 = Ptr<MeshVertex>::alloc(2, gvtx2);
+    auto mcurve = Ptr<MeshCurve>::alloc(1, edge, v1, v2);
 
     SchemeEqual::Options opts;
     opts.intervals = 4;

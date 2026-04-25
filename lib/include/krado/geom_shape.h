@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"
@@ -24,16 +25,6 @@ public:
               Flags<HealFlag> flags = FIX_DEGENERATED | FIX_SMALL_EDGES | FIX_SMALL_FACES |
                                       SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
-
-    /// Get the unique identifier of the shape
-    ///
-    /// @return The unique identifier of the shape.
-    int id() const;
-
-    /// Set the unique identifier of the shape
-    ///
-    /// @param id The unique identifier of the shape.
-    void set_id(int id);
 
     /// Query if this shape has material assigned to it
     ///
@@ -95,7 +86,6 @@ private:
 
     int dim_;
     TopoDS_Shape shape_;
-    int id_;
     /// Color of this shape
     Color clr_;
     /// Material name

@@ -20,12 +20,12 @@ Meshable::set_meshed()
 }
 
 void
-Meshable::set_marker(marker_t marker)
+Meshable::set_marker(Marker marker)
 {
     this->marker_ = marker;
 }
 
-marker_t
+Marker
 Meshable::marker() const
 {
     return this->marker_;

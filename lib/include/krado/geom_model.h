@@ -16,8 +16,13 @@
 #include "krado/mesh.h"
 #include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
-#include <Standard_TypeDef.hxx>
 #include <map>
+
+class TopoDS_Vertex;
+class TopoDS_Edge;
+class TopoDS_Face;
+class TopoDS_Shell;
+class TopoDS_Solid;
 
 namespace krado {
 
@@ -34,76 +39,76 @@ public:
     ///
     /// @param id Vertex id
     /// @return Vertex with specified ID
-    [[nodiscard]] const GeomVertex & geom_vertex(int id) const;
-    [[nodiscard]] GeomVertex & geom_vertex(int id);
+    [[nodiscard]] const GeomVertex & geom_vertex(ShapeID id) const;
+    [[nodiscard]] GeomVertex & geom_vertex(ShapeID id);
 
     /// Get curve with specified ID
     ///
     /// @param id Curve id
     /// @return Curve with specified ID
-    [[nodiscard]] const GeomCurve & geom_curve(int id) const;
-    [[nodiscard]] GeomCurve & geom_curve(int id);
+    [[nodiscard]] const GeomCurve & geom_curve(ShapeID id) const;
+    [[nodiscard]] GeomCurve & geom_curve(ShapeID id);
 
     /// Get surface with specified ID
     ///
     /// @param id Surface ID
     /// @return Surface with specified ID
-    [[nodiscard]] const GeomSurface & geom_surface(int id) const;
-    [[nodiscard]] GeomSurface & geom_surface(int id);
+    [[nodiscard]] const GeomSurface & geom_surface(ShapeID id) const;
+    [[nodiscard]] GeomSurface & geom_surface(ShapeID id);
 
     /// Get volume with specified ID
     ///
     /// @param id Volume ID
     /// @return Volume with specified ID
-    [[nodiscard]] const GeomVolume & geom_volume(int id) const;
-    [[nodiscard]] GeomVolume & geom_volume(int id);
+    [[nodiscard]] const GeomVolume & geom_volume(ShapeID id) const;
+    [[nodiscard]] GeomVolume & geom_volume(ShapeID id);
 
     /// Vertex
-    [[nodiscard]] Ptr<MeshVertex> vertex(int id);
+    [[nodiscard]] Ptr<MeshVertex> vertex(ShapeID id);
 
     /// Get model vertices
     ///
     /// @return Vertices
-    [[nodiscard]] const std::map<int, Ptr<MeshVertex>> & vertices() const;
+    [[nodiscard]] const std::map<ShapeID, Ptr<MeshVertex>> & vertices() const;
 
     /// Curve
-    [[nodiscard]] Ptr<MeshCurve> curve(int id);
+    [[nodiscard]] Ptr<MeshCurve> curve(ShapeID id);
 
     /// Get model curves
     ///
     /// @return Curves
-    [[nodiscard]] const std::map<int, Ptr<MeshCurve>> & curves() const;
+    [[nodiscard]] const std::map<ShapeID, Ptr<MeshCurve>> & curves() const;
 
     /// Surface
-    [[nodiscard]] Ptr<MeshSurface> surface(int id);
+    [[nodiscard]] Ptr<MeshSurface> surface(ShapeID id);
 
     /// Get model surfaces
     ///
     /// @return Surfaces
-    [[nodiscard]] const std::map<int, Ptr<MeshSurface>> & surfaces() const;
+    [[nodiscard]] const std::map<ShapeID, Ptr<MeshSurface>> & surfaces() const;
 
     /// Volume
-    [[nodiscard]] Ptr<MeshVolume> volume(int id);
+    [[nodiscard]] Ptr<MeshVolume> volume(ShapeID id);
 
     /// Get model volume
     ///
     /// @return Volume
-    [[nodiscard]] const std::map<int, Ptr<MeshVolume>> & volumes() const;
+    [[nodiscard]] const std::map<ShapeID, Ptr<MeshVolume>> & volumes() const;
 
     /// Create vertex mesh
-    void mesh_vertex(int id);
+    void mesh_vertex(ShapeID id);
     void mesh_vertex(Ptr<MeshVertex> vertex);
 
     /// Create curve mesh
-    void mesh_curve(int id);
+    void mesh_curve(ShapeID id);
     void mesh_curve(Ptr<MeshCurve> curve);
 
     /// Create surface mesh
-    void mesh_surface(int id);
+    void mesh_surface(ShapeID id);
     void mesh_surface(Ptr<MeshSurface> surface);
 
     /// Create volume mesh
-    void mesh_volume(int id);
+    void mesh_volume(ShapeID id);
     void mesh_volume(Ptr<MeshVolume> volume);
 
     /// Build the mesh from meshed entities
@@ -117,27 +122,33 @@ protected:
     ///
     /// @param vertex Vertex
     /// @return Vertex ID
-    [[nodiscard]] int vertex_id(const GeomVertex & vertex) const;
+    [[nodiscard]] ShapeID vertex_id(const GeomVertex & vertex) const;
 
     /// Get curve ID
     ///
     /// @param curve Curve
     /// @return Curve ID
-    [[nodiscard]] int curve_id(const GeomCurve & curve) const;
+    [[nodiscard]] ShapeID curve_id(const GeomCurve & curve) const;
 
     /// Get surface ID
     ///
     /// @param surface Surface
     /// @return Surface ID
-    [[nodiscard]] int surface_id(const GeomSurface & surface) const;
+    [[nodiscard]] ShapeID surface_id(const GeomSurface & surface) const;
 
     /// Get volume ID
     ///
     /// @param volume Volume
     /// @return Volume ID
-    [[nodiscard]] int volume_id(const GeomVolume & volume) const;
+    [[nodiscard]] ShapeID volume_id(const GeomVolume & volume) const;
 
 private:
+    ShapeID get_shape_id(const TopoDS_Vertex & vertex);
+    ShapeID get_shape_id(const TopoDS_Edge & edge);
+    ShapeID get_shape_id(const TopoDS_Face & face);
+    ShapeID get_shape_id(const TopoDS_Shell & shell);
+    ShapeID get_shape_id(const TopoDS_Solid & solid);
+
     void bind_shape(const GeomShape & shape);
     void bind_vertices(const GeomShape & shape);
     void bind_edges(const GeomShape & shape);
@@ -154,20 +165,20 @@ private:
 
     GeomShape root_shape_;
 
-    std::map<int, GeomVertex> vtxs_;
-    std::map<int, GeomCurve> crvs_;
-    std::map<int, GeomSurface> srfs_;
-    std::map<int, GeomVolume> vols_;
+    std::map<ShapeID, GeomVertex> vtxs_;
+    std::map<ShapeID, GeomCurve> crvs_;
+    std::map<ShapeID, GeomSurface> srfs_;
+    std::map<ShapeID, GeomVolume> vols_;
 
     TopTools_DataMapOfShapeInteger vtx_id_;
     TopTools_DataMapOfShapeInteger crv_id_;
     TopTools_DataMapOfShapeInteger srf_id_;
     TopTools_DataMapOfShapeInteger vol_id_;
 
-    std::map<int, Ptr<MeshVertex>> mvtxs_;
-    std::map<int, Ptr<MeshCurve>> mcrvs_;
-    std::map<int, Ptr<MeshSurface>> msurfs_;
-    std::map<int, Ptr<MeshVolume>> mvols_;
+    std::map<ShapeID, Ptr<MeshVertex>> mvtxs_;
+    std::map<ShapeID, Ptr<MeshCurve>> mcrvs_;
+    std::map<ShapeID, Ptr<MeshSurface>> msurfs_;
+    std::map<ShapeID, Ptr<MeshVolume>> mvols_;
     /// Mesh points
     std::vector<Point> pnts_;
     /// Mesh elements

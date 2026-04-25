@@ -84,8 +84,6 @@ mirror(const GeomShape & shape, const Axis1 & axis)
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
 {
-    Log::info("Splitting curve {} at parameter u={}", curve.id(), split_param);
-
     double umin, umax;
     Handle(Geom_Curve) orig_curve = BRep_Tool::Curve(curve, umin, umax);
     if (split_param < umin || split_param > umax)
@@ -103,8 +101,6 @@ split_curve(const GeomCurve & curve, Standard_Real split_param)
 GeomShell
 imprint(const GeomSurface & surface, const GeomCurve & curve)
 {
-    Log::info("Imprinting curve {} onto surface {}", curve.id(), surface.id());
-
     BRepAlgo_NormalProjection projection(surface);
     projection.Add(curve);
     projection.Build();
@@ -133,8 +129,6 @@ imprint(const GeomSurface & surface, const GeomCurve & curve)
 GeomVolume
 imprint(const GeomVolume & volume, const GeomCurve & curve)
 {
-    Log::info("Imprinting volume {} with curve {}", volume.id(), curve.id());
-
     BRepAlgo_NormalProjection projection(volume);
     // arbitrary distance limit, shapes must be close together
     projection.SetMaxDistance(1e-10);
@@ -163,8 +157,6 @@ imprint(const GeomVolume & volume, const GeomCurve & curve)
 GeomVolume
 imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
 {
-    Log::info("Imprinting volume {} with volume {}", volume.id(), imp_vol.id());
-
     TopTools_ListOfShape args;
     args.Append(volume);
 
@@ -200,7 +192,7 @@ imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
     return GeomVolume(TopoDS::Solid(result));
 }
 
-std::map<marker_t, double>
+std::map<Marker, double>
 compute_volume(const Mesh & mesh)
 {
     auto element_volume = [&](const Element & elem) {
@@ -239,7 +231,7 @@ compute_volume(const Mesh & mesh)
         return { std::pair(0, volume) };
     }
     else {
-        std::map<marker_t, double> vols_per_cellset;
+        std::map<Marker, double> vols_per_cellset;
         for (auto csid : cellsets_ids) {
             auto & volume = vols_per_cellset[csid];
             for (auto & cid : mesh.cell_set(csid)) {
@@ -288,7 +280,7 @@ combine(const std::vector<Mesh> & parts)
     }
 
     // merge cell sets
-    std::unordered_map<marker_t, std::size_t> cell_sets_size;
+    std::unordered_map<Marker, std::size_t> cell_sets_size;
     for (auto & p : parts) {
         for (auto id : p.cell_set_ids()) {
             auto & cell_set = p.cell_set(id);
@@ -299,8 +291,8 @@ combine(const std::vector<Mesh> & parts)
                 cell_sets_size[id] += cell_set.size();
         }
     }
-    std::map<marker_t, std::string> cell_set_names;
-    std::map<marker_t, std::vector<gidx_t>> cell_sets;
+    std::map<Marker, std::string> cell_set_names;
+    std::map<Marker, std::vector<gidx_t>> cell_sets;
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
     for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {

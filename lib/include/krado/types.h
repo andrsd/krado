@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "fmt/core.h"
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -13,8 +14,6 @@ namespace krado {
 using lidx_t = unsigned int;
 /// Global indexing type
 using gidx_t = std::size_t;
-/// Marker type
-using marker_t = int;
 ///
 template <typename T>
 using Optional = std::optional<T>;
@@ -24,6 +23,119 @@ using int32 = std::int32_t;
 
 /// 64-bit integer
 using int64 = std::int64_t;
+
+/// Shape identifier
+class ShapeID {
+public:
+    explicit constexpr ShapeID() : value_(-1) {}
+    constexpr ShapeID(int32 id) : value_(id) {}
+    constexpr ShapeID(std::size_t id) : value_(id) {}
+
+    constexpr ShapeID &
+    operator=(std::size_t id)
+    {
+        this->value_ = id;
+        return *this;
+    }
+
+    constexpr int32
+    value() const
+    {
+        return this->value_;
+    }
+
+    constexpr bool
+    operator==(int32 other) const
+    {
+        return this->value_ == other;
+    }
+
+    constexpr bool
+    operator!=(int32 other) const
+    {
+        return this->value_ != other;
+    }
+
+    constexpr bool
+    operator<(ShapeID other) const
+    {
+        return this->value_ < other.value_;
+    }
+
+    constexpr bool
+    operator<(int32 other) const
+    {
+        return this->value_ < other;
+    }
+
+    ShapeID &
+    operator++()
+    {
+        ++this->value_;
+        return *this;
+    }
+
+private:
+    int32 value_;
+
+public:
+    static const ShapeID INVALID;
+};
+
+inline constexpr ShapeID ShapeID::INVALID { -1 };
+
+/// Marker type
+class Marker {
+public:
+    explicit constexpr Marker() : value_(-1) {}
+    constexpr Marker(int32 id) : value_(id) {}
+
+    constexpr Marker &
+    operator=(std::size_t id)
+    {
+        this->value_ = id;
+        return *this;
+    }
+
+    constexpr int32
+    value() const
+    {
+        return this->value_;
+    }
+
+    constexpr bool
+    operator==(int32 other) const
+    {
+        return this->value_ == other;
+    }
+
+    constexpr bool
+    operator==(Marker other) const
+    {
+        return this->value_ == other.value_;
+    }
+
+    constexpr bool
+    operator!=(int32 other) const
+    {
+        return this->value_ != other;
+    }
+
+    constexpr bool
+    operator<(Marker other) const
+    {
+        return this->value_ < other.value_;
+    }
+
+    constexpr bool
+    operator<(int32 other) const
+    {
+        return this->value_ < other;
+    }
+
+private:
+    int32 value_;
+};
 
 enum class ElementType {
     /// 0-D element
@@ -62,3 +174,57 @@ operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
 }
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::ShapeID & id)
+{
+    stream << id.value();
+    return stream;
+}
+
+template <>
+struct fmt::formatter<krado::ShapeID> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::ShapeID & obj, FormatContext & ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", obj.value());
+    }
+};
+
+// Marker-related functions
+
+namespace std {
+
+template <>
+struct hash<krado::Marker> {
+    size_t
+    operator()(const krado::Marker & s) const
+    {
+        return hash<std::size_t>()(s.value());
+    }
+};
+
+} // namespace std
+
+template <>
+struct fmt::formatter<krado::Marker> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::Marker & obj, FormatContext & ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", obj.value());
+    }
+};

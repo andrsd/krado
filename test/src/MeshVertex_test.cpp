@@ -11,7 +11,7 @@ TEST(MeshVertexTest, api)
     auto vtx = testing::build_vertex(Point(3, 4, 0));
     GeomVertex gvertex(vtx);
 
-    MeshVertex mvertex(gvertex);
+    MeshVertex mvertex(1, gvertex);
 
     EXPECT_EQ(&mvertex.geom_vertex(), &gvertex);
     EXPECT_EQ(mvertex.global_id(), 0);

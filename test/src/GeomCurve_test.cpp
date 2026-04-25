@@ -3,6 +3,9 @@
 #include "krado/geom_surface.h"
 #include "krado/ops.h"
 #include "krado/exception.h"
+#include "krado/geom_model.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface_vertex.h"
 #include "builder.h"
 
 using namespace krado;
@@ -179,4 +182,12 @@ TEST(GeomCurveTest, split)
     auto [lower, upper] = split_curve(curves[0], 0.25);
     EXPECT_DOUBLE_EQ(lower.length(), 0.25);
     EXPECT_DOUBLE_EQ(upper.length(), 0.75);
+}
+
+TEST(GeomCurveTest, op_shl)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    std::stringstream ss;
+    ss << line;
+    EXPECT_EQ(ss.str(), "Curve: type=line, u=[0, 5], length=5");
 }

@@ -133,3 +133,11 @@ TEST(GeomSurfaceTest, is_circular_face)
     auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 2., 0.));
     EXPECT_FALSE(is_circular_face(rect));
 }
+
+TEST(GeomSurfaceTest, op_shl)
+{
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
+    std::stringstream ss;
+    ss << circ;
+    EXPECT_EQ(ss.str(), "Surface: u=[-2, 2], v=[-2, 2], area=12.5664");
+}

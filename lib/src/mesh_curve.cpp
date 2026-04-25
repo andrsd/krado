@@ -13,7 +13,8 @@
 
 namespace krado {
 
-MeshCurve::MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2) :
+MeshCurve::MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2) :
+    id_(id),
     gcurve_(gcurve),
     too_smoll(false)
 {
@@ -24,10 +25,10 @@ MeshCurve::MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVerte
     }
 }
 
-int
+ShapeID
 MeshCurve::id() const
 {
-    return this->gcurve_.id();
+    return this->id_;
 }
 
 const GeomCurve &
