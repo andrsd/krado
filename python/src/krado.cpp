@@ -217,7 +217,6 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
-        .def(py::init<int, const TopoDS_Shape &>())
         .def("clean", &GeomShape::clean)
         .def("heal", &GeomShape::heal)
         .def("scale", &GeomShape::scale)

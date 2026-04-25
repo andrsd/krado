@@ -16,9 +16,6 @@ public:
 
     GeomShape() = default;
     explicit GeomShape(const TopoDS_Shape & shape);
-    [[deprecated]] GeomShape(int dim, const TopoDS_Shape & shape);
-
-    [[deprecated]] int dim() const;
 
     void clean();
     void heal(double tolerance,
@@ -69,7 +66,6 @@ private:
     void sew_faces(double tolerance);
     void make_solids(double tolerance);
 
-    int dim_;
     TopoDS_Shape shape_;
     /// Color of this shape
     Color clr_;
