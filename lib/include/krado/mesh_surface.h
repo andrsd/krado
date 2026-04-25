@@ -24,7 +24,7 @@ public:
     /// Get the unique identifier of the surface.
     ///
     /// @return The unique identifier of the surface.
-    int id() const;
+    ShapeID id() const;
 
     /// Get geometrical surface associated with this surface
     ///

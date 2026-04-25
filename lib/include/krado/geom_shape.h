@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"
@@ -28,12 +29,12 @@ public:
     /// Get the unique identifier of the shape
     ///
     /// @return The unique identifier of the shape.
-    int id() const;
+    ShapeID id() const;
 
     /// Set the unique identifier of the shape
     ///
     /// @param id The unique identifier of the shape.
-    void set_id(int id);
+    void set_id(ShapeID id);
 
     /// Query if this shape has material assigned to it
     ///
@@ -80,7 +81,7 @@ private:
 
     int dim_;
     TopoDS_Shape shape_;
-    int id_;
+    ShapeID id_;
     /// Color of this shape
     Color clr_;
     /// Material name

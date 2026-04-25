@@ -16,7 +16,7 @@ MeshVolume::MeshVolume(const GeomVolume & gvolume,
 {
 }
 
-int
+ShapeID
 MeshVolume::id() const
 {
     return this->gvolume_.id();

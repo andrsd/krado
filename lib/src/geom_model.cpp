@@ -32,7 +32,7 @@ GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
 }
 
 const GeomVertex &
-GeomModel::geom_vertex(int id) const
+GeomModel::geom_vertex(ShapeID id) const
 {
     try {
         return this->vtxs_.at(id);
@@ -43,7 +43,7 @@ GeomModel::geom_vertex(int id) const
 }
 
 GeomVertex &
-GeomModel::geom_vertex(int id)
+GeomModel::geom_vertex(ShapeID id)
 {
     try {
         return this->vtxs_.at(id);
@@ -53,7 +53,7 @@ GeomModel::geom_vertex(int id)
     }
 }
 
-int
+ShapeID
 GeomModel::vertex_id(const GeomVertex & vertex) const
 {
     try {
@@ -65,7 +65,7 @@ GeomModel::vertex_id(const GeomVertex & vertex) const
 }
 
 const GeomCurve &
-GeomModel::geom_curve(int id) const
+GeomModel::geom_curve(ShapeID id) const
 {
     try {
         return this->crvs_.at(id);
@@ -76,7 +76,7 @@ GeomModel::geom_curve(int id) const
 }
 
 GeomCurve &
-GeomModel::geom_curve(int id)
+GeomModel::geom_curve(ShapeID id)
 {
     try {
         return this->crvs_.at(id);
@@ -86,7 +86,7 @@ GeomModel::geom_curve(int id)
     }
 }
 
-int
+ShapeID
 GeomModel::curve_id(const GeomCurve & curve) const
 {
     try {
@@ -98,7 +98,7 @@ GeomModel::curve_id(const GeomCurve & curve) const
 }
 
 const GeomSurface &
-GeomModel::geom_surface(int id) const
+GeomModel::geom_surface(ShapeID id) const
 {
     try {
         return this->srfs_.at(id);
@@ -109,7 +109,7 @@ GeomModel::geom_surface(int id) const
 }
 
 GeomSurface &
-GeomModel::geom_surface(int id)
+GeomModel::geom_surface(ShapeID id)
 {
     try {
         return this->srfs_.at(id);
@@ -119,7 +119,7 @@ GeomModel::geom_surface(int id)
     }
 }
 
-int
+ShapeID
 GeomModel::surface_id(const GeomSurface & surface) const
 {
     try {
@@ -131,7 +131,7 @@ GeomModel::surface_id(const GeomSurface & surface) const
 }
 
 const GeomVolume &
-GeomModel::geom_volume(int id) const
+GeomModel::geom_volume(ShapeID id) const
 {
     try {
         return this->vols_.at(id);
@@ -142,7 +142,7 @@ GeomModel::geom_volume(int id) const
 }
 
 GeomVolume &
-GeomModel::geom_volume(int id)
+GeomModel::geom_volume(ShapeID id)
 {
     try {
         return this->vols_.at(id);
@@ -152,7 +152,7 @@ GeomModel::geom_volume(int id)
     }
 }
 
-int
+ShapeID
 GeomModel::volume_id(const GeomVolume & volume) const
 {
     try {
@@ -181,12 +181,12 @@ GeomModel::bind_solids(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
-            auto id = this->vols_.size() + 1;
+            ShapeID id = this->vols_.size() + 1;
             GeomVolume gvol(solid);
             gvol.set_id(id);
             gvol.set_material(shape.material(), shape.density());
             this->vols_.emplace(id, gvol);
-            this->vol_id_.Bind(solid, id);
+            this->vol_id_.Bind(solid, id.value());
         }
     }
 }
@@ -198,12 +198,12 @@ GeomModel::bind_faces(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
-            auto id = this->srfs_.size() + 1;
+            ShapeID id = this->srfs_.size() + 1;
             GeomSurface gsurf(face);
             gsurf.set_id(id);
             gsurf.set_material(shape.material(), shape.density());
             this->srfs_.emplace(id, gsurf);
-            this->srf_id_.Bind(face, id);
+            this->srf_id_.Bind(face, id.value());
         }
     }
 }
@@ -215,12 +215,12 @@ GeomModel::bind_edges(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
-            auto id = this->crvs_.size() + 1;
+            ShapeID id = this->crvs_.size() + 1;
             GeomCurve gedge(edge);
             gedge.set_id(id);
             gedge.set_material(shape.material(), shape.density());
             this->crvs_.emplace(id, gedge);
-            this->crv_id_.Bind(edge, id);
+            this->crv_id_.Bind(edge, id.value());
         }
     }
 }
@@ -232,12 +232,12 @@ GeomModel::bind_vertices(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
-            auto id = this->vtxs_.size() + 1;
+            ShapeID id = this->vtxs_.size() + 1;
             GeomVertex gvtx(vertex);
             gvtx.set_id(id);
             gvtx.set_material(shape.material(), shape.density());
             this->vtxs_.emplace(id, gvtx);
-            this->vtx_id_.Bind(vertex, id);
+            this->vtx_id_.Bind(vertex, id.value());
         }
     }
 }
@@ -288,7 +288,7 @@ GeomModel::initialize()
 }
 
 Ptr<MeshVertex>
-GeomModel::vertex(int id)
+GeomModel::vertex(ShapeID id)
 {
     try {
         return this->mvtxs_.at(id);
@@ -298,14 +298,14 @@ GeomModel::vertex(int id)
     }
 }
 
-const std::map<int, Ptr<MeshVertex>> &
+const std::map<ShapeID, Ptr<MeshVertex>> &
 GeomModel::vertices() const
 {
     return this->mvtxs_;
 }
 
 Ptr<MeshCurve>
-GeomModel::curve(int id)
+GeomModel::curve(ShapeID id)
 {
     try {
         return this->mcrvs_.at(id);
@@ -315,14 +315,14 @@ GeomModel::curve(int id)
     }
 }
 
-const std::map<int, Ptr<MeshCurve>> &
+const std::map<ShapeID, Ptr<MeshCurve>> &
 GeomModel::curves() const
 {
     return this->mcrvs_;
 }
 
 Ptr<MeshSurface>
-GeomModel::surface(int id)
+GeomModel::surface(ShapeID id)
 {
     try {
         return this->msurfs_.at(id);
@@ -332,14 +332,14 @@ GeomModel::surface(int id)
     }
 }
 
-const std::map<int, Ptr<MeshSurface>> &
+const std::map<ShapeID, Ptr<MeshSurface>> &
 GeomModel::surfaces() const
 {
     return this->msurfs_;
 }
 
 Ptr<MeshVolume>
-GeomModel::volume(int id)
+GeomModel::volume(ShapeID id)
 {
     try {
         return this->mvols_.at(id);
@@ -349,14 +349,14 @@ GeomModel::volume(int id)
     }
 }
 
-const std::map<int, Ptr<MeshVolume>> &
+const std::map<ShapeID, Ptr<MeshVolume>> &
 GeomModel::volumes() const
 {
     return this->mvols_;
 }
 
 void
-GeomModel::mesh_vertex(int id)
+GeomModel::mesh_vertex(ShapeID id)
 {
     auto & vertex = this->mvtxs_.at(id);
     mesh_vertex(vertex);
@@ -373,7 +373,7 @@ GeomModel::mesh_vertex(Ptr<MeshVertex> gvertex)
 }
 
 void
-GeomModel::mesh_curve(int id)
+GeomModel::mesh_curve(ShapeID id)
 {
     auto curve = this->mcrvs_.at(id);
     mesh_curve(curve);
@@ -403,7 +403,7 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
 }
 
 void
-GeomModel::mesh_surface(int id)
+GeomModel::mesh_surface(ShapeID id)
 {
     auto surface = this->msurfs_.at(id);
     mesh_surface(surface);
@@ -431,7 +431,7 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
 }
 
 void
-GeomModel::mesh_volume(int id)
+GeomModel::mesh_volume(ShapeID id)
 {
     auto & volume = this->mvols_.at(id);
     mesh_volume(volume);

@@ -24,7 +24,7 @@ public:
     /// Get the unique identifier of the curve.
     ///
     /// @return The unique identifier of the curve.
-    int id() const;
+    ShapeID id() const;
 
     /// Get geometrical curve associated with this curve
     ///
