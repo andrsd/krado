@@ -43,10 +43,10 @@ endif()
 target_include_directories(
     libkrado
     PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/include>
         $<INSTALL_INTERFACE:include>
         ${OpenCASCADE_INCLUDE_DIR}
     PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/include>
         ${CMAKE_SOURCE_DIR}/contrib
         ${Boost_INCLUDE_DIRS}
 )
