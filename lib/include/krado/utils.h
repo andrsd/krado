@@ -247,6 +247,21 @@ std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
 
 } // namespace utils
 
+template <typename RANGE>
+std::string
+join(const char * con, const RANGE & vals)
+{
+    std::ostringstream oss;
+    bool first = true;
+    for (const auto & v : vals) {
+        if (!first)
+            oss << con;
+        first = false;
+        oss << v;
+    }
+    return oss.str();
+}
+
 /// Create a counter-clock-wise triangle
 ///
 /// @param gsurf Geomterical surface
