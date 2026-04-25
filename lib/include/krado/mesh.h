@@ -154,29 +154,29 @@ public:
     /// @param cell_set_id Cell set ID (marker)
     /// @param name Cell set name
     /// @return Reference to this mesh
-    Mesh & set_cell_set_name(marker_t cell_set_id, const std::string & name);
+    Mesh & set_cell_set_name(Marker cell_set_id, const std::string & name);
 
     /// Get cell set name
     ///
     /// @param cell_set_id Cell set ID (marker)
     /// @return Cell set name
-    [[nodiscard]] std::string cell_set_name(marker_t cell_set_id) const;
+    [[nodiscard]] std::string cell_set_name(Marker cell_set_id) const;
 
     /// Get cell set IDs
-    [[nodiscard]] std::vector<marker_t> cell_set_ids() const;
+    [[nodiscard]] std::vector<Marker> cell_set_ids() const;
 
     /// Get cell set
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    [[nodiscard]] const std::vector<gidx_t> & cell_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & cell_set(Marker id) const;
 
     /// Set cell set
     ///
     /// @param id Cell set ID
     /// @param cell_ids Cell IDs
     /// @return Reference to this mesh
-    Mesh & set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids);
+    Mesh & set_cell_set(Marker id, const std::vector<gidx_t> & cell_ids);
 
     /// Remove cell sets
     ///
@@ -188,29 +188,29 @@ public:
     /// @param face_set_id Face set ID (marker)
     /// @param name Face set name
     /// @return Reference to this mesh
-    Mesh & set_face_set_name(marker_t face_set_id, const std::string & name);
+    Mesh & set_face_set_name(Marker face_set_id, const std::string & name);
 
     /// Get face set name
     ///
     /// @param face_set_id Face set ID (marker)
     /// @return Face set name
-    [[nodiscard]] std::string face_set_name(marker_t cell_set_id) const;
+    [[nodiscard]] std::string face_set_name(Marker cell_set_id) const;
 
     /// Get face set IDs
-    [[nodiscard]] std::vector<marker_t> face_set_ids() const;
+    [[nodiscard]] std::vector<Marker> face_set_ids() const;
 
     /// Get face set
     ///
     /// @param id Face set ID
     /// @return Face set
-    [[nodiscard]] const std::vector<gidx_t> & face_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & face_set(Marker id) const;
 
     /// Set face set
     ///
     /// @param id Face set ID
     /// @param face_ids Face IDs
     /// @return Reference to this mesh
-    Mesh & set_face_set(marker_t id, const std::vector<gidx_t> & face_ids);
+    Mesh & set_face_set(Marker id, const std::vector<gidx_t> & face_ids);
 
     /// Remove face sets
     ///
@@ -222,29 +222,29 @@ public:
     /// @param edge_set_id Edge set ID (marker)
     /// @param name Edge set name
     /// @return Reference to this mesh
-    Mesh & set_edge_set_name(marker_t edge_set_id, const std::string & name);
+    Mesh & set_edge_set_name(Marker edge_set_id, const std::string & name);
 
     /// Get edge set name
     ///
     /// @param edge_set_id Edge set ID (marker)
     /// @return Edge set name
-    [[nodiscard]] std::string edge_set_name(marker_t edge_set_id) const;
+    [[nodiscard]] std::string edge_set_name(Marker edge_set_id) const;
 
     /// Get edge set IDs
-    [[nodiscard]] std::vector<marker_t> edge_set_ids() const;
+    [[nodiscard]] std::vector<Marker> edge_set_ids() const;
 
     /// Get edge set
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    [[nodiscard]] const std::vector<gidx_t> & edge_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & edge_set(Marker id) const;
 
     /// Set edge set
     ///
     /// @param id Edge set ID
     /// @param edge_ids Edge IDs
     /// @return Reference to this mesh
-    Mesh & set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids);
+    Mesh & set_edge_set(Marker id, const std::vector<gidx_t> & edge_ids);
 
     /// Remove edge sets
     ///
@@ -256,31 +256,31 @@ public:
     /// @param id Vertex set ID
     /// @param name Vertex set name
     /// @return Reference to this mesh
-    Mesh & set_vertex_set_name(marker_t id, const std::string & name);
+    Mesh & set_vertex_set_name(Marker id, const std::string & name);
 
     /// Get vertex set name
     ///
     /// @param id Vertex set ID
     /// @return Vertex set name
-    [[nodiscard]] std::string vertex_set_name(marker_t id) const;
+    [[nodiscard]] std::string vertex_set_name(Marker id) const;
 
     /// Get vertex set IDs
     ///
     /// @return Vertex set IDs
-    [[nodiscard]] std::vector<marker_t> vertex_set_ids() const;
+    [[nodiscard]] std::vector<Marker> vertex_set_ids() const;
 
     /// Get vertex set
     ///
     /// @param id Vertex set ID
     /// @return Vertex set
-    [[nodiscard]] const std::vector<gidx_t> & vertex_set(marker_t id) const;
+    [[nodiscard]] const std::vector<gidx_t> & vertex_set(Marker id) const;
 
     /// Set vertex set
     ///
     /// @param id Vertex set ID
     /// @param vertex_ids Vertex IDs
     /// @return Reference to this mesh
-    Mesh & set_vertex_set(marker_t id, const std::vector<gidx_t> & vertex_ids);
+    Mesh & set_vertex_set(Marker id, const std::vector<gidx_t> & vertex_ids);
 
     /// Remove vertex sets
     ///
@@ -291,7 +291,7 @@ public:
     ///
     /// @param block_map Map of old block IDs to new block IDs
     /// @return Reference to this mesh
-    Mesh & remap_block_ids(const std::map<marker_t, marker_t> & block_map);
+    Mesh & remap_block_ids(const std::map<Marker, Marker> & block_map);
 
     /// Get mesh vertex ID range
     ///
@@ -460,21 +460,21 @@ private:
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
     std::vector<Element> elems_;
     /// Cell set names
-    std::map<marker_t, std::string> cell_set_names_;
+    std::map<Marker, std::string> cell_set_names_;
     /// Cell sets
-    std::map<marker_t, std::vector<gidx_t>> cell_sets_;
+    std::map<Marker, std::vector<gidx_t>> cell_sets_;
     /// Face set names
-    std::map<marker_t, std::string> face_set_names_;
+    std::map<Marker, std::string> face_set_names_;
     /// Face sets
-    std::map<marker_t, std::vector<gidx_t>> face_sets_;
+    std::map<Marker, std::vector<gidx_t>> face_sets_;
     /// Edge set names
-    std::map<marker_t, std::string> edge_set_names_;
+    std::map<Marker, std::string> edge_set_names_;
     /// Edge sets
-    std::map<marker_t, std::vector<gidx_t>> edge_sets_;
+    std::map<Marker, std::vector<gidx_t>> edge_sets_;
     /// Vertex set names
-    std::map<marker_t, std::string> vertex_set_names_;
+    std::map<Marker, std::string> vertex_set_names_;
     /// Vertex sets
-    std::map<marker_t, std::vector<gidx_t>> vertex_sets_;
+    std::map<Marker, std::vector<gidx_t>> vertex_sets_;
 
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;

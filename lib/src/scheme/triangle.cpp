@@ -55,7 +55,7 @@ public:
             auto [x, y] = this->region_point_.value();
             this->in_.regionlist[0] = x;
             this->in_.regionlist[1] = y;
-            this->in_.regionlist[2] = this->surface_->marker();
+            this->in_.regionlist[2] = this->surface_->marker().value();
             this->in_.regionlist[3] = this->max_area_.value();
         }
     }

@@ -148,7 +148,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         }
     }
 
-    std::map<marker_t, std::vector<side_set_entry_t>> side_sets;
+    std::map<Marker, std::vector<side_set_entry_t>> side_sets;
     if (dim == 1) {
         for (const auto & id : mesh.vertex_set_ids())
             side_sets[id] = utils::create_side_set(mesh, mesh.vertex_set(id));

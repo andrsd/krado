@@ -14,8 +14,6 @@ namespace krado {
 using lidx_t = unsigned int;
 /// Global indexing type
 using gidx_t = std::size_t;
-/// Marker type
-using marker_t = int;
 ///
 template <typename T>
 using Optional = std::optional<T>;
@@ -60,6 +58,59 @@ public:
 
     constexpr bool
     operator<(ShapeID other) const
+    {
+        return this->value_ < other.value_;
+    }
+
+    constexpr bool
+    operator<(int32 other) const
+    {
+        return this->value_ < other;
+    }
+
+private:
+    int32 value_;
+};
+
+/// Marker type
+class Marker {
+public:
+    explicit constexpr Marker() : value_(-1) {}
+    constexpr Marker(int32 id) : value_(id) {}
+
+    constexpr Marker &
+    operator=(std::size_t id)
+    {
+        this->value_ = id;
+        return *this;
+    }
+
+    constexpr int32
+    value() const
+    {
+        return this->value_;
+    }
+
+    constexpr bool
+    operator==(int32 other) const
+    {
+        return this->value_ == other;
+    }
+
+    constexpr bool
+    operator==(Marker other) const
+    {
+        return this->value_ == other.value_;
+    }
+
+    constexpr bool
+    operator!=(int32 other) const
+    {
+        return this->value_ != other;
+    }
+
+    constexpr bool
+    operator<(Marker other) const
     {
         return this->value_ < other.value_;
     }
@@ -130,6 +181,37 @@ struct fmt::formatter<krado::ShapeID> {
     template <typename FormatContext>
     auto
     format(const krado::ShapeID & obj, FormatContext & ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", obj.value());
+    }
+};
+
+// Marker-related functions
+
+namespace std {
+
+template <>
+struct hash<krado::Marker> {
+    size_t
+    operator()(const krado::Marker & s) const
+    {
+        return hash<std::size_t>()(s.value());
+    }
+};
+
+} // namespace std
+
+template <>
+struct fmt::formatter<krado::Marker> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::Marker & obj, FormatContext & ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", obj.value());
     }

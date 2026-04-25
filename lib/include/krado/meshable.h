@@ -23,18 +23,18 @@ public:
     /// Set entity marker
     ///
     /// @param marker Marker to assign to the entity
-    void set_marker(marker_t marker);
+    void set_marker(Marker marker);
 
     /// Get entity marker
     ///
     /// @return Marker associated with this entity
-    marker_t marker() const;
+    Marker marker() const;
 
 private:
     /// Flag indicating if the entity is meshed
     bool meshed_;
     ///
-    marker_t marker_;
+    Marker marker_;
 };
 
 } // namespace krado

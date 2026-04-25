@@ -150,7 +150,7 @@ imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
     return GeomVolume(TopoDS::Solid(result));
 }
 
-std::map<marker_t, double>
+std::map<Marker, double>
 compute_volume(const Mesh & mesh)
 {
     auto element_volume = [&](const Element & elem) {
@@ -189,7 +189,7 @@ compute_volume(const Mesh & mesh)
         return { std::pair(0, volume) };
     }
     else {
-        std::map<marker_t, double> vols_per_cellset;
+        std::map<Marker, double> vols_per_cellset;
         for (auto csid : cellsets_ids) {
             auto & volume = vols_per_cellset[csid];
             for (auto & cid : mesh.cell_set(csid)) {
@@ -238,7 +238,7 @@ combine(const std::vector<Mesh> & parts)
     }
 
     // merge cell sets
-    std::unordered_map<marker_t, std::size_t> cell_sets_size;
+    std::unordered_map<Marker, std::size_t> cell_sets_size;
     for (auto & p : parts) {
         for (auto id : p.cell_set_ids()) {
             auto & cell_set = p.cell_set(id);
@@ -249,8 +249,8 @@ combine(const std::vector<Mesh> & parts)
                 cell_sets_size[id] += cell_set.size();
         }
     }
-    std::map<marker_t, std::string> cell_set_names;
-    std::map<marker_t, std::vector<gidx_t>> cell_sets;
+    std::map<Marker, std::string> cell_set_names;
+    std::map<Marker, std::vector<gidx_t>> cell_sets;
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
     for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {

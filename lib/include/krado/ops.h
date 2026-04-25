@@ -50,7 +50,7 @@ class Mesh;
 ///
 /// @param mesh Mesh to compute volumes of blocks
 /// @return Computed volumes
-std::map<marker_t, double> compute_volume(const Mesh & mesh);
+std::map<Marker, double> compute_volume(const Mesh & mesh);
 
 /// Combine mesh part into one large mesh
 ///
