@@ -3,6 +3,7 @@
 
 #include "krado/geom_volume.h"
 #include "krado/geom_surface.h"
+#include "krado/geom_model.h"
 #include "TopoDS.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"

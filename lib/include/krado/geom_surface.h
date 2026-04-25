@@ -109,13 +109,7 @@ bool is_circular_face(const GeomSurface & surface);
 inline std::ostream &
 operator<<(std::ostream & stream, const krado::GeomSurface & srf)
 {
-    stream << "Surface " << srf.id() << ": ";
-    auto crvs = srf.curves();
-    std::vector<krado::ShapeID> cids;
-    cids.reserve(crvs.size());
-    for (auto c : crvs)
-        cids.push_back(c.id());
-    stream << "curves=[" << krado::join(", ", cids) << "], ";
+    stream << "Surface: ";
     auto [u_min, u_max] = srf.param_range(0);
     auto [v_min, v_max] = srf.param_range(1);
     stream << "u=[" << u_min << ", " << u_max << "], ";

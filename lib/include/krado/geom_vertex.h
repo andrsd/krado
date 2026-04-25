@@ -41,6 +41,7 @@ private:
 inline std::ostream &
 operator<<(std::ostream & stream, const krado::GeomVertex & vtx)
 {
-    stream << "Vertex " << vtx.id() << ": location=" << vtx.point();
+    auto pt = vtx.point();
+    stream << "Vertex: location=(x=" << pt.x << ", y=" << pt.y << ", z=" << pt.z << ")";
     return stream;
 }

@@ -26,16 +26,6 @@ public:
                                       SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
 
-    /// Get the unique identifier of the shape
-    ///
-    /// @return The unique identifier of the shape.
-    ShapeID id() const;
-
-    /// Set the unique identifier of the shape
-    ///
-    /// @param id The unique identifier of the shape.
-    void set_id(ShapeID id);
-
     /// Query if this shape has material assigned to it
     ///
     /// @return `true` if material is assigned, `false` otherwise
@@ -81,7 +71,6 @@ private:
 
     int dim_;
     TopoDS_Shape shape_;
-    ShapeID id_;
     /// Color of this shape
     Color clr_;
     /// Material name

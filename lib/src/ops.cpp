@@ -34,8 +34,6 @@ namespace krado {
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
 {
-    Log::info("Splitting curve {} at parameter u={}", curve.id(), split_param);
-
     double umin, umax;
     Handle(Geom_Curve) orig_curve = BRep_Tool::Curve(curve, umin, umax);
     if (split_param < umin || split_param > umax)
@@ -53,8 +51,6 @@ split_curve(const GeomCurve & curve, Standard_Real split_param)
 GeomShell
 imprint(const GeomSurface & surface, const GeomCurve & curve)
 {
-    Log::info("Imprinting curve {} onto surface {}", curve.id(), surface.id());
-
     BRepAlgo_NormalProjection projection(surface);
     projection.Add(curve);
     projection.Build();
@@ -83,8 +79,6 @@ imprint(const GeomSurface & surface, const GeomCurve & curve)
 GeomVolume
 imprint(const GeomVolume & volume, const GeomCurve & curve)
 {
-    Log::info("Imprinting volume {} with curve {}", volume.id(), curve.id());
-
     BRepAlgo_NormalProjection projection(volume);
     // arbitrary distance limit, shapes must be close together
     projection.SetMaxDistance(1e-10);
@@ -113,8 +107,6 @@ imprint(const GeomVolume & volume, const GeomCurve & curve)
 GeomVolume
 imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
 {
-    Log::info("Imprinting volume {} with volume {}", volume.id(), imp_vol.id());
-
     TopTools_ListOfShape args;
     args.Append(volume);
 

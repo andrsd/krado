@@ -8,8 +8,9 @@
 
 namespace krado {
 
-MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
+MeshVertex::MeshVertex(ShapeID id, const GeomVertex & geom_vertex) :
     MeshVertexAbstract(geom_vertex),
+    id_(id),
     gvtx_(geom_vertex),
     mesh_size_(MAX_LC)
 {
@@ -18,7 +19,7 @@ MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
 ShapeID
 MeshVertex::id() const
 {
-    return this->gvtx_.id();
+    return this->id_;
 }
 
 const GeomVertex &

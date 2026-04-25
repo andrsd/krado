@@ -19,6 +19,7 @@
 #include "TopoDS_Vertex.hxx"
 #include "TopoDS_Edge.hxx"
 #include "TopoDS_Face.hxx"
+#include "TopoDS_Shell.hxx"
 #include "TopoDS_Solid.hxx"
 
 namespace krado {
@@ -166,8 +167,6 @@ GeomModel::volume_id(const GeomVolume & volume) const
 void
 GeomModel::bind_shape(const GeomShape & shape)
 {
-    Log::debug("Binding shape {}", shape.id());
-
     bind_vertices(shape);
     bind_edges(shape);
     bind_faces(shape);
@@ -181,12 +180,12 @@ GeomModel::bind_solids(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
-            ShapeID id = this->vols_.size() + 1;
+            auto id = get_shape_id(solid);
+            this->vol_id_.Bind(solid, id.value());
+
             GeomVolume gvol(solid);
-            gvol.set_id(id);
             gvol.set_material(shape.material(), shape.density());
             this->vols_.emplace(id, gvol);
-            this->vol_id_.Bind(solid, id.value());
         }
     }
 }
@@ -198,12 +197,12 @@ GeomModel::bind_faces(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
-            ShapeID id = this->srfs_.size() + 1;
+            auto id = get_shape_id(face);
+            this->srf_id_.Bind(face, id.value());
+
             GeomSurface gsurf(face);
-            gsurf.set_id(id);
             gsurf.set_material(shape.material(), shape.density());
             this->srfs_.emplace(id, gsurf);
-            this->srf_id_.Bind(face, id.value());
         }
     }
 }
@@ -215,12 +214,12 @@ GeomModel::bind_edges(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
-            ShapeID id = this->crvs_.size() + 1;
+            auto id = get_shape_id(edge);
+            this->crv_id_.Bind(edge, id.value());
+
             GeomCurve gedge(edge);
-            gedge.set_id(id);
             gedge.set_material(shape.material(), shape.density());
             this->crvs_.emplace(id, gedge);
-            this->crv_id_.Bind(edge, id.value());
         }
     }
 }
@@ -232,12 +231,12 @@ GeomModel::bind_vertices(const GeomShape & shape)
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
-            ShapeID id = this->vtxs_.size() + 1;
+            auto id = get_shape_id(vertex);
+            this->vtx_id_.Bind(vertex, id.value());
+
             GeomVertex gvtx(vertex);
-            gvtx.set_id(id);
             gvtx.set_material(shape.material(), shape.density());
             this->vtxs_.emplace(id, gvtx);
-            this->vtx_id_.Bind(vertex, id.value());
         }
     }
 }
@@ -246,7 +245,7 @@ void
 GeomModel::initialize()
 {
     for (auto & [id, gvtx] : this->vtxs_) {
-        auto mvtx = Ptr<MeshVertex>::alloc(gvtx);
+        auto mvtx = Ptr<MeshVertex>::alloc(id, gvtx);
         this->mvtxs_.emplace(id, mvtx);
     }
 
@@ -256,7 +255,7 @@ GeomModel::initialize()
         auto v1 = vertex(id1);
         auto v2 = vertex(id2);
 
-        auto mesh_crv = Ptr<MeshCurve>::alloc(geom_curve, v1, v2);
+        auto mesh_crv = Ptr<MeshCurve>::alloc(id, geom_curve, v1, v2);
         this->mcrvs_.emplace(id, mesh_crv);
     }
 
@@ -269,7 +268,7 @@ GeomModel::initialize()
             mesh_curves.push_back(mcurve);
         }
 
-        auto mesh_surf = Ptr<MeshSurface>::alloc(geom_surface, mesh_curves);
+        auto mesh_surf = Ptr<MeshSurface>::alloc(id, geom_surface, mesh_curves);
         this->msurfs_.emplace(id, mesh_surf);
     }
 
@@ -282,7 +281,7 @@ GeomModel::initialize()
             mesh_surfaces.push_back(msurface);
         }
 
-        auto mesh_vol = Ptr<MeshVolume>::alloc(geom_volume, mesh_surfaces);
+        auto mesh_vol = Ptr<MeshVolume>::alloc(id, geom_volume, mesh_surfaces);
         this->mvols_.emplace(id, mesh_vol);
     }
 }
@@ -600,6 +599,71 @@ GeomModel::build_surface_mesh()
     auto elements = build_surface_elements();
     Mesh mesh(points, elements);
     return mesh;
+}
+
+ShapeID
+GeomModel::get_shape_id(const TopoDS_Vertex & vertex)
+{
+    if (!this->vtx_id_.IsBound(vertex)) {
+        ShapeID id = this->vtxs_.size() + 1;
+        this->vtx_id_.Bind(vertex, id.value());
+        return id;
+    }
+    else {
+        return this->vtx_id_.Find(vertex);
+    }
+}
+
+ShapeID
+GeomModel::get_shape_id(const TopoDS_Edge & edge)
+{
+    if (!this->crv_id_.IsBound(edge)) {
+        ShapeID id = this->crvs_.size() + 1;
+        this->crv_id_.Bind(edge, id.value());
+        return id;
+    }
+    else {
+        return this->crv_id_.Find(edge);
+    }
+}
+
+ShapeID
+GeomModel::get_shape_id(const TopoDS_Face & face)
+{
+    if (!this->srf_id_.IsBound(face)) {
+        ShapeID id = this->srfs_.size() + 1;
+        this->srf_id_.Bind(face, id.value());
+        return id;
+    }
+    else {
+        return this->srf_id_.Find(face);
+    }
+}
+
+ShapeID
+GeomModel::get_shape_id(const TopoDS_Shell & shell)
+{
+    if (!this->vol_id_.IsBound(shell)) {
+        ShapeID id = this->vols_.size() + 1;
+        this->vol_id_.Bind(shell, id.value());
+        return id;
+    }
+    else {
+        return this->vol_id_.Find(shell);
+    }
+}
+
+ShapeID
+GeomModel::get_shape_id(const TopoDS_Solid & solid)
+{
+    if (!this->vol_id_.IsBound(solid)) {
+        ShapeID id = this->vols_.size() + 1;
+        this->vol_id_.Bind(solid, id.value());
+        return id;
+    }
+    else {
+        return this->vol_id_.Find(solid);
+    }
 }
 
 } // namespace krado

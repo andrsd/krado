@@ -19,7 +19,9 @@ class MeshCurve;
 
 class MeshSurface : public Meshable {
 public:
-    MeshSurface(const GeomSurface & gcurve, const std::vector<Ptr<MeshCurve>> & mesh_curves);
+    MeshSurface(ShapeID id,
+                const GeomSurface & gcurve,
+                const std::vector<Ptr<MeshCurve>> & mesh_curves);
 
     /// Get the unique identifier of the surface.
     ///
@@ -112,6 +114,9 @@ public:
     }
 
 private:
+    ///
+    ShapeID id_;
+    ///
     const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
     std::vector<Ptr<MeshCurve>> mesh_curves_;

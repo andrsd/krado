@@ -14,7 +14,7 @@ class Point;
 
 class MeshVertex : public MeshVertexAbstract, public Meshable {
 public:
-    MeshVertex(const GeomVertex & geom_vertex);
+    MeshVertex(ShapeID id, const GeomVertex & geom_vertex);
 
     /// Get the unique identifier of the vertex.
     ///
@@ -42,6 +42,9 @@ public:
     void set_mesh_size(double size);
 
 private:
+    ///
+    ShapeID id_;
+    ///
     const GeomVertex & gvtx_;
     /// Mesh size at the vertex.
     double mesh_size_;
