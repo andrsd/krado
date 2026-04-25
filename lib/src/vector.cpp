@@ -5,7 +5,6 @@
 #include "krado/point.h"
 #include "krado/exception.h"
 #include "krado/axis1.h"
-#include "krado/occ.h"
 
 namespace krado {
 

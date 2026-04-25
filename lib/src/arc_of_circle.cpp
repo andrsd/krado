@@ -3,7 +3,6 @@
 
 #include "krado/arc_of_circle.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "GC_MakeArcOfCircle.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 

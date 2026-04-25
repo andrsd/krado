@@ -12,7 +12,6 @@
 #include "krado/mesh.h"
 #include "krado/types.h"
 #include "krado/vector.h"
-#include "krado/occ.h"
 #include "krado/wire.h"
 #include "krado/plane.h"
 #include "krado/axis1.h"

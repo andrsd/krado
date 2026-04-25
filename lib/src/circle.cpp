@@ -5,7 +5,6 @@
 #include "krado/axis2.h"
 #include "krado/exception.h"
 #include "krado/geom_curve.h"
-#include "krado/occ.h"
 #include "GC_MakeCircle.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "gp_Circ.hxx"

@@ -6,7 +6,6 @@
 #include "krado/geom_curve.h"
 #include "krado/point.h"
 #include "krado/vector.h"
-#include "krado/occ.h"
 #include "gp_Circ.hxx"
 
 namespace krado {

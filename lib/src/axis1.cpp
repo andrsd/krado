@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/axis1.h"
-#include "krado/occ.h"
 
 namespace krado {
 

@@ -5,7 +5,6 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"

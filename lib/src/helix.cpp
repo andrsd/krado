@@ -6,7 +6,6 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "TColgp_HArray1OfPnt.hxx"
 #include "GeomAPI_PointsToBSpline.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"

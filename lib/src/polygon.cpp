@@ -6,7 +6,6 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/vector.h"
-#include "krado/occ.h"
 
 namespace krado {
 

@@ -4,7 +4,6 @@
 #include "krado/line.h"
 #include "krado/point.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 
 namespace krado {

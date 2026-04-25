@@ -4,7 +4,6 @@
 #include "krado/plane.h"
 #include "krado/axis1.h"
 #include "krado/geom_surface.h"
-#include "krado/occ.h"
 #include "BRepAdaptor_Surface.hxx"
 
 namespace krado {

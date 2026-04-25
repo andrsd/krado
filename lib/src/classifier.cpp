@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/classifier.h"
-#include "krado/occ.h"
 #include "gp_Pnt.hxx"
 #include <TopAbs_State.hxx>
 

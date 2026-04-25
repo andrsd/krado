@@ -3,7 +3,6 @@
 
 #include "krado/box.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "BRepPrimAPI_MakeBox.hxx"
 
 namespace krado {

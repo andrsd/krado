@@ -3,7 +3,6 @@
 
 #include "krado/spline.h"
 #include "krado/exception.h"
-#include "krado/occ.h"
 #include "TColgp_HArray1OfPnt.hxx"
 #include "GeomAPI_Interpolate.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"

@@ -5,7 +5,6 @@
 
 #include "krado/point.h"
 #include "krado/vector.h"
-#include "krado/occ.h"
 #include "gp_Pln.hxx"
 
 namespace krado {

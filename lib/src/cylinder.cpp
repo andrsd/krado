@@ -4,7 +4,6 @@
 #include "krado/cylinder.h"
 #include "krado/exception.h"
 #include "krado/geom_volume.h"
-#include "krado/occ.h"
 #include "BRepPrimAPI_MakeCylinder.hxx"
 
 namespace krado {
