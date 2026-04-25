@@ -111,7 +111,7 @@ operator<<(std::ostream & stream, const krado::GeomSurface & srf)
 {
     stream << "Surface " << srf.id() << ": ";
     auto crvs = srf.curves();
-    std::vector<int> cids;
+    std::vector<krado::ShapeID> cids;
     cids.reserve(crvs.size());
     for (auto c : crvs)
         cids.push_back(c.id());

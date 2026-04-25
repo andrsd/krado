@@ -55,14 +55,14 @@ GeomShape::dim() const
     return this->dim_;
 }
 
-int
+ShapeID
 GeomShape::id() const
 {
     return this->id_;
 }
 
 void
-GeomShape::set_id(int id)
+GeomShape::set_id(ShapeID id)
 {
     this->id_ = id;
 }

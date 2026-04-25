@@ -21,7 +21,7 @@ MeshSurface::MeshSurface(const GeomSurface & gsurface,
 {
 }
 
-int
+ShapeID
 MeshSurface::id() const
 {
     return this->gsurface_.id();

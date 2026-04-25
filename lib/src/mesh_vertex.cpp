@@ -15,7 +15,7 @@ MeshVertex::MeshVertex(const GeomVertex & geom_vertex) :
 {
 }
 
-int
+ShapeID
 MeshVertex::id() const
 {
     return this->gvtx_.id();

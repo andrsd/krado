@@ -19,7 +19,7 @@ public:
     /// Get the unique identifier of the volume.
     ///
     /// @return The unique identifier of the volume.
-    int id() const;
+    ShapeID id() const;
 
     /// Get geometrical volume associated with this surface
     ///

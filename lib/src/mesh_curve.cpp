@@ -24,7 +24,7 @@ MeshCurve::MeshCurve(const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVerte
     }
 }
 
-int
+ShapeID
 MeshCurve::id() const
 {
     return this->gcurve_.id();
