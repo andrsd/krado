@@ -68,9 +68,21 @@ public:
         return this->value_ < other;
     }
 
+    ShapeID &
+    operator++()
+    {
+        ++this->value_;
+        return *this;
+    }
+
 private:
     int32 value_;
+
+public:
+    static const ShapeID INVALID;
 };
+
+inline constexpr ShapeID ShapeID::INVALID { -1 };
 
 /// Marker type
 class Marker {

@@ -16,10 +16,10 @@ TEST(MeshSurfaceTest, api)
     GeomSurface gsurf(circ);
     auto crvs = gsurf.curves();
     ASSERT_EQ(crvs.size(), 1);
-    auto mcurve = Ptr<MeshCurve>::alloc(crvs[0], Ptr<MeshVertex>(), Ptr<MeshVertex>());
+    auto mcurve = Ptr<MeshCurve>::alloc(1, crvs[0], Ptr<MeshVertex>(), Ptr<MeshVertex>());
 
     std::vector<Ptr<MeshCurve>> c = { mcurve };
-    auto msurface = Ptr<MeshSurface>::alloc(gsurf, c);
+    auto msurface = Ptr<MeshSurface>::alloc(1, gsurf, c);
     EXPECT_EQ(&msurface->geom_surface(), &gsurf);
 
     // EXPECT_EQ(msurface->scheme().name(), "auto");

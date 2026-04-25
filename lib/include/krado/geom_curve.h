@@ -151,11 +151,8 @@ operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type)
 inline std::ostream &
 operator<<(std::ostream & stream, const krado::GeomCurve & crv)
 {
-    stream << "Curve " << crv.id() << ": ";
+    stream << "Curve: ";
     stream << "type=" << crv.type() << ", ";
-    auto first_vtx = crv.first_vertex();
-    auto last_vtx = crv.last_vertex();
-    stream << "vertices=[" << first_vtx.id() << ", " << last_vtx.id() << "], ";
     auto [umin, umax] = crv.param_range();
     stream << "u=[" << umin << ", " << umax << "], ";
     stream << "length=" << crv.length();

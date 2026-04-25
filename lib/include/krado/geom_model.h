@@ -16,8 +16,13 @@
 #include "krado/mesh.h"
 #include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
-#include <Standard_TypeDef.hxx>
 #include <map>
+
+class TopoDS_Vertex;
+class TopoDS_Edge;
+class TopoDS_Face;
+class TopoDS_Shell;
+class TopoDS_Solid;
 
 namespace krado {
 
@@ -138,6 +143,12 @@ protected:
     [[nodiscard]] ShapeID volume_id(const GeomVolume & volume) const;
 
 private:
+    ShapeID get_shape_id(const TopoDS_Vertex & vertex);
+    ShapeID get_shape_id(const TopoDS_Edge & edge);
+    ShapeID get_shape_id(const TopoDS_Face & face);
+    ShapeID get_shape_id(const TopoDS_Shell & shell);
+    ShapeID get_shape_id(const TopoDS_Solid & solid);
+
     void bind_shape(const GeomShape & shape);
     void bind_vertices(const GeomShape & shape);
     void bind_edges(const GeomShape & shape);

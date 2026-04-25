@@ -17,13 +17,14 @@ TEST(MeshVolumeTest, api)
     auto surfs = gvol.surfaces();
     ASSERT_EQ(surfs.size(), 6);
 
+    ShapeID surf_id = 0;
     std::vector<Ptr<MeshSurface>> msurfs;
     for (auto & gs : surfs) {
         std::vector<Ptr<MeshCurve>> c;
-        msurfs.emplace_back(Ptr<MeshSurface>::alloc(gs, c));
+        msurfs.emplace_back(Ptr<MeshSurface>::alloc(++surf_id, gs, c));
     }
 
-    auto mvol = Ptr<MeshVolume>::alloc(gvol, msurfs);
+    auto mvol = Ptr<MeshVolume>::alloc(1, gvol, msurfs);
     EXPECT_EQ(&mvol->geom_volume(), &gvol);
 
     // EXPECT_EQ(mvol->scheme().name(), "auto");

@@ -3,6 +3,7 @@
 
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
+#include "krado/geom_model.h"
 #include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
@@ -183,7 +184,7 @@ Point
 get_circle_center(const GeomCurve & crv)
 {
     if (crv.type() != GeomCurve::CurveType::Circle)
-        throw Exception("Curve {} is not a circle", crv.id());
+        throw Exception("Curve is not a circle");
 
     const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
     gp_Pnt center = circle->Location();

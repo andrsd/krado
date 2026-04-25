@@ -40,7 +40,7 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
 
     const auto & gsurf = mesh_surface->geom_surface();
     if (!is_circular_face(gsurf))
-        throw Exception("Surface {} is not a circle", gsurf.id());
+        throw Exception("Surface {} is not a circle", mesh_surface->id());
 
     auto n_radial = this->opts_.radial_intervals;
     if (n_radial <= 0)

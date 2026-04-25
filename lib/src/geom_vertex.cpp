@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_vertex.h"
+#include "krado/geom_model.h"
 #include "BRep_Tool.hxx"
 
 namespace krado {

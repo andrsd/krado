@@ -38,5 +38,5 @@ TEST(GeomVertexTest, op_shl)
     auto vtx = testing::build_vertex(Point(1, 2, 3));
     std::stringstream ss;
     ss << vtx;
-    EXPECT_EQ(ss.str(), "Vertex -1: location=(x = 1, y = 2, z = 3)");
+    EXPECT_EQ(ss.str(), "Vertex: location=(x=1, y=2, z=3)");
 }

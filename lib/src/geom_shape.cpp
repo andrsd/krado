@@ -45,26 +45,14 @@ get_next_color()
 
 } // namespace
 
-GeomShape::GeomShape(const TopoDS_Shape & shape) : dim_(-1), shape_(shape), id_(-1) {}
+GeomShape::GeomShape(const TopoDS_Shape & shape) : dim_(-1), shape_(shape) {}
 
-GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) : dim_(dim), shape_(shape), id_(-1) {}
+GeomShape::GeomShape(int dim, const TopoDS_Shape & shape) : dim_(dim), shape_(shape) {}
 
 int
 GeomShape::dim() const
 {
     return this->dim_;
-}
-
-ShapeID
-GeomShape::id() const
-{
-    return this->id_;
-}
-
-void
-GeomShape::set_id(ShapeID id)
-{
-    this->id_ = id;
 }
 
 bool

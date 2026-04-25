@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_shell.h"
+#include "krado/geom_model.h"
 #include "TopoDS.hxx"
 #include "TopExp_Explorer.hxx"
 
