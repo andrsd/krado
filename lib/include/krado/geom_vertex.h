@@ -37,3 +37,10 @@ private:
 };
 
 } // namespace krado
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::GeomVertex & vtx)
+{
+    stream << "Vertex " << vtx.id() << ": location=" << vtx.point();
+    return stream;
+}
