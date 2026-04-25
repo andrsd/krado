@@ -3,6 +3,8 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/geom_model.h"
 #include "krado/scheme/equal.h"
 #include "builder.h"
 
@@ -62,4 +64,15 @@ TEST(MeshCurveTest, mesh)
 
     EXPECT_EQ(segs[3].type(), ElementType::LINE2);
     EXPECT_EQ(segs[3].num_vertices(), 2);
+}
+
+TEST(MeshCurveTest, op_shl)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    GeomModel model(line);
+
+    auto crv = model.curve(1);
+    std::stringstream ss;
+    ss << *crv;
+    EXPECT_EQ(ss.str(), "Curve 1: type=line, vertices=[1, 2], u=[0, 5], length=5");
 }

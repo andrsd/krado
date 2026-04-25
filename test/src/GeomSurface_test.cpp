@@ -139,5 +139,5 @@ TEST(GeomSurfaceTest, op_shl)
     auto circ = testing::build_circle(Point(0, 0, 0), 2.);
     std::stringstream ss;
     ss << circ;
-    EXPECT_EQ(ss.str(), "Surface: u=[-2, 2], v=[-2, 2], area=12.5664");
+    EXPECT_EQ(ss.str(), "Surface: (u, v)=[-2, 2]x[-2, 2], area=12.5664");
 }
