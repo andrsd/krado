@@ -178,8 +178,8 @@ boundary_entities(const Mesh & mesh, const Range & range)
 }
 
 void
-expand_size(std::unordered_map<marker_t, std::size_t> & sizes,
-            const std::map<marker_t, std::vector<gidx_t>> & face_sets)
+expand_size(std::unordered_map<Marker, std::size_t> & sizes,
+            const std::map<Marker, std::vector<gidx_t>> & face_sets)
 {
     for (const auto & [id, fs] : face_sets) {
         auto it = sizes.find(id);
@@ -344,9 +344,9 @@ Mesh::add(const Mesh & other)
     }
 
     // merge face sets
-    std::map<marker_t, std::vector<side_set_entry_t>> face_side_sets;
+    std::map<Marker, std::vector<side_set_entry_t>> face_side_sets;
     {
-        std::unordered_map<marker_t, std::size_t> face_side_sets_size;
+        std::unordered_map<Marker, std::size_t> face_side_sets_size;
         expand_size(face_side_sets_size, this->face_sets_);
         expand_size(face_side_sets_size, other.face_sets_);
 
@@ -369,9 +369,9 @@ Mesh::add(const Mesh & other)
         }
     }
     // merge edge sets
-    std::map<marker_t, std::vector<side_set_entry_t>> edge_side_sets;
+    std::map<Marker, std::vector<side_set_entry_t>> edge_side_sets;
     {
-        std::unordered_map<marker_t, std::size_t> edge_side_sets_size;
+        std::unordered_map<Marker, std::size_t> edge_side_sets_size;
         expand_size(edge_side_sets_size, this->edge_sets_);
         expand_size(edge_side_sets_size, other.edge_sets_);
 
@@ -448,14 +448,14 @@ Mesh::duplicate() const
 }
 
 Mesh &
-Mesh::set_cell_set_name(marker_t cell_set_id, const std::string & name)
+Mesh::set_cell_set_name(Marker cell_set_id, const std::string & name)
 {
     this->cell_set_names_[cell_set_id] = name;
     return *this;
 }
 
 std::string
-Mesh::cell_set_name(marker_t cell_set_id) const
+Mesh::cell_set_name(Marker cell_set_id) const
 {
     try {
         return this->cell_set_names_.at(cell_set_id);
@@ -465,14 +465,14 @@ Mesh::cell_set_name(marker_t cell_set_id) const
     }
 }
 
-std::vector<marker_t>
+std::vector<Marker>
 Mesh::cell_set_ids() const
 {
     return utils::map_keys(this->cell_sets_);
 }
 
 const std::vector<gidx_t> &
-Mesh::cell_set(marker_t id) const
+Mesh::cell_set(Marker id) const
 {
     try {
         return this->cell_sets_.at(id);
@@ -483,7 +483,7 @@ Mesh::cell_set(marker_t id) const
 }
 
 Mesh &
-Mesh::set_cell_set(marker_t id, const std::vector<gidx_t> & cell_ids)
+Mesh::set_cell_set(Marker id, const std::vector<gidx_t> & cell_ids)
 {
     this->cell_sets_[id] = cell_ids;
     return *this;
@@ -498,14 +498,14 @@ Mesh::remove_cell_sets()
 }
 
 Mesh &
-Mesh::set_face_set_name(marker_t face_set_id, const std::string & name)
+Mesh::set_face_set_name(Marker face_set_id, const std::string & name)
 {
     this->face_set_names_[face_set_id] = name;
     return *this;
 }
 
 std::string
-Mesh::face_set_name(marker_t face_set_id) const
+Mesh::face_set_name(Marker face_set_id) const
 {
     try {
         return this->face_set_names_.at(face_set_id);
@@ -515,14 +515,14 @@ Mesh::face_set_name(marker_t face_set_id) const
     }
 }
 
-std::vector<marker_t>
+std::vector<Marker>
 Mesh::face_set_ids() const
 {
     return utils::map_keys(this->face_sets_);
 }
 
 const std::vector<gidx_t> &
-Mesh::face_set(marker_t id) const
+Mesh::face_set(Marker id) const
 {
     try {
         return this->face_sets_.at(id);
@@ -533,7 +533,7 @@ Mesh::face_set(marker_t id) const
 }
 
 Mesh &
-Mesh::set_face_set(marker_t id, const std::vector<gidx_t> & face_ids)
+Mesh::set_face_set(Marker id, const std::vector<gidx_t> & face_ids)
 {
     this->face_sets_[id] = face_ids;
     return *this;
@@ -548,14 +548,14 @@ Mesh::remove_face_sets()
 }
 
 Mesh &
-Mesh::set_edge_set_name(marker_t edge_set_id, const std::string & name)
+Mesh::set_edge_set_name(Marker edge_set_id, const std::string & name)
 {
     this->edge_set_names_[edge_set_id] = name;
     return *this;
 }
 
 std::string
-Mesh::edge_set_name(marker_t edge_set_id) const
+Mesh::edge_set_name(Marker edge_set_id) const
 {
     try {
         return this->edge_set_names_.at(edge_set_id);
@@ -565,14 +565,14 @@ Mesh::edge_set_name(marker_t edge_set_id) const
     }
 }
 
-std::vector<marker_t>
+std::vector<Marker>
 Mesh::edge_set_ids() const
 {
     return utils::map_keys(this->edge_sets_);
 }
 
 const std::vector<gidx_t> &
-Mesh::edge_set(marker_t id) const
+Mesh::edge_set(Marker id) const
 {
     try {
         return this->edge_sets_.at(id);
@@ -583,7 +583,7 @@ Mesh::edge_set(marker_t id) const
 }
 
 Mesh &
-Mesh::set_edge_set(marker_t id, const std::vector<gidx_t> & edge_ids)
+Mesh::set_edge_set(Marker id, const std::vector<gidx_t> & edge_ids)
 {
     this->edge_sets_[id] = edge_ids;
     return *this;
@@ -598,14 +598,14 @@ Mesh::remove_edge_sets()
 }
 
 Mesh &
-Mesh::set_vertex_set_name(marker_t id, const std::string & name)
+Mesh::set_vertex_set_name(Marker id, const std::string & name)
 {
     this->vertex_set_names_[id] = name;
     return *this;
 }
 
 std::string
-Mesh::vertex_set_name(marker_t id) const
+Mesh::vertex_set_name(Marker id) const
 {
     auto it = this->vertex_set_names_.find(id);
     if (it != this->vertex_set_names_.end())
@@ -614,14 +614,14 @@ Mesh::vertex_set_name(marker_t id) const
         return std::string("");
 }
 
-std::vector<marker_t>
+std::vector<Marker>
 Mesh::vertex_set_ids() const
 {
     return utils::map_keys(this->vertex_sets_);
 }
 
 const std::vector<gidx_t> &
-Mesh::vertex_set(marker_t id) const
+Mesh::vertex_set(Marker id) const
 {
     try {
         return this->vertex_sets_.at(id);
@@ -632,7 +632,7 @@ Mesh::vertex_set(marker_t id) const
 }
 
 Mesh &
-Mesh::set_vertex_set(marker_t id, const std::vector<gidx_t> & vertex_ids)
+Mesh::set_vertex_set(Marker id, const std::vector<gidx_t> & vertex_ids)
 {
     this->vertex_sets_[id] = vertex_ids;
     return *this;
@@ -647,14 +647,14 @@ Mesh::remove_vertex_sets()
 }
 
 Mesh &
-Mesh::remap_block_ids(const std::map<marker_t, marker_t> & block_map)
+Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
 {
     Log::info("Remapping block IDs:");
     for (auto & [block_id, new_block_id] : block_map)
         Log::info("- {} -> {}", block_id, new_block_id);
 
-    std::map<marker_t, std::string> new_cell_set_names;
-    std::map<marker_t, std::vector<gidx_t>> new_cell_sets;
+    std::map<Marker, std::string> new_cell_set_names;
+    std::map<Marker, std::vector<gidx_t>> new_cell_sets;
     for (auto & [block_id, cells] : this->cell_sets_) {
         auto new_block_id = block_map.at(block_id);
         new_cell_sets[new_block_id] = cells;
