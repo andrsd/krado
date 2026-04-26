@@ -9,12 +9,6 @@
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
-#include "krado/mesh_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_volume.h"
-#include "krado/mesh.h"
-#include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
 
@@ -30,6 +24,7 @@ class MeshVertex;
 class MeshCurve;
 class MeshSurface;
 class MeshVolume;
+class BoundingBox3D;
 
 class GeomModel {
 public:
@@ -111,12 +106,6 @@ public:
     void mesh_volume(ShapeID id);
     void mesh_volume(Ptr<MeshVolume> volume);
 
-    /// Build the mesh from meshed entities
-    [[nodiscard]] Mesh build_mesh();
-
-    /// Build the surface mesh from meshed entities
-    [[nodiscard]] Mesh build_surface_mesh();
-
 protected:
     /// Get vertex ID
     ///
@@ -156,12 +145,6 @@ private:
     void bind_solids(const GeomShape & shape);
     void initialize();
 
-    [[nodiscard]] std::vector<Point> build_points();
-    [[nodiscard]] std::vector<Element> build_elements();
-    [[nodiscard]] std::vector<Element> build_surface_elements();
-    [[nodiscard]] std::vector<Element> build_1d_elements();
-    [[nodiscard]] std::vector<Element> build_2d_elements();
-
     GeomShape root_shape_;
 
     std::map<ShapeID, GeomVertex> vtxs_;
@@ -185,5 +168,17 @@ private:
 /// @param model Geometrical model
 /// @return Bounding box
 BoundingBox3D compute_bounding_box(const GeomModel & model);
+
+/// Build mesh from meshed entities
+///
+/// @param model Geometrical model
+/// @return Volumetric mesh
+Mesh build_mesh(const GeomModel & model);
+
+/// Build the surface mesh from meshed entities
+///
+/// @param model Geometrical model
+/// @return Surface mesh
+Mesh build_surface_mesh(const GeomModel & model);
 
 } // namespace krado

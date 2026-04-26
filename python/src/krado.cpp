@@ -242,8 +242,6 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
         .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
         .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
-        .def("build_mesh", &GeomModel::build_mesh)
-        .def("build_surface_mesh", &GeomModel::build_surface_mesh)
     ;
 
     py::class_<GeomVertex>(m, "GeomVertex")
@@ -480,6 +478,9 @@ PYBIND11_MODULE(krado, m)
 
     m.def("compute_volume", &compute_volume);
     m.def("combine", &combine);
+
+    m.def("build_mesh", &build_mesh);
+    m.def("build_surface_mesh", &build_surface_mesh);
 
     m.def("tetrahedralize", &tetrahedralize);
 

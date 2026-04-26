@@ -1,8 +1,12 @@
 #include "gmock/gmock.h"
 #include "builder.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_volume.h"
 #include "krado/ops.h"
 #include "krado/exodusii_file.h"
 #include "krado/scheme/equal.h"
@@ -22,7 +26,7 @@ TEST(ComputeVolumeTest, length_of_a_line)
     model.curve(1)->set_scheme<SchemeEqual>(opts);
 
     model.mesh_curve(1);
-    auto mesh = model.build_mesh();
+    auto mesh = build_mesh(model);
 
     auto vols = compute_volume(mesh);
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(5., 1e-10))));

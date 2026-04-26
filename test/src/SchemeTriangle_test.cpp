@@ -45,7 +45,7 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
     EXPECT_EQ(qcirc->all_vertices().size(), 6);
     EXPECT_EQ(qcirc->triangles().size(), 4);
 
-    auto mesh = model.build_mesh();
+    auto mesh = build_mesh(model);
 
     auto & pts = mesh.points();
     ASSERT_EQ(pts.size(), 6);
