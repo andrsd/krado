@@ -6,13 +6,10 @@
 #include "krado/range.h"
 #include "boost/graph/adjacency_list.hpp"
 #include "boost/graph/graph_traits.hpp"
+#include <vector>
 #include <cstddef>
 #include <limits>
-#include <set>
-#include <map>
 #include <iostream>
-#include <unordered_map>
-#include <algorithm>
 
 namespace krado {
 

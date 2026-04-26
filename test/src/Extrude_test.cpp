@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/extrude.h"
 #include "krado/mesh.h"
+#include "krado/vector.h"
 #include "krado/types.h"
 
 using namespace krado;

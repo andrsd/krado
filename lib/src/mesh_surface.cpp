@@ -10,6 +10,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/consts.h"
+#include "krado/utils.h"
 #include <array>
 #include <cassert>
 
@@ -23,6 +24,8 @@ MeshSurface::MeshSurface(ShapeID id,
     mesh_curves_(mesh_curves)
 {
 }
+
+MeshSurface::~MeshSurface() = default;
 
 ShapeID
 MeshSurface::id() const
@@ -175,6 +178,18 @@ MeshSurface::delete_mesh()
     this->vtxs_.clear();
     this->surf_vtxs_.clear();
     this->tris_.clear();
+}
+
+bool
+MeshSurface::has_scheme() const
+{
+    return this->scheme_.get() != nullptr;
+}
+
+Scheme2D &
+MeshSurface::scheme()
+{
+    return *this->scheme_.get();
 }
 
 } // namespace krado

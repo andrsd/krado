@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/tetrahedralize.h"
+#include "krado/mesh.h"
 #include "krado/exception.h"
 #include "krado/types.h"
 #include "krado/element.h"

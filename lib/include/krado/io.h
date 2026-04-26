@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/mesh.h"
-#include <vector>
 
 namespace krado {
 

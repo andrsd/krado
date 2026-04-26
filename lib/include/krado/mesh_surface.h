@@ -3,15 +3,18 @@
 
 #pragma once
 
-#include "krado/mesh_vertex.h"
 #include "krado/mesh_element.h"
 #include "krado/meshable.h"
 #include "krado/scheme2d.h"
+#include "krado/ptr.h"
 #include <vector>
+#include <memory>
 
 namespace krado {
 
+class UVParam;
 class GeomSurface;
+class MeshVertex;
 class MeshVertexAbstract;
 class MeshCurveVertex;
 class MeshSurfaceVertex;
@@ -22,6 +25,7 @@ public:
     MeshSurface(ShapeID id,
                 const GeomSurface & gcurve,
                 const std::vector<Ptr<MeshCurve>> & mesh_curves);
+    ~MeshSurface();
 
     /// Get the unique identifier of the surface.
     ///
@@ -117,17 +121,9 @@ public:
         return *sch_ptr;
     }
 
-    bool
-    has_scheme() const
-    {
-        return this->scheme_.get() != nullptr;
-    }
+    bool has_scheme() const;
 
-    Scheme2D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme2D & scheme();
 
 private:
     ///

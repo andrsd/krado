@@ -4,11 +4,12 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/vector.h"
-#include "krado/axis1.h"
 #include "gp_Ax2.hxx"
 
 namespace krado {
+
+class Vector;
+class Axis1;
 
 class Axis2 {
 public:

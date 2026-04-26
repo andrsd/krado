@@ -4,9 +4,10 @@
 #pragma once
 
 #include "krado/geom_volume.h"
-#include "krado/axis2.h"
 
 namespace krado {
+
+class Axis2;
 
 class Cone : public GeomVolume {
 private:

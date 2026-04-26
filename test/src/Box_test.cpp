@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/box.h"
+#include "krado/point.h"
 
 using namespace krado;
 

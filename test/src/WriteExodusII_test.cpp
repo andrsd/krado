@@ -1,11 +1,6 @@
 #include "gmock/gmock.h"
-#include "krado/geom_shape.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
-#include "krado/mesh_volume.h"
 #include "krado/io.h"
 #include "builder.h"
 

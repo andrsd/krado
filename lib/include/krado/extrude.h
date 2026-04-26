@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "krado/mesh.h"
-#include "krado/vector.h"
+#include <vector>
 
 namespace krado {
+
+class Mesh;
+class Vector;
 
 /// Extrude a mesh
 ///

@@ -4,9 +4,10 @@
 #pragma once
 
 #include "krado/geom_volume.h"
-#include "krado/point.h"
 
 namespace krado {
+
+class Point;
 
 /// Box
 class Box : public GeomVolume {

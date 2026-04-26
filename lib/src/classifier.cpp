@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/classifier.h"
-#include "gp_Pnt.hxx"
-#include <TopAbs_State.hxx>
+#include "krado/geom_shape.h"
+#include "TopAbs_State.hxx"
 
 namespace krado {
 

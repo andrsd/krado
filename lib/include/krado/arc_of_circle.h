@@ -4,12 +4,13 @@
 #pragma once
 
 #include "krado/geom_curve.h"
-#include "krado/point.h"
-#include "krado/vector.h"
-#include "krado/circle.h"
 #include "Geom_TrimmedCurve.hxx"
 
 namespace krado {
+
+class Point;
+class Vector;
+class Circle;
 
 /// Describes an arc of a circle in 3D space.
 class ArcOfCircle : public GeomCurve {

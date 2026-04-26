@@ -3,20 +3,23 @@
 
 #pragma once
 
-#include "krado/ptr.h"
-#include "krado/geom_volume.h"
 #include "krado/meshable.h"
 #include "krado/scheme3d.h"
+#include "krado/ptr.h"
+#include <vector>
+#include <memory>
 
 namespace krado {
 
 class MeshSurface;
+class GeomVolume;
 
 class MeshVolume : public Meshable {
 public:
     MeshVolume(ShapeID id,
                const GeomVolume & gvolume,
                const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
+    ~MeshVolume();
 
     /// Get the unique identifier of the volume.
     ///
@@ -45,11 +48,7 @@ public:
         return *sch_ptr;
     }
 
-    Scheme3D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme3D & scheme();
 
 private:
     ///

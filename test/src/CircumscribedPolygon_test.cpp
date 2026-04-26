@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/circumscribed_polygon.h"
 #include "krado/axis2.h"
+#include "krado/vector.h"
 #include "krado/exception.h"
 
 using namespace krado;

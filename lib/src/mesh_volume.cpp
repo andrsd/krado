@@ -3,9 +3,6 @@
 
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
 
 namespace krado {
 
@@ -17,6 +14,8 @@ MeshVolume::MeshVolume(ShapeID id,
     mesh_surfaces_(mesh_surfaces)
 {
 }
+
+MeshVolume::~MeshVolume() = default;
 
 ShapeID
 MeshVolume::id() const
@@ -34,6 +33,12 @@ const std::vector<Ptr<MeshSurface>> &
 MeshVolume::surfaces() const
 {
     return this->mesh_surfaces_;
+}
+
+Scheme3D &
+MeshVolume::scheme()
+{
+    return *this->scheme_.get();
 }
 
 } // namespace krado

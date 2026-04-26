@@ -4,10 +4,9 @@
 #include "krado/exception.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
+#include "krado/vector.h"
 #include <filesystem>
 
 using namespace krado;

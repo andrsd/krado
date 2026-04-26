@@ -7,6 +7,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/ptr.h"
 

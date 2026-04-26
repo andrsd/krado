@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "krado/point.h"
-#include "krado/vector.h"
 #include "gp_Pln.hxx"
 
 namespace krado {
 
 class GeomSurface;
 class Axis1;
+class Vector;
+class Point;
 
 /// Describes a plane.
 ///

@@ -1,6 +1,5 @@
 #include "gmock/gmock.h"
 #include "krado/bounding_box_3d.h"
-#include "krado/exception.h"
 
 using namespace krado;
 

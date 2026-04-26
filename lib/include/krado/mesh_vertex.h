@@ -5,10 +5,10 @@
 
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/meshable.h"
+#include "krado/types.h"
 
 namespace krado {
 
-class GeomEntity;
 class GeomVertex;
 class Point;
 

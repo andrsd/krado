@@ -11,7 +11,6 @@
 #include "krado/log.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
-#include <iostream>
 #include <unordered_map>
 
 namespace krado {

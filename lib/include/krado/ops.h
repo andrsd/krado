@@ -3,14 +3,15 @@
 
 #pragma once
 
-#include "krado/geom_shape.h"
 #include "krado/types.h"
 #include "Standard_TypeDef.hxx"
+#include <vector>
 #include <tuple>
 #include <map>
 
 namespace krado {
 
+class GeomShape;
 class GeomVolume;
 class GeomSurface;
 class GeomCurve;

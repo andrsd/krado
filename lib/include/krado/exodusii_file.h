@@ -6,6 +6,7 @@
 #include "krado/mesh.h"
 #include "exodusIIcpp/exodusIIcpp.h"
 #include <string>
+#include <vector>
 
 namespace krado {
 

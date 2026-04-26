@@ -3,11 +3,12 @@
 
 #include "krado/wire.h"
 #include "krado/exception.h"
+#include "krado/geom_curve.h"
+#include "krado/geom_shape.h"
 #include "BRepBuilderAPI_MakeWire.hxx"
 #include "TopoDS.hxx"
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
-#include "krado/geom_shape.h"
 
 namespace krado {
 

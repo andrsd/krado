@@ -3,11 +3,9 @@
 
 #pragma once
 
+#include "krado/exception.h"
 #include <map>
 #include <string>
-#include <iostream>
-#include <vector>
-#include "krado/exception.h"
 
 namespace krado {
 

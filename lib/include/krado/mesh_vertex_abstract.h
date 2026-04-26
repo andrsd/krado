@@ -3,15 +3,10 @@
 
 #pragma once
 
-#include <tuple>
-
 namespace krado {
 
 class GeomShape;
 class Point;
-class GeomCurve;
-class GeomSurface;
-class UVParam;
 
 class MeshVertexAbstract {
 public:

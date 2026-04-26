@@ -12,9 +12,9 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme/equal.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
-#include <memory>
 
 namespace krado {
 

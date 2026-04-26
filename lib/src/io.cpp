@@ -3,7 +3,6 @@
 
 #include "krado/io.h"
 #include "krado/exodusii_file.h"
-#include "krado/log.h"
 
 namespace krado {
 

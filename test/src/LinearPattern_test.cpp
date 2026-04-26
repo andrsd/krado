@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/linear_pattern.h"
 #include "krado/point.h"
+#include "krado/vector.h"
 #include "krado/axis2.h"
 
 using namespace krado;

@@ -5,6 +5,9 @@
 #include "krado/geom_shape.h"
 #include "krado/wire.h"
 #include "krado/geom_model.h"
+#include "krado/point.h"
+#include "krado/vector.h"
+#include "krado/uv_param.h"
 #include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
@@ -208,3 +211,15 @@ is_circular_face(const GeomSurface & surface)
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomSurface & srf)
+{
+    stream << "Surface: ";
+    auto [u_min, u_max] = srf.param_range(0);
+    auto [v_min, v_max] = srf.param_range(1);
+    stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
+    stream << "[" << v_min << ", " << v_max << "], ";
+    stream << "area=" << srf.area();
+    return stream;
+}

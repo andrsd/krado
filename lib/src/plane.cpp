@@ -3,6 +3,8 @@
 
 #include "krado/plane.h"
 #include "krado/axis1.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include "krado/geom_surface.h"
 #include "BRepAdaptor_Surface.hxx"
 

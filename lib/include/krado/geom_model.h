@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include "krado/ptr.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_vertex.h"
@@ -20,6 +21,7 @@ class TopoDS_Solid;
 
 namespace krado {
 
+class Mesh;
 class MeshVertex;
 class MeshCurve;
 class MeshSurface;
@@ -29,6 +31,7 @@ class BoundingBox3D;
 class GeomModel {
 public:
     explicit GeomModel(const GeomShape & root_shape);
+    ~GeomModel();
 
     /// Get vertex with specified ID
     ///

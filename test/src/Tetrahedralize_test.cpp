@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 #include "krado/point.h"
+#include "krado/mesh.h"
 #include "krado/tetrahedralize.h"
 
 using namespace krado;

@@ -4,22 +4,19 @@
 #pragma once
 
 #include "krado/geom_shape.h"
-#include "krado/geom_vertex.h"
-#include "krado/point.h"
-#include "krado/vector.h"
-#include "krado/uv_param.h"
 #include "krado/geom_curve.h"
-#include "krado/utils.h"
 #include "TopoDS_Face.hxx"
 #include "Geom_Surface.hxx"
 #include "GeomAPI_ProjectPointOnSurf.hxx"
 #include <vector>
-#include <set>
 
 namespace krado {
 
 class GeomModel;
 class Wire;
+class UVParam;
+class Point;
+class Vector;
 
 class GeomSurface : public GeomShape {
 public:
@@ -110,14 +107,4 @@ bool is_circular_face(const GeomSurface & surface);
 
 } // namespace krado
 
-inline std::ostream &
-operator<<(std::ostream & stream, const krado::GeomSurface & srf)
-{
-    stream << "Surface: ";
-    auto [u_min, u_max] = srf.param_range(0);
-    auto [v_min, v_max] = srf.param_range(1);
-    stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
-    stream << "[" << v_min << ", " << v_max << "], ";
-    stream << "area=" << srf.area();
-    return stream;
-}
+std::ostream & operator<<(std::ostream & stream, const krado::GeomSurface & srf);

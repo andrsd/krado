@@ -3,6 +3,7 @@
 
 #include "krado/cone.h"
 #include "krado/exception.h"
+#include "krado/axis2.h"
 #include "BRepPrimAPI_MakeCone.hxx"
 
 namespace krado {

@@ -3,9 +3,8 @@
 
 #include "krado/scheme/bamg.h"
 #include "krado/element.h"
-#include "krado/mesh.h"
 #include "krado/mesh_vertex.h"
-#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
 #include "krado/log.h"
@@ -209,7 +208,7 @@ private:
             this->Gh.edges->SetRequired();
         }
 
-        Hmin = Min(Hmin, l12);
+        Hmin = bamg::Min(Hmin, l12);
     }
 
     void

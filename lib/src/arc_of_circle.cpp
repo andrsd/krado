@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/arc_of_circle.h"
+#include "krado/point.h"
+#include "krado/vector.h"
+#include "krado/circle.h"
 #include "krado/exception.h"
 #include "GC_MakeArcOfCircle.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"

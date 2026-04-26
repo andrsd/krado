@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "krado/types.h"
 #include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"

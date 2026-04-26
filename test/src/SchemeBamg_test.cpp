@@ -1,13 +1,10 @@
 #include "gmock/gmock.h"
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "krado/scheme/bamg.h"
-#include "ExceptionTestMacros.h"
 #include <filesystem>
 
 using namespace krado;

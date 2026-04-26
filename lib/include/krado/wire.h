@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "krado/geom_curve.h"
 #include "krado/geom_shape.h"
 #include "TopoDS_Wire.hxx"
 #include <vector>
@@ -11,6 +10,7 @@
 namespace krado {
 
 class Plane;
+class GeomCurve;
 
 class Wire : public GeomShape {
 public:

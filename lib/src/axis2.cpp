@@ -3,6 +3,8 @@
 
 #include "krado/axis2.h"
 #include "krado/exception.h"
+#include "krado/axis1.h"
+#include "krado/point.h"
 #include "krado/vector.h"
 
 namespace krado {
