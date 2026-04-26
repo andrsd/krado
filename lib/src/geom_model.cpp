@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_model.h"
+#include "krado/bounding_box_3d.h"
 #include "krado/exception.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include "krado/mesh.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
@@ -40,6 +42,135 @@ compute_bounding_box(const GeomModel & model)
             bbox += v->point();
     return bbox;
 }
+
+std::vector<Point>
+build_points(const GeomModel & model)
+{
+    std::vector<Point> pnts;
+    gidx_t gid = 0;
+
+    for (auto & [id, v] : model.vertices()) {
+        v->set_global_id(gid);
+        pnts.emplace_back(v->point());
+        gid++;
+    }
+    for (auto & [id, curve] : model.curves())
+        for (auto & v : curve->curve_vertices()) {
+            v->set_global_id(gid);
+            pnts.emplace_back(v->point());
+            gid++;
+        }
+    for (auto & [id, surface] : model.surfaces())
+        for (auto & v : surface->surface_vertices()) {
+            v->set_global_id(gid);
+            pnts.emplace_back(v->point());
+            gid++;
+        }
+    return pnts;
+}
+
+std::vector<Element>
+build_1d_elements(const GeomModel & model)
+{
+    Log::debug("Building 1D elements");
+
+    std::vector<Element> elems;
+    for (auto & [id, curve] : model.curves()) {
+        std::array<gidx_t, Line2::N_VERTICES> line;
+        for (auto & local_elem : curve->segments()) {
+            for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                auto vtx = local_elem.vertex(i);
+                line[i] = vtx->global_id();
+            }
+            elems.emplace_back(Element::Line2(line));
+        }
+    }
+    return elems;
+}
+
+std::vector<Element>
+build_2d_elements(const GeomModel & model)
+{
+    Log::debug("Building 2D elements");
+
+    if (model.surfaces().size() > 0) {
+        std::vector<Element> elems;
+        for (auto & [id, surface] : model.surfaces()) {
+            auto & tris = surface->triangles();
+            std::array<gidx_t, Tri3::N_VERTICES> tri;
+            for (auto & local_elem : tris) {
+                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                    auto vtx = local_elem.vertex(i);
+                    tri[i] = vtx->global_id();
+                }
+                elems.emplace_back(Element::Tri3(tri));
+            }
+        }
+        return elems;
+    }
+    else
+        return build_1d_elements(model);
+}
+
+std::vector<Element>
+build_elements(const GeomModel & model)
+{
+    Log::debug("Building elements");
+
+    auto bbox = compute_bounding_box(model);
+    auto dims = bbox.size();
+
+    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
+        return build_1d_elements(model);
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
+        return build_2d_elements(model);
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
+        throw Exception("3D element construction is not implemented yet");
+    else
+        throw Exception("Element construction for your setup is not implemented yet");
+}
+
+std::vector<Element>
+build_surface_elements(const GeomModel & model)
+{
+    Log::debug("Building surface elements");
+
+    auto bbox = compute_bounding_box(model);
+    auto dims = bbox.size();
+
+    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
+        throw Exception("Surface mesh in 1D is not implemented yet");
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
+        return build_1d_elements(model);
+    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
+        return build_2d_elements(model);
+    else
+        throw Exception("Element construction for your setup is not implemented yet");
+}
+
+Mesh
+build_mesh(const GeomModel & model)
+{
+    Log::debug("Building mesh");
+
+    auto points = build_points(model);
+    auto elements = build_elements(model);
+    Mesh mesh(points, elements);
+    return mesh;
+}
+
+Mesh
+build_surface_mesh(const GeomModel & model)
+{
+    Log::debug("Building surface mesh");
+
+    auto points = build_points(model);
+    auto elements = build_surface_elements(model);
+    Mesh mesh(points, elements);
+    return mesh;
+}
+
+//
 
 GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
 {
@@ -472,133 +603,6 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
     }
     else
         Log::debug("Volume {} is already meshed", volume->id());
-}
-
-std::vector<Point>
-GeomModel::build_points()
-{
-    std::vector<Point> pnts;
-    gidx_t gid = 0;
-
-    for (auto & [id, v] : this->mvtxs_) {
-        v->set_global_id(gid);
-        pnts.emplace_back(v->point());
-        gid++;
-    }
-    for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve->curve_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface->surface_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    return pnts;
-}
-
-std::vector<Element>
-GeomModel::build_elements()
-{
-    Log::debug("Building elements");
-
-    auto bbox = compute_bounding_box(*this);
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        return build_1d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_2d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        throw Exception("3D element construction is not implemented yet");
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-std::vector<Element>
-GeomModel::build_surface_elements()
-{
-    Log::debug("Building surface elements");
-
-    auto bbox = compute_bounding_box(*this);
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        throw Exception("Surface mesh in 1D is not implemented yet");
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_1d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        return build_2d_elements();
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-std::vector<Element>
-GeomModel::build_1d_elements()
-{
-    Log::debug("Building 1D elements");
-
-    std::vector<Element> elems;
-    for (auto & [id, curve] : this->mcrvs_) {
-        std::array<gidx_t, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve->segments()) {
-            for (int i = 0; i < Line2::N_VERTICES; ++i) {
-                auto vtx = local_elem.vertex(i);
-                line[i] = vtx->global_id();
-            }
-            elems.emplace_back(Element::Line2(line));
-        }
-    }
-    return elems;
-}
-
-std::vector<Element>
-GeomModel::build_2d_elements()
-{
-    Log::debug("Building 2D elements");
-
-    if (this->msurfs_.size() > 0) {
-        std::vector<Element> elems;
-        for (auto & [id, surface] : this->msurfs_) {
-            auto & tris = surface->triangles();
-            std::array<gidx_t, Tri3::N_VERTICES> tri;
-            for (auto & local_elem : tris) {
-                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                    auto vtx = local_elem.vertex(i);
-                    tri[i] = vtx->global_id();
-                }
-                elems.emplace_back(Element::Tri3(tri));
-            }
-        }
-        return elems;
-    }
-    else
-        return build_1d_elements();
-}
-
-Mesh
-GeomModel::build_mesh()
-{
-    Log::debug("Building mesh");
-
-    auto points = build_points();
-    auto elements = build_elements();
-    Mesh mesh(points, elements);
-    return mesh;
-}
-
-Mesh
-GeomModel::build_surface_mesh()
-{
-    Log::debug("Building surface mesh");
-
-    auto points = build_points();
-    auto elements = build_surface_elements();
-    Mesh mesh(points, elements);
-    return mesh;
 }
 
 ShapeID

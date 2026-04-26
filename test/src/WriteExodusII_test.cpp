@@ -24,7 +24,7 @@ TEST(WriteExodusIITest, DISABLED_line)
     // clang-format on
     model.mesh_curve(1);
 
-    auto mesh = model.build_mesh();
+    auto mesh = build_mesh(model);
 
     IO::export_mesh("line.exo", mesh);
 }

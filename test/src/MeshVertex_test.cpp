@@ -2,8 +2,11 @@
 #include "krado/point.h"
 #include "krado/geom_vertex.h"
 #include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "krado/geom_model.h"
 #include "builder.h"
 
