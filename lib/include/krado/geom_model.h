@@ -156,7 +156,6 @@ private:
     void bind_solids(const GeomShape & shape);
     void initialize();
 
-    [[nodiscard]] BoundingBox3D compute_mesh_bounding_box();
     [[nodiscard]] std::vector<Point> build_points();
     [[nodiscard]] std::vector<Element> build_elements();
     [[nodiscard]] std::vector<Element> build_surface_elements();
@@ -184,5 +183,11 @@ private:
     /// Mesh elements
     std::vector<Element> elems_;
 };
+
+/// Compute bounding box of a meshed geometrical model
+///
+/// @param model Geometrical model
+/// @return Bounding box
+BoundingBox3D compute_bounding_box(const GeomModel & model);
 
 } // namespace krado
