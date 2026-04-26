@@ -24,6 +24,23 @@
 
 namespace krado {
 
+BoundingBox3D
+compute_bounding_box(const GeomModel & model)
+{
+    Log::debug("Computing mesh bounding box");
+
+    BoundingBox3D bbox;
+    for (auto & [id, v] : model.vertices())
+        bbox += v->point();
+    for (auto & [id, curve] : model.curves())
+        for (auto & v : curve->curve_vertices())
+            bbox += v->point();
+    for (auto & [id, surface] : model.surfaces())
+        for (auto & v : surface->surface_vertices())
+            bbox += v->point();
+    return bbox;
+}
+
 GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
 {
     Log::debug("Creating geometrical model");
@@ -483,29 +500,12 @@ GeomModel::build_points()
     return pnts;
 }
 
-BoundingBox3D
-GeomModel::compute_mesh_bounding_box()
-{
-    Log::debug("Computing mesh bounding box");
-
-    BoundingBox3D bbox;
-    for (auto & [id, v] : this->mvtxs_)
-        bbox += v->point();
-    for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve->curve_vertices())
-            bbox += v->point();
-    for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface->surface_vertices())
-            bbox += v->point();
-    return bbox;
-}
-
 std::vector<Element>
 GeomModel::build_elements()
 {
     Log::debug("Building elements");
 
-    auto bbox = compute_mesh_bounding_box();
+    auto bbox = compute_bounding_box(*this);
     auto dims = bbox.size();
 
     if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
@@ -523,7 +523,7 @@ GeomModel::build_surface_elements()
 {
     Log::debug("Building surface elements");
 
-    auto bbox = compute_mesh_bounding_box();
+    auto bbox = compute_bounding_box(*this);
     auto dims = bbox.size();
 
     if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
