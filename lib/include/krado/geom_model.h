@@ -179,10 +179,6 @@ private:
     std::map<ShapeID, Ptr<MeshCurve>> mcrvs_;
     std::map<ShapeID, Ptr<MeshSurface>> msurfs_;
     std::map<ShapeID, Ptr<MeshVolume>> mvols_;
-    /// Mesh points
-    std::vector<Point> pnts_;
-    /// Mesh elements
-    std::vector<Element> elems_;
 };
 
 } // namespace krado
