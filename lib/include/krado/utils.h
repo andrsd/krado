@@ -15,15 +15,14 @@
 #include <array>
 
 namespace krado {
+
 class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
 class Mesh;
 class GeomSurface;
-} // namespace krado
 
-namespace krado {
 namespace utils {
 
 /// Convert supplied string to upper case.

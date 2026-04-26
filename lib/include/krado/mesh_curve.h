@@ -9,10 +9,10 @@
 #include "krado/ptr.h"
 #include "krado/types.h"
 #include <vector>
+#include <memory>
 
 namespace krado {
 
-class GeomVertex;
 class GeomCurve;
 class MeshVertex;
 class MeshCurveVertex;
@@ -20,6 +20,7 @@ class MeshCurveVertex;
 class MeshCurve : public Meshable {
 public:
     MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
+    ~MeshCurve();
 
     /// Get the unique identifier of the curve.
     ///
@@ -103,17 +104,9 @@ public:
         return *sch_ptr;
     }
 
-    bool
-    has_scheme() const
-    {
-        return this->scheme_.get() != nullptr;
-    }
+    bool has_scheme() const;
 
-    Scheme1D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme1D & scheme();
 
 private:
     ///

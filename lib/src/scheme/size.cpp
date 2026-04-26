@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/size.h"
-#include "krado/scheme/equal.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"

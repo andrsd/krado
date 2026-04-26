@@ -7,6 +7,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_element.h"
 #include "krado/types.h"
+#include "krado/utils.h"
 #include "krado/log.h"
 #include "krado/consts.h"
 #include <array>
@@ -24,6 +25,8 @@ MeshCurve::MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, P
             this->bnd_vtxs_.push_back(v2);
     }
 }
+
+MeshCurve::~MeshCurve() = default;
 
 ShapeID
 MeshCurve::id() const
@@ -139,6 +142,18 @@ MeshCurve::mesh_size_at_param(double u) const
     }
     else
         return MAX_LC;
+}
+
+bool
+MeshCurve::has_scheme() const
+{
+    return this->scheme_.get() != nullptr;
+}
+
+Scheme1D &
+MeshCurve::scheme()
+{
+    return *this->scheme_.get();
 }
 
 } // namespace krado

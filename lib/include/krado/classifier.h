@@ -4,10 +4,11 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/geom_shape.h"
 #include "BRepClass3d_SolidClassifier.hxx"
 
 namespace krado {
+
+class GeomShape;
 
 /// Provides capability to classify if points are inside or outside of a given shape
 ///

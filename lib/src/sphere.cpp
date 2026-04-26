@@ -4,6 +4,7 @@
 #include "krado/sphere.h"
 #include "krado/exception.h"
 #include "krado/geom_volume.h"
+#include "krado/point.h"
 #include "BRepPrimAPI_MakeSphere.hxx"
 
 namespace krado {

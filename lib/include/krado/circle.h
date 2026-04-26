@@ -4,13 +4,13 @@
 #pragma once
 
 #include "krado/geom_curve.h"
-#include "krado/point.h"
 #include "krado/vector.h"
 #include "gp_Circ.hxx"
 
 namespace krado {
 
 class Axis2;
+class Point;
 
 /// Describes a circle in 3D space. A circle is defined by its radius and positioned in space with a
 /// coordinate system.

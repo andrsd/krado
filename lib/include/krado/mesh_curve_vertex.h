@@ -8,7 +8,6 @@
 
 namespace krado {
 
-class GeomEntity;
 class GeomCurve;
 
 class MeshCurveVertex : public MeshVertexAbstract {

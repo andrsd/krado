@@ -14,6 +14,7 @@
 #include "krado/utils.h"
 #include <map>
 #include <unordered_map>
+#include <vector>
 
 namespace krado {
 

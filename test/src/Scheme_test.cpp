@@ -1,17 +1,18 @@
-#include "gmock/gmock.h"
-#include "builder.h"
-#include "ExceptionTestMacros.h"
-#include "krado/geom_curve.h"
-#include "krado/geom_model.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
-#include "krado/mesh_volume.h"
+#if 0
+
+    #include "gmock/gmock.h"
+    #include "builder.h"
+    #include "ExceptionTestMacros.h"
+    #include "krado/geom_curve.h"
+    #include "krado/geom_model.h"
+    #include "krado/mesh_curve.h"
+    #include "krado/mesh_curve_vertex.h"
+    #include "krado/mesh_surface.h"
+    #include "krado/mesh_surface_vertex.h"
+    #include "krado/mesh_volume.h"
 
 using namespace krado;
 
-#if 0
 
 TEST(SchemeTest, mesh_curve_with_2d_scheme)
 {

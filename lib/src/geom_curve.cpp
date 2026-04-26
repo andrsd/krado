@@ -5,6 +5,8 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -186,3 +188,42 @@ get_circle_center(const GeomCurve & crv)
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type)
+{
+    switch (type) {
+    case krado::GeomCurve::CurveType::Line:
+        stream << "line";
+        break;
+
+    case krado::GeomCurve::CurveType::Circle:
+        stream << "circle";
+        break;
+
+    case krado::GeomCurve::CurveType::BSpline:
+        stream << "bspline";
+        break;
+
+    case krado::GeomCurve::CurveType::Bezier:
+        stream << "bezier";
+        break;
+
+    case krado::GeomCurve::CurveType::Unknown:
+    default:
+        stream << "unknown";
+        break;
+    }
+    return stream;
+}
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve & crv)
+{
+    stream << "Curve: ";
+    stream << "type=" << crv.type() << ", ";
+    auto [umin, umax] = crv.param_range();
+    stream << "u=[" << umin << ", " << umax << "], ";
+    stream << "length=" << crv.length();
+    return stream;
+}

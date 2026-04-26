@@ -180,6 +180,8 @@ GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
     initialize();
 }
 
+GeomModel::~GeomModel() = default;
+
 const GeomVertex &
 GeomModel::geom_vertex(ShapeID id) const
 {

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/point.h"
+#include <vector>
 
 namespace krado {
 

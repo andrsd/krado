@@ -3,8 +3,7 @@
 
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex_abstract.h"
-#include "krado/point.h"
-#include "krado/vector.h"
+#include "krado/utils.h"
 #include "krado/types.h"
 #include "krado/exception.h"
 #include <cassert>
@@ -16,6 +15,8 @@ MeshElement::MeshElement(ElementType type, const std::vector<Ptr<MeshVertexAbstr
     vtx_(vtx)
 {
 }
+
+MeshElement::~MeshElement() = default;
 
 ElementType
 MeshElement::type() const
@@ -84,3 +85,13 @@ MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::MeshElement & el)
+{
+    stream << "(" << krado::utils::to_str(el.type()) << ":";
+    for (auto & vtx : el.vertices())
+        stream << " " << vtx->global_id();
+    stream << ")";
+    return stream;
+}

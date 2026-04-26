@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/circular_pattern.h"
+#include "krado/vector.h"
 
 using namespace krado;
 

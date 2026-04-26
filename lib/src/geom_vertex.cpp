@@ -50,3 +50,11 @@ GeomVertex::operator const TopoDS_Shape &() const
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomVertex & vtx)
+{
+    auto pt = vtx.point();
+    stream << "Vertex: location=(x=" << pt.x << ", y=" << pt.y << ", z=" << pt.z << ")";
+    return stream;
+}

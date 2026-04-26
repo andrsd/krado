@@ -6,8 +6,7 @@ using namespace krado;
 
 TEST(GeomVertexTest, ctor)
 {
-    auto vtx = testing::build_vertex(Point(1, 2, 3));
-    GeomVertex v(vtx);
+    auto v = testing::build_vertex(Point(1, 2, 3));
     EXPECT_DOUBLE_EQ(v.x(), 1.);
     EXPECT_DOUBLE_EQ(v.y(), 2.);
     EXPECT_DOUBLE_EQ(v.z(), 3.);
@@ -25,8 +24,7 @@ TEST(GeomVertexTest, null_vertex)
 
 TEST(GeomVertexTest, point)
 {
-    auto vtx = testing::build_vertex(Point(1, 2, 3));
-    GeomVertex v(vtx);
+    auto v = testing::build_vertex(Point(1, 2, 3));
     auto pt = v.point();
     EXPECT_DOUBLE_EQ(pt.x, 1.);
     EXPECT_DOUBLE_EQ(pt.y, 2.);

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "krado/bounding_box_3d.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include <limits>
 
 namespace krado {
@@ -165,8 +167,8 @@ BoundingBox3D::contains(const Point & p)
 bool
 BoundingBox3D::contains(double x, double y, double z)
 {
-    if (x >= this->min_pt_.x && y >= this->min_pt_.y && z >= this->min_pt_.z && x <= this->max_pt_.x &&
-        y <= this->max_pt_.y && z <= this->max_pt_.z)
+    if (x >= this->min_pt_.x && y >= this->min_pt_.y && z >= this->min_pt_.z &&
+        x <= this->max_pt_.x && y <= this->max_pt_.y && z <= this->max_pt_.z)
         return true;
     else
         return false;

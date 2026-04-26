@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/cylinder.h"
+#include "krado/axis2.h"
 #include "krado/exception.h"
 #include "krado/geom_volume.h"
 #include "BRepPrimAPI_MakeCylinder.hxx"

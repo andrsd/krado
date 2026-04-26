@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/vector.h"
 #include <vector>
 #include <array>
 

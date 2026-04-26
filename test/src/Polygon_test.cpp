@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/polygon.h"
 #include "krado/exception.h"
+#include "krado/point.h"
 
 using namespace krado;
 

@@ -3,16 +3,13 @@
 
 #include "krado/scheme/triangle.h"
 #include "krado/element.h"
-#include "krado/mesh.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
-#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
 #include <map>
 #include <array>
-#include <set>
 #include <cassert>
 
 #ifdef KRADO_WITH_TRIANGLE

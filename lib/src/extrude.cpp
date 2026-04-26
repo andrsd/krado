@@ -5,6 +5,7 @@
 #include "krado/element.h"
 #include "krado/mesh.h"
 #include "krado/point.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
 

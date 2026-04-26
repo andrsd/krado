@@ -6,6 +6,7 @@
 #include "krado/geom_shape.h"
 #include "krado/geom_surface.h"
 #include "TopoDS_Shell.hxx"
+#include <vector>
 
 namespace krado {
 

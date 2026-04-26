@@ -3,6 +3,7 @@
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
 #include "krado/range.h"
+#include "krado/vector.h"
 #include <filesystem>
 
 using namespace krado;

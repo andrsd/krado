@@ -1,5 +1,8 @@
 #include "gmock/gmock.h"
 #include "krado/cylinder.h"
+#include "krado/axis2.h"
+#include "krado/vector.h"
+#include "krado/point.h"
 
 using namespace krado;
 

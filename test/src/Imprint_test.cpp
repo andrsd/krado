@@ -1,6 +1,4 @@
 #include <gmock/gmock.h>
-#include "krado/exception.h"
-#include "krado/geom_model.h"
 #include "krado/geom_volume.h"
 #include "krado/ops.h"
 #include "krado/geom_surface.h"
