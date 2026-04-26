@@ -12,8 +12,8 @@
 #include "krado/hasse_diagram.h"
 #include "krado/types.h"
 #include "krado/utils.h"
+#include "krado/flat_hash_map.hpp"
 #include <map>
-#include <unordered_map>
 
 namespace krado {
 
@@ -479,7 +479,7 @@ private:
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;
     /// Map of keys to node IDs
-    std::unordered_map<std::size_t, gidx_t> key_map_;
+    ska::flat_hash_map<std::size_t, gidx_t> key_map_;
 };
 
 } // namespace krado
