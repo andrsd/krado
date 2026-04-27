@@ -52,6 +52,15 @@ GeomCurve::type() const
     return this->crv_type_;
 }
 
+GeomCurve::Orientation
+GeomCurve::orientation() const
+{
+    if (this->edge_.Orientation() == TopAbs_FORWARD)
+        return Orientation::Forward;
+    else
+        return Orientation::Reversed;
+}
+
 bool
 GeomCurve::is_degenerated() const
 {
