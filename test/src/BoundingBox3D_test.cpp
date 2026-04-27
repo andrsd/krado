@@ -147,3 +147,14 @@ TEST(BoundingBox3DTest, reset)
     EXPECT_DOUBLE_EQ(max.y, -MAX);
     EXPECT_DOUBLE_EQ(max.z, -MAX);
 }
+
+TEST(BoundingBox3DTest, op_shl)
+{
+    BoundingBox3D bbox;
+    bbox += Point(0, 0, 0);
+    bbox += Point(1, 2, 3);
+
+    std::stringstream ss;
+    ss << bbox;
+    EXPECT_EQ(ss.str(), "BoundingBox: min=(x=0, y=0, z=0), max=(x=1, y=2, z=3)");
+}
