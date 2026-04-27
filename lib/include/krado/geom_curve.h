@@ -21,12 +21,19 @@ class GeomCurve : public GeomShape {
 public:
     enum class CurveType { Line, Circle, BSpline, Bezier, Unknown };
 
+    enum class Orientation { Forward, Reversed };
+
     explicit GeomCurve(const TopoDS_Edge & edge);
 
     /// Get curve type
     ///
     /// @return Curve type
     [[nodiscard]] CurveType type() const;
+
+    /// Get curve orientation
+    ///
+    /// @return Curve orientation
+    [[nodiscard]] Orientation orientation() const;
 
     /// Check if the edge is degenerated
     ///
