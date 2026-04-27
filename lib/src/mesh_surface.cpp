@@ -105,6 +105,18 @@ MeshSurface::triangles()
     return this->tris_;
 }
 
+const std::vector<MeshElement> &
+MeshSurface::quadrangles() const
+{
+    return this->quads_;
+}
+
+std::vector<MeshElement> &
+MeshSurface::quadrangles()
+{
+    return this->quads_;
+}
+
 void
 MeshSurface::add_vertex(Ptr<MeshVertex> vertex)
 {
@@ -143,6 +155,8 @@ MeshSurface::add_element(MeshElement tri)
 {
     if (tri.type() == ElementType::TRI3)
         this->tris_.emplace_back(tri);
+    else if (tri.type() == ElementType::QUAD4)
+        this->quads_.emplace_back(tri);
     else
         throw Exception("Unsupported element type");
 }
@@ -178,6 +192,7 @@ MeshSurface::delete_mesh()
     this->vtxs_.clear();
     this->surf_vtxs_.clear();
     this->tris_.clear();
+    this->quads_.clear();
 }
 
 bool
