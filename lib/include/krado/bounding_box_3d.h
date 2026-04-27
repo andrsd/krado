@@ -63,3 +63,5 @@ private:
 };
 
 } // namespace krado
+
+std::ostream & operator<<(std::ostream & stream, const krado::BoundingBox3D & bbox);
