@@ -187,3 +187,9 @@ TEST(GeomCurveTest, op_shl)
     ss << line;
     EXPECT_EQ(ss.str(), "Curve: type=line, u=[0, 5], length=5");
 }
+
+TEST(GeomCurveTest, orientation)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    EXPECT_EQ(line.orientation(), GeomCurve::Orientation::Forward);
+}
