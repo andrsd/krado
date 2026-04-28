@@ -462,28 +462,115 @@ PYBIND11_MODULE(krado, m)
         .def("compute_bounding_box", &Mesh::compute_bounding_box)
         .def("duplicate", &Mesh::duplicate)
 
-        .def("set_cell_set", &Mesh::set_cell_set)
-        .def("set_cell_set_name", &Mesh::set_cell_set_name)
-        .def("cell_set_name", &Mesh::cell_set_name)
-        .def("cell_set_ids", &Mesh::cell_set_ids)
-        .def("cell_set", &Mesh::cell_set)
+        .def("set_cell_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & cell_ids) {
+                 self.set_cell_set(Marker(id), cell_ids);
+             })
+        .def("set_cell_set_name",
+             [](Mesh & self, int32 cell_set_id, const std::string & name) {
+                 self.set_cell_set_name(Marker(cell_set_id), name);
+             })
+        .def("cell_set_name",
+             [](const Mesh & self, int32 cell_set_id) {
+                 return self.cell_set_name(Marker(cell_set_id));
+             })
+        .def("cell_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.cell_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("cell_set",
+             [](const Mesh & self, int32 id) {
+                 return self.cell_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_cell_sets", &Mesh::remove_cell_sets)
 
-        .def("set_face_set", &Mesh::set_face_set)
-        .def("set_face_set_name", &Mesh::set_face_set_name)
-        .def("face_set_name", &Mesh::face_set_name)
-        .def("face_set_ids", &Mesh::face_set_ids)
-        .def("face_set", &Mesh::face_set)
+        .def("set_face_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & face_ids) {
+                 self.set_face_set(Marker(id), face_ids);
+             })
+        .def("set_face_set_name",
+             [](Mesh & self, int32 face_set_id, const std::string & name) {
+                 self.set_face_set_name(Marker(face_set_id), name);
+             })
+        .def("face_set_name",
+             [](const Mesh & self, int32 face_set_id) {
+                 return self.face_set_name(Marker(face_set_id));
+             })
+        .def("face_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.face_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("face_set",
+             [](const Mesh & self, int32 id) {
+                 return self.face_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_face_sets", &Mesh::remove_face_sets)
 
-        .def("set_edge_set", &Mesh::set_edge_set)
-        .def("set_edge_set_name", &Mesh::set_edge_set_name)
-        .def("edge_set_name", &Mesh::edge_set_name)
-        .def("edge_set_ids", &Mesh::edge_set_ids)
-        .def("edge_set", &Mesh::edge_set)
+        .def("set_edge_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & edge_ids) {
+                 self.set_edge_set(Marker(id), edge_ids);
+             })
+        .def("set_edge_set_name",
+             [](Mesh & self, int32 edge_set_id, const std::string & name) {
+                 self.set_edge_set_name(Marker(edge_set_id), name);
+             })
+        .def("edge_set_name",
+             [](const Mesh & self, int32 edge_set_id) {
+                 return self.edge_set_name(Marker(edge_set_id));
+             })
+        .def("edge_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.edge_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("edge_set",
+             [](const Mesh & self, int32 id) {
+                 return self.edge_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_edge_sets", &Mesh::remove_edge_sets)
 
-        .def("remap_block_ids", &Mesh::remap_block_ids)
+        .def("set_vertex_set_name",
+             [](Mesh & self, int32 id, const std::string & name) {
+                 self.set_vertex_set_name(Marker(id), name);
+             })
+        .def("vertex_set_name",
+             [](const Mesh & self, int32 id) {
+                 return self.vertex_set_name(Marker(id));
+             })
+        .def("vertex_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.vertex_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("vertex_set",
+             [](const Mesh & self, int32 id) {
+                 return self.vertex_set(Marker(id));
+             }, py::return_value_policy::reference)
+        .def("set_vertex_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & vertex_ids) {
+                 self.set_vertex_set(Marker(id), vertex_ids);
+             })
+        .def("remove_vertex_sets", &Mesh::remove_vertex_sets)
+
+        .def("remap_block_ids",
+             [](Mesh & self, const py::dict & block_map_py) {
+                 std::map<Marker, Marker> block_map_cpp;
+                 for (auto item : block_map_py) {
+                     block_map_cpp[Marker(item.first.cast<int32>())] =
+                         Marker(item.second.cast<int32>());
+                 }
+                 self.remap_block_ids(block_map_cpp);
+             })
         .def("vertex_range", &Mesh::vertex_range)
         .def("edge_range", &Mesh::edge_range)
         .def("face_range", &Mesh::face_range)
