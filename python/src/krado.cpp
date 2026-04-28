@@ -9,6 +9,16 @@
 #include "krado/axis2.h"
 #include "krado/box.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/scheme/bamg.h"
+#include "krado/scheme/bias.h"
+#include "krado/scheme/curvature.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/pinpoint.h"
+#include "krado/scheme/size.h"
+#include "krado/scheme/structured.h"
+#include "krado/scheme/triangle.h"
+#include "krado/scheme/tricircle.h"
+#include "krado/scheme/trisurf.h"
 #include "krado/circle.h"
 #include "krado/circumscribed_polygon.h"
 #include "krado/cone.h"
@@ -544,6 +554,46 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
         .def("mesh_size", &MeshCurve::mesh_size)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
+        .def("set_scheme",
+             [](MeshCurve & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "equal") {
+                     SchemeEqual::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeEqual>(opts);
+                 }
+                 else if (name == "bias") {
+                     SchemeBias::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     if (kwargs.contains("factor"))
+                         opts.factor = kwargs["factor"].cast<double>();
+                     self.set_scheme<SchemeBias>(opts);
+                 }
+                 else if (name == "curvature") {
+                     SchemeCurvature::Options opts;
+                     if (kwargs.contains("min_size"))
+                         opts.min_size = kwargs["min_size"].cast<double>();
+                     if (kwargs.contains("max_size"))
+                         opts.max_size = kwargs["max_size"].cast<double>();
+                     if (kwargs.contains("deflection"))
+                         opts.deflection = kwargs["deflection"].cast<double>();
+                     self.set_scheme<SchemeCurvature>(opts);
+                 }
+                 else if (name == "pinpoint") {
+                     SchemePinpoint::Options opts;
+                     if (kwargs.contains("positions"))
+                         opts.positions = kwargs["positions"].cast<std::vector<double>>();
+                     self.set_scheme<SchemePinpoint>(opts);
+                 }
+                 else if (name == "size") {
+                     SchemeSize::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeSize>(opts);
+                 }
+             },
+             "Set the meshing scheme for the curve.")
     ;
 
     py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
@@ -561,12 +611,55 @@ PYBIND11_MODULE(krado, m)
         .def("elements", &MeshSurface::elements)
         .def("remove_all_triangles", &MeshSurface::remove_all_triangles)
         .def("delete_mesh", &MeshSurface::delete_mesh)
+        .def("set_scheme",
+             [](MeshSurface & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "bamg") {
+                     SchemeBAMG::Options opts;
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeBAMG>(opts);
+                 }
+                 else if (name == "structured") {
+                     SchemeStructured::Options opts;
+                     self.set_scheme<SchemeStructured>(opts);
+                 }
+                 else if (name == "triangle") {
+                     SchemeTriangle::Options opts;
+                     if (kwargs.contains("region_point"))
+                         opts.region_point =
+                             kwargs["region_point"].cast<std::tuple<double, double>>();
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeTriangle>(opts);
+                 }
+                 else if (name == "tricircle") {
+                     SchemeTriCircle::Options opts;
+                     if (kwargs.contains("radial_intervals"))
+                         opts.radial_intervals = kwargs["radial_intervals"].cast<int>();
+                     self.set_scheme<SchemeTriCircle>(opts);
+                 }
+             },
+             "Set the meshing scheme for the surface.")
     ;
 
     py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
         .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
+        .def("set_scheme",
+             [](MeshVolume & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "trisurf") {
+                     SchemeTriSurf::Options opts;
+                     if (kwargs.contains("linear_deflection"))
+                         opts.linear_deflection = kwargs["linear_deflection"].cast<double>();
+                     if (kwargs.contains("angular_deflection"))
+                         opts.angular_deflection = kwargs["angular_deflection"].cast<double>();
+                     if (kwargs.contains("is_relative"))
+                         opts.is_relative = kwargs["is_relative"].cast<bool>();
+                     self.set_scheme<SchemeTriSurf>(opts);
+                 }
+             },
+             "Set the meshing scheme for the volume.")
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
