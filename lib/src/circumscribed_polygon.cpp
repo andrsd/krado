@@ -19,7 +19,7 @@ CircumscribedPolygon::create(const Axis2 & ax2, double radius, int n_sides)
     if (n_sides < 3)
         throw Exception("InscribedPolygon needs at least 3 sides");
 
-    auto r_out = radius / (0.5 * std::sqrt(3));
+    auto r_out = radius / std::cos(M_PI / n_sides);
     auto points = build_points(ax2, r_out * ax2.x_direction(), n_sides);
     CircumscribedPolygon polygon(build_polygon(points, true));
     polygon.n_sides_ = n_sides;
@@ -35,8 +35,8 @@ CircumscribedPolygon::create(const Axis2 & ax2, const Point & pt1, int n_sides)
 
     auto vec = pt1 - ax2.location();
     auto radius = vec.magnitude();
-    auto r_out = radius / (0.5 * std::sqrt(3));
-    auto points = build_points(ax2, r_out * vec, n_sides);
+    auto r_out = radius / std::cos(M_PI / n_sides);
+    auto points = build_points(ax2, r_out * vec.normalized(), n_sides);
     CircumscribedPolygon polygon(build_polygon(points, true));
     polygon.n_sides_ = n_sides;
     polygon.radius_ = radius;
