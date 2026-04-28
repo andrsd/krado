@@ -45,3 +45,16 @@ def test_geom_model_indexing():
 def test_shape_id_class():
     sid = krado.ShapeID(5)
     assert sid.value() == 5
+
+
+def test_build_from_geom_surface():
+    pt1 = krado.Point(0, 0, 0)
+    pt2 = krado.Point(1, 0, 0)
+    pt3 = krado.Point(1, 1, 0)
+    poly = krado.Polygon([pt1, pt2, pt3])
+
+    surf = krado.GeomSurface(poly)
+    model = krado.GeomModel(surf)
+
+    surfs = model.surfaces()
+    assert len(surfs) > 0
