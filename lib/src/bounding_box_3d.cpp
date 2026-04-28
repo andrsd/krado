@@ -207,3 +207,15 @@ BoundingBox3D::size(int n) const
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::BoundingBox3D & bbox)
+{
+    auto mn = bbox.min();
+    auto mx = bbox.max();
+    stream << "BoundingBox: ";
+    stream << "min=(x=" << mn.x << ", y=" << mn.y << ", z=" << mn.z << ")";
+    stream << ", ";
+    stream << "max=(x=" << mx.x << ", y=" << mx.y << ", z=" << mx.z << ")";
+    return stream;
+}
