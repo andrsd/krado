@@ -22,7 +22,7 @@ def DISABLED_test_scheme_equal():
     model.mesh_curve(1)
 
     crv = model.curve(1)
-    verts = crv.all_vertices()
+    verts = list(crv.bounding_vertices()) + list(crv.curve_vertices())
     assert len(verts) == 5
     segs = crv.segments()
     assert len(segs) == 4

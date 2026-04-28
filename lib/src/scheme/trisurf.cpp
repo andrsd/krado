@@ -61,7 +61,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
                 srf->add_vertex(Ptr<MeshSurfaceVertex>::alloc(geom_surface, uv.X(), uv.Y()));
             }
 
-            auto & vertices = srf->all_vertices();
+            auto & vertices = srf->surface_vertices();
             for (int i = 0; i < triangulation->NbTriangles(); ++i) {
                 auto tri = triangulation->Triangle(i + 1);
                 Standard_Integer n1, n2, n3;

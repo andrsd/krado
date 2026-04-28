@@ -16,26 +16,26 @@ SurfaceIndexMapper::SurfaceIndexMapper(Ptr<MeshSurface> surface) : surface_(surf
     for (auto & curve : surface->curves()) {
         for (auto & v : curve->bounding_vertices()) {
             auto pt = v->point();
-            auto [it, inserted] = this->surf_idx_.try_emplace(pt, v);
-            if (inserted)
-                surface->add_vertex(v);
+            this->surf_idx_.try_emplace(pt, v);
         }
         for (auto & v : curve->curve_vertices()) {
             auto pt = v->point();
-            auto [it, inserted] = this->surf_idx_.try_emplace(pt, v);
-            if (inserted)
-                surface->add_vertex(v);
+            this->surf_idx_.try_emplace(pt, v);
         }
     }
 
     for (int cidx = 0; cidx < surface->curves().size(); cidx++) {
         auto curve = surface->curves()[cidx];
-        for (auto & v : curve->all_vertices()) {
+        for (auto & v : curve->bounding_vertices()) {
+            auto pt = v->point();
+            this->curv_surf_idx_[cidx].try_emplace(pt, v);
+        }
+        for (auto & v : curve->curve_vertices()) {
             auto pt = v->point();
             this->curv_surf_idx_[cidx].try_emplace(pt, v);
         }
     }
-    for (auto & v : surface->all_vertices()) {
+    for (auto & v : surface->surface_vertices()) {
         auto pt = v->point();
         this->surf_idx_.try_emplace(pt, v);
     }
@@ -75,7 +75,6 @@ SurfaceIndexMapper::curve_vertex(int curve_idx, double x, double y)
         curve->add_vertex(cv);
 
         this->surf_idx_.try_emplace(pt, cv);
-        this->surface_->add_vertex(cv);
 
         return cv;
     }

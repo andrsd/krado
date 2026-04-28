@@ -8,6 +8,7 @@
 #include "krado/geom_curve.h"
 #include "krado/log.h"
 #include "krado/exception.h"
+#include "krado/utils.h"
 #include "GCPnts_AbscissaPoint.hxx"
 #include "GeomAdaptor_Curve.hxx"
 
@@ -41,8 +42,6 @@ SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
     if (bnd_verts.empty())
         throw Exception("Curve {} must have at least 1 bounding vertex", curve->id());
 
-    std::vector<Ptr<MeshCurveVertex>> curve_vtxs;
-
     double s = 0.0;
     double t = t0;
     while (s < total_length - tol) {
@@ -69,7 +68,7 @@ SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
         t = abscissa.Parameter();
         if (t < t1 - tol) {
             auto cvtx = Ptr<MeshCurveVertex>::alloc(geom_curve, t);
-            curve_vtxs.push_back(cvtx);
+            curve->add_vertex(cvtx);
             s += h;
         }
         else
@@ -77,30 +76,7 @@ SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
             break;
     }
 
-    if ((geom_curve.type() == GeomCurve::CurveType::Circle) && (bnd_verts.size() == 1)) {
-        // curve is a full circle
-        curve->add_vertex(bnd_verts[0]);
-        for (auto & cv : curve_vtxs)
-            curve->add_vertex(cv);
-
-        const auto & all = curve->all_vertices();
-        for (std::size_t i = 0; i + 1 < all.size(); ++i)
-            curve->add_segment({ all[i], all[i + 1] });
-        curve->add_segment({ all.back(), bnd_verts[0] });
-    }
-    else {
-        if (bnd_verts.size() != 2)
-            throw Exception("Curve {} must have 2 bounding vertices", curve->id());
-
-        curve->add_vertex(bnd_verts[0]);
-        for (auto & cv : curve_vtxs)
-            curve->add_vertex(cv);
-        curve->add_vertex(bnd_verts[1]);
-
-        const auto & all = curve->all_vertices();
-        for (std::size_t i = 0; i + 1 < all.size(); ++i)
-            curve->add_segment({ all[i], all[i + 1] });
-    }
+    utils::build_curve_segments(curve);
 }
 
 } // namespace krado

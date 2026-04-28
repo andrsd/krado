@@ -32,18 +32,8 @@ public:
     /// @return Geometrical curve associated with this curve
     [[nodiscard]] const GeomCurve & geom_curve() const;
 
-    /// Get vertices on this curve
-    ///
-    /// @return Curve vertices
-    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
-
     ///
     [[nodiscard]] const std::vector<Ptr<MeshVertex>> & bounding_vertices() const;
-
-    /// Add vertex
-    ///
-    /// @param vertex Vertex to add
-    void add_vertex(Ptr<MeshVertex> vertex);
 
     /// Add curve vertex
     ///
@@ -113,8 +103,6 @@ private:
     ShapeID id_;
     ///
     const GeomCurve & gcurve_;
-    /// All vertices on this curve
-    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
     /// Bounding vertices
     std::vector<Ptr<MeshVertex>> bnd_vtxs_;
     /// Vertices on the curve (excluding the bounding vertices)
