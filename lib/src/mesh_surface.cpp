@@ -177,6 +177,8 @@ MeshSurface::has_scheme() const
 Scheme2D &
 MeshSurface::scheme()
 {
+    if (this->scheme_ == nullptr)
+        throw Exception("No scheme assigned on surface {}", id());
     return *this->scheme_.get();
 }
 

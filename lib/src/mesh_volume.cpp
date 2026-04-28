@@ -38,6 +38,8 @@ MeshVolume::surfaces() const
 Scheme3D &
 MeshVolume::scheme()
 {
+    if (this->scheme_ == nullptr)
+        throw Exception("No scheme assigned on volume {}", id());
     return *this->scheme_.get();
 }
 
