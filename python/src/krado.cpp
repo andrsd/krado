@@ -9,6 +9,16 @@
 #include "krado/axis2.h"
 #include "krado/box.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/scheme/bamg.h"
+#include "krado/scheme/bias.h"
+#include "krado/scheme/curvature.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/pinpoint.h"
+#include "krado/scheme/size.h"
+#include "krado/scheme/structured.h"
+#include "krado/scheme/triangle.h"
+#include "krado/scheme/tricircle.h"
+#include "krado/scheme/trisurf.h"
 #include "krado/circle.h"
 #include "krado/circumscribed_polygon.h"
 #include "krado/cone.h"
@@ -55,6 +65,8 @@
 
 namespace py = pybind11;
 using namespace krado;
+
+PYBIND11_DECLARE_HOLDER_TYPE(T, krado::Ptr<T>);
 
 class PyMeshVertexAbstract : public MeshVertexAbstract {
 public:
@@ -273,23 +285,33 @@ PYBIND11_MODULE(krado, m)
              py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
     ;
 
+    py::class_<ShapeID>(m, "ShapeID")
+        .def(py::init<int32>())
+        .def("value", &ShapeID::value)
+    ;
+
+    py::class_<Marker>(m, "Marker")
+        .def(py::init<int32>())
+        .def("value", &Marker::value)
+    ;
+
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
-        .def("vertex", py::overload_cast<ShapeID>(&GeomModel::vertex), py::return_value_policy::reference)
+        .def("vertex", [](GeomModel & self, int32 id) { return self.vertex(ShapeID(id)); })
         .def("curves", &GeomModel::curves, py::return_value_policy::reference)
-        .def("curve", py::overload_cast<ShapeID>(&GeomModel::curve), py::return_value_policy::reference)
+        .def("curve", [](GeomModel & self, int32 id) { return self.curve(ShapeID(id)); })
         .def("surfaces", &GeomModel::surfaces, py::return_value_policy::reference)
-        .def("surface", py::overload_cast<ShapeID>(&GeomModel::surface), py::return_value_policy::reference)
+        .def("surface", [](GeomModel & self, int32 id) { return self.surface(ShapeID(id)); })
         .def("volumes", &GeomModel::volumes, py::return_value_policy::reference)
-        .def("volume", py::overload_cast<ShapeID>(&GeomModel::volume), py::return_value_policy::reference)
-        .def("mesh_vertex", py::overload_cast<ShapeID>(&GeomModel::mesh_vertex))
-        .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
-        .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
-        .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
+        .def("volume", [](GeomModel & self, int32 id) { return self.volume(ShapeID(id)); })
+        .def("mesh_vertex", [](GeomModel & self, int32 id) { self.mesh_vertex(ShapeID(id)); })
+        .def("mesh_curve", [](GeomModel & self, int32 id) { self.mesh_curve(ShapeID(id)); })
+        .def("mesh_surface", [](GeomModel & self, int32 id) { self.mesh_surface(ShapeID(id)); })
+        .def("mesh_volume", [](GeomModel & self, int32 id) { self.mesh_volume(ShapeID(id)); })
     ;
 
-    py::class_<GeomVertex>(m, "GeomVertex")
+    py::class_<GeomVertex, GeomShape>(m, "GeomVertex")
         .def(py::init<const TopoDS_Vertex &>())
         .def("x", &GeomVertex::x)
         .def("y", &GeomVertex::y)
@@ -298,7 +320,7 @@ PYBIND11_MODULE(krado, m)
         .def("is_null", &GeomVertex::is_null)
     ;
 
-    py::class_<GeomCurve>(m, "GeomCurve")
+    py::class_<GeomCurve, GeomShape>(m, "GeomCurve")
         .def(py::init<const TopoDS_Edge &>())
         .def("type", &GeomCurve::type)
         .def("is_degenerated", &GeomCurve::is_degenerated)
@@ -373,8 +395,11 @@ PYBIND11_MODULE(krado, m)
              py::arg("start_angle") = 0.)
     ;
 
-    py::class_<GeomSurface>(m, "GeomSurface")
-        .def(py::init<const TopoDS_Face &>())
+    py::class_<GeomSurface, GeomShape>(m, "GeomSurface")
+        .def(py::init([](const Wire & wire) {
+                return GeomSurface::create(wire);
+             }),
+             py::arg("wire"))
         .def("point", &GeomSurface::point)
         .def("normal", &GeomSurface::normal)
         .def("d1", &GeomSurface::d1)
@@ -386,7 +411,7 @@ PYBIND11_MODULE(krado, m)
         .def("contains_point", &GeomSurface::contains_point)
     ;
 
-    py::class_<GeomVolume>(m, "GeomVolume")
+    py::class_<GeomVolume, GeomShape>(m, "GeomVolume")
         .def(py::init<const TopoDS_Solid &>())
         .def("volume", &GeomVolume::volume)
         .def("surfaces", &GeomVolume::surfaces)
@@ -437,28 +462,115 @@ PYBIND11_MODULE(krado, m)
         .def("compute_bounding_box", &Mesh::compute_bounding_box)
         .def("duplicate", &Mesh::duplicate)
 
-        .def("set_cell_set", &Mesh::set_cell_set)
-        .def("set_cell_set_name", &Mesh::set_cell_set_name)
-        .def("cell_set_name", &Mesh::cell_set_name)
-        .def("cell_set_ids", &Mesh::cell_set_ids)
-        .def("cell_set", &Mesh::cell_set)
+        .def("set_cell_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & cell_ids) {
+                 self.set_cell_set(Marker(id), cell_ids);
+             })
+        .def("set_cell_set_name",
+             [](Mesh & self, int32 cell_set_id, const std::string & name) {
+                 self.set_cell_set_name(Marker(cell_set_id), name);
+             })
+        .def("cell_set_name",
+             [](const Mesh & self, int32 cell_set_id) {
+                 return self.cell_set_name(Marker(cell_set_id));
+             })
+        .def("cell_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.cell_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("cell_set",
+             [](const Mesh & self, int32 id) {
+                 return self.cell_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_cell_sets", &Mesh::remove_cell_sets)
 
-        .def("set_face_set", &Mesh::set_face_set)
-        .def("set_face_set_name", &Mesh::set_face_set_name)
-        .def("face_set_name", &Mesh::face_set_name)
-        .def("face_set_ids", &Mesh::face_set_ids)
-        .def("face_set", &Mesh::face_set)
+        .def("set_face_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & face_ids) {
+                 self.set_face_set(Marker(id), face_ids);
+             })
+        .def("set_face_set_name",
+             [](Mesh & self, int32 face_set_id, const std::string & name) {
+                 self.set_face_set_name(Marker(face_set_id), name);
+             })
+        .def("face_set_name",
+             [](const Mesh & self, int32 face_set_id) {
+                 return self.face_set_name(Marker(face_set_id));
+             })
+        .def("face_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.face_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("face_set",
+             [](const Mesh & self, int32 id) {
+                 return self.face_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_face_sets", &Mesh::remove_face_sets)
 
-        .def("set_edge_set", &Mesh::set_edge_set)
-        .def("set_edge_set_name", &Mesh::set_edge_set_name)
-        .def("edge_set_name", &Mesh::edge_set_name)
-        .def("edge_set_ids", &Mesh::edge_set_ids)
-        .def("edge_set", &Mesh::edge_set)
+        .def("set_edge_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & edge_ids) {
+                 self.set_edge_set(Marker(id), edge_ids);
+             })
+        .def("set_edge_set_name",
+             [](Mesh & self, int32 edge_set_id, const std::string & name) {
+                 self.set_edge_set_name(Marker(edge_set_id), name);
+             })
+        .def("edge_set_name",
+             [](const Mesh & self, int32 edge_set_id) {
+                 return self.edge_set_name(Marker(edge_set_id));
+             })
+        .def("edge_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.edge_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("edge_set",
+             [](const Mesh & self, int32 id) {
+                 return self.edge_set(Marker(id));
+             }, py::return_value_policy::reference)
         .def("remove_edge_sets", &Mesh::remove_edge_sets)
 
-        .def("remap_block_ids", &Mesh::remap_block_ids)
+        .def("set_vertex_set_name",
+             [](Mesh & self, int32 id, const std::string & name) {
+                 self.set_vertex_set_name(Marker(id), name);
+             })
+        .def("vertex_set_name",
+             [](const Mesh & self, int32 id) {
+                 return self.vertex_set_name(Marker(id));
+             })
+        .def("vertex_set_ids",
+             [](const Mesh & self) {
+                 std::vector<int32> ids;
+                 for (const auto & marker : self.vertex_set_ids())
+                     ids.push_back(marker.value());
+                 return ids;
+             })
+        .def("vertex_set",
+             [](const Mesh & self, int32 id) {
+                 return self.vertex_set(Marker(id));
+             }, py::return_value_policy::reference)
+        .def("set_vertex_set",
+             [](Mesh & self, int32 id, const std::vector<gidx_t> & vertex_ids) {
+                 self.set_vertex_set(Marker(id), vertex_ids);
+             })
+        .def("remove_vertex_sets", &Mesh::remove_vertex_sets)
+
+        .def("remap_block_ids",
+             [](Mesh & self, const py::dict & block_map_py) {
+                 std::map<Marker, Marker> block_map_cpp;
+                 for (auto item : block_map_py) {
+                     block_map_cpp[Marker(item.first.cast<int32>())] =
+                         Marker(item.second.cast<int32>());
+                 }
+                 self.remap_block_ids(block_map_cpp);
+             })
         .def("vertex_range", &Mesh::vertex_range)
         .def("edge_range", &Mesh::edge_range)
         .def("face_range", &Mesh::face_range)
@@ -473,11 +585,11 @@ PYBIND11_MODULE(krado, m)
         .def("outward_normal", &Mesh::outward_normal)
     ;
 
-    py::class_<Meshable>(m, "Meshable")
+    py::class_<Meshable, Ptr<Meshable>>(m, "Meshable")
         .def(py::init<>())
         .def("is_meshed", &Meshable::is_meshed)
-        .def("set_marker", &Meshable::set_marker)
-        .def("marker", &Meshable::marker)
+        .def("set_marker", [](Meshable & self, int32 m) { self.set_marker(Marker(m)); })
+        .def("marker", [](const Meshable & self) { return self.marker().value(); })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
@@ -490,13 +602,13 @@ PYBIND11_MODULE(krado, m)
         .def("swap_vertices", &MeshElement::swap_vertices)
     ;
 
-    py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
+    py::class_<MeshVertexAbstract, PyMeshVertexAbstract, Ptr<MeshVertexAbstract>>(m, "MeshVertexAbstract")
         .def("point", &MeshVertexAbstract::point)
         .def("global_id", &MeshVertexAbstract::global_id)
         .def("set_global_id", &MeshVertexAbstract::set_global_id)
     ;
 
-    py::class_<MeshVertex, MeshVertexAbstract>(m, "MeshVertex")
+    py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
         .def(py::init<ShapeID, const GeomVertex &>())
         .def("id", &MeshVertex::id)
         .def("point", &MeshVertex::point)
@@ -504,20 +616,20 @@ PYBIND11_MODULE(krado, m)
         .def("set_mesh_size", &MeshVertex::set_mesh_size)
     ;
 
-    py::class_<MeshCurveVertex, MeshVertexAbstract>(m, "MeshCurveVertex")
+    py::class_<MeshCurveVertex, MeshVertexAbstract, Ptr<MeshCurveVertex>>(m, "MeshCurveVertex")
         .def(py::init<const GeomCurve &, double>())
         .def("parameter", &MeshCurveVertex::parameter)
         .def("point", &MeshCurveVertex::point)
     ;
 
-    py::class_<MeshSurfaceVertex, MeshVertexAbstract>(m, "MeshSurfaceVertex")
+    py::class_<MeshSurfaceVertex, MeshVertexAbstract, Ptr<MeshSurfaceVertex>>(m, "MeshSurfaceVertex")
         .def(py::init<const GeomSurface &, double, double>())
         .def(py::init<const GeomSurface &, UVParam>())
         .def("parameter", &MeshSurfaceVertex::parameter)
         .def("point", &MeshSurfaceVertex::point)
     ;
 
-    py::class_<MeshCurve, Meshable>(m, "MeshCurve")
+    py::class_<MeshCurve, Meshable, Ptr<MeshCurve>>(m, "MeshCurve")
         .def(py::init<ShapeID, const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
         .def("bounding_vertices", &MeshCurve::bounding_vertices, py::return_value_policy::reference)
@@ -529,9 +641,49 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
         .def("mesh_size", &MeshCurve::mesh_size)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
+        .def("set_scheme",
+             [](MeshCurve & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "equal") {
+                     SchemeEqual::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeEqual>(opts);
+                 }
+                 else if (name == "bias") {
+                     SchemeBias::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     if (kwargs.contains("factor"))
+                         opts.factor = kwargs["factor"].cast<double>();
+                     self.set_scheme<SchemeBias>(opts);
+                 }
+                 else if (name == "curvature") {
+                     SchemeCurvature::Options opts;
+                     if (kwargs.contains("min_size"))
+                         opts.min_size = kwargs["min_size"].cast<double>();
+                     if (kwargs.contains("max_size"))
+                         opts.max_size = kwargs["max_size"].cast<double>();
+                     if (kwargs.contains("deflection"))
+                         opts.deflection = kwargs["deflection"].cast<double>();
+                     self.set_scheme<SchemeCurvature>(opts);
+                 }
+                 else if (name == "pinpoint") {
+                     SchemePinpoint::Options opts;
+                     if (kwargs.contains("positions"))
+                         opts.positions = kwargs["positions"].cast<std::vector<double>>();
+                     self.set_scheme<SchemePinpoint>(opts);
+                 }
+                 else if (name == "size") {
+                     SchemeSize::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeSize>(opts);
+                 }
+             },
+             "Set the meshing scheme for the curve.")
     ;
 
-    py::class_<MeshSurface, Meshable>(m, "MeshSurface")
+    py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
         .def(py::init<ShapeID, const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
@@ -546,12 +698,55 @@ PYBIND11_MODULE(krado, m)
         .def("elements", &MeshSurface::elements)
         .def("remove_all_triangles", &MeshSurface::remove_all_triangles)
         .def("delete_mesh", &MeshSurface::delete_mesh)
+        .def("set_scheme",
+             [](MeshSurface & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "bamg") {
+                     SchemeBAMG::Options opts;
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeBAMG>(opts);
+                 }
+                 else if (name == "structured") {
+                     SchemeStructured::Options opts;
+                     self.set_scheme<SchemeStructured>(opts);
+                 }
+                 else if (name == "triangle") {
+                     SchemeTriangle::Options opts;
+                     if (kwargs.contains("region_point"))
+                         opts.region_point =
+                             kwargs["region_point"].cast<std::tuple<double, double>>();
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeTriangle>(opts);
+                 }
+                 else if (name == "tricircle") {
+                     SchemeTriCircle::Options opts;
+                     if (kwargs.contains("radial_intervals"))
+                         opts.radial_intervals = kwargs["radial_intervals"].cast<int>();
+                     self.set_scheme<SchemeTriCircle>(opts);
+                 }
+             },
+             "Set the meshing scheme for the surface.")
     ;
 
-    py::class_<MeshVolume, Meshable>(m, "MeshVolume")
+    py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
         .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
+        .def("set_scheme",
+             [](MeshVolume & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "trisurf") {
+                     SchemeTriSurf::Options opts;
+                     if (kwargs.contains("linear_deflection"))
+                         opts.linear_deflection = kwargs["linear_deflection"].cast<double>();
+                     if (kwargs.contains("angular_deflection"))
+                         opts.angular_deflection = kwargs["angular_deflection"].cast<double>();
+                     if (kwargs.contains("is_relative"))
+                         opts.is_relative = kwargs["is_relative"].cast<bool>();
+                     self.set_scheme<SchemeTriSurf>(opts);
+                 }
+             },
+             "Set the meshing scheme for the volume.")
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
@@ -597,7 +792,14 @@ PYBIND11_MODULE(krado, m)
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
 
-    m.def("compute_volume", &compute_volume);
+    m.def("compute_volume", [](const Mesh & mesh) {
+        auto vols = compute_volume(mesh);
+        py::dict py_vols;
+        for (const auto & [marker, volume] : vols) {
+            py_vols[py::cast(marker.value())] = volume;
+        }
+        return py_vols;
+    });
     m.def("combine", &combine);
 
     m.def("build_mesh", &build_mesh);

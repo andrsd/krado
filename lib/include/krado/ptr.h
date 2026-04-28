@@ -216,9 +216,9 @@ public:
         return this->ctrl_ == nullptr;
     }
 
-private:
     explicit Ptr(T * ptr) : ctrl_(new ControlBlock(ptr)) {}
 
+private:
     void
     release()
     {
