@@ -17,7 +17,7 @@ CircumscribedPolygon
 CircumscribedPolygon::create(const Axis2 & ax2, double radius, int n_sides)
 {
     if (n_sides < 3)
-        throw Exception("InscribedPolygon needs at least 3 sides");
+        throw Exception("CircumscribedPolygon needs at least 3 sides");
 
     auto r_out = radius / std::cos(M_PI / n_sides);
     auto points = build_points(ax2, r_out * ax2.x_direction(), n_sides);
@@ -31,7 +31,7 @@ CircumscribedPolygon
 CircumscribedPolygon::create(const Axis2 & ax2, const Point & pt1, int n_sides)
 {
     if (n_sides < 3)
-        throw Exception("InscribedPolygon needs at least 3 sides");
+        throw Exception("CircumscribedPolygon needs at least 3 sides");
 
     auto vec = pt1 - ax2.location();
     auto radius = vec.magnitude();
