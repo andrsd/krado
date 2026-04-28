@@ -386,6 +386,10 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<GeomSurface, GeomShape>(m, "GeomSurface")
+        .def(py::init([](const Wire & wire) {
+                return GeomSurface::create(wire);
+             }),
+             py::arg("wire"))
         .def("point", &GeomSurface::point)
         .def("normal", &GeomSurface::normal)
         .def("d1", &GeomSurface::d1)
