@@ -301,7 +301,7 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_volume", [](GeomModel & self, int32 id) { self.mesh_volume(ShapeID(id)); })
     ;
 
-    py::class_<GeomVertex>(m, "GeomVertex")
+    py::class_<GeomVertex, GeomShape>(m, "GeomVertex")
         .def(py::init<const TopoDS_Vertex &>())
         .def("x", &GeomVertex::x)
         .def("y", &GeomVertex::y)
@@ -310,7 +310,7 @@ PYBIND11_MODULE(krado, m)
         .def("is_null", &GeomVertex::is_null)
     ;
 
-    py::class_<GeomCurve>(m, "GeomCurve")
+    py::class_<GeomCurve, GeomShape>(m, "GeomCurve")
         .def(py::init<const TopoDS_Edge &>())
         .def("type", &GeomCurve::type)
         .def("is_degenerated", &GeomCurve::is_degenerated)
@@ -385,8 +385,7 @@ PYBIND11_MODULE(krado, m)
              py::arg("start_angle") = 0.)
     ;
 
-    py::class_<GeomSurface>(m, "GeomSurface")
-        .def(py::init<const TopoDS_Face &>())
+    py::class_<GeomSurface, GeomShape>(m, "GeomSurface")
         .def("point", &GeomSurface::point)
         .def("normal", &GeomSurface::normal)
         .def("d1", &GeomSurface::d1)
@@ -398,7 +397,7 @@ PYBIND11_MODULE(krado, m)
         .def("contains_point", &GeomSurface::contains_point)
     ;
 
-    py::class_<GeomVolume>(m, "GeomVolume")
+    py::class_<GeomVolume, GeomShape>(m, "GeomVolume")
         .def(py::init<const TopoDS_Solid &>())
         .def("volume", &GeomVolume::volume)
         .def("surfaces", &GeomVolume::surfaces)
