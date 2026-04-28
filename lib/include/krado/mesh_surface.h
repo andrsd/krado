@@ -56,13 +56,6 @@ public:
     /// @return Mesh size at the parameter
     [[nodiscard]] double mesh_size_at_param(UVParam par) const;
 
-    /// Get vertices on this surface
-    ///
-    /// @return Surface vertices
-    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
-
-    [[nodiscard]] std::vector<Ptr<MeshVertexAbstract>> & all_vertices();
-
     /// Get (internal) vertices on the surface
     ///
     /// @return Vertices on the surface
@@ -87,8 +80,6 @@ public:
     /// Add vertex
     ///
     /// @param vertex Vertex to add
-    void add_vertex(Ptr<MeshVertex> vertex);
-    void add_vertex(Ptr<MeshCurveVertex> vertex);
     void add_vertex(Ptr<MeshSurfaceVertex> vertex);
 
     /// Add new triangle
@@ -139,9 +130,7 @@ private:
     const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
     std::vector<Ptr<MeshCurve>> mesh_curves_;
-    /// All vertices on this surface
-    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
-    /// Surface vertices
+    /// Surface vertices (not including boundary and mesh vertices)
     std::vector<Ptr<MeshSurfaceVertex>> surf_vtxs_;
     /// Triangles
     std::vector<MeshElement> tris_;

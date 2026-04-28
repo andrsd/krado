@@ -69,18 +69,6 @@ MeshSurface::mesh_size_at_param(UVParam par) const
     return MAX_LC;
 }
 
-const std::vector<Ptr<MeshVertexAbstract>> &
-MeshSurface::all_vertices() const
-{
-    return this->vtxs_;
-}
-
-std::vector<Ptr<MeshVertexAbstract>> &
-MeshSurface::all_vertices()
-{
-    return this->vtxs_;
-}
-
 const std::vector<Ptr<MeshSurfaceVertex>> &
 MeshSurface::surface_vertices() const
 {
@@ -118,21 +106,8 @@ MeshSurface::quadrangles()
 }
 
 void
-MeshSurface::add_vertex(Ptr<MeshVertex> vertex)
-{
-    this->vtxs_.push_back(vertex);
-}
-
-void
-MeshSurface::add_vertex(Ptr<MeshCurveVertex> vertex)
-{
-    this->vtxs_.push_back(vertex);
-}
-
-void
 MeshSurface::add_vertex(Ptr<MeshSurfaceVertex> vertex)
 {
-    this->vtxs_.push_back(vertex);
     this->surf_vtxs_.push_back(vertex);
 }
 
@@ -164,7 +139,6 @@ MeshSurface::add_element(MeshElement tri)
 void
 MeshSurface::reserve_mem(std::size_t n_vtxs, std::size_t n_tris)
 {
-    this->vtxs_.reserve(n_vtxs);
     this->tris_.reserve(n_tris);
 }
 
@@ -189,7 +163,6 @@ MeshSurface::remove_all_triangles()
 void
 MeshSurface::delete_mesh()
 {
-    this->vtxs_.clear();
     this->surf_vtxs_.clear();
     this->tris_.clear();
     this->quads_.clear();

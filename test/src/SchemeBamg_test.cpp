@@ -3,6 +3,7 @@
 #include "krado/geom_model.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "krado/scheme/bamg.h"
 #include <filesystem>
@@ -26,8 +27,8 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
     model.mesh_surface(1);
 
     auto quad = model.surface(1);
-    ASSERT_EQ(quad->all_vertices().size(), 10);
-    auto & vtx = quad->all_vertices();
+    ASSERT_EQ(quad->surface_vertices().size(), 10);
+    auto & vtx = quad->surface_vertices();
     EXPECT_EQ(vtx[0]->point(), Point(0., 0., 0.));
     EXPECT_EQ(vtx[1]->point(), Point(2., 0., 0.));
     EXPECT_EQ(vtx[2]->point(), Point(2., 3., 0.));
@@ -38,8 +39,8 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
     EXPECT_EQ(vtx[7]->point(), Point(0.6666666666666666, 1.6666666666666666, 0.));
     EXPECT_EQ(vtx[8]->point(), Point(1., 0.4999999984633178, 0.));
     EXPECT_EQ(vtx[9]->point(), Point(1.333333333333333, 1.333333331796651, 0.));
-    EXPECT_EQ(quad->triangles().size(), 10);
 
+    EXPECT_EQ(quad->triangles().size(), 10);
     auto & tris = quad->triangles();
     // EXPECT_THAT(tris[0].ids(), ElementsAre(8, 7, 3));
     // EXPECT_THAT(tris[1].ids(), ElementsAre(9, 5, 6));

@@ -55,10 +55,6 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
 
     // Outer ring vertices (existing)
     auto & mesh_crv = mesh_surface->curves()[0];
-    for (auto & vtx : mesh_crv->bounding_vertices())
-        mesh_surface->add_vertex(vtx);
-    for (auto & vtx : mesh_crv->curve_vertices())
-        mesh_surface->add_vertex(vtx);
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings;
     rings.resize(n_radial + 1);

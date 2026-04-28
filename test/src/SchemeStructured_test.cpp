@@ -28,7 +28,7 @@ TEST(SchemeStructuredTest, square_1x1)
 
     auto surface = model.surface(1);
     EXPECT_EQ(surface->quadrangles().size(), 1);
-    EXPECT_EQ(surface->all_vertices().size(), 4);
+    EXPECT_EQ(surface->surface_vertices().size(), 0);
 }
 
 TEST(SchemeStructuredTest, rect_3x2)

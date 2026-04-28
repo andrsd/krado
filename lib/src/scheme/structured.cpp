@@ -16,31 +16,10 @@
 #include "krado/utils.h"
 #include <vector>
 #include <algorithm>
-#include <set>
 
 namespace krado {
 
 namespace {
-
-void
-add_vertex_to_surface(Ptr<MeshSurface> surface,
-                      Ptr<MeshVertexAbstract> vertex,
-                      std::set<Ptr<MeshVertexAbstract>> & added_vtxs)
-{
-    if (added_vtxs.find(vertex) != added_vtxs.end())
-        return;
-
-    if (auto v = dynamic_ptr_cast<MeshVertex>(vertex))
-        surface->add_vertex(v);
-    else if (auto cv = dynamic_ptr_cast<MeshCurveVertex>(vertex))
-        surface->add_vertex(cv);
-    else if (auto sv = dynamic_ptr_cast<MeshSurfaceVertex>(vertex))
-        surface->add_vertex(sv);
-    else
-        throw Exception("Unknown vertex type");
-
-    added_vtxs.insert(vertex);
-}
 
 std::vector<Ptr<MeshVertexAbstract>>
 get_ordered_vertices(Ptr<MeshCurve> curve)
@@ -178,17 +157,6 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
         grid[ni - 1 - i][nj - 1] = v2[i];
     for (std::size_t j = 0; j < nj; ++j)
         grid[0][nj - 1 - j] = v3[j];
-
-    // Add boundary vertices to surface
-    std::set<Ptr<MeshVertexAbstract>> added_vtxs;
-    for (std::size_t i = 0; i < ni; ++i) {
-        add_vertex_to_surface(surface, grid[i][0], added_vtxs);
-        add_vertex_to_surface(surface, grid[i][nj - 1], added_vtxs);
-    }
-    for (std::size_t j = 0; j < nj; ++j) {
-        add_vertex_to_surface(surface, grid[0][j], added_vtxs);
-        add_vertex_to_surface(surface, grid[ni - 1][j], added_vtxs);
-    }
 
     auto & gsurf = surface->geom_surface();
     for (std::size_t i = 1; i < ni - 1; ++i) {
