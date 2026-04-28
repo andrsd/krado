@@ -7,6 +7,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/log.h"
+#include "krado/utils.h"
 #include "GCPnts_AbscissaPoint.hxx"
 
 namespace krado {
@@ -59,15 +60,7 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
             break;
     }
 
-    std::vector<Ptr<MeshVertexAbstract>> all;
-    all.push_back(bnd_verts[0]);
-    for (auto & cv : curve->curve_vertices())
-        all.push_back(cv);
-    all.push_back(bnd_verts[1]);
-
-    for (std::size_t i = 0; i + 1 < all.size(); ++i) {
-        curve->add_segment({ all[i], all[i + 1] });
-    }
+    utils::build_curve_segments(curve);
 }
 
 } // namespace krado

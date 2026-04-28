@@ -22,6 +22,7 @@ class MeshVertexAbstract;
 class Vector;
 class Mesh;
 class GeomSurface;
+class MeshCurve;
 
 namespace utils {
 
@@ -243,6 +244,11 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
 /// @return Edge/face set
 std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
                                       const std::vector<side_set_entry_t> & side_set);
+
+/// Build segments for a curve
+///
+/// @param curve Mesh curve
+void build_curve_segments(Ptr<MeshCurve> curve);
 
 } // namespace utils
 

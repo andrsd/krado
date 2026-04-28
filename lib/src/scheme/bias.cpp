@@ -9,6 +9,7 @@
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
 #include "krado/log.h"
+#include "krado/utils.h"
 
 namespace krado {
 
@@ -54,28 +55,7 @@ SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
         }
     }
 
-    auto bnd_verts = curve->bounding_vertices();
-    if ((geom_curve.type() == GeomCurve::CurveType::Circle) && (bnd_verts.size() == 1)) {
-        std::vector<Ptr<MeshVertexAbstract>> all_vertices;
-        // curve is a full circle
-        all_vertices.push_back(bnd_verts[0]);
-        for (auto & cv : curve->curve_vertices())
-            all_vertices.push_back(cv);
-
-        for (std::size_t i = 0; i < n_segs - 1; ++i)
-            curve->add_segment({ all_vertices[i], all_vertices[i + 1] });
-        curve->add_segment({ all_vertices[n_segs - 1], bnd_verts[0] });
-    }
-    else {
-        std::vector<Ptr<MeshVertexAbstract>> all_vertices;
-        all_vertices.push_back(bnd_verts[0]);
-        for (auto & cv : curve->curve_vertices())
-            all_vertices.push_back(cv);
-        all_vertices.push_back(bnd_verts[1]);
-
-        for (std::size_t i = 0; i < n_segs; ++i)
-            curve->add_segment({ all_vertices[i], all_vertices[i + 1] });
-    }
+    utils::build_curve_segments(curve);
 }
 
 } // namespace krado
