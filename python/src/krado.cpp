@@ -612,7 +612,14 @@ PYBIND11_MODULE(krado, m)
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
 
-    m.def("compute_volume", &compute_volume);
+    m.def("compute_volume", [](const Mesh & mesh) {
+        auto vols = compute_volume(mesh);
+        py::dict py_vols;
+        for (const auto & [marker, volume] : vols) {
+            py_vols[py::cast(marker.value())] = volume;
+        }
+        return py_vols;
+    });
     m.def("combine", &combine);
 
     m.def("build_mesh", &build_mesh);
