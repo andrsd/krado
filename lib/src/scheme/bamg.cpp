@@ -5,6 +5,7 @@
 #include "krado/element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
 #include "krado/log.h"
@@ -101,7 +102,11 @@ private:
     {
         this->local_vtx_id.clear();
         for (auto & curve : this->surface->curves()) {
-            for (auto & vtx : curve->all_vertices()) {
+            for (auto vtx : curve->bounding_vertices()) {
+                int64 id = this->local_vtx_id.size();
+                this->local_vtx_id.try_emplace(vtx, id);
+            }
+            for (auto vtx : curve->curve_vertices()) {
                 int64 id = this->local_vtx_id.size();
                 this->local_vtx_id.try_emplace(vtx, id);
             }

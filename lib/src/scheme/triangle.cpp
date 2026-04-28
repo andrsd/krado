@@ -6,6 +6,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
 #include <map>
@@ -130,11 +131,16 @@ private:
         std::map<Point, int64> pt_id;
         auto & curves = this->surface_->curves();
         for (auto & c : curves) {
-            auto & verts = c->all_vertices();
-            for (auto & vtx : verts) {
+            for (auto & vtx : c->bounding_vertices()) {
                 assert(vtx != nullptr);
                 auto pt = vtx->point();
-                auto id = pt_id.size();
+                int64 id = pt_id.size();
+                pt_id.try_emplace(pt, id);
+            }
+            for (auto & vtx : c->curve_vertices()) {
+                assert(vtx != nullptr);
+                auto pt = vtx->point();
+                int64 id = pt_id.size();
                 pt_id.try_emplace(pt, id);
             }
         }

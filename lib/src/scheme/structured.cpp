@@ -46,7 +46,14 @@ std::vector<Ptr<MeshVertexAbstract>>
 get_ordered_vertices(Ptr<MeshCurve> curve)
 {
     // The orientation of the GeomCurve dictates if we need to reverse the order of vertices.
-    auto v = curve->all_vertices();
+    std::vector<Ptr<MeshVertexAbstract>> v;
+    auto bnd_vtxs = curve->bounding_vertices();
+    v.push_back(bnd_vtxs[0]);
+    for (auto & cv : curve->curve_vertices())
+        v.push_back(cv);
+    if (bnd_vtxs.size() > 1)
+        v.push_back(bnd_vtxs[1]);
+
     if (curve->geom_curve().orientation() == GeomCurve::Orientation::Reversed) {
         std::reverse(v.begin(), v.end());
     }
@@ -108,7 +115,7 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
 
     // Check if curves are meshed
     for (auto & c : curves) {
-        if (c->all_vertices().empty())
+        if (c->segments().empty())
             throw Exception("Scheme 'structured' requires all curves to be meshed first");
     }
 

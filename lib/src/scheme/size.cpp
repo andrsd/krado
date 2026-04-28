@@ -35,8 +35,6 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
     if (bnd_verts.size() != 2)
         throw Exception("Curve {} must have 2 bounding vertices", curve->id());
 
-    curve->add_vertex(bnd_verts[0]);
-
     double s = 0.0;
     double t = t0;
     while (s < total_length - tol) {
@@ -61,9 +59,12 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
             break;
     }
 
-    curve->add_vertex(bnd_verts[1]);
+    std::vector<Ptr<MeshVertexAbstract>> all;
+    all.push_back(bnd_verts[0]);
+    for (auto & cv : curve->curve_vertices())
+        all.push_back(cv);
+    all.push_back(bnd_verts[1]);
 
-    const auto & all = curve->all_vertices();
     for (std::size_t i = 0; i + 1 < all.size(); ++i) {
         curve->add_segment({ all[i], all[i + 1] });
     }

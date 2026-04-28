@@ -30,7 +30,11 @@ SurfaceIndexMapper::SurfaceIndexMapper(Ptr<MeshSurface> surface) : surface_(surf
 
     for (int cidx = 0; cidx < surface->curves().size(); cidx++) {
         auto curve = surface->curves()[cidx];
-        for (auto & v : curve->all_vertices()) {
+        for (auto & v : curve->bounding_vertices()) {
+            auto pt = v->point();
+            this->curv_surf_idx_[cidx].try_emplace(pt, v);
+        }
+        for (auto & v : curve->curve_vertices()) {
             auto pt = v->point();
             this->curv_surf_idx_[cidx].try_emplace(pt, v);
         }

@@ -40,12 +40,6 @@ MeshCurve::geom_curve() const
     return this->gcurve_;
 }
 
-const std::vector<Ptr<MeshVertexAbstract>> &
-MeshCurve::all_vertices() const
-{
-    return this->vtxs_;
-}
-
 const std::vector<Ptr<MeshVertex>> &
 MeshCurve::bounding_vertices() const
 {
@@ -53,16 +47,9 @@ MeshCurve::bounding_vertices() const
 }
 
 void
-MeshCurve::add_vertex(Ptr<MeshVertex> vertex)
-{
-    this->vtxs_.push_back(vertex);
-}
-
-void
 MeshCurve::add_vertex(Ptr<MeshCurveVertex> curve_vertex)
 {
     this->curve_vtx_.push_back(curve_vertex);
-    this->vtxs_.push_back(curve_vertex);
 }
 
 const std::vector<Ptr<MeshCurveVertex>> &
@@ -95,10 +82,11 @@ MeshCurve::is_mesh_degenerated() const
 {
     if (this->too_smoll)
         Log::debug("Degenerated mesh on curve {}: too small", id());
-    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->vtxs_.size() < 2)
-        Log::debug("Degenerated mesh on curve {}: {} mesh nodes", id(), (int) this->vtxs_.size());
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
+        this->curve_vtx_.size() == 0)
+        Log::debug("Degenerated mesh on curve {}", id());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-                               this->vtxs_.size() < 2);
+                               this->curve_vtx_.size() == 0);
 }
 
 double

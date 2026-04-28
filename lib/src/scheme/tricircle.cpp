@@ -67,7 +67,13 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     rings.push_back({ ctr });
 
     // ring `n_radial` contains full boundary
-    auto circum_verts = mesh_crv->all_vertices();
+    std::vector<Ptr<MeshVertexAbstract>> circum_verts;
+    auto bnd_vtxs = mesh_crv->bounding_vertices();
+    circum_verts.push_back(bnd_vtxs[0]);
+    for (auto & v : mesh_crv->curve_vertices())
+        circum_verts.push_back(v);
+    if (bnd_vtxs.size() > 1)
+        circum_verts.push_back(bnd_vtxs[1]);
     rings[n_radial] = circum_verts;
 
     // Generate intermediate rings
