@@ -141,6 +141,8 @@ MeshCurve::has_scheme() const
 Scheme1D &
 MeshCurve::scheme()
 {
+    if (this->scheme_ == nullptr)
+        throw Exception("No scheme assigned on curve {}", id());
     return *this->scheme_.get();
 }
 
