@@ -4,9 +4,19 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "krado/arc_of_circle.h"
 #include "krado/axis1.h"
 #include "krado/axis2.h"
+#include "krado/box.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/circle.h"
+#include "krado/circumscribed_polygon.h"
+#include "krado/cone.h"
+#include "krado/cylinder.h"
+#include "krado/helix.h"
+#include "krado/inscribed_polygon.h"
+#include "krado/sphere.h"
+#include "krado/spline.h"
 #include "krado/classifier.h"
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"
@@ -34,6 +44,8 @@
 #include "krado/hexagonal_pattern.h"
 #include "krado/element.h"
 #include "krado/point.h"
+#include "krado/polygon.h"
+#include "krado/wire.h"
 #include "krado/tetrahedralize.h"
 #include "krado/transform.h"
 #include "krado/vector.h"
@@ -228,6 +240,39 @@ PYBIND11_MODULE(krado, m)
         .def("density", &GeomShape::density)
     ;
 
+    py::class_<Wire, GeomShape>(m, "Wire")
+        .def("length", &Wire::length)
+    ;
+
+    py::class_<Polygon, Wire>(m, "Polygon")
+        .def(py::init([](const std::vector<Point> & points, bool closed) {
+                 return Polygon::create(points, closed);
+             }),
+             py::arg("points"), py::arg("closed") = true)
+    ;
+
+    py::class_<InscribedPolygon, Polygon>(m, "InscribedPolygon")
+        .def(py::init([](const Axis2 & ax2, double radius, int n_sides) {
+                 return InscribedPolygon::create(ax2, radius, n_sides);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("n_sides"))
+        .def(py::init([](const Axis2 & ax2, const Point & pt1, int n_sides) {
+                 return InscribedPolygon::create(ax2, pt1, n_sides);
+             }),
+             py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
+    ;
+
+    py::class_<CircumscribedPolygon, Polygon>(m, "CircumscribedPolygon")
+        .def(py::init([](const Axis2 & ax2, double radius, int n_sides) {
+                 return CircumscribedPolygon::create(ax2, radius, n_sides);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("n_sides"))
+        .def(py::init([](const Axis2 & ax2, const Point & pt1, int n_sides) {
+                 return CircumscribedPolygon::create(ax2, pt1, n_sides);
+             }),
+             py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
+    ;
+
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
@@ -270,6 +315,64 @@ PYBIND11_MODULE(krado, m)
         .def("is_seam", &GeomCurve::is_seam)
     ;
 
+    py::class_<Circle, GeomCurve>(m, "Circle")
+        .def(py::init([](const Axis2 & origin, double radius) {
+                 return Circle::create(origin, radius);
+             }),
+             py::arg("origin"), py::arg("radius"))
+        .def(py::init([](const Point & center, double radius, const Vector & normal) {
+                 return Circle::create(center, radius, normal);
+             }),
+             py::arg("center"), py::arg("radius"), py::arg("normal") = Vector(0., 0., 1.))
+        .def(py::init([](const Point & center, const Point & pt, const Vector & normal) {
+                 return Circle::create(center, pt, normal);
+             }),
+             py::arg("center"), py::arg("pt"), py::arg("normal") = Vector(0., 0., 1.))
+        .def(py::init([](const Point & pt1, const Point & pt2, const Point & pt3) {
+                 return Circle::create(pt1, pt2, pt3);
+             }),
+             py::arg("pt1"), py::arg("pt2"), py::arg("pt3"))
+        .def("area", &Circle::area)
+        .def("radius", &Circle::radius)
+        .def("location", &Circle::location)
+    ;
+
+    py::class_<ArcOfCircle, GeomCurve>(m, "ArcOfCircle")
+        .def(py::init([](const Point & pt1, const Point & pt2, const Point & pt3) {
+                 return ArcOfCircle::create(pt1, pt2, pt3);
+             }),
+             py::arg("pt1"), py::arg("pt2"), py::arg("pt3"))
+        .def(py::init([](const Circle & circ, const Point & pt1, const Point & pt2, bool sense) {
+                 return ArcOfCircle::create(circ, pt1, pt2, sense);
+             }),
+             py::arg("circ"), py::arg("pt1"), py::arg("pt2"), py::arg("sense") = true)
+        .def(py::init([](const Point & pt1, const Vector & tangent, const Point & pt2) {
+                 return ArcOfCircle::create(pt1, tangent, pt2);
+             }),
+             py::arg("pt1"), py::arg("tangent"), py::arg("pt2"))
+        .def("start_point", &ArcOfCircle::start_point)
+        .def("end_point", &ArcOfCircle::end_point)
+    ;
+
+    py::class_<Spline, GeomCurve>(m, "Spline")
+        .def(py::init([](const std::vector<Point> & points) { return Spline::create(points); }),
+             py::arg("points"))
+        .def(py::init([](const std::vector<Point> & points, const Vector & initial_tg,
+                         const Vector & final_tg) {
+                 return Spline::create(points, initial_tg, final_tg);
+             }),
+             py::arg("points"), py::arg("initial_tg"), py::arg("final_tg"))
+    ;
+
+    py::class_<Helix, GeomCurve>(m, "Helix")
+        .def(py::init([](const Axis2 & ax2, double radius, double height, double turns,
+                         double start_angle) {
+                 return Helix::create(ax2, radius, height, turns, start_angle);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("height"), py::arg("turns"),
+             py::arg("start_angle") = 0.)
+    ;
+
     py::class_<GeomSurface>(m, "GeomSurface")
         .def(py::init<const TopoDS_Face &>())
         .def("point", &GeomSurface::point)
@@ -287,6 +390,29 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<const TopoDS_Solid &>())
         .def("volume", &GeomVolume::volume)
         .def("surfaces", &GeomVolume::surfaces)
+    ;
+
+    py::class_<Sphere, GeomVolume>(m, "Sphere")
+        .def(py::init([](const Point & center, double radius) { return Sphere::create(center, radius); }),
+             py::arg("center"), py::arg("radius"))
+    ;
+
+    py::class_<Cylinder, GeomVolume>(m, "Cylinder")
+        .def(py::init([](const Axis2 & location, double radius, double height) {
+                 return Cylinder::create(location, radius, height);
+             }),
+             py::arg("location"), py::arg("radius"), py::arg("height"))
+    ;
+
+    py::class_<Cone, GeomVolume>(m, "Cone")
+        .def(py::init([](const Axis2 & location, double radius1, double radius2, double height) {
+                 return Cone::create(location, radius1, radius2, height);
+             }),
+             py::arg("location"), py::arg("radius1"), py::arg("radius2"), py::arg("height"))
+    ;
+
+    py::class_<Box, GeomVolume>(m, "Box")
+        .def(py::init([](const Point & pt1, const Point & pt2) { return Box::create(pt1, pt2); }))
     ;
 
     py::class_<Mesh>(m, "Mesh")
