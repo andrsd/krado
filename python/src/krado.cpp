@@ -56,6 +56,8 @@
 namespace py = pybind11;
 using namespace krado;
 
+PYBIND11_DECLARE_HOLDER_TYPE(T, krado::Ptr<T>);
+
 class PyMeshVertexAbstract : public MeshVertexAbstract {
 public:
     using MeshVertexAbstract::MeshVertexAbstract;
@@ -273,20 +275,30 @@ PYBIND11_MODULE(krado, m)
              py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
     ;
 
+    py::class_<ShapeID>(m, "ShapeID")
+        .def(py::init<int32>())
+        .def("value", &ShapeID::value)
+    ;
+
+    py::class_<Marker>(m, "Marker")
+        .def(py::init<int32>())
+        .def("value", &Marker::value)
+    ;
+
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
-        .def("vertex", py::overload_cast<ShapeID>(&GeomModel::vertex), py::return_value_policy::reference)
+        .def("vertex", [](GeomModel & self, int32 id) { return self.vertex(ShapeID(id)); })
         .def("curves", &GeomModel::curves, py::return_value_policy::reference)
-        .def("curve", py::overload_cast<ShapeID>(&GeomModel::curve), py::return_value_policy::reference)
+        .def("curve", [](GeomModel & self, int32 id) { return self.curve(ShapeID(id)); })
         .def("surfaces", &GeomModel::surfaces, py::return_value_policy::reference)
-        .def("surface", py::overload_cast<ShapeID>(&GeomModel::surface), py::return_value_policy::reference)
+        .def("surface", [](GeomModel & self, int32 id) { return self.surface(ShapeID(id)); })
         .def("volumes", &GeomModel::volumes, py::return_value_policy::reference)
-        .def("volume", py::overload_cast<ShapeID>(&GeomModel::volume), py::return_value_policy::reference)
-        .def("mesh_vertex", py::overload_cast<ShapeID>(&GeomModel::mesh_vertex))
-        .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
-        .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
-        .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
+        .def("volume", [](GeomModel & self, int32 id) { return self.volume(ShapeID(id)); })
+        .def("mesh_vertex", [](GeomModel & self, int32 id) { self.mesh_vertex(ShapeID(id)); })
+        .def("mesh_curve", [](GeomModel & self, int32 id) { self.mesh_curve(ShapeID(id)); })
+        .def("mesh_surface", [](GeomModel & self, int32 id) { self.mesh_surface(ShapeID(id)); })
+        .def("mesh_volume", [](GeomModel & self, int32 id) { self.mesh_volume(ShapeID(id)); })
     ;
 
     py::class_<GeomVertex>(m, "GeomVertex")
@@ -473,11 +485,11 @@ PYBIND11_MODULE(krado, m)
         .def("outward_normal", &Mesh::outward_normal)
     ;
 
-    py::class_<Meshable>(m, "Meshable")
+    py::class_<Meshable, Ptr<Meshable>>(m, "Meshable")
         .def(py::init<>())
         .def("is_meshed", &Meshable::is_meshed)
-        .def("set_marker", &Meshable::set_marker)
-        .def("marker", &Meshable::marker)
+        .def("set_marker", [](Meshable & self, int32 m) { self.set_marker(Marker(m)); })
+        .def("marker", [](const Meshable & self) { return self.marker().value(); })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
@@ -490,13 +502,13 @@ PYBIND11_MODULE(krado, m)
         .def("swap_vertices", &MeshElement::swap_vertices)
     ;
 
-    py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
+    py::class_<MeshVertexAbstract, PyMeshVertexAbstract, Ptr<MeshVertexAbstract>>(m, "MeshVertexAbstract")
         .def("point", &MeshVertexAbstract::point)
         .def("global_id", &MeshVertexAbstract::global_id)
         .def("set_global_id", &MeshVertexAbstract::set_global_id)
     ;
 
-    py::class_<MeshVertex, MeshVertexAbstract>(m, "MeshVertex")
+    py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
         .def(py::init<ShapeID, const GeomVertex &>())
         .def("id", &MeshVertex::id)
         .def("point", &MeshVertex::point)
@@ -504,20 +516,20 @@ PYBIND11_MODULE(krado, m)
         .def("set_mesh_size", &MeshVertex::set_mesh_size)
     ;
 
-    py::class_<MeshCurveVertex, MeshVertexAbstract>(m, "MeshCurveVertex")
+    py::class_<MeshCurveVertex, MeshVertexAbstract, Ptr<MeshCurveVertex>>(m, "MeshCurveVertex")
         .def(py::init<const GeomCurve &, double>())
         .def("parameter", &MeshCurveVertex::parameter)
         .def("point", &MeshCurveVertex::point)
     ;
 
-    py::class_<MeshSurfaceVertex, MeshVertexAbstract>(m, "MeshSurfaceVertex")
+    py::class_<MeshSurfaceVertex, MeshVertexAbstract, Ptr<MeshSurfaceVertex>>(m, "MeshSurfaceVertex")
         .def(py::init<const GeomSurface &, double, double>())
         .def(py::init<const GeomSurface &, UVParam>())
         .def("parameter", &MeshSurfaceVertex::parameter)
         .def("point", &MeshSurfaceVertex::point)
     ;
 
-    py::class_<MeshCurve, Meshable>(m, "MeshCurve")
+    py::class_<MeshCurve, Meshable, Ptr<MeshCurve>>(m, "MeshCurve")
         .def(py::init<ShapeID, const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
         .def("bounding_vertices", &MeshCurve::bounding_vertices, py::return_value_policy::reference)
@@ -531,7 +543,7 @@ PYBIND11_MODULE(krado, m)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
     ;
 
-    py::class_<MeshSurface, Meshable>(m, "MeshSurface")
+    py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
         .def(py::init<ShapeID, const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
@@ -548,7 +560,7 @@ PYBIND11_MODULE(krado, m)
         .def("delete_mesh", &MeshSurface::delete_mesh)
     ;
 
-    py::class_<MeshVolume, Meshable>(m, "MeshVolume")
+    py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
         .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
