@@ -156,4 +156,24 @@ ccw_triangle(const GeomSurface & gsurf,
         throw Exception("Degenerate triangle detected. Points are collinear.");
 }
 
+std::array<Ptr<MeshVertexAbstract>, 4>
+ccw_quadrangle(const GeomSurface & gsurf,
+               Ptr<MeshVertexAbstract> a,
+               Ptr<MeshVertexAbstract> b,
+               Ptr<MeshVertexAbstract> c,
+               Ptr<MeshVertexAbstract> d)
+{
+    auto uv_a = gsurf.parameter_from_point(a->point());
+    auto uv_b = gsurf.parameter_from_point(b->point());
+    auto uv_c = gsurf.parameter_from_point(c->point());
+
+    auto orientation = orient2d(uv_a, uv_b, uv_c);
+    if (orientation > 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, b, c, d };
+    else if (orientation < 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, d, c, b };
+    else
+        throw Exception("Degenerate quadrangle detected.");
+}
+
 } // namespace krado

@@ -275,4 +275,18 @@ std::array<Ptr<MeshVertexAbstract>, 3> ccw_triangle(const GeomSurface & gsurf,
                                                     Ptr<MeshVertexAbstract> b,
                                                     Ptr<MeshVertexAbstract> c);
 
+/// Create a counter-clock-wise quadrangle
+///
+/// @param gsurf Geomterical surface
+/// @param a Vertex A
+/// @param b Vertex B
+/// @param c Vertex C
+/// @param d Vertex D
+/// @return Counter-clockwise quadrangle
+std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
+                                                      Ptr<MeshVertexAbstract> a,
+                                                      Ptr<MeshVertexAbstract> b,
+                                                      Ptr<MeshVertexAbstract> c,
+                                                      Ptr<MeshVertexAbstract> d);
+
 } // namespace krado

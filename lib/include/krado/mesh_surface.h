@@ -77,6 +77,13 @@ public:
 
     [[nodiscard]] std::vector<MeshElement> & triangles();
 
+    /// Get quadrangles on this surface
+    ///
+    /// @return Quadrangles on this surface
+    [[nodiscard]] const std::vector<MeshElement> & quadrangles() const;
+
+    [[nodiscard]] std::vector<MeshElement> & quadrangles();
+
     /// Add vertex
     ///
     /// @param vertex Vertex to add

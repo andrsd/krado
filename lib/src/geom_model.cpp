@@ -97,13 +97,29 @@ build_2d_elements(const GeomModel & model)
         std::vector<Element> elems;
         for (auto & [id, surface] : model.surfaces()) {
             auto & tris = surface->triangles();
-            std::array<gidx_t, Tri3::N_VERTICES> tri;
-            for (auto & local_elem : tris) {
-                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                    auto vtx = local_elem.vertex(i);
-                    tri[i] = vtx->global_id();
+            auto & quads = surface->quadrangles();
+            if (tris.size() > 0 and quads.size() == 0) {
+                std::array<gidx_t, Tri3::N_VERTICES> tri;
+                for (auto & local_elem : tris) {
+                    for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                        auto vtx = local_elem.vertex(i);
+                        tri[i] = vtx->global_id();
+                    }
+                    elems.emplace_back(Element::Tri3(tri));
                 }
-                elems.emplace_back(Element::Tri3(tri));
+            }
+            else if (quads.size() > 0 and tris.size() == 0) {
+                std::array<gidx_t, Quad4::N_VERTICES> quad;
+                for (auto & local_elem : quads) {
+                    for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+                        auto vtx = local_elem.vertex(i);
+                        quad[i] = vtx->global_id();
+                    }
+                    elems.emplace_back(Element::Quad4(quad));
+                }
+            }
+            else if (quads.size() > 0 and tris.size() > 0) {
+                throw Exception("Heterogeneous meshes are not supported, yet");
             }
         }
         return elems;
