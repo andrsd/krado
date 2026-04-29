@@ -25,64 +25,7 @@ using int32 = std::int32_t;
 using int64 = std::int64_t;
 
 /// Shape identifier
-class ShapeID {
-public:
-    explicit constexpr ShapeID() : value_(-1) {}
-    constexpr ShapeID(int32 id) : value_(id) {}
-    constexpr ShapeID(std::size_t id) : value_(id) {}
-
-    constexpr ShapeID &
-    operator=(std::size_t id)
-    {
-        this->value_ = id;
-        return *this;
-    }
-
-    constexpr int32
-    value() const
-    {
-        return this->value_;
-    }
-
-    constexpr bool
-    operator==(int32 other) const
-    {
-        return this->value_ == other;
-    }
-
-    constexpr bool
-    operator!=(int32 other) const
-    {
-        return this->value_ != other;
-    }
-
-    constexpr bool
-    operator<(ShapeID other) const
-    {
-        return this->value_ < other.value_;
-    }
-
-    constexpr bool
-    operator<(int32 other) const
-    {
-        return this->value_ < other;
-    }
-
-    ShapeID &
-    operator++()
-    {
-        ++this->value_;
-        return *this;
-    }
-
-private:
-    int32 value_;
-
-public:
-    static const ShapeID INVALID;
-};
-
-inline constexpr ShapeID ShapeID::INVALID { -1 };
+using ShapeID = std::int32_t;
 
 /// Marker type
 using Marker = std::int32_t;
@@ -124,26 +67,3 @@ operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
 }
 
 } // namespace krado
-
-inline std::ostream &
-operator<<(std::ostream & stream, const krado::ShapeID & id)
-{
-    stream << id.value();
-    return stream;
-}
-
-template <>
-struct fmt::formatter<krado::ShapeID> {
-    constexpr auto
-    parse(format_parse_context & ctx) -> decltype(ctx.begin())
-    {
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto
-    format(const krado::ShapeID & obj, FormatContext & ctx) const -> decltype(ctx.out())
-    {
-        return fmt::format_to(ctx.out(), "{}", obj.value());
-    }
-};

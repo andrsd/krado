@@ -45,11 +45,6 @@ def test_geom_model_indexing():
     assert isinstance(vol1, krado.MeshVolume)
 
 
-def test_shape_id_class():
-    sid = krado.ShapeID(5)
-    assert sid.value() == 5
-
-
 def test_build_from_geom_surface():
     pt1 = krado.Point(0, 0, 0)
     pt2 = krado.Point(1, 0, 0)

@@ -187,12 +187,12 @@ MeshSurface::scheme()
 std::ostream &
 operator<<(std::ostream & stream, const krado::MeshSurface & srf)
 {
-    stream << "Surface " << srf.id().value() << ": ";
+    stream << "Surface " << srf.id() << ": ";
     auto crvs = srf.curves();
     std::vector<krado::int32> cids;
     cids.reserve(crvs.size());
     for (auto c : crvs)
-        cids.push_back(c->id().value());
+        cids.push_back(c->id());
     stream << "curves=[" << krado::join(", ", cids) << "], ";
     auto & gsurf = srf.geom_surface();
     auto [u_min, u_max] = gsurf.param_range(0);

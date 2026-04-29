@@ -285,25 +285,20 @@ PYBIND11_MODULE(krado, m)
              py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
     ;
 
-    py::class_<ShapeID>(m, "ShapeID")
-        .def(py::init<int32>())
-        .def("value", &ShapeID::value)
-    ;
-
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
-        .def("vertex", [](GeomModel & self, int32 id) { return self.vertex(ShapeID(id)); })
+        .def("vertex", py::overload_cast<ShapeID>(&GeomModel::vertex))
         .def("curves", &GeomModel::curves, py::return_value_policy::reference)
-        .def("curve", [](GeomModel & self, int32 id) { return self.curve(ShapeID(id)); })
+        .def("curve", py::overload_cast<ShapeID>(&GeomModel::curve))
         .def("surfaces", &GeomModel::surfaces, py::return_value_policy::reference)
-        .def("surface", [](GeomModel & self, int32 id) { return self.surface(ShapeID(id)); })
+        .def("surface", py::overload_cast<ShapeID>(&GeomModel::surface))
         .def("volumes", &GeomModel::volumes, py::return_value_policy::reference)
-        .def("volume", [](GeomModel & self, int32 id) { return self.volume(ShapeID(id)); })
-        .def("mesh_vertex", [](GeomModel & self, int32 id) { self.mesh_vertex(ShapeID(id)); })
-        .def("mesh_curve", [](GeomModel & self, int32 id) { self.mesh_curve(ShapeID(id)); })
-        .def("mesh_surface", [](GeomModel & self, int32 id) { self.mesh_surface(ShapeID(id)); })
-        .def("mesh_volume", [](GeomModel & self, int32 id) { self.mesh_volume(ShapeID(id)); })
+        .def("volume", py::overload_cast<ShapeID>(&GeomModel::volume))
+        .def("mesh_vertex", py::overload_cast<ShapeID>(&GeomModel::mesh_vertex))
+        .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
+        .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
+        .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
     ;
 
     py::class_<GeomVertex, GeomShape>(m, "GeomVertex")

@@ -52,7 +52,7 @@ std::ostream &
 operator<<(std::ostream & stream, const krado::MeshVertex & vtx)
 {
     auto pt = vtx.point();
-    stream << "Vertex " << vtx.id().value() << ": ";
+    stream << "Vertex " << vtx.id() << ": ";
     stream << "location=(x=" << pt.x << ", y=" << pt.y << ", z=" << pt.z << ")";
     return stream;
 }

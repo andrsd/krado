@@ -347,7 +347,7 @@ GeomModel::bind_solids(const GeomShape & shape)
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
             auto id = get_shape_id(solid);
-            this->vol_id_.Bind(solid, id.value());
+            this->vol_id_.Bind(solid, id);
 
             GeomVolume gvol(solid);
             gvol.set_material(shape.material(), shape.density());
@@ -364,7 +364,7 @@ GeomModel::bind_faces(const GeomShape & shape)
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
             auto id = get_shape_id(face);
-            this->srf_id_.Bind(face, id.value());
+            this->srf_id_.Bind(face, id);
 
             GeomSurface gsurf(face);
             gsurf.set_material(shape.material(), shape.density());
@@ -381,7 +381,7 @@ GeomModel::bind_edges(const GeomShape & shape)
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
             auto id = get_shape_id(edge);
-            this->crv_id_.Bind(edge, id.value());
+            this->crv_id_.Bind(edge, id);
 
             GeomCurve gedge(edge);
             gedge.set_material(shape.material(), shape.density());
@@ -398,7 +398,7 @@ GeomModel::bind_vertices(const GeomShape & shape)
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
             auto id = get_shape_id(vertex);
-            this->vtx_id_.Bind(vertex, id.value());
+            this->vtx_id_.Bind(vertex, id);
 
             GeomVertex gvtx(vertex);
             gvtx.set_material(shape.material(), shape.density());
@@ -628,7 +628,7 @@ GeomModel::get_shape_id(const TopoDS_Vertex & vertex)
 {
     if (!this->vtx_id_.IsBound(vertex)) {
         ShapeID id = this->vtxs_.size() + 1;
-        this->vtx_id_.Bind(vertex, id.value());
+        this->vtx_id_.Bind(vertex, id);
         return id;
     }
     else {
@@ -641,7 +641,7 @@ GeomModel::get_shape_id(const TopoDS_Edge & edge)
 {
     if (!this->crv_id_.IsBound(edge)) {
         ShapeID id = this->crvs_.size() + 1;
-        this->crv_id_.Bind(edge, id.value());
+        this->crv_id_.Bind(edge, id);
         return id;
     }
     else {
@@ -654,7 +654,7 @@ GeomModel::get_shape_id(const TopoDS_Face & face)
 {
     if (!this->srf_id_.IsBound(face)) {
         ShapeID id = this->srfs_.size() + 1;
-        this->srf_id_.Bind(face, id.value());
+        this->srf_id_.Bind(face, id);
         return id;
     }
     else {
@@ -667,7 +667,7 @@ GeomModel::get_shape_id(const TopoDS_Shell & shell)
 {
     if (!this->vol_id_.IsBound(shell)) {
         ShapeID id = this->vols_.size() + 1;
-        this->vol_id_.Bind(shell, id.value());
+        this->vol_id_.Bind(shell, id);
         return id;
     }
     else {
@@ -680,7 +680,7 @@ GeomModel::get_shape_id(const TopoDS_Solid & solid)
 {
     if (!this->vol_id_.IsBound(solid)) {
         ShapeID id = this->vols_.size() + 1;
-        this->vol_id_.Bind(solid, id.value());
+        this->vol_id_.Bind(solid, id);
         return id;
     }
     else {
