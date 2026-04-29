@@ -425,15 +425,6 @@ Mesh::remove_duplicate_points(double tolerance)
     return *this;
 }
 
-BoundingBox3D
-Mesh::compute_bounding_box() const
-{
-    BoundingBox3D bbox;
-    for (const auto & pt : this->pnts_)
-        bbox += pt;
-    return bbox;
-}
-
 Mesh
 Mesh::duplicate() const
 {
@@ -894,6 +885,15 @@ Mesh::outward_normal(gidx_t index) const
             n = -n;
         return n;
     }
+}
+
+BoundingBox3D
+compute_bounding_box(const Mesh & mesh)
+{
+    BoundingBox3D bbox;
+    for (const auto & pt : mesh.points())
+        bbox += pt;
+    return bbox;
 }
 
 } // namespace krado

@@ -140,11 +140,6 @@ public:
     /// @return Reference to this mesh
     Mesh & remove_duplicate_points(double tolerance = 1e-12);
 
-    /// Compute bounding box around the mesh
-    ///
-    /// @return Bounding box
-    [[nodiscard]] BoundingBox3D compute_bounding_box() const;
-
     /// Duplicate mesh
     ///
     /// @return Duplicated mesh
@@ -482,5 +477,10 @@ private:
     /// Map of keys to node IDs
     std::unordered_map<std::size_t, gidx_t> key_map_;
 };
+
+/// Compute bounding box around the mesh
+///
+/// @return Bounding box
+BoundingBox3D compute_bounding_box(const Mesh & mesh);
 
 } // namespace krado

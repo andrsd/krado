@@ -449,7 +449,6 @@ PYBIND11_MODULE(krado, m)
         .def("transform", &Mesh::transform)
         .def("add", &Mesh::add)
         .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
-        .def("compute_bounding_box", &Mesh::compute_bounding_box)
         .def("duplicate", &Mesh::duplicate)
 
         .def("set_cell_set", &Mesh::set_cell_set)
