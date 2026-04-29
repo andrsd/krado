@@ -299,6 +299,12 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
         .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
         .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
+        .def("set_block_name", &GeomModel::set_block_name)
+        .def("block_name", &GeomModel::block_name)
+        .def("set_side_set_name", &GeomModel::set_side_set_name)
+        .def("side_set_name", &GeomModel::side_set_name)
+        .def("set_node_set_name", &GeomModel::set_node_set_name)
+        .def("node_set_name", &GeomModel::node_set_name)
     ;
 
     py::class_<GeomVertex, GeomShape>(m, "GeomVertex")
