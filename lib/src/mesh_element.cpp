@@ -89,9 +89,6 @@ MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
 std::ostream &
 operator<<(std::ostream & stream, const krado::MeshElement & el)
 {
-    stream << "(" << krado::utils::to_str(el.type()) << ":";
-    for (auto & vtx : el.vertices())
-        stream << " " << vtx->global_id();
-    stream << ")";
+    stream << "(" << krado::utils::to_str(el.type()) << ")";
     return stream;
 }

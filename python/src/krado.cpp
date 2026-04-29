@@ -512,8 +512,6 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract, Ptr<MeshVertexAbstract>>(m, "MeshVertexAbstract")
         .def("point", &MeshVertexAbstract::point)
-        .def("global_id", &MeshVertexAbstract::global_id)
-        .def("set_global_id", &MeshVertexAbstract::set_global_id)
     ;
 
     py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
