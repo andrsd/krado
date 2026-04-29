@@ -29,6 +29,7 @@ def test_geom_model_indexing():
     assert isinstance(c1, krado.MeshCurve)
 
     # Test method call on Ptr-held object
+    assert c1.marker() is None
     c1.set_marker(104)
     assert c1.marker() == 104
 

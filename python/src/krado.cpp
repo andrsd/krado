@@ -492,7 +492,13 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<>())
         .def("is_meshed", &Meshable::is_meshed)
         .def("set_marker", &Meshable::set_marker)
-        .def("marker", [](const Meshable & self) { return self.marker(); })
+        .def("marker", [](const Meshable & self) -> py::object {
+            if (self.marker().has_value()) {
+                return py::cast(self.marker().value());
+            } else {
+                return py::none();
+            }
+        })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
