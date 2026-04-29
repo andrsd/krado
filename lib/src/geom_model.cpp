@@ -623,6 +623,40 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
         Log::debug("Volume {} is already meshed", volume->id());
 }
 
+void
+GeomModel::set_block_name(Marker marker, const std::string & name)
+{
+    this->block_names_[marker] = name;
+}
+
+std::string
+GeomModel::block_name(Marker marker) const
+{
+    try {
+        return this->block_names_.at(marker);
+    }
+    catch (const std::out_of_range & e) {
+        return "";
+    }
+}
+
+void
+GeomModel::set_side_set_name(Marker marker, const std::string & name)
+{
+    this->side_set_names_[marker] = name;
+}
+
+std::string
+GeomModel::side_set_name(Marker marker) const
+{
+    try {
+        return this->side_set_names_.at(marker);
+    }
+    catch (const std::out_of_range & e) {
+        return "";
+    }
+}
+
 ShapeID
 GeomModel::get_shape_id(const TopoDS_Vertex & vertex)
 {

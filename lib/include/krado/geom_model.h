@@ -109,6 +109,30 @@ public:
     void mesh_volume(ShapeID id);
     void mesh_volume(Ptr<MeshVolume> volume);
 
+    /// Set block name
+    ///
+    /// @param marker Block marker
+    /// @param name Block name
+    void set_block_name(Marker marker, const std::string & name);
+
+    /// Get block name
+    ///
+    /// @param marker Block marker
+    /// @return Block name
+    [[nodiscard]] std::string block_name(Marker marker) const;
+
+    /// Set side set name
+    ///
+    /// @param marker Side set marker
+    /// @param name Side set name
+    void set_side_set_name(Marker marker, const std::string & name);
+
+    /// Get side set name
+    ///
+    /// @param marker Side set marker
+    /// @return Side set name
+    [[nodiscard]] std::string side_set_name(Marker marker) const;
+
 protected:
     /// Get vertex ID
     ///
@@ -164,6 +188,9 @@ private:
     std::map<ShapeID, Ptr<MeshCurve>> mcrvs_;
     std::map<ShapeID, Ptr<MeshSurface>> msurfs_;
     std::map<ShapeID, Ptr<MeshVolume>> mvols_;
+
+    std::map<Marker, std::string> block_names_;
+    std::map<Marker, std::string> side_set_names_;
 };
 
 /// Compute bounding box of a meshed geometrical model
