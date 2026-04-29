@@ -6,6 +6,7 @@
 #include "krado/meshable.h"
 #include "krado/scheme3d.h"
 #include "krado/ptr.h"
+#include "krado/mesh_element.h"
 #include <vector>
 #include <memory>
 
@@ -34,6 +35,16 @@ public:
     /// Get surfaces bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshSurface>> & surfaces() const;
 
+    /// Get mesh elements
+    ///
+    /// @return Mesh elements
+    [[nodiscard]] const std::vector<MeshElement> & tetrahedra() const;
+
+    /// Add a mesh element to the volume
+    ///
+    /// @param element Mesh element to add
+    void add_tetra(const std::array<Ptr<MeshVertexAbstract>, 4> & tetra);
+
     /// Set meshing scheme
     ///
     /// @param name Name od the scheme to assign
@@ -57,6 +68,8 @@ private:
     const GeomVolume & gvolume_;
     /// Mesh surfaces bounding this surface
     std::vector<Ptr<MeshSurface>> mesh_surfaces_;
+    /// Mesh elements
+    std::vector<MeshElement> tetras_;
     ///
     std::unique_ptr<Scheme3D> scheme_;
 };
