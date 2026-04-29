@@ -4,6 +4,7 @@
 #include "krado/bounding_box_3d.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/exception.h"
 #include <limits>
 
 namespace krado {
@@ -204,6 +205,20 @@ BoundingBox3D::size(int n) const
         return std::abs(this->max_pt_.z - this->min_pt_.z);
     else
         return std::numeric_limits<double>::infinity();
+}
+
+int
+determine_spatial_dim(const BoundingBox3D & bbox)
+{
+    auto sz = bbox.size();
+    if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
+        return 1;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))
+        return 2;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
+        return 3;
+    else
+        throw Exception("Unusual mesh, unable to write.");
 }
 
 } // namespace krado
