@@ -538,7 +538,7 @@ ExodusIIFile::write_elements(const Mesh & mesh)
                     for (auto id : exII::build_element(el))
                         connect.push_back(id);
                 }
-                this->exo_.write_block(blk_id.value(), el_type, elem_ids.size(), connect);
+                this->exo_.write_block(blk_id, el_type, elem_ids.size(), connect);
                 blk_names.push_back(mesh.cell_set_name(blk_id));
             }
         }
@@ -556,7 +556,7 @@ ExodusIIFile::write_side_sets(const Mesh & mesh)
         for (auto & id : mesh.edge_set_ids()) {
             auto [elems, sides] =
                 exII::create_side_set(mesh, mesh.edge_set(id), this->exii_elem_ids_);
-            this->exo_.write_side_set(id.value(), elems, sides);
+            this->exo_.write_side_set(id, elems, sides);
             side_sets_names.push_back(mesh.edge_set_name(id));
         }
     }
@@ -564,7 +564,7 @@ ExodusIIFile::write_side_sets(const Mesh & mesh)
         for (auto & id : mesh.face_set_ids()) {
             auto [elems, sides] =
                 exII::create_side_set(mesh, mesh.face_set(id), this->exii_elem_ids_);
-            this->exo_.write_side_set(id.value(), elems, sides);
+            this->exo_.write_side_set(id, elems, sides);
             side_sets_names.push_back(mesh.face_set_name(id));
         }
     }
@@ -586,7 +586,7 @@ ExodusIIFile::write_node_sets(const Mesh & mesh)
         nodes.reserve(n);
         for (auto & v : vtx_ids)
             nodes.push_back(v - rng.first() + 1);
-        this->exo_.write_node_set(id.value(), nodes);
+        this->exo_.write_node_set(id, nodes);
         node_set_names.push_back(mesh.vertex_set_name(id));
     }
 
