@@ -62,6 +62,12 @@ private:
     Point min_pt_, max_pt_;
 };
 
+/// Determine spatial dimension of a bounding box
+///
+/// @param bbox Boudning box
+/// @return Spatial dimension
+int determine_spatial_dim(const BoundingBox3D & bbox);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::BoundingBox3D & bbox);

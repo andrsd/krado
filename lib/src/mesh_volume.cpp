@@ -3,6 +3,7 @@
 
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"
+#include "krado/mesh_vertex_abstract.h"
 
 namespace krado {
 
@@ -33,6 +34,19 @@ const std::vector<Ptr<MeshSurface>> &
 MeshVolume::surfaces() const
 {
     return this->mesh_surfaces_;
+}
+
+const std::vector<MeshElement> &
+MeshVolume::tetrahedra() const
+{
+    return this->tetras_;
+}
+
+void
+MeshVolume::add_tetra(const std::array<Ptr<MeshVertexAbstract>, 4> & tetra)
+{
+    MeshElement tet4(ElementType::TETRA4, { tetra[0], tetra[1], tetra[2], tetra[3] });
+    this->tetras_.emplace_back(tet4);
 }
 
 Scheme3D &

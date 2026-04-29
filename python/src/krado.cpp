@@ -299,6 +299,12 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
         .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
         .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
+        .def("set_block_name", &GeomModel::set_block_name)
+        .def("block_name", &GeomModel::block_name)
+        .def("set_side_set_name", &GeomModel::set_side_set_name)
+        .def("side_set_name", &GeomModel::side_set_name)
+        .def("set_node_set_name", &GeomModel::set_node_set_name)
+        .def("node_set_name", &GeomModel::node_set_name)
     ;
 
     py::class_<GeomVertex, GeomShape>(m, "GeomVertex")
@@ -449,7 +455,6 @@ PYBIND11_MODULE(krado, m)
         .def("transform", &Mesh::transform)
         .def("add", &Mesh::add)
         .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
-        .def("compute_bounding_box", &Mesh::compute_bounding_box)
         .def("duplicate", &Mesh::duplicate)
 
         .def("set_cell_set", &Mesh::set_cell_set)
@@ -513,8 +518,6 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<MeshVertexAbstract, PyMeshVertexAbstract, Ptr<MeshVertexAbstract>>(m, "MeshVertexAbstract")
         .def("point", &MeshVertexAbstract::point)
-        .def("global_id", &MeshVertexAbstract::global_id)
-        .def("set_global_id", &MeshVertexAbstract::set_global_id)
     ;
 
     py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
@@ -661,7 +664,8 @@ PYBIND11_MODULE(krado, m)
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
-        .def("write", &ExodusIIFile::write)
+        .def("write", py::overload_cast<const Mesh &>(&ExodusIIFile::write))
+        .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))
     ;
 
     py::class_<DAGMCFile>(m, "DAGMCFile")
@@ -710,9 +714,6 @@ PYBIND11_MODULE(krado, m)
         return py_vols;
     });
     m.def("combine", &combine);
-
-    m.def("build_mesh", &build_mesh);
-    m.def("build_surface_mesh", &build_surface_mesh);
 
     m.def("tetrahedralize", &tetrahedralize);
 

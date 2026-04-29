@@ -210,7 +210,7 @@ TEST(MeshTest, remove_duplicate_points)
     EXPECT_EQ(elems[3].type(), ElementType::TRI3);
     EXPECT_THAT(elems[3].ids(), ElementsAre(3, 4, 5));
 
-    auto bbox = m.compute_bounding_box();
+    auto bbox = compute_bounding_box(m);
     EXPECT_NEAR(bbox.size(0), 4., 1e-15);
     EXPECT_NEAR(bbox.size(1), 2., 1e-15);
 }
