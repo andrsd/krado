@@ -17,10 +17,6 @@ TEST(MeshVertexTest, api)
     MeshVertex mvertex(1, gvertex);
 
     EXPECT_EQ(&mvertex.geom_vertex(), &gvertex);
-    EXPECT_EQ(mvertex.global_id(), 0);
-
-    mvertex.set_global_id(123);
-    EXPECT_EQ(mvertex.global_id(), 123);
 }
 
 TEST(MeshVertexTest, op_shl)

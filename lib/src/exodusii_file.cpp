@@ -8,6 +8,12 @@
 #include "krado/types.h"
 #include "krado/utils.h"
 #include "krado/log.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "fmt/format.h"
 #include "fmt/chrono.h"
 
@@ -15,8 +21,7 @@ namespace krado {
 
 namespace exII {
 
-// NOTE: functions in this namespace should be called by the write_ methods, since they
-// are providing their outputs in ExodusII indexing
+// NOTE: functions in this namespace provide their outputs in ExodusII indexing
 
 /// Get ExodusII element name
 ///
@@ -123,21 +128,446 @@ local_face_index(ElementType et, int idx)
         throw Exception("Not implemented");
 }
 
-///
+} // namespace exII
+
+namespace {
+
+struct SideSet {
+    std::vector<int> elems;
+    std::vector<int> sides;
+};
+
+using NodeSet = std::vector<int>;
+
+using VertexIdMap = std::map<Ptr<MeshVertexAbstract>, gidx_t>;
+using BlocksMap = std::map<Marker, std::vector<Element>>;
+using SideSetMap = std::map<Marker, SideSet>;
+using NodeSetMap = std::map<Marker, NodeSet>;
+using NamesMap = std::map<Marker, std::string>;
+
+// Helpers for building things from `GeomModel`
+
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+build_coords(const VertexIdMap & pnt_map, int dim)
+{
+    std::vector<double> x, y, z;
+    int n_nodes = pnt_map.size();
+    if (dim >= 1)
+        x.resize(n_nodes);
+    if (dim >= 2)
+        y.resize(n_nodes);
+    if (dim >= 3)
+        z.resize(n_nodes);
+    for (auto & [vtx, id] : pnt_map) {
+        auto pt = vtx->point();
+        if (dim >= 1)
+            x[id] = pt.x;
+        if (dim >= 2)
+            y[id] = pt.y;
+        if (dim >= 3)
+            z[id] = pt.z;
+    }
+    return { x, y, z };
+}
+
+VertexIdMap
+build_points(const GeomModel & model)
+{
+    VertexIdMap pnts;
+    gidx_t gid = 0;
+
+    for (auto & [id, v] : model.vertices()) {
+        auto [_, inserted] = pnts.try_emplace(v, gid);
+        if (inserted)
+            gid++;
+    }
+    for (auto & [id, curve] : model.curves())
+        for (auto & v : curve->curve_vertices()) {
+            auto [_, inserted] = pnts.try_emplace(v, gid);
+            if (inserted)
+                gid++;
+        }
+    for (auto & [id, surface] : model.surfaces())
+        for (auto & v : surface->surface_vertices()) {
+            auto [_, inserted] = pnts.try_emplace(v, gid);
+            if (inserted)
+                gid++;
+        }
+    return pnts;
+}
+
+template <int N>
+std::array<gidx_t, N>
+elem2idxs(const MeshElement & mesh_elem, const VertexIdMap & pnt_map)
+{
+    std::array<gidx_t, N> idxs;
+    for (int i = 0; i < N; ++i) {
+        auto vtx = mesh_elem.vertex(i);
+        idxs[i] = pnt_map.at(vtx);
+    }
+    return idxs;
+}
+
+std::tuple<BlocksMap, NamesMap>
+build_1d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
+{
+    Log::debug("Building 1D elements");
+
+    BlocksMap blocks;
+    NamesMap names;
+    for (auto & [id, curve] : model.curves()) {
+        auto blk_id = curve->marker().value();
+        for (auto & mseg : curve->segments()) {
+            auto line = elem2idxs<Line2::N_VERTICES>(mseg, pnt_map);
+            blocks[blk_id].emplace_back(Element::Line2(line));
+        }
+        names[blk_id] = model.block_name(blk_id);
+    }
+    return { blocks, names };
+}
+
+std::tuple<BlocksMap, NamesMap>
+build_2d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
+{
+    Log::debug("Building 2D elements");
+
+    BlocksMap blocks;
+    NamesMap names;
+    for (auto & [id, surface] : model.surfaces()) {
+        auto blk_id = surface->marker().value();
+        auto & tris = surface->triangles();
+        auto & quads = surface->quadrangles();
+        if (tris.size() > 0 and quads.size() == 0) {
+            for (auto & mt : tris) {
+                auto tri = elem2idxs<Tri3::N_VERTICES>(mt, pnt_map);
+                blocks[blk_id].emplace_back(Element::Tri3(tri));
+            }
+            names[blk_id] = model.block_name(blk_id);
+        }
+        else if (quads.size() > 0 and tris.size() == 0) {
+            for (auto & mq : quads) {
+                auto quad = elem2idxs<Quad4::N_VERTICES>(mq, pnt_map);
+                blocks[blk_id].emplace_back(Element::Quad4(quad));
+            }
+            names[blk_id] = model.block_name(blk_id);
+        }
+        else if (quads.size() > 0 and tris.size() > 0) {
+            throw Exception("Heterogeneous meshes are not supported, yet");
+        }
+    }
+    return { blocks, names };
+}
+
+std::tuple<BlocksMap, NamesMap>
+build_3d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
+{
+    Log::debug("Building 3D elements");
+
+    BlocksMap blocks;
+    NamesMap names;
+    for (auto & [id, volume] : model.volumes()) {
+        auto blk_id = volume->marker().value();
+        auto & tets = volume->tetrahedra();
+        for (auto & mt : tets) {
+            auto tetra = elem2idxs<Tetra4::N_VERTICES>(mt, pnt_map);
+            blocks[blk_id].emplace_back(Element::Tetra4(tetra));
+        }
+        names[blk_id] = model.block_name(blk_id);
+    }
+    return { blocks, names };
+}
+
+std::tuple<BlocksMap, NamesMap>
+build_blocks(const GeomModel & model, const VertexIdMap & pnt_map, int dim)
+{
+    if (dim == 1)
+        return build_1d_blocks(model, pnt_map);
+    else if (dim == 2)
+        return build_2d_blocks(model, pnt_map);
+    else if (dim == 3)
+        return build_3d_blocks(model, pnt_map);
+    else
+        throw Exception("Unsupported dimension {}", dim);
+}
+
+std::tuple<SideSetMap, NamesMap>
+build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const VertexIdMap & pnt_map)
+{
+    SideSetMap side_sets;
+    NamesMap names;
+
+    std::map<gidx_t, std::vector<gidx_t>> vertex_to_elements_map;
+    std::map<gidx_t, const Element *> global_elem_map;
+    gidx_t elem_idx_counter = 0;
+    for (const auto & [blk_id, blk_elements] : blocks) {
+        for (const auto & element : blk_elements) {
+            global_elem_map[elem_idx_counter] = &element;
+            for (const auto & vertex_id : element.ids()) {
+                vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
+            }
+            elem_idx_counter++;
+        }
+    }
+
+    for (const auto & [id, vertex] : model.vertices()) {
+        auto marker = vertex->marker();
+        if (marker.has_value()) {
+            Marker side_set_id = marker.value();
+            names[side_set_id] = model.side_set_name(side_set_id);
+
+            gidx_t vertex_gidx = pnt_map.at(vertex);
+
+            const auto & a_elements = vertex_to_elements_map.find(vertex_gidx);
+            if (a_elements != vertex_to_elements_map.end()) {
+                const auto & elements = a_elements->second;
+                if (!elements.empty()) {
+                    gidx_t elem_idx = elements[0];
+                    const Element * element = global_elem_map.at(elem_idx);
+
+                    int local_side = -1;
+                    if (element->vertex_id(0) == vertex_gidx) {
+                        local_side = 1;
+                    }
+                    else if (element->vertex_id(1) == vertex_gidx) {
+                        local_side = 2;
+                    }
+
+                    if (local_side != -1) {
+                        side_sets[side_set_id].elems.push_back(elem_idx + 1);
+                        side_sets[side_set_id].sides.push_back(local_side);
+                    }
+                }
+            }
+        }
+    }
+
+    return { side_sets, names };
+}
+
+std::tuple<SideSetMap, NamesMap>
+build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const VertexIdMap & pnt_map)
+{
+    SideSetMap side_sets;
+    NamesMap names;
+
+    std::map<gidx_t, std::vector<gidx_t>> vertex_to_elements_map;
+    gidx_t elem_idx_counter = 0;
+    for (const auto & [blk_id, blk_elements] : blocks) {
+        for (const auto & element : blk_elements) {
+            for (const auto & vertex_id : element.ids()) {
+                vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
+            }
+            elem_idx_counter++;
+        }
+    }
+
+    gidx_t global_elem_idx = 0;
+    std::map<gidx_t, const Element *> global_elem_map;
+    for (const auto & [blk_id, blk_elements] : blocks) {
+        for (const auto & element : blk_elements) {
+            global_elem_map[global_elem_idx++] = &element;
+        }
+    }
+
+    for (const auto & [id, curve] : model.curves()) {
+        auto marker_opt = curve->marker();
+        if (!marker_opt.has_value()) {
+            continue;
+        }
+        Marker side_set_id = marker_opt.value();
+        names[side_set_id] = model.side_set_name(side_set_id);
+
+        for (const auto & mseg : curve->segments()) {
+            auto v0_ptr = mseg.vertex(0);
+            auto v1_ptr = mseg.vertex(1);
+
+            gidx_t v0_id = pnt_map.at(v0_ptr);
+            gidx_t v1_id = pnt_map.at(v1_ptr);
+
+            const auto & elements_of_v0 = vertex_to_elements_map[v0_id];
+
+            for (gidx_t elem_idx : elements_of_v0) {
+                const auto * element = global_elem_map.at(elem_idx);
+                bool v1_found = false;
+                for (const auto & elem_vertex_id : element->ids()) {
+                    if (elem_vertex_id == v1_id) {
+                        v1_found = true;
+                        break;
+                    }
+                }
+
+                if (v1_found) {
+                    int local_side = -1;
+                    auto elem_type = element->type();
+                    const auto & elem_vertex_ids = element->ids();
+
+                    if (elem_type == ElementType::TRI3) {
+                        auto p0 = elem_vertex_ids[0];
+                        auto p1 = elem_vertex_ids[1];
+                        auto p2 = elem_vertex_ids[2];
+                        if ((v0_id == p0 && v1_id == p1) || (v0_id == p1 && v1_id == p0))
+                            local_side = 0;
+                        else if ((v0_id == p1 && v1_id == p2) || (v0_id == p2 && v1_id == p1))
+                            local_side = 1;
+                        else if ((v0_id == p2 && v1_id == p0) || (v0_id == p0 && v1_id == p2))
+                            local_side = 2;
+                    }
+                    else if (elem_type == ElementType::QUAD4) {
+                        auto p0 = elem_vertex_ids[0];
+                        auto p1 = elem_vertex_ids[1];
+                        auto p2 = elem_vertex_ids[2];
+                        auto p3 = elem_vertex_ids[3];
+                        if ((v0_id == p0 && v1_id == p1) || (v0_id == p1 && v1_id == p0))
+                            local_side = 0;
+                        else if ((v0_id == p1 && v1_id == p2) || (v0_id == p2 && v1_id == p1))
+                            local_side = 1;
+                        else if ((v0_id == p2 && v1_id == p3) || (v0_id == p3 && v1_id == p2))
+                            local_side = 2;
+                        else if ((v0_id == p3 && v1_id == p0) || (v0_id == p0 && v1_id == p3))
+                            local_side = 3;
+                    }
+
+                    if (local_side != -1) {
+                        side_sets[side_set_id].elems.push_back(elem_idx + 1);
+                        side_sets[side_set_id].sides.push_back(
+                            exII::local_side_index(elem_type, local_side));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return { side_sets, names };
+}
+
+std::tuple<SideSetMap, NamesMap>
+build_side_sets(const GeomModel & model,
+                const BlocksMap & blocks,
+                const VertexIdMap & pnt_map,
+                int dim)
+{
+    if (dim == 1)
+        return build_side_sets_1d(model, blocks, pnt_map);
+    else if (dim == 2)
+        return build_side_sets_2d(model, blocks, pnt_map);
+    else
+        throw Exception("Building side sets in {}-D is not supported yet", dim);
+}
+
+std::tuple<NodeSetMap, NamesMap>
+build_node_sets(const GeomModel & model, const VertexIdMap & pnt_map)
+{
+    NodeSetMap node_sets;
+    NamesMap names;
+
+    for (auto & [id, vertex] : model.vertices()) {
+        auto marker = vertex->marker();
+        if (marker.has_value()) {
+            auto ns_id = marker.value();
+            auto & node_set = node_sets[ns_id];
+            node_set.emplace_back(pnt_map.at(vertex) + 1);
+
+            names[ns_id] = model.node_set_name(ns_id);
+        }
+    }
+
+    return { node_sets, names };
+}
+
+// Helpers for building things from `Mesh`
+
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+build_coords(const Mesh & mesh, int dim)
+{
+    std::vector<double> x, y, z;
+    auto n_nodes = mesh.points().size();
+    if (dim >= 1) {
+        x.reserve(n_nodes);
+        for (auto & pt : mesh.points())
+            x.push_back(pt.x);
+    }
+    if (dim >= 2) {
+        y.reserve(n_nodes);
+        for (auto & pt : mesh.points())
+            y.push_back(pt.y);
+    }
+    if (dim >= 3) {
+        z.reserve(n_nodes);
+        for (auto & pt : mesh.points())
+            z.push_back(pt.z);
+    }
+    return { x, y, z };
+}
+
+std::tuple<BlocksMap, NamesMap>
+build_blocks(const Mesh & mesh, std::map<std::size_t, int> & exii_elem_ids)
+{
+    BlocksMap blocks;
+    NamesMap names;
+
+    if (mesh.cell_set_ids().empty()) {
+        std::map<ElementType, std::vector<gidx_t>> elem_blks;
+        int exii_idx = 1;
+        for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
+            exii_elem_ids[cell_id] = exii_idx++;
+            auto & cell = mesh.element(cell_id);
+            auto et = cell.type();
+            elem_blks[et].push_back(cell_id);
+        }
+
+        int blk_id = 1;
+        for (auto & [blk_type, elems] : elem_blks) {
+            if (!elems.empty()) {
+                auto & block = blocks[blk_id];
+                for (auto & cell_id : elems) {
+                    auto & el = mesh.element(cell_id);
+                    block.push_back(el);
+                }
+                blk_id++;
+            }
+        }
+    }
+    else {
+        // NOTE: krado allows to have different cell types in a single cell set, but not
+        // exodusII. So, we need to filter on both cell set id and cell type, i.e. put all cells
+        // of the same type in the same block. Currently, we just assume cell sets are
+        // homogeneous in terms of cell type.
+
+        int exii_idx = 1;
+        std::vector<std::string> blk_names;
+        auto cell_set_ids = mesh.cell_set_ids();
+        for (auto & blk_id : cell_set_ids) {
+            auto & elem_ids = mesh.cell_set(blk_id);
+            if (!elem_ids.empty()) {
+                auto & block = blocks[blk_id];
+                for (auto & id : elem_ids) {
+                    exii_elem_ids[id] = exii_idx++;
+                    auto & el = mesh.element(id);
+                    block.push_back(el);
+                }
+                blk_names.push_back(mesh.cell_set_name(blk_id));
+            }
+        }
+    }
+
+    return { blocks, names };
+}
+
+/// Create side set
 ///
 /// @param mesh Mesh object
 /// @param elem_ids Face or edge IDs
 /// @param exii_elem_ids Map that converts from krado cell IDs to exodus element numbers
-std::tuple<std::vector<int>, std::vector<int>>
+SideSet
 create_side_set(const Mesh & mesh,
                 const std::vector<gidx_t> & elem_ids,
                 const std::map<std::size_t, int> & exii_elem_ids)
 {
-    std::vector<int> elems;
-    std::vector<int> sides;
+    SideSet side_set;
     auto n = elem_ids.size();
-    elems.reserve(n);
-    sides.reserve(n);
+    side_set.elems.reserve(n);
+    side_set.sides.reserve(n);
     for (auto & eid : elem_ids) {
         auto supp = mesh.support(eid);
         if (supp.size() == 2)
@@ -147,14 +577,56 @@ create_side_set(const Mesh & mesh,
         auto cell = supp[0];
         auto cell_connect = mesh.cone(cell);
         auto side = utils::index_of(cell_connect, eid);
-        elems.push_back(exii_elem_ids.at(cell));
+        side_set.elems.push_back(exii_elem_ids.at(cell));
         auto et = mesh.element_type(cell);
-        sides.push_back(local_side_index(et, side));
+        side_set.sides.push_back(exII::local_side_index(et, side));
     }
-    return { elems, sides };
+    return side_set;
 }
 
-} // namespace exII
+std::tuple<SideSetMap, NamesMap>
+build_side_sets(const Mesh & mesh, int dim, const std::map<std::size_t, int> & exii_elem_ids)
+{
+    SideSetMap side_sets;
+    NamesMap names;
+    if (dim == 2) {
+        for (auto & id : mesh.edge_set_ids()) {
+            side_sets[id] = create_side_set(mesh, mesh.edge_set(id), exii_elem_ids);
+            names[id] = mesh.edge_set_name(id);
+        }
+    }
+    else if (dim == 3) {
+        for (auto & id : mesh.face_set_ids()) {
+            side_sets[id] = create_side_set(mesh, mesh.face_set(id), exii_elem_ids);
+            names[id] = mesh.face_set_name(id);
+        }
+    }
+
+    return { side_sets, names };
+}
+
+std::tuple<NodeSetMap, NamesMap>
+build_node_sets(const Mesh & mesh)
+{
+    NodeSetMap node_sets;
+    NamesMap names;
+
+    auto rng = mesh.vertex_range();
+    auto set_ids = mesh.vertex_set_ids();
+    for (auto & id : set_ids) {
+        auto & vtx_ids = mesh.vertex_set(id);
+        auto n = vtx_ids.size();
+        auto & nodes = node_sets[id];
+        nodes.reserve(n);
+        for (auto & v : vtx_ids)
+            nodes.push_back(v - rng.first() + 1);
+        names[id] = mesh.vertex_set_name(id);
+    }
+
+    return { node_sets, names };
+}
+
+// Helpers for element handling
 
 /// Get krado element type from ExodusII element type
 ///
@@ -229,6 +701,101 @@ local_side_index(ElementType et, int idx)
         throw Exception("Unsupported element type {}", Element::type(et));
     }
 }
+
+// Helpers for writing into the exodusIIfile
+
+void
+write_info(exodusIIcpp::File & exo)
+{
+    std::time_t now = std::time(nullptr);
+    std::string datetime = fmt::format("{:%d %b %Y, %H:%M:%S}", *std::localtime(&now));
+
+    std::vector<std::string> info(1);
+    info[0] = fmt::format("Created by krado v{} on {}", KRADO_VERSION, datetime);
+    exo.write_info(info);
+}
+
+/// Write coordinates
+void
+write_coords(exodusIIcpp::File & exo,
+             int dim,
+             const std::vector<double> & x,
+             const std::vector<double> & y,
+             const std::vector<double> & z)
+{
+    if (dim == 1)
+        exo.write_coords(x);
+    else if (dim == 2)
+        exo.write_coords(x, y);
+    else if (dim == 3)
+        exo.write_coords(x, y, z);
+    exo.write_coord_names();
+}
+
+void
+write_element_blocks(exodusIIcpp::File & exo, const BlocksMap & blocks, const NamesMap & names)
+{
+    std::vector<std::string> blk_names;
+    for (auto & [blk_id, elems] : blocks) {
+        auto & cell = elems[0];
+        auto el_type = exII::element_name(cell.type());
+
+        auto n = cell.num_vertices() * elems.size();
+        std::vector<int> connect;
+        connect.reserve(n);
+        for (auto & cell : elems) {
+            for (auto id : exII::build_element(cell))
+                connect.push_back(id);
+        }
+        exo.write_block(blk_id, el_type, elems.size(), connect);
+
+        if (names.contains(blk_id))
+            blk_names.push_back(names.at(blk_id));
+        else
+            blk_names.push_back(fmt::format("{}", blk_id));
+    }
+
+    if (!blk_names.empty())
+        exo.write_block_names(blk_names);
+}
+
+void
+write_side_sets(exodusIIcpp::File & exo, const SideSetMap & side_sets, const NamesMap & names)
+{
+    std::vector<std::string> side_sets_names;
+
+    for (auto & [id, side_set] : side_sets) {
+        exo.write_side_set(id, side_set.elems, side_set.sides);
+
+        if (names.contains(id))
+            side_sets_names.push_back(names.at(id));
+        else
+            side_sets_names.push_back(fmt::format("{}", id));
+    }
+
+    if (!side_sets_names.empty())
+        exo.write_side_set_names(side_sets_names);
+}
+
+void
+write_node_sets(exodusIIcpp::File & exo, const NodeSetMap & node_sets, const NamesMap & names)
+{
+    std::vector<std::string> node_set_names;
+
+    for (auto & [id, nodes] : node_sets) {
+        exo.write_node_set(id, nodes);
+
+        if (names.contains(id))
+            node_set_names.push_back(names.at(id));
+        else
+            node_set_names.push_back(fmt::format("{}", id));
+    }
+
+    if (!node_set_names.empty())
+        exo.write_node_set_names(node_set_names);
+}
+
+} // namespace
 
 //
 
@@ -413,185 +980,60 @@ ExodusIIFile::write(const Mesh & mesh)
     Log::info("Writing ExodusII file '{}'", this->fn_);
 
     this->exo_.create(this->fn_);
-    this->dim_ = determine_spatial_dim(mesh);
+    auto bbox = compute_bounding_box(mesh);
+    auto dim = determine_spatial_dim(bbox);
+
+    auto [x, y, z] = build_coords(mesh, dim);
+    std::map<std::size_t, int> exii_elem_ids;
+    auto [blocks, block_names] = build_blocks(mesh, exii_elem_ids);
+    auto [side_sets, side_set_names] = build_side_sets(mesh, dim, exii_elem_ids);
+    auto [node_sets, node_set_names] = build_node_sets(mesh);
 
     int n_nodes = (int) mesh.points().size();
     int n_elems = (int) mesh.elements().size();
-    int n_elem_blks = mesh.cell_set_ids().empty() ? 1 : mesh.cell_set_ids().size();
-    int n_node_sets = mesh.vertex_set_ids().size();
-    int n_side_sets = 0;
-    if (this->dim_ == 2)
-        n_side_sets = mesh.edge_set_ids().size();
-    else if (this->dim_ == 3)
-        n_side_sets = mesh.face_set_ids().size();
-    this->exo_.init("", this->dim_, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
+    int n_elem_blks = blocks.size();
+    int n_node_sets = node_sets.size();
+    int n_side_sets = side_sets.size();
+    this->exo_.init("", dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
-    write_info();
-    write_coords(mesh);
-    write_elements(mesh);
-    write_side_sets(mesh);
-    write_node_sets(mesh);
-
-    this->exo_.close();
-}
-
-int
-ExodusIIFile::determine_spatial_dim(const Mesh & mesh)
-{
-    auto sz = mesh.compute_bounding_box().size();
-    if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
-        return 1;
-    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))
-        return 2;
-    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
-        return 3;
-    else
-        throw Exception("Unusual mesh, unable to write.");
+    write_info(this->exo_);
+    write_coords(this->exo_, dim, x, y, z);
+    write_element_blocks(this->exo_, blocks, block_names);
+    write_side_sets(this->exo_, side_sets, side_set_names);
+    write_node_sets(this->exo_, node_sets, node_set_names);
 }
 
 void
-ExodusIIFile::write_info()
+ExodusIIFile::write(const GeomModel & model)
 {
-    std::time_t now = std::time(nullptr);
-    std::string datetime = fmt::format("{:%d %b %Y, %H:%M:%S}", *std::localtime(&now));
+    Log::info("Writing ExodusII file '{}'", this->fn_);
 
-    std::vector<std::string> info(1);
-    info[0] = fmt::format("Created by krado v{} on {}", KRADO_VERSION, datetime);
-    this->exo_.write_info(info);
-}
+    this->exo_.create(this->fn_);
 
-void
-ExodusIIFile::write_coords(const Mesh & mesh)
-{
-    std::vector<double> x, y, z;
-    for (auto & pt : mesh.points()) {
-        if (this->dim_ >= 1)
-            x.push_back(pt.x);
-        if (this->dim_ >= 2)
-            y.push_back(pt.y);
-        if (this->dim_ >= 3)
-            z.push_back(pt.z);
-    }
+    auto bbox = compute_bounding_box(model);
+    auto dim = determine_spatial_dim(bbox);
 
-    if (this->dim_ == 1)
-        this->exo_.write_coords(x);
-    else if (this->dim_ == 2)
-        this->exo_.write_coords(x, y);
-    else if (this->dim_ == 3)
-        this->exo_.write_coords(x, y, z);
-    this->exo_.write_coord_names();
-}
+    auto pnt_map = build_points(model);
+    auto [x, y, z] = build_coords(pnt_map, dim);
+    auto [blocks, block_names] = build_blocks(model, pnt_map, dim);
+    auto [side_sets, side_set_names] = build_side_sets(model, blocks, pnt_map, dim);
+    auto [node_sets, node_set_names] = build_node_sets(model, pnt_map);
 
-void
-ExodusIIFile::write_elements(const Mesh & mesh)
-{
-    if (mesh.cell_set_ids().empty()) {
-        std::map<ElementType, std::vector<gidx_t>> elem_blks;
-        int exii_idx = 1;
-        for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
-            this->exii_elem_ids_[cell_id] = exii_idx++;
-            auto & cell = mesh.element(cell_id);
-            auto et = cell.type();
-            elem_blks[et].push_back(cell_id);
-        }
+    int n_nodes = pnt_map.size();
+    int n_elems = 0;
+    for (auto & [marker, blk] : blocks)
+        n_elems += blk.size();
+    int n_elem_blks = blocks.size();
+    int n_node_sets = node_sets.size();
+    int n_side_sets = side_sets.size();
 
-        int blk_id = 1;
-        for (auto & [blk_type, elems] : elem_blks) {
-            if (!elems.empty()) {
-                auto cell_id = elems[0];
-                auto & cell = mesh.element(cell_id);
+    this->exo_.init("", dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
-                auto el_type = exII::element_name(cell.type());
-                auto n = cell.num_vertices() * elems.size();
-                std::vector<int> connect;
-                connect.reserve(n);
-                for (auto & cell_id : elems) {
-                    auto & el = mesh.element(cell_id);
-                    for (auto id : exII::build_element(el))
-                        connect.push_back(id);
-                }
-                this->exo_.write_block(blk_id, el_type, elems.size(), connect);
-                blk_id++;
-            }
-        }
-    }
-    else {
-        // NOTE: krado allows to have different cell types in a single cell set, but not exodusII.
-        // So, we need to filter on both cell set id and cell type, i.e. put all cells of the same
-        // type in the same block.
-        // Currently, we just assume cell sets are homogeneous in terms of cell type.
-
-        int exii_idx = 1;
-        std::vector<std::string> blk_names;
-        auto cell_set_ids = mesh.cell_set_ids();
-        for (auto & blk_id : cell_set_ids) {
-            auto & elem_ids = mesh.cell_set(blk_id);
-            if (!elem_ids.empty()) {
-                const auto & elem = mesh.element(elem_ids[0]);
-                auto el_type = exII::element_name(elem.type());
-                auto n = elem.num_vertices() * elem_ids.size();
-                std::vector<int> connect;
-                connect.reserve(n);
-                for (auto & cell_id : elem_ids) {
-                    this->exii_elem_ids_[cell_id] = exii_idx++;
-                    const auto & el = mesh.element(cell_id);
-                    for (auto id : exII::build_element(el))
-                        connect.push_back(id);
-                }
-                this->exo_.write_block(blk_id, el_type, elem_ids.size(), connect);
-                blk_names.push_back(mesh.cell_set_name(blk_id));
-            }
-        }
-
-        if (!blk_names.empty())
-            this->exo_.write_block_names(blk_names);
-    }
-}
-
-void
-ExodusIIFile::write_side_sets(const Mesh & mesh)
-{
-    std::vector<std::string> side_sets_names;
-    if (this->dim_ == 2) {
-        for (auto & id : mesh.edge_set_ids()) {
-            auto [elems, sides] =
-                exII::create_side_set(mesh, mesh.edge_set(id), this->exii_elem_ids_);
-            this->exo_.write_side_set(id, elems, sides);
-            side_sets_names.push_back(mesh.edge_set_name(id));
-        }
-    }
-    else if (this->dim_ == 3) {
-        for (auto & id : mesh.face_set_ids()) {
-            auto [elems, sides] =
-                exII::create_side_set(mesh, mesh.face_set(id), this->exii_elem_ids_);
-            this->exo_.write_side_set(id, elems, sides);
-            side_sets_names.push_back(mesh.face_set_name(id));
-        }
-    }
-
-    if (!side_sets_names.empty())
-        this->exo_.write_side_set_names(side_sets_names);
-}
-
-void
-ExodusIIFile::write_node_sets(const Mesh & mesh)
-{
-    auto rng = mesh.vertex_range();
-    std::vector<std::string> node_set_names;
-    auto set_ids = mesh.vertex_set_ids();
-    for (auto & id : set_ids) {
-        auto & vtx_ids = mesh.vertex_set(id);
-        auto n = vtx_ids.size();
-        std::vector<int> nodes;
-        nodes.reserve(n);
-        for (auto & v : vtx_ids)
-            nodes.push_back(v - rng.first() + 1);
-        this->exo_.write_node_set(id, nodes);
-        node_set_names.push_back(mesh.vertex_set_name(id));
-    }
-
-    if (!node_set_names.empty())
-        this->exo_.write_node_set_names(node_set_names);
+    write_info(this->exo_);
+    write_coords(this->exo_, dim, x, y, z);
+    write_element_blocks(this->exo_, blocks, block_names);
+    write_side_sets(this->exo_, side_sets, side_set_names);
+    write_node_sets(this->exo_, node_sets, node_set_names);
 }
 
 } // namespace krado

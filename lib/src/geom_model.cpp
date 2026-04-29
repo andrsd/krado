@@ -43,149 +43,6 @@ compute_bounding_box(const GeomModel & model)
     return bbox;
 }
 
-std::vector<Point>
-build_points(const GeomModel & model)
-{
-    std::vector<Point> pnts;
-    gidx_t gid = 0;
-
-    for (auto & [id, v] : model.vertices()) {
-        v->set_global_id(gid);
-        pnts.emplace_back(v->point());
-        gid++;
-    }
-    for (auto & [id, curve] : model.curves())
-        for (auto & v : curve->curve_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    for (auto & [id, surface] : model.surfaces())
-        for (auto & v : surface->surface_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    return pnts;
-}
-
-std::vector<Element>
-build_1d_elements(const GeomModel & model)
-{
-    Log::debug("Building 1D elements");
-
-    std::vector<Element> elems;
-    for (auto & [id, curve] : model.curves()) {
-        std::array<gidx_t, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve->segments()) {
-            for (int i = 0; i < Line2::N_VERTICES; ++i) {
-                auto vtx = local_elem.vertex(i);
-                line[i] = vtx->global_id();
-            }
-            elems.emplace_back(Element::Line2(line));
-        }
-    }
-    return elems;
-}
-
-std::vector<Element>
-build_2d_elements(const GeomModel & model)
-{
-    Log::debug("Building 2D elements");
-
-    if (model.surfaces().size() > 0) {
-        std::vector<Element> elems;
-        for (auto & [id, surface] : model.surfaces()) {
-            auto & tris = surface->triangles();
-            auto & quads = surface->quadrangles();
-            if (tris.size() > 0 and quads.size() == 0) {
-                std::array<gidx_t, Tri3::N_VERTICES> tri;
-                for (auto & local_elem : tris) {
-                    for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                        auto vtx = local_elem.vertex(i);
-                        tri[i] = vtx->global_id();
-                    }
-                    elems.emplace_back(Element::Tri3(tri));
-                }
-            }
-            else if (quads.size() > 0 and tris.size() == 0) {
-                std::array<gidx_t, Quad4::N_VERTICES> quad;
-                for (auto & local_elem : quads) {
-                    for (int i = 0; i < Quad4::N_VERTICES; ++i) {
-                        auto vtx = local_elem.vertex(i);
-                        quad[i] = vtx->global_id();
-                    }
-                    elems.emplace_back(Element::Quad4(quad));
-                }
-            }
-            else if (quads.size() > 0 and tris.size() > 0) {
-                throw Exception("Heterogeneous meshes are not supported, yet");
-            }
-        }
-        return elems;
-    }
-    else
-        return build_1d_elements(model);
-}
-
-std::vector<Element>
-build_elements(const GeomModel & model)
-{
-    Log::debug("Building elements");
-
-    auto bbox = compute_bounding_box(model);
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        return build_1d_elements(model);
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_2d_elements(model);
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        throw Exception("3D element construction is not implemented yet");
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-std::vector<Element>
-build_surface_elements(const GeomModel & model)
-{
-    Log::debug("Building surface elements");
-
-    auto bbox = compute_bounding_box(model);
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        throw Exception("Surface mesh in 1D is not implemented yet");
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_1d_elements(model);
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        return build_2d_elements(model);
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-Mesh
-build_mesh(const GeomModel & model)
-{
-    Log::debug("Building mesh");
-
-    auto points = build_points(model);
-    auto elements = build_elements(model);
-    Mesh mesh(points, elements);
-    return mesh;
-}
-
-Mesh
-build_surface_mesh(const GeomModel & model)
-{
-    Log::debug("Building surface mesh");
-
-    auto points = build_points(model);
-    auto elements = build_surface_elements(model);
-    Mesh mesh(points, elements);
-    return mesh;
-}
-
 //
 
 GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
@@ -651,6 +508,23 @@ GeomModel::side_set_name(Marker marker) const
 {
     try {
         return this->side_set_names_.at(marker);
+    }
+    catch (const std::out_of_range & e) {
+        return "";
+    }
+}
+
+void
+GeomModel::set_node_set_name(Marker marker, const std::string & name)
+{
+    this->node_set_names_[marker] = name;
+}
+
+std::string
+GeomModel::node_set_name(Marker marker) const
+{
+    try {
+        return this->node_set_names_.at(marker);
     }
     catch (const std::out_of_range & e) {
         return "";

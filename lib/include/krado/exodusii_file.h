@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/mesh.h"
+#include "krado/geom_model.h"
 #include "exodusIIcpp/exodusIIcpp.h"
 #include <string>
 #include <vector>
@@ -27,6 +28,11 @@ public:
     /// @param mesh Mesh object to write
     void write(const Mesh & mesh);
 
+    /// Write mesh to ExodusII file
+    ///
+    /// @param model GeomModel object to write
+    void write(const GeomModel & model);
+
 private:
     /// Read nodes
     ///
@@ -49,27 +55,6 @@ private:
     /// Read node sets
     [[nodiscard]] std::map<int, std::vector<int>> read_node_sets();
 
-    /// Determine mesh spatial dimension
-    ///
-    /// @param mesh Mesh object
-    /// @return Spatial dimension
-    [[nodiscard]] int determine_spatial_dim(const Mesh & mesh);
-
-    /// Write info
-    void write_info();
-
-    /// Write coordinates
-    void write_coords(const Mesh & mesh);
-
-    /// Write elements
-    void write_elements(const Mesh & mesh);
-
-    /// Write side sets
-    void write_side_sets(const Mesh & mesh);
-
-    ///
-    void write_node_sets(const Mesh & mesh);
-
     std::tuple<std::vector<int>, std::vector<int>>
     create_side_set_from_face_set(const Mesh & mesh, const std::vector<gidx_t> & elem_ids);
 
@@ -77,10 +62,6 @@ private:
     std::string fn_;
     /// ExodusII file object
     exodusIIcpp::File exo_;
-    /// Spatial dimension
-    int dim_;
-    /// Maaping from krado indexing into exodusii indexing
-    std::map<std::size_t, int> exii_elem_ids_;
 };
 
 } // namespace krado

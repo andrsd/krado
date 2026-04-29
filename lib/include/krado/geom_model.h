@@ -133,6 +133,18 @@ public:
     /// @return Side set name
     [[nodiscard]] std::string side_set_name(Marker marker) const;
 
+    /// Set node set name
+    ///
+    /// @param marker Node set marker
+    /// @param name Node set name
+    void set_node_set_name(Marker marker, const std::string & name);
+
+    /// Get node set name
+    ///
+    /// @param marker Node set marker
+    /// @return Node set name
+    [[nodiscard]] std::string node_set_name(Marker marker) const;
+
 protected:
     /// Get vertex ID
     ///
@@ -191,6 +203,7 @@ private:
 
     std::map<Marker, std::string> block_names_;
     std::map<Marker, std::string> side_set_names_;
+    std::map<Marker, std::string> node_set_names_;
 };
 
 /// Compute bounding box of a meshed geometrical model
@@ -198,17 +211,5 @@ private:
 /// @param model Geometrical model
 /// @return Bounding box
 BoundingBox3D compute_bounding_box(const GeomModel & model);
-
-/// Build mesh from meshed entities
-///
-/// @param model Geometrical model
-/// @return Volumetric mesh
-Mesh build_mesh(const GeomModel & model);
-
-/// Build the surface mesh from meshed entities
-///
-/// @param model Geometrical model
-/// @return Surface mesh
-Mesh build_surface_mesh(const GeomModel & model);
 
 } // namespace krado

@@ -658,7 +658,8 @@ PYBIND11_MODULE(krado, m)
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
-        .def("write", &ExodusIIFile::write)
+        .def("write", py::overload_cast<const Mesh &>(&ExodusIIFile::write))
+        .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))
     ;
 
     py::class_<DAGMCFile>(m, "DAGMCFile")
@@ -707,9 +708,6 @@ PYBIND11_MODULE(krado, m)
         return py_vols;
     });
     m.def("combine", &combine);
-
-    m.def("build_mesh", &build_mesh);
-    m.def("build_surface_mesh", &build_surface_mesh);
 
     m.def("tetrahedralize", &tetrahedralize);
 
