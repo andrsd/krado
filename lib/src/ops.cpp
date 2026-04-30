@@ -197,20 +197,20 @@ compute_volume(const Mesh & mesh)
     auto element_volume = [&](const Element & elem) {
         switch (elem.type()) {
         case ElementType::LINE2: {
-            auto idxs = elem.ids();
+            auto idxs = elem.indices();
             auto vec = mesh.point(idxs[1]) - mesh.point(idxs[0]);
             return vec.magnitude();
         }
 
         case ElementType::TRI3: {
-            auto idxs = elem.ids();
+            auto idxs = elem.indices();
             auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
             auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
             return 0.5 * cross_product(va, vb).magnitude();
         }
 
         case ElementType::TETRA4: {
-            auto idxs = elem.ids();
+            auto idxs = elem.indices();
             auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
             auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
             auto vc = mesh.point(idxs[3]) - mesh.point(idxs[0]);

@@ -109,24 +109,12 @@ public:
     ///
     /// @param idx Local vertex index
     /// @return Vertex ID
-    [[nodiscard]] Index vertex_id(int idx) const;
-
-    /// Call operator to access vertex index
-    ///
-    /// @param idx Vertex index
-    /// @return Vertex ID
-    [[nodiscard]] Index operator()(int idx) const;
+    [[nodiscard]] Index index(int idx) const;
 
     /// Get vertex IDs
     ///
     /// @return Vertex IDs
-    [[nodiscard]] const std::vector<Index> & ids() const;
-
-    /// Get vertex IDs
-    ///
-    /// @param idx Local vertex index
-    /// @return Vertex IDs
-    [[nodiscard]] Index id(int idx) const;
+    [[nodiscard]] const std::vector<Index> & indices() const;
 
     /// Shift element indices by offset
     ///
@@ -200,7 +188,7 @@ inline std::ostream &
 operator<<(std::ostream & stream, const krado::Element & el)
 {
     stream << "(" << krado::Element::type(el.type()) << ",";
-    for (auto & id : el.ids())
+    for (auto & id : el.indices())
         stream << " " << id;
     stream << ")";
     return stream;

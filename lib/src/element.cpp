@@ -94,27 +94,15 @@ Element::num_vertices() const
 }
 
 Index
-Element::vertex_id(int idx) const
-{
-    return this->vtx_id_[idx];
-}
-
-Index
-Element::operator()(int idx) const
+Element::index(int idx) const
 {
     return this->vtx_id_[idx];
 }
 
 const std::vector<Index> &
-Element::ids() const
+Element::indices() const
 {
     return this->vtx_id_;
-}
-
-Index
-Element::id(int idx) const
-{
-    return this->vtx_id_[idx];
 }
 
 void
@@ -204,7 +192,7 @@ operator==(const Element & a, const Element & b)
     if (a.num_vertices() != b.num_vertices())
         return false;
     for (int i = 0; i < a.num_vertices(); ++i)
-        if (a.vertex_id(i) != b.vertex_id(i))
+        if (a.index(i) != b.index(i))
             return false;
     return true;
 }

@@ -235,8 +235,8 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<ElementType, const std::vector<Index> &>())
         .def("type", py::overload_cast<>(&Element::type, py::const_))
         .def("num_vertices", &Element::num_vertices)
-        .def("vertex_id", &Element::vertex_id)
-        .def("ids", &Element::ids)
+        .def("index", &Element::index)
+        .def("indices", &Element::indices)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")

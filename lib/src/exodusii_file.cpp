@@ -58,9 +58,9 @@ element_name(ElementType et)
 std::vector<int>
 build_element(const Element & el)
 {
-    std::vector<int> connect(el.ids().size());
-    for (int j = 0; j < el.ids().size(); ++j)
-        connect[j] = el.vertex_id(j) + 1;
+    std::vector<int> connect(el.indices().size());
+    for (int j = 0; j < el.indices().size(); ++j)
+        connect[j] = el.index(j) + 1;
     return connect;
 }
 
@@ -302,7 +302,7 @@ build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const Vert
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
             global_elem_map[elem_idx_counter] = &element;
-            for (const auto & vertex_id : element.ids()) {
+            for (const auto & vertex_id : element.indices()) {
                 vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
             }
             elem_idx_counter++;
@@ -325,10 +325,10 @@ build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const Vert
                     const Element * element = global_elem_map.at(elem_idx);
 
                     int local_side = -1;
-                    if (element->vertex_id(0) == vertex_gidx) {
+                    if (element->index(0) == vertex_gidx) {
                         local_side = 1;
                     }
-                    else if (element->vertex_id(1) == vertex_gidx) {
+                    else if (element->index(1) == vertex_gidx) {
                         local_side = 2;
                     }
 
@@ -354,7 +354,7 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
     Index elem_idx_counter = 0;
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
-            for (const auto & vertex_id : element.ids()) {
+            for (const auto & vertex_id : element.indices()) {
                 vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
             }
             elem_idx_counter++;
@@ -389,7 +389,7 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
             for (Index elem_idx : elements_of_v0) {
                 const auto * element = global_elem_map.at(elem_idx);
                 bool v1_found = false;
-                for (const auto & elem_vertex_id : element->ids()) {
+                for (const auto & elem_vertex_id : element->indices()) {
                     if (elem_vertex_id == v1_id) {
                         v1_found = true;
                         break;
@@ -399,7 +399,7 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
                 if (v1_found) {
                     int local_side = -1;
                     auto elem_type = element->type();
-                    const auto & elem_vertex_ids = element->ids();
+                    const auto & elem_vertex_ids = element->indices();
 
                     if (elem_type == ElementType::TRI3) {
                         auto p0 = elem_vertex_ids[0];
