@@ -37,19 +37,19 @@ to_lower(const std::string & text)
     return lower;
 }
 
-std::vector<gidx_t>
-sub_connect(const std::vector<gidx_t> & element_connect, const std::vector<int> & idxs)
+std::vector<Index>
+sub_connect(const std::vector<Index> & element_connect, const std::vector<int> & idxs)
 {
-    std::vector<gidx_t> connect;
+    std::vector<Index> connect;
     for (auto i : idxs)
         connect.emplace_back(element_connect[i]);
     return connect;
 }
 
 std::size_t
-key(const std::vector<gidx_t> & idxs)
+key(const std::vector<Index> & idxs)
 {
-    std::vector<gidx_t> vertices(idxs.begin(), idxs.end());
+    std::vector<Index> vertices(idxs.begin(), idxs.end());
     std::sort(vertices.begin(), vertices.end());
 
     std::size_t hash_value = 0;
@@ -109,7 +109,7 @@ distance(const UVParam & p1, const UVParam & p2)
 }
 
 std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst)
+create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst)
 {
     std::vector<SideEntry> sset;
     sset.reserve(facets.size());
@@ -126,10 +126,10 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
     return sset;
 }
 
-std::vector<gidx_t>
+std::vector<Index>
 set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
 {
-    std::vector<gidx_t> sset;
+    std::vector<Index> sset;
     sset.reserve(side_set.size());
     for (auto & ent : side_set) {
         auto cell_connect = mesh.cone(ent.elem);

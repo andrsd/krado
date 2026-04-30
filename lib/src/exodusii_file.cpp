@@ -139,7 +139,7 @@ struct SideSet {
 
 using NodeSet = std::vector<int>;
 
-using VertexIdMap = std::map<Ptr<MeshVertexAbstract>, gidx_t>;
+using VertexIdMap = std::map<Ptr<MeshVertexAbstract>, Index>;
 using BlocksMap = std::map<Marker, std::vector<Element>>;
 using SideSetMap = std::map<Marker, SideSet>;
 using NodeSetMap = std::map<Marker, NodeSet>;
@@ -174,7 +174,7 @@ VertexIdMap
 build_points(const GeomModel & model)
 {
     VertexIdMap pnts;
-    gidx_t gid = 0;
+    Index gid = 0;
 
     for (auto & [id, v] : model.vertices()) {
         auto [_, inserted] = pnts.try_emplace(v, gid);
@@ -197,10 +197,10 @@ build_points(const GeomModel & model)
 }
 
 template <int N>
-std::array<gidx_t, N>
+std::array<Index, N>
 elem2idxs(const MeshElement & mesh_elem, const VertexIdMap & pnt_map)
 {
-    std::array<gidx_t, N> idxs;
+    std::array<Index, N> idxs;
     for (int i = 0; i < N; ++i) {
         auto vtx = mesh_elem.vertex(i);
         idxs[i] = pnt_map.at(vtx);
@@ -296,9 +296,9 @@ build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const Vert
     SideSetMap side_sets;
     NamesMap names;
 
-    std::map<gidx_t, std::vector<gidx_t>> vertex_to_elements_map;
-    std::map<gidx_t, const Element *> global_elem_map;
-    gidx_t elem_idx_counter = 0;
+    std::map<Index, std::vector<Index>> vertex_to_elements_map;
+    std::map<Index, const Element *> global_elem_map;
+    Index elem_idx_counter = 0;
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
             global_elem_map[elem_idx_counter] = &element;
@@ -315,13 +315,13 @@ build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const Vert
             Marker side_set_id = marker.value();
             names[side_set_id] = model.side_set_name(side_set_id);
 
-            gidx_t vertex_gidx = pnt_map.at(vertex);
+            Index vertex_gidx = pnt_map.at(vertex);
 
             const auto & a_elements = vertex_to_elements_map.find(vertex_gidx);
             if (a_elements != vertex_to_elements_map.end()) {
                 const auto & elements = a_elements->second;
                 if (!elements.empty()) {
-                    gidx_t elem_idx = elements[0];
+                    Index elem_idx = elements[0];
                     const Element * element = global_elem_map.at(elem_idx);
 
                     int local_side = -1;
@@ -350,8 +350,8 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
     SideSetMap side_sets;
     NamesMap names;
 
-    std::map<gidx_t, std::vector<gidx_t>> vertex_to_elements_map;
-    gidx_t elem_idx_counter = 0;
+    std::map<Index, std::vector<Index>> vertex_to_elements_map;
+    Index elem_idx_counter = 0;
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
             for (const auto & vertex_id : element.ids()) {
@@ -361,8 +361,8 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
         }
     }
 
-    gidx_t global_elem_idx = 0;
-    std::map<gidx_t, const Element *> global_elem_map;
+    Index global_elem_idx = 0;
+    std::map<Index, const Element *> global_elem_map;
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
             global_elem_map[global_elem_idx++] = &element;
@@ -381,12 +381,12 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
             auto v0_ptr = mseg.vertex(0);
             auto v1_ptr = mseg.vertex(1);
 
-            gidx_t v0_id = pnt_map.at(v0_ptr);
-            gidx_t v1_id = pnt_map.at(v1_ptr);
+            Index v0_id = pnt_map.at(v0_ptr);
+            Index v1_id = pnt_map.at(v1_ptr);
 
             const auto & elements_of_v0 = vertex_to_elements_map[v0_id];
 
-            for (gidx_t elem_idx : elements_of_v0) {
+            for (Index elem_idx : elements_of_v0) {
                 const auto * element = global_elem_map.at(elem_idx);
                 bool v1_found = false;
                 for (const auto & elem_vertex_id : element->ids()) {
@@ -507,9 +507,9 @@ build_blocks(const Mesh & mesh, std::map<std::size_t, int> & exii_elem_ids)
     NamesMap names;
 
     if (mesh.cell_set_ids().empty()) {
-        std::map<ElementType, std::vector<gidx_t>> elem_blks;
+        std::map<ElementType, std::vector<Index>> elem_blks;
         int exii_idx = 1;
-        for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
+        for (Index cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
             exii_elem_ids[cell_id] = exii_idx++;
             auto & cell = mesh.element(cell_id);
             auto et = cell.type();
@@ -561,7 +561,7 @@ build_blocks(const Mesh & mesh, std::map<std::size_t, int> & exii_elem_ids)
 /// @param exii_elem_ids Map that converts from krado cell IDs to exodus element numbers
 SideSet
 create_side_set(const Mesh & mesh,
-                const std::vector<gidx_t> & elem_ids,
+                const std::vector<Index> & elem_ids,
                 const std::map<std::size_t, int> & exii_elem_ids)
 {
     SideSet side_set;
@@ -661,10 +661,10 @@ element_type(const std::string elem_type_name)
 /// @param connect Element connectivity (ExodusII)
 /// @param n_elem_nodes Number of nodes per element
 /// @return Element vertex indices (krado)
-std::vector<gidx_t>
+std::vector<Index>
 build_element(const int * connect, int n_elem_nodes)
 {
-    std::vector<gidx_t> elem_connect(n_elem_nodes);
+    std::vector<Index> elem_connect(n_elem_nodes);
     // krado local vertex indices match ExodusII local vertex indices (they just start from 0)
     for (int i = 0; i < n_elem_nodes; ++i, ++connect)
         elem_connect[i] = *connect - 1;
@@ -843,7 +843,7 @@ ExodusIIFile::read()
     }
     else if (dim == 2) {
         for (auto & [id, sides] : side_sets) {
-            std::vector<gidx_t> edges;
+            std::vector<Index> edges;
             edges.reserve(sides.size());
             for (auto & ent : sides) {
                 auto cone = mesh.cone(ent.elem);
@@ -858,7 +858,7 @@ ExodusIIFile::read()
     }
     else if (dim == 3) {
         for (auto & [id, sides] : side_sets) {
-            std::vector<gidx_t> faces;
+            std::vector<Index> faces;
             faces.reserve(sides.size());
             for (auto & ent : sides) {
                 auto cone = mesh.cone(ent.elem);
@@ -874,7 +874,7 @@ ExodusIIFile::read()
 
     // node sets
     for (auto & [id, ns] : node_sets) {
-        std::vector<gidx_t> vertex_ids;
+        std::vector<Index> vertex_ids;
         vertex_ids.reserve(ns.size());
         for (auto & id : ns)
             vertex_ids.push_back(id + elems.size());
@@ -915,7 +915,7 @@ ExodusIIFile::read_points()
     return points;
 }
 
-std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>>
+std::tuple<std::vector<Element>, std::map<int, std::vector<Index>>>
 ExodusIIFile::read_elements()
 {
     this->exo_.read_blocks();
@@ -926,7 +926,7 @@ ExodusIIFile::read_elements()
     std::vector<Element> elems;
     elems.reserve(n);
 
-    std::map<int, std::vector<gidx_t>> cell_sets;
+    std::map<int, std::vector<Index>> cell_sets;
     for (auto & eb : this->exo_.get_element_blocks()) {
         auto et = element_type(eb.get_element_type());
         auto connect = eb.get_connectivity();

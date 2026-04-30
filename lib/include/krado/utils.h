@@ -75,13 +75,13 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param element_connect The connectivity of the element
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
-[[nodiscard]] std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
-                                              const std::vector<int> & idxs);
+[[nodiscard]] std::vector<Index> sub_connect(const std::vector<Index> & element_connect,
+                                             const std::vector<int> & idxs);
 
-[[nodiscard]] inline std::array<gidx_t, 2>
-edge_connect(const std::vector<gidx_t> & element_connect, const std::array<int, 2> & idxs)
+[[nodiscard]] inline std::array<Index, 2>
+edge_connect(const std::vector<Index> & element_connect, const std::array<int, 2> & idxs)
 {
-    std::array<gidx_t, 2> econ;
+    std::array<Index, 2> econ;
     econ[0] = element_connect[idxs[0]];
     econ[1] = element_connect[idxs[1]];
     return econ;
@@ -92,7 +92,7 @@ edge_connect(const std::vector<gidx_t> & element_connect, const std::array<int, 
 /// @param id The index to create a key from
 /// @return The key
 [[nodiscard]] inline std::size_t
-key(const std::size_t id)
+key(const Index id)
 {
     std::size_t hash_value = 0;
     boost::hash_combine(hash_value, id);
@@ -100,9 +100,9 @@ key(const std::size_t id)
 }
 
 [[nodiscard]] inline std::size_t
-key(const std::array<gidx_t, 2> & idxs)
+key(const std::array<Index, 2> & idxs)
 {
-    std::array<gidx_t, 2> vertices;
+    std::array<Index, 2> vertices;
     if (idxs[0] <= idxs[1]) {
         vertices[0] = idxs[0];
         vertices[1] = idxs[1];
@@ -123,7 +123,7 @@ key(const std::array<gidx_t, 2> & idxs)
 ///
 /// @param idxs The indices to create a key from
 /// @return The key
-[[nodiscard]] std::size_t key(const std::vector<gidx_t> & idxs);
+[[nodiscard]] std::size_t key(const std::vector<Index> & idxs);
 
 /// Get map keys
 template <typename K, typename V>
@@ -235,14 +235,14 @@ unreachable()
 /// @param facets Facets/edges
 /// @return Side set
 std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0);
+create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst = 0);
 
 /// Create an edge/face set from a side set
 ///
 /// @param mesh Mesh object
 /// @param side_set Side set
 /// @return Edge/face set
-std::vector<gidx_t> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
+std::vector<Index> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
 
 /// Build segments for a curve
 ///

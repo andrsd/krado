@@ -291,7 +291,7 @@ combine(const std::vector<Mesh> & parts)
         }
     }
     std::map<Marker, std::string> cell_set_names;
-    std::map<Marker, std::vector<gidx_t>> cell_sets;
+    std::map<Marker, std::vector<Index>> cell_sets;
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
     for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {

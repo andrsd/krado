@@ -23,7 +23,7 @@ using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 
 /// Global indexing type
-using gidx_t = std::size_t;
+using Index = std::uint32_t;
 ///
 template <typename T>
 using Optional = std::optional<T>;
@@ -56,11 +56,11 @@ enum class ElementType : u8 {
 /// Side set entry
 struct SideEntry {
     /// Element ID
-    gidx_t elem;
+    Index elem;
     /// Local side number
     std::size_t side;
 
-    SideEntry(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
+    SideEntry(Index elem, std::size_t side) : elem(elem), side(side) {}
 };
 
 /// Equality operator for side set entry

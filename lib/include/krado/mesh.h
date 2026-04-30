@@ -59,7 +59,7 @@ public:
     ///
     /// @param idx Index of the point
     /// @return Point
-    [[nodiscard]] const Point & point(gidx_t idx) const;
+    [[nodiscard]] const Point & point(Index idx) const;
 
     /// Get elements
     ///
@@ -70,7 +70,7 @@ public:
     ///
     /// @param idx Index of the element
     /// @return Element
-    [[nodiscard]] const Element & element(gidx_t idx) const;
+    [[nodiscard]] const Element & element(Index idx) const;
 
     /// Scale mesh by a factor (isotropic)
     ///
@@ -165,14 +165,14 @@ public:
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    [[nodiscard]] const std::vector<gidx_t> & cell_set(Marker id) const;
+    [[nodiscard]] const std::vector<Index> & cell_set(Marker id) const;
 
     /// Set cell set
     ///
     /// @param id Cell set ID
     /// @param cell_ids Cell IDs
     /// @return Reference to this mesh
-    Mesh & set_cell_set(Marker id, const std::vector<gidx_t> & cell_ids);
+    Mesh & set_cell_set(Marker id, const std::vector<Index> & cell_ids);
 
     /// Remove cell sets
     ///
@@ -199,14 +199,14 @@ public:
     ///
     /// @param id Face set ID
     /// @return Face set
-    [[nodiscard]] const std::vector<gidx_t> & face_set(Marker id) const;
+    [[nodiscard]] const std::vector<Index> & face_set(Marker id) const;
 
     /// Set face set
     ///
     /// @param id Face set ID
     /// @param face_ids Face IDs
     /// @return Reference to this mesh
-    Mesh & set_face_set(Marker id, const std::vector<gidx_t> & face_ids);
+    Mesh & set_face_set(Marker id, const std::vector<Index> & face_ids);
 
     /// Remove face sets
     ///
@@ -233,14 +233,14 @@ public:
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    [[nodiscard]] const std::vector<gidx_t> & edge_set(Marker id) const;
+    [[nodiscard]] const std::vector<Index> & edge_set(Marker id) const;
 
     /// Set edge set
     ///
     /// @param id Edge set ID
     /// @param edge_ids Edge IDs
     /// @return Reference to this mesh
-    Mesh & set_edge_set(Marker id, const std::vector<gidx_t> & edge_ids);
+    Mesh & set_edge_set(Marker id, const std::vector<Index> & edge_ids);
 
     /// Remove edge sets
     ///
@@ -269,14 +269,14 @@ public:
     ///
     /// @param id Vertex set ID
     /// @return Vertex set
-    [[nodiscard]] const std::vector<gidx_t> & vertex_set(Marker id) const;
+    [[nodiscard]] const std::vector<Index> & vertex_set(Marker id) const;
 
     /// Set vertex set
     ///
     /// @param id Vertex set ID
     /// @param vertex_ids Vertex IDs
     /// @return Reference to this mesh
-    Mesh & set_vertex_set(Marker id, const std::vector<gidx_t> & vertex_ids);
+    Mesh & set_vertex_set(Marker id, const std::vector<Index> & vertex_ids);
 
     /// Remove vertex sets
     ///
@@ -312,24 +312,24 @@ public:
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    [[nodiscard]] std::vector<gidx_t> support(gidx_t index) const;
+    [[nodiscard]] std::vector<Index> support(Index index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    [[nodiscard]] std::vector<gidx_t> cone(gidx_t index) const;
+    [[nodiscard]] std::vector<Index> cone(Index index) const;
 
     /// Get cone vertices of a mesh node
     ///
     /// @param index Index of the node
     /// @return Cone vertices
-    [[nodiscard]] std::set<gidx_t> cone_vertices(gidx_t index) const;
+    [[nodiscard]] std::set<Index> cone_vertices(Index index) const;
 
     /// Get element type
     ///
     /// @param index Index of the element
     /// @return Element type
-    [[nodiscard]] ElementType element_type(gidx_t index) const;
+    [[nodiscard]] ElementType element_type(Index index) const;
 
     /// Prepare mesh
     void set_up();
@@ -337,34 +337,34 @@ public:
     /// Get all boundary edge IDs
     ///
     /// @return Boundary edge IDs
-    [[nodiscard]] std::vector<gidx_t> boundary_edges() const;
+    [[nodiscard]] std::vector<Index> boundary_edges() const;
 
     /// Get all boundary face IDs
     ///
     /// @return Boundary face IDs
-    [[nodiscard]] std::vector<gidx_t> boundary_faces() const;
+    [[nodiscard]] std::vector<Index> boundary_faces() const;
 
     /// Compute centroid
     ///
     /// @param index Index of the element
     /// @return Centroid
-    [[nodiscard]] Point compute_centroid(gidx_t index) const;
+    [[nodiscard]] Point compute_centroid(Index index) const;
 
     /// Compute outward normal
     ///
     /// @param index Index of the edge/face
     /// @return Outward normal
-    [[nodiscard]] Vector outward_normal(gidx_t index) const;
+    [[nodiscard]] Vector outward_normal(Index index) const;
 
 private:
     void build_hasse_diagram();
 
     void
-    hasse_add_edge(gidx_t parent_node_id, const std::array<gidx_t, 2> & edge_connect)
+    hasse_add_edge(Index parent_node_id, const std::array<Index, 2> & edge_connect)
     {
         auto k = utils::key(edge_connect);
         if (this->key_map_.find(k) == this->key_map_.end()) {
-            gidx_t edge_node_id = this->hasse_.size();
+            Index edge_node_id = this->hasse_.size();
             this->key_map_[k] = edge_node_id;
             this->hasse_.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
             this->hasse_.add_edge(parent_node_id, edge_node_id);
@@ -377,7 +377,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_faces(gidx_t id, const Element & elem)
+    hasse_add_faces(Index id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
         auto elem_node_id = this->key_map_[iid];
@@ -401,7 +401,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_face_edges(gidx_t id, const Element & elem)
+    hasse_add_face_edges(Index id, const Element & elem)
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
@@ -419,7 +419,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_edges(gidx_t id, const Element & elem)
+    hasse_add_edges(Index id, const Element & elem)
     {
         auto iid = utils::key(-(id + 1));
         auto elem_node_id = this->key_map_[iid];
@@ -433,7 +433,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_edge_vertices(gidx_t id, const Element & elem)
+    hasse_add_edge_vertices(Index id, const Element & elem)
     {
         const auto & elem_connect = elem.ids();
         for (std::size_t j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
@@ -458,24 +458,24 @@ private:
     /// Cell set names
     std::map<Marker, std::string> cell_set_names_;
     /// Cell sets
-    std::map<Marker, std::vector<gidx_t>> cell_sets_;
+    std::map<Marker, std::vector<Index>> cell_sets_;
     /// Face set names
     std::map<Marker, std::string> face_set_names_;
     /// Face sets
-    std::map<Marker, std::vector<gidx_t>> face_sets_;
+    std::map<Marker, std::vector<Index>> face_sets_;
     /// Edge set names
     std::map<Marker, std::string> edge_set_names_;
     /// Edge sets
-    std::map<Marker, std::vector<gidx_t>> edge_sets_;
+    std::map<Marker, std::vector<Index>> edge_sets_;
     /// Vertex set names
     std::map<Marker, std::string> vertex_set_names_;
     /// Vertex sets
-    std::map<Marker, std::vector<gidx_t>> vertex_sets_;
+    std::map<Marker, std::vector<Index>> vertex_sets_;
 
     /// Hasse diagram representing the mesh
     HasseDiagram hasse_;
     /// Map of keys to node IDs
-    std::unordered_map<std::size_t, gidx_t> key_map_;
+    std::unordered_map<std::size_t, Index> key_map_;
 };
 
 /// Compute bounding box around the mesh

@@ -232,7 +232,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Element>(m, "Element")
-        .def(py::init<ElementType, const std::vector<gidx_t> &>())
+        .def(py::init<ElementType, const std::vector<Index> &>())
         .def("type", py::overload_cast<>(&Element::type, py::const_))
         .def("num_vertices", &Element::num_vertices)
         .def("vertex_id", &Element::vertex_id)

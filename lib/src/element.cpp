@@ -75,7 +75,7 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(ElementType type, const std::vector<gidx_t> & vtx_ids) :
+Element::Element(ElementType type, const std::vector<Index> & vtx_ids) :
     elem_type_(type),
     vtx_id_(vtx_ids)
 {
@@ -93,32 +93,32 @@ Element::num_vertices() const
     return this->vtx_id_.size();
 }
 
-gidx_t
+Index
 Element::vertex_id(int idx) const
 {
     return this->vtx_id_[idx];
 }
 
-gidx_t
+Index
 Element::operator()(int idx) const
 {
     return this->vtx_id_[idx];
 }
 
-const std::vector<gidx_t> &
+const std::vector<Index> &
 Element::ids() const
 {
     return this->vtx_id_;
 }
 
-gidx_t
+Index
 Element::id(int idx) const
 {
     return this->vtx_id_[idx];
 }
 
 void
-Element::set_ids(const std::vector<gidx_t> & ids)
+Element::set_ids(const std::vector<Index> & ids)
 {
     if (this->vtx_id_.size() == ids.size())
         this->vtx_id_ = ids;
@@ -127,47 +127,47 @@ Element::set_ids(const std::vector<gidx_t> & ids)
 }
 
 Element
-Element::Line2(const std::array<gidx_t, 2> & ids)
+Element::Line2(const std::array<Index, 2> & ids)
 {
     Element line2(ElementType::LINE2, { ids[0], ids[1] });
     return line2;
 }
 
 Element
-Element::Tri3(const std::array<gidx_t, 3> & ids)
+Element::Tri3(const std::array<Index, 3> & ids)
 {
     return Element(ElementType::TRI3, { ids[0], ids[1], ids[2] });
 }
 
 Element
-Element::Quad4(const std::array<gidx_t, 4> & ids)
+Element::Quad4(const std::array<Index, 4> & ids)
 {
     return Element(ElementType::QUAD4, { ids[0], ids[1], ids[2], ids[3] });
 }
 
 Element
-Element::Tetra4(const std::array<gidx_t, 4> & ids)
+Element::Tetra4(const std::array<Index, 4> & ids)
 {
     Element tet4(ElementType::TETRA4, { ids[0], ids[1], ids[2], ids[3] });
     return tet4;
 }
 
 Element
-Element::Pyramid5(const std::array<gidx_t, 5> & ids)
+Element::Pyramid5(const std::array<Index, 5> & ids)
 {
     Element pyr5(ElementType::PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
     return pyr5;
 }
 
 Element
-Element::Prism6(const std::array<gidx_t, 6> & ids)
+Element::Prism6(const std::array<Index, 6> & ids)
 {
     Element wed6(ElementType::PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
     return wed6;
 }
 
 Element
-Element::Hex8(const std::array<gidx_t, 8> & ids)
+Element::Hex8(const std::array<Index, 8> & ids)
 {
     Element hex8(ElementType::HEX8,
                  { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });

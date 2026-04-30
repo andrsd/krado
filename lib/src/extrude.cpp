@@ -24,7 +24,7 @@ template <>
 Element
 extrude_element<ElementType::LINE2>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Quad4::N_VERTICES> ids;
+    std::array<Index, Quad4::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
     ids[1] = el(1) + layer * layer_stride;
     ids[2] = el(1) + (layer + 1) * layer_stride;
@@ -36,7 +36,7 @@ template <>
 Element
 extrude_element<ElementType::TRI3>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Prism6::N_VERTICES> ids;
+    std::array<Index, Prism6::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
     ids[1] = el(1) + layer * layer_stride;
     ids[2] = el(2) + layer * layer_stride;
@@ -50,7 +50,7 @@ template <>
 Element
 extrude_element<ElementType::QUAD4>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Hex8::N_VERTICES> ids;
+    std::array<Index, Hex8::N_VERTICES> ids;
     ids[0] = el(0) + layer * layer_stride;
     ids[1] = el(1) + layer * layer_stride;
     ids[2] = el(2) + layer * layer_stride;
@@ -164,7 +164,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     // extrude cell sets
     for (auto & id : mesh.cell_set_ids()) {
         auto & cells = mesh.cell_set(id);
-        std::vector<gidx_t> cell_set;
+        std::vector<Index> cell_set;
         cell_set.reserve(cells.size() * thicknesses.size());
         for (std::size_t i = 0; i < thicknesses.size(); ++i) {
             for (auto & cell : cells)

@@ -42,7 +42,7 @@ private:
     /// Read elements
     ///
     /// @return Vector of elements
-    [[nodiscard]] std::tuple<std::vector<Element>, std::map<int, std::vector<gidx_t>>>
+    [[nodiscard]] std::tuple<std::vector<Element>, std::map<int, std::vector<Index>>>
     read_elements();
 
     /// Read side sets

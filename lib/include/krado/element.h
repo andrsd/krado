@@ -19,7 +19,7 @@ public:
     ///
     /// @param type Element type
     /// @param vtx_ids Vertex IDs composing the element
-    Element(ElementType type, const std::vector<gidx_t> & vtx_ids);
+    Element(ElementType type, const std::vector<Index> & vtx_ids);
 
     /// Get element type
     ///
@@ -35,45 +35,45 @@ public:
     ///
     /// @param idx Local vertex index
     /// @return Vertex ID
-    [[nodiscard]] gidx_t vertex_id(int idx) const;
+    [[nodiscard]] Index vertex_id(int idx) const;
 
     /// Call operator to access vertex index
     ///
     /// @param idx Vertex index
     /// @return Vertex ID
-    [[nodiscard]] gidx_t operator()(int idx) const;
+    [[nodiscard]] Index operator()(int idx) const;
 
     /// Get vertex IDs
     ///
     /// @return Vertex IDs
-    [[nodiscard]] const std::vector<gidx_t> & ids() const;
+    [[nodiscard]] const std::vector<Index> & ids() const;
 
     /// Get vertex IDs
     ///
     /// @param idx Local vertex index
     /// @return Vertex IDs
-    [[nodiscard]] gidx_t id(int idx) const;
+    [[nodiscard]] Index id(int idx) const;
 
     /// Set element connectivity. This is good for element renumbering. This cannot be used for
     /// changing element type.
     ///
     /// @param ids Vertex IDs
-    void set_ids(const std::vector<gidx_t> & ids);
+    void set_ids(const std::vector<Index> & ids);
 
 private:
     ElementType elem_type_;
-    std::vector<gidx_t> vtx_id_;
+    std::vector<Index> vtx_id_;
 
 public:
     [[nodiscard]] static std::string type(ElementType type);
-    [[nodiscard]] static Element Point(gidx_t id);
-    [[nodiscard]] static Element Line2(const std::array<gidx_t, 2> & ids);
-    [[nodiscard]] static Element Tri3(const std::array<gidx_t, 3> & ids);
-    [[nodiscard]] static Element Quad4(const std::array<gidx_t, 4> & ids);
-    [[nodiscard]] static Element Tetra4(const std::array<gidx_t, 4> & ids);
-    [[nodiscard]] static Element Pyramid5(const std::array<gidx_t, 5> & ids);
-    [[nodiscard]] static Element Prism6(const std::array<gidx_t, 6> & ids);
-    [[nodiscard]] static Element Hex8(const std::array<gidx_t, 8> & ids);
+    [[nodiscard]] static Element Point(Index id);
+    [[nodiscard]] static Element Line2(const std::array<Index, 2> & ids);
+    [[nodiscard]] static Element Tri3(const std::array<Index, 3> & ids);
+    [[nodiscard]] static Element Quad4(const std::array<Index, 4> & ids);
+    [[nodiscard]] static Element Tetra4(const std::array<Index, 4> & ids);
+    [[nodiscard]] static Element Pyramid5(const std::array<Index, 5> & ids);
+    [[nodiscard]] static Element Prism6(const std::array<Index, 6> & ids);
+    [[nodiscard]] static Element Hex8(const std::array<Index, 8> & ids);
 
     friend class Mesh;
 };

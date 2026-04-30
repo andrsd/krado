@@ -142,10 +142,10 @@ TEST(ExodusIIFileTest, write_2d)
     mesh.set_up();
     mesh.set_cell_set(1, { 0 });
     mesh.set_cell_set(2, { 1 });
-    std::vector<std::size_t> edges_left = { 8 };
+    std::vector<Index> edges_left = { 8 };
     mesh.set_face_set(100, edges_left);
     mesh.set_face_set_name(100, "left");
-    std::vector<std::size_t> edges_right = { 9 };
+    std::vector<Index> edges_right = { 9 };
     mesh.set_face_set(101, edges_right);
 
     ExodusIIFile f("sq-2d.exo");
