@@ -237,7 +237,6 @@ PYBIND11_MODULE(krado, m)
         .def("num_vertices", &Element::num_vertices)
         .def("vertex_id", &Element::vertex_id)
         .def("ids", &Element::ids)
-        .def("set_ids", &Element::set_ids)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")

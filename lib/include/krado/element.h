@@ -128,11 +128,10 @@ public:
     /// @return Vertex IDs
     [[nodiscard]] Index id(int idx) const;
 
-    /// Set element connectivity. This is good for element renumbering. This cannot be used for
-    /// changing element type.
+    /// Shift element indices by offset
     ///
-    /// @param ids Vertex IDs
-    void set_ids(const std::vector<Index> & ids);
+    /// @param ofst Offset by which we shift the indices
+    void shift(Index ofst);
 
 private:
     /// Element type

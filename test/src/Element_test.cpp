@@ -40,3 +40,12 @@ TEST(MeshElementTest, str_type)
     EXPECT_EQ(Element::type(ElementType::TRI3), "TRI3");
     EXPECT_EQ(Element::type(ElementType::TETRA4), "TETRA4");
 }
+
+TEST(ElementTest, shift)
+{
+    auto elem = Element::Tri3({ 1, 5, 9 });
+    elem.shift(10);
+    EXPECT_EQ(elem.id(0), 11);
+    EXPECT_EQ(elem.id(1), 15);
+    EXPECT_EQ(elem.id(2), 19);
+}

@@ -271,10 +271,7 @@ combine(const std::vector<Mesh> & parts)
         auto & p = parts[i];
         for (std::size_t j = 0; j < p.num_elements(); ++j, ++k) {
             auto & elem = elements[k];
-            auto ids = elem.ids();
-            for (auto & id : ids)
-                id += pts_shift[i];
-            elem.set_ids(ids);
+            elem.shift(pts_shift[i]);
         }
     }
 

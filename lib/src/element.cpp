@@ -118,12 +118,10 @@ Element::id(int idx) const
 }
 
 void
-Element::set_ids(const std::vector<Index> & ids)
+Element::shift(Index ofst)
 {
-    if (this->vtx_id_.size() == ids.size())
-        this->vtx_id_ = ids;
-    else
-        throw Exception("Element::set_ids: size mismatch");
+    for (auto & id : this->vtx_id_)
+        id += ofst;
 }
 
 Element
