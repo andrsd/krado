@@ -813,7 +813,7 @@ ExodusIIFile::read()
 
     auto cell_set_names = this->exo_.read_block_names();
 
-    std::map<int, std::vector<side_set_entry_t>> side_sets;
+    std::map<int, std::vector<SideEntry>> side_sets;
     std::map<int, std::string> side_set_names;
     if (this->exo_.get_num_side_sets() > 0) {
         side_sets = read_side_sets(elems);
@@ -942,10 +942,10 @@ ExodusIIFile::read_elements()
     return { elems, cell_sets };
 }
 
-std::map<int, std::vector<side_set_entry_t>>
+std::map<int, std::vector<SideEntry>>
 ExodusIIFile::read_side_sets(const std::vector<Element> & elems)
 {
-    std::map<int, std::vector<side_set_entry_t>> side_sets;
+    std::map<int, std::vector<SideEntry>> side_sets;
     this->exo_.read_side_sets();
     for (auto & ss : this->exo_.get_side_sets()) {
         auto id = ss.get_id();

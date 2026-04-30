@@ -49,7 +49,7 @@ private:
     ///
     /// @param elems Vector of elements
     /// @return Vector of side set entries
-    [[nodiscard]] std::map<int, std::vector<side_set_entry_t>>
+    [[nodiscard]] std::map<int, std::vector<SideEntry>>
     read_side_sets(const std::vector<Element> & elems);
 
     /// Read node sets

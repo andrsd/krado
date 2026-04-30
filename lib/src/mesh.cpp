@@ -190,7 +190,7 @@ expand_size(std::unordered_map<Marker, std::size_t> & sizes,
 }
 
 void
-append(std::vector<side_set_entry_t> & dest, const std::vector<side_set_entry_t> & src)
+append(std::vector<SideEntry> & dest, const std::vector<SideEntry> & src)
 {
     dest.insert(dest.end(), src.begin(), src.end());
 }
@@ -343,7 +343,7 @@ Mesh::add(const Mesh & other)
     }
 
     // merge face sets
-    std::map<Marker, std::vector<side_set_entry_t>> face_side_sets;
+    std::map<Marker, std::vector<SideEntry>> face_side_sets;
     {
         std::unordered_map<Marker, std::size_t> face_side_sets_size;
         expand_size(face_side_sets_size, this->face_sets_);
@@ -368,7 +368,7 @@ Mesh::add(const Mesh & other)
         }
     }
     // merge edge sets
-    std::map<Marker, std::vector<side_set_entry_t>> edge_side_sets;
+    std::map<Marker, std::vector<SideEntry>> edge_side_sets;
     {
         std::unordered_map<Marker, std::size_t> edge_side_sets_size;
         expand_size(edge_side_sets_size, this->edge_sets_);

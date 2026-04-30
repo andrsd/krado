@@ -149,7 +149,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         }
     }
 
-    std::map<Marker, std::vector<side_set_entry_t>> side_sets;
+    std::map<Marker, std::vector<SideEntry>> side_sets;
     if (dim == 1) {
         for (const auto & id : mesh.vertex_set_ids())
             side_sets[id] = utils::create_side_set(mesh, mesh.vertex_set(id));
@@ -177,7 +177,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     // extrude side sets
     if (dim == 1) {
         for (auto & [id, ss] : side_sets) {
-            std::vector<side_set_entry_t> extruded_side_sets;
+            std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
             for (std::size_t i = 0; i < thicknesses.size(); ++i) {
                 for (auto & entry : ss) {
@@ -200,7 +200,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     }
     else if (dim == 2) {
         for (auto & [id, ss] : side_sets) {
-            std::vector<side_set_entry_t> extruded_side_sets;
+            std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
             for (std::size_t i = 0; i < thicknesses.size(); ++i) {
                 for (auto & entry : ss) {

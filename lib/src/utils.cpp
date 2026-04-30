@@ -108,10 +108,10 @@ distance(const UVParam & p1, const UVParam & p2)
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);
 }
 
-std::vector<side_set_entry_t>
+std::vector<SideEntry>
 create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst)
 {
-    std::vector<side_set_entry_t> sset;
+    std::vector<SideEntry> sset;
     sset.reserve(facets.size());
     for (auto & f : facets) {
         auto support = mesh.support(f);
@@ -127,7 +127,7 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
 }
 
 std::vector<gidx_t>
-set_from_side_set(const Mesh & mesh, const std::vector<side_set_entry_t> & side_set)
+set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
 {
     std::vector<gidx_t> sset;
     sset.reserve(side_set.size());

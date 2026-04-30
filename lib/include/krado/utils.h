@@ -234,7 +234,7 @@ unreachable()
 /// @param mesh Mesh object
 /// @param facets Facets/edges
 /// @return Side set
-std::vector<side_set_entry_t>
+std::vector<SideEntry>
 create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0);
 
 /// Create an edge/face set from a side set
@@ -242,8 +242,7 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
 /// @param mesh Mesh object
 /// @param side_set Side set
 /// @return Edge/face set
-std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
-                                      const std::vector<side_set_entry_t> & side_set);
+std::vector<gidx_t> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
 
 /// Build segments for a curve
 ///
