@@ -34,7 +34,7 @@ using ShapeID = std::int32_t;
 /// Marker type
 using Marker = std::int32_t;
 
-enum class ElementType {
+enum class ElementType : u8 {
     /// 0-D element
     POINT,
     /// 1-D element
