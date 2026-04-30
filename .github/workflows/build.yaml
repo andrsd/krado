@@ -56,7 +56,7 @@ jobs:
             fmt=11.* \
             eigen=3.* \
             libboost-devel>=1.88 \
-            gtest \
+            gtest=1.17 \
             pybind11 \
             pytest \
             flake8 \
