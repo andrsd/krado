@@ -18,6 +18,9 @@ namespace krado {
 
 namespace {
 
+/// Local indexing type
+using lidx_t = unsigned int;
+
 template <ElementType ET>
 std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
 nodes_to_tet_nodes_determiner(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el);
