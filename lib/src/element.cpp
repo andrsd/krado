@@ -75,10 +75,15 @@ const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2,
 
 //
 
-Element::Element(ElementType type, const std::vector<Index> & vtx_ids) :
-    elem_type_(type),
-    vtx_id_(vtx_ids)
+Element::Element(ElementType type, const std::vector<Index> & vtx_ids) : elem_type_(type)
 {
+    if (vtx_ids.size() < MAX_INDICES) {
+        this->n_ids_ = vtx_ids.size();
+        for (int i = 0; i < this->n_ids_; i++)
+            this->vtx_id_[i] = vtx_ids[i];
+    }
+    else
+        throw Exception("Unable to handle more then {} indices", MAX_INDICES);
 }
 
 ElementType
@@ -90,7 +95,7 @@ Element::type() const
 int
 Element::num_vertices() const
 {
-    return this->vtx_id_.size();
+    return this->n_ids_;
 }
 
 Index
@@ -99,65 +104,59 @@ Element::index(int idx) const
     return this->vtx_id_[idx];
 }
 
-const std::vector<Index> &
+Span<const Index>
 Element::indices() const
 {
-    return this->vtx_id_;
+    return { this->vtx_id_.data(), this->n_ids_ };
 }
 
 void
 Element::shift(Index ofst)
 {
-    for (auto & id : this->vtx_id_)
-        id += ofst;
+    for (int i = 0; i < this->n_ids_; i++)
+        this->vtx_id_[i] += ofst;
 }
 
 Element
 Element::Line2(const std::array<Index, 2> & ids)
 {
-    Element line2(ElementType::LINE2, { ids[0], ids[1] });
-    return line2;
+    return Element(ElementType::LINE2, ids);
 }
 
 Element
 Element::Tri3(const std::array<Index, 3> & ids)
 {
-    return Element(ElementType::TRI3, { ids[0], ids[1], ids[2] });
+    return Element(ElementType::TRI3, ids);
 }
 
 Element
 Element::Quad4(const std::array<Index, 4> & ids)
 {
-    return Element(ElementType::QUAD4, { ids[0], ids[1], ids[2], ids[3] });
+    return Element(ElementType::QUAD4, ids);
 }
 
 Element
 Element::Tetra4(const std::array<Index, 4> & ids)
 {
-    Element tet4(ElementType::TETRA4, { ids[0], ids[1], ids[2], ids[3] });
-    return tet4;
+    return Element(ElementType::TETRA4, ids);
 }
 
 Element
 Element::Pyramid5(const std::array<Index, 5> & ids)
 {
-    Element pyr5(ElementType::PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
-    return pyr5;
+    return Element(ElementType::PYRAMID5, ids);
 }
 
 Element
 Element::Prism6(const std::array<Index, 6> & ids)
 {
-    Element wed6(ElementType::PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
-    return wed6;
+    return Element(ElementType::PRISM6, ids);
 }
 
 Element
 Element::Hex8(const std::array<Index, 8> & ids)
 {
-    Element hex8(ElementType::HEX8,
-                 { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });
-    return hex8;
+    return Element(ElementType::HEX8, ids);
 }
 
 std::string

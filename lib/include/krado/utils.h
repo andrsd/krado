@@ -75,11 +75,11 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param element_connect The connectivity of the element
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
-[[nodiscard]] std::vector<Index> sub_connect(const std::vector<Index> & element_connect,
+[[nodiscard]] std::vector<Index> sub_connect(Span<const Index> element_connect,
                                              const std::vector<int> & idxs);
 
 [[nodiscard]] inline std::array<Index, 2>
-edge_connect(const std::vector<Index> & element_connect, const std::array<int, 2> & idxs)
+edge_connect(Span<const Index> element_connect, const std::array<int, 2> & idxs)
 {
     std::array<Index, 2> econ;
     econ[0] = element_connect[idxs[0]];
@@ -166,6 +166,15 @@ template <std::size_t N,
 to_array(Iter iter) -> std::array<T, N>
 {
     return to_array<T>(iter, std::make_index_sequence<N> {});
+}
+
+template <std::size_t N, typename T>
+[[nodiscard]] constexpr auto
+to_array(Span<const T> span) -> std::array<T, N>
+{
+    std::array<T, N> arr;
+    std::memcpy(arr.data(), span.data(), N * sizeof(T));
+    return arr;
 }
 
 template <typename T>

@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <span>
 
 namespace krado {
 
@@ -27,6 +28,9 @@ using Index = std::uint32_t;
 ///
 template <typename T>
 using Optional = std::optional<T>;
+
+template <typename T>
+using Span = std::span<T>;
 
 /// Shape identifier
 using ShapeID = std::int32_t;
@@ -50,7 +54,9 @@ enum class ElementType : u8 {
     /// Prism
     PRISM6,
     /// Hexahedron
-    HEX8
+    HEX8,
+    /// Invalid
+    INVALID
 };
 
 /// Side set entry

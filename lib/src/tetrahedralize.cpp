@@ -52,7 +52,7 @@ template <ElementType ET>
 std::vector<std::array<Index, Tetra4::N_VERTICES>>
 split_elem(const Element & elem)
 {
-    auto connect = utils::to_array<ElementSelector<ET>::N_VERTICES>(elem.indices().cbegin());
+    auto connect = utils::to_array<ElementSelector<ET>::N_VERTICES>(elem.indices());
     return elem_splitter<ET>(connect);
 }
 
