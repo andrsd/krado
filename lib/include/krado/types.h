@@ -76,4 +76,11 @@ operator==(const SideEntry & lhs, const SideEntry & rhs)
     return lhs.elem == rhs.elem && lhs.side == rhs.side;
 }
 
+enum class QuadSplitMode {
+    /// Split into 2 triangles
+    SPLIT2,
+    /// Split into 4 triangles
+    SPLIT4
+};
+
 } // namespace krado

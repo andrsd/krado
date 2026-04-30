@@ -137,6 +137,34 @@ MeshSurface::add_element(MeshElement tri)
 }
 
 void
+MeshSurface::quads_to_tris(QuadSplitMode mode)
+{
+    if (this->quads_.empty())
+        return;
+
+    for (const auto & quad : this->quads_) {
+        auto v = quad.vertices();
+        if (mode == QuadSplitMode::SPLIT2) {
+            add_triangle({ v[0], v[1], v[2] });
+            add_triangle({ v[2], v[3], v[0] });
+        }
+        else if (mode == QuadSplitMode::SPLIT4) {
+            const auto & gsurf = geom_surface();
+            Point center_pt =
+                0.25 * (v[0]->point() + v[1]->point() + v[2]->point() + v[3]->point());
+            auto uv = gsurf.parameter_from_point(center_pt);
+
+            auto center_vtx = Ptr<MeshSurfaceVertex>::alloc(this->gsurface_, uv);
+            add_triangle({ v[0], v[1], center_vtx });
+            add_triangle({ v[1], v[2], center_vtx });
+            add_triangle({ v[2], v[3], center_vtx });
+            add_triangle({ v[3], v[0], center_vtx });
+        }
+    }
+    this->quads_.clear();
+}
+
+void
 MeshSurface::reserve_mem(std::size_t n_vtxs, std::size_t n_tris)
 {
     this->tris_.reserve(n_tris);

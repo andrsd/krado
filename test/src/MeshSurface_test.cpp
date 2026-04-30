@@ -68,3 +68,43 @@ TEST(MeshSurfaceTest, op_shl_rect)
     EXPECT_EQ(ss.str(),
               "Surface 1: curves=[1, 2, 3, 4], (u, v)=[-1.5, 1.5]x[-1.25, 1.25], area=7.5");
 }
+
+TEST(MeshSurfaceTest, quads_to_tris_2)
+{
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 1, 0));
+    GeomModel model(rect);
+    auto msurface = model.surface(1);
+
+    auto v0 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 0.);
+    auto v1 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 0.);
+    auto v2 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 1.);
+    auto v3 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 1.);
+    msurface->add_quadrangle({ v0, v1, v2, v3 });
+
+    EXPECT_EQ(msurface->quadrangles().size(), 1);
+    EXPECT_EQ(msurface->triangles().size(), 0);
+
+    msurface->quads_to_tris();
+    EXPECT_EQ(msurface->quadrangles().size(), 0);
+    EXPECT_EQ(msurface->triangles().size(), 2);
+}
+
+TEST(MeshSurfaceTest, quads_to_tris_4)
+{
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 1, 0));
+    GeomModel model(rect);
+    auto msurface = model.surface(1);
+
+    auto v0 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 0.);
+    auto v1 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 0.);
+    auto v2 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 1.);
+    auto v3 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 1.);
+    msurface->add_quadrangle({ v0, v1, v2, v3 });
+
+    EXPECT_EQ(msurface->quadrangles().size(), 1);
+    EXPECT_EQ(msurface->triangles().size(), 0);
+
+    msurface->quads_to_tris(QuadSplitMode::SPLIT4);
+    EXPECT_EQ(msurface->quadrangles().size(), 0);
+    EXPECT_EQ(msurface->triangles().size(), 4);
+}
