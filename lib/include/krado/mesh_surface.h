@@ -94,6 +94,11 @@ public:
 
     void add_element(MeshElement tri);
 
+    /// Convert all quadrangles to triangles
+    ///
+    /// @param mode Splitting mode
+    void quads_to_tris(QuadSplitMode mode = QuadSplitMode::SPLIT2);
+
     /// Reserve memory for vertices and triangles
     void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
 

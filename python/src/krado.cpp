@@ -609,6 +609,19 @@ PYBIND11_MODULE(krado, m)
         .def("elements", &MeshSurface::elements)
         .def("remove_all_triangles", &MeshSurface::remove_all_triangles)
         .def("delete_mesh", &MeshSurface::delete_mesh)
+        .def("quads_to_tris", [](MeshSurface & self, py::kwargs kwargs) {
+                QuadSplitMode split = QuadSplitMode::SPLIT2;
+                if (kwargs.contains("split")) {
+                    auto n = kwargs["split"].cast<int>();
+                    if (n == 2)
+                        split = QuadSplitMode::SPLIT2;
+                    else if (n == 4)
+                        split = QuadSplitMode::SPLIT4;
+                    else
+                        throw Exception("Unsupported split");
+                }
+                self.quads_to_tris(split);
+            })
         .def("set_scheme",
              [](MeshSurface & self, const std::string & name, py::kwargs kwargs) {
                  if (name == "bamg") {
