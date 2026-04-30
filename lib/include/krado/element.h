@@ -13,71 +13,6 @@
 
 namespace krado {
 
-class Element {
-public:
-    /// Build an element
-    ///
-    /// @param type Element type
-    /// @param vtx_ids Vertex IDs composing the element
-    Element(ElementType type, const std::vector<Index> & vtx_ids);
-
-    /// Get element type
-    ///
-    /// @return Element type
-    [[nodiscard]] ElementType type() const;
-
-    /// Get number of vertices
-    ///
-    /// @return Number of vertices
-    [[nodiscard]] int num_vertices() const;
-
-    /// Get vertex ID fom local index
-    ///
-    /// @param idx Local vertex index
-    /// @return Vertex ID
-    [[nodiscard]] Index vertex_id(int idx) const;
-
-    /// Call operator to access vertex index
-    ///
-    /// @param idx Vertex index
-    /// @return Vertex ID
-    [[nodiscard]] Index operator()(int idx) const;
-
-    /// Get vertex IDs
-    ///
-    /// @return Vertex IDs
-    [[nodiscard]] const std::vector<Index> & ids() const;
-
-    /// Get vertex IDs
-    ///
-    /// @param idx Local vertex index
-    /// @return Vertex IDs
-    [[nodiscard]] Index id(int idx) const;
-
-    /// Set element connectivity. This is good for element renumbering. This cannot be used for
-    /// changing element type.
-    ///
-    /// @param ids Vertex IDs
-    void set_ids(const std::vector<Index> & ids);
-
-private:
-    ElementType elem_type_;
-    std::vector<Index> vtx_id_;
-
-public:
-    [[nodiscard]] static std::string type(ElementType type);
-    [[nodiscard]] static Element Point(Index id);
-    [[nodiscard]] static Element Line2(const std::array<Index, 2> & ids);
-    [[nodiscard]] static Element Tri3(const std::array<Index, 3> & ids);
-    [[nodiscard]] static Element Quad4(const std::array<Index, 4> & ids);
-    [[nodiscard]] static Element Tetra4(const std::array<Index, 4> & ids);
-    [[nodiscard]] static Element Pyramid5(const std::array<Index, 5> & ids);
-    [[nodiscard]] static Element Prism6(const std::array<Index, 6> & ids);
-    [[nodiscard]] static Element Hex8(const std::array<Index, 8> & ids);
-
-    friend class Mesh;
-};
-
 class Line2 {
 public:
     static constexpr ElementType TYPE = ElementType::LINE2;
@@ -149,6 +84,74 @@ public:
     static const std::vector<std::array<int, 2>> EDGE_VERTICES;
     static const std::vector<std::vector<int>> FACE_EDGES;
     static const std::vector<std::vector<int>> FACE_VERTICES;
+};
+
+/// Class that represents an element
+class Element {
+public:
+    /// Build an element
+    ///
+    /// @param type Element type
+    /// @param vtx_ids Vertex IDs composing the element
+    Element(ElementType type, const std::vector<Index> & vtx_ids);
+
+    /// Get element type
+    ///
+    /// @return Element type
+    [[nodiscard]] ElementType type() const;
+
+    /// Get number of vertices
+    ///
+    /// @return Number of vertices
+    [[nodiscard]] int num_vertices() const;
+
+    /// Get vertex ID fom local index
+    ///
+    /// @param idx Local vertex index
+    /// @return Vertex ID
+    [[nodiscard]] Index vertex_id(int idx) const;
+
+    /// Call operator to access vertex index
+    ///
+    /// @param idx Vertex index
+    /// @return Vertex ID
+    [[nodiscard]] Index operator()(int idx) const;
+
+    /// Get vertex IDs
+    ///
+    /// @return Vertex IDs
+    [[nodiscard]] const std::vector<Index> & ids() const;
+
+    /// Get vertex IDs
+    ///
+    /// @param idx Local vertex index
+    /// @return Vertex IDs
+    [[nodiscard]] Index id(int idx) const;
+
+    /// Set element connectivity. This is good for element renumbering. This cannot be used for
+    /// changing element type.
+    ///
+    /// @param ids Vertex IDs
+    void set_ids(const std::vector<Index> & ids);
+
+private:
+    /// Element type
+    ElementType elem_type_;
+    /// Global index into `points` array
+    std::vector<Index> vtx_id_;
+
+public:
+    [[nodiscard]] static std::string type(ElementType type);
+    [[nodiscard]] static Element Point(Index id);
+    [[nodiscard]] static Element Line2(const std::array<Index, Line2::N_VERTICES> & ids);
+    [[nodiscard]] static Element Tri3(const std::array<Index, Tri3::N_VERTICES> & ids);
+    [[nodiscard]] static Element Quad4(const std::array<Index, Quad4::N_VERTICES> & ids);
+    [[nodiscard]] static Element Tetra4(const std::array<Index, Tetra4::N_VERTICES> & ids);
+    [[nodiscard]] static Element Pyramid5(const std::array<Index, Pyramid5::N_VERTICES> & ids);
+    [[nodiscard]] static Element Prism6(const std::array<Index, Prism6::N_VERTICES> & ids);
+    [[nodiscard]] static Element Hex8(const std::array<Index, Hex8::N_VERTICES> & ids);
+
+    friend class Mesh;
 };
 
 //
