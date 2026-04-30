@@ -13,6 +13,74 @@
 
 namespace krado {
 
+/// Class that represents an element
+class Element {
+private:
+    static constexpr u8 MAX_INDICES = 8;
+
+    template <std::size_t N>
+    Element(ElementType et, const std::array<Index, N> & vtx_ids) : elem_type_(et), n_ids_(N)
+    {
+        std::memcpy(this->vtx_id_.data(), vtx_ids.data(), this->n_ids_ * sizeof(Index));
+    }
+
+public:
+    /// Build an element
+    ///
+    /// @param type Element type
+    /// @param vtx_ids Vertex IDs composing the element
+    Element(ElementType type, const std::vector<Index> & vtx_ids);
+
+    /// Get element type
+    ///
+    /// @return Element type
+    [[nodiscard]] ElementType type() const;
+
+    /// Get number of vertices
+    ///
+    /// @return Number of vertices
+    [[nodiscard]] u8 num_vertices() const;
+
+    /// Get vertex ID fom local index
+    ///
+    /// @param idx Local vertex index
+    /// @return Vertex ID
+    [[nodiscard]] Index index(u8 idx) const;
+
+    /// Get vertex IDs
+    ///
+    /// @return Vertex IDs
+    [[nodiscard]] Span<const Index> indices() const;
+
+    /// Shift element indices by offset
+    ///
+    /// @param ofst Offset by which we shift the indices
+    void shift(Index ofst);
+
+private:
+    /// Element type
+    ElementType elem_type_ = ElementType::INVALID;
+    /// Number of valid indices in `vtx_id_`
+    u8 n_ids_ = 0;
+    /// Global index into `points` array
+    std::array<Index, MAX_INDICES> vtx_id_;
+
+public:
+    [[nodiscard]] static std::string type(ElementType type);
+    [[nodiscard]] static Element Point(Index id);
+    [[nodiscard]] static Element Line2(const std::array<Index, 2> & ids);
+    [[nodiscard]] static Element Tri3(const std::array<Index, 3> & ids);
+    [[nodiscard]] static Element Quad4(const std::array<Index, 4> & ids);
+    [[nodiscard]] static Element Tetra4(const std::array<Index, 4> & ids);
+    [[nodiscard]] static Element Pyramid5(const std::array<Index, 5> & ids);
+    [[nodiscard]] static Element Prism6(const std::array<Index, 6> & ids);
+    [[nodiscard]] static Element Hex8(const std::array<Index, 8> & ids);
+
+    friend class Mesh;
+};
+
+bool operator==(const Element & a, const Element & b);
+
 class Line2 {
 public:
     static constexpr ElementType TYPE = ElementType::LINE2;
@@ -129,74 +197,6 @@ struct ElementSelector<ElementType::PYRAMID5> {
     static constexpr u8 N_VERTICES = Pyramid5::N_VERTICES;
     static constexpr u8 N_FACES = Pyramid5::N_FACES;
 };
-
-/// Class that represents an element
-class Element {
-private:
-    static constexpr u8 MAX_INDICES = Hex8::N_VERTICES;
-
-    template <std::size_t N>
-    Element(ElementType et, const std::array<Index, N> & vtx_ids) : elem_type_(et), n_ids_(N)
-    {
-        std::memcpy(this->vtx_id_.data(), vtx_ids.data(), this->n_ids_ * sizeof(Index));
-    }
-
-public:
-    /// Build an element
-    ///
-    /// @param type Element type
-    /// @param vtx_ids Vertex IDs composing the element
-    Element(ElementType type, const std::vector<Index> & vtx_ids);
-
-    /// Get element type
-    ///
-    /// @return Element type
-    [[nodiscard]] ElementType type() const;
-
-    /// Get number of vertices
-    ///
-    /// @return Number of vertices
-    [[nodiscard]] u8 num_vertices() const;
-
-    /// Get vertex ID fom local index
-    ///
-    /// @param idx Local vertex index
-    /// @return Vertex ID
-    [[nodiscard]] Index index(u8 idx) const;
-
-    /// Get vertex IDs
-    ///
-    /// @return Vertex IDs
-    [[nodiscard]] Span<const Index> indices() const;
-
-    /// Shift element indices by offset
-    ///
-    /// @param ofst Offset by which we shift the indices
-    void shift(Index ofst);
-
-private:
-    /// Element type
-    ElementType elem_type_ = ElementType::INVALID;
-    /// Number of valid indices in `vtx_id_`
-    u8 n_ids_ = 0;
-    /// Global index into `points` array
-    std::array<Index, MAX_INDICES> vtx_id_;
-
-public:
-    [[nodiscard]] static std::string type(ElementType type);
-    [[nodiscard]] static Element Point(Index id);
-    [[nodiscard]] static Element Line2(const std::array<Index, Line2::N_VERTICES> & ids);
-    [[nodiscard]] static Element Tri3(const std::array<Index, Tri3::N_VERTICES> & ids);
-    [[nodiscard]] static Element Quad4(const std::array<Index, Quad4::N_VERTICES> & ids);
-    [[nodiscard]] static Element Tetra4(const std::array<Index, Tetra4::N_VERTICES> & ids);
-    [[nodiscard]] static Element Pyramid5(const std::array<Index, Pyramid5::N_VERTICES> & ids);
-    [[nodiscard]] static Element Prism6(const std::array<Index, Prism6::N_VERTICES> & ids);
-    [[nodiscard]] static Element Hex8(const std::array<Index, Hex8::N_VERTICES> & ids);
-
-    friend class Mesh;
-};
-
-bool operator==(const Element & a, const Element & b);
 
 } // namespace krado
 
