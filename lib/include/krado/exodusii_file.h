@@ -55,9 +55,6 @@ private:
     /// Read node sets
     [[nodiscard]] std::map<int, std::vector<int>> read_node_sets();
 
-    std::tuple<std::vector<int>, std::vector<int>>
-    create_side_set_from_face_set(const Mesh & mesh, const std::vector<gidx_t> & elem_ids);
-
     /// File name
     std::string fn_;
     /// ExodusII file object
