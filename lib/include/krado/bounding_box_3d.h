@@ -18,7 +18,7 @@ public:
     BoundingBox3D(const Point & pt);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
-    [[nodiscard]] bool empty();
+    [[nodiscard]] bool empty() const;
 
     void reset();
 
@@ -42,11 +42,11 @@ public:
 
     void thicken(double factor);
 
-    [[nodiscard]] bool contains(const BoundingBox3D & bound);
+    [[nodiscard]] bool contains(const BoundingBox3D & bound) const;
 
-    [[nodiscard]] bool contains(const Point & p);
+    [[nodiscard]] bool contains(const Point & p) const;
 
-    [[nodiscard]] bool contains(double x, double y, double z);
+    [[nodiscard]] bool contains(double x, double y, double z) const;
 
     [[nodiscard]] bool transform(const std::vector<double> & tfo);
 
