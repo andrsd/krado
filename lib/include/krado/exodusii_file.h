@@ -34,27 +34,6 @@ public:
     void write(const GeomModel & model);
 
 private:
-    /// Read nodes
-    ///
-    /// @return Vector of points
-    [[nodiscard]] std::vector<Point> read_points();
-
-    /// Read elements
-    ///
-    /// @return Vector of elements
-    [[nodiscard]] std::tuple<std::vector<Element>, std::map<int, std::vector<Index>>>
-    read_elements();
-
-    /// Read side sets
-    ///
-    /// @param elems Vector of elements
-    /// @return Vector of side set entries
-    [[nodiscard]] std::map<int, std::vector<SideEntry>>
-    read_side_sets(const std::vector<Element> & elems);
-
-    /// Read node sets
-    [[nodiscard]] std::map<int, std::vector<int>> read_node_sets();
-
     /// File name
     std::string fn_;
     /// ExodusII file object
