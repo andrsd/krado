@@ -270,7 +270,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
     for (i64 i = 0; i < bamg_session.num_of_triangles(); i++) {
         if (bamg_session.is_triangle_active(i)) {
             std::array<Ptr<MeshVertexAbstract>, 3> tri;
-            for (int j = 0; j < Tri3::N_VERTICES; j++) {
+            for (u8 j = 0; j < Tri3::N_VERTICES; j++) {
                 auto vtx = bamg_session.triangle(i)[j];
                 auto idx = im.surface_vertex(vtx.r.x, vtx.r.y);
                 tri[j] = idx;

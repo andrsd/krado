@@ -800,7 +800,7 @@ Mesh::build_hasse_diagram()
         else if (cell.type() == ElementType::LINE2) {
             auto elem_node_id = i;
             auto connect = cell.indices();
-            for (int j = 0; j < Line2::N_VERTICES; ++j) {
+            for (u8 j = 0; j < Line2::N_VERTICES; ++j) {
                 auto vtx = connect[Line2::EDGE_VERTICES[j]];
                 auto vtx_id = utils::key(vtx);
                 if (this->key_map_.find(vtx_id) != this->key_map_.end()) {

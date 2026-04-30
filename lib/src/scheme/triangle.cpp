@@ -245,7 +245,7 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
     SurfaceIndexMapper im(surface);
     for (i64 i = 0; i < triangle.n_triangles(); i++) {
         std::array<Ptr<MeshVertexAbstract>, Tri3::N_VERTICES> tri;
-        for (int j = 0; j < Tri3::N_VERTICES; j++) {
+        for (u8 j = 0; j < Tri3::N_VERTICES; j++) {
             auto pt = triangle.point(i, j);
             tri[j] = im.surface_vertex(pt.x, pt.y);
         }

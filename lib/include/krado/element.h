@@ -16,74 +16,74 @@ namespace krado {
 class Line2 {
 public:
     static constexpr ElementType TYPE = ElementType::LINE2;
-    static constexpr int N_VERTICES = 2;
-    static const std::array<int, 2> EDGE_VERTICES;
+    static constexpr u8 N_VERTICES = 2;
+    static const std::array<u8, 2> EDGE_VERTICES;
 };
 
 class Tri3 {
 public:
     static constexpr ElementType TYPE = ElementType::TRI3;
-    static constexpr int N_VERTICES = 3;
-    static constexpr int N_EDGES = 3;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
+    static constexpr u8 N_VERTICES = 3;
+    static constexpr u8 N_EDGES = 3;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
 };
 
 class Quad4 {
 public:
     static constexpr ElementType TYPE = ElementType::QUAD4;
-    static constexpr int N_VERTICES = 4;
-    static constexpr int N_EDGES = 4;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
+    static constexpr u8 N_VERTICES = 4;
+    static constexpr u8 N_EDGES = 4;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
 };
 
 class Tetra4 {
 public:
     static constexpr ElementType TYPE = ElementType::TETRA4;
-    static constexpr int N_VERTICES = 4;
-    static constexpr int N_EDGES = 6;
-    static constexpr int N_FACES = 4;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
-    static const std::vector<std::vector<int>> FACE_EDGES;
-    static const std::vector<std::vector<int>> FACE_VERTICES;
+    static constexpr u8 N_VERTICES = 4;
+    static constexpr u8 N_EDGES = 6;
+    static constexpr u8 N_FACES = 4;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
+    static const std::vector<std::vector<u8>> FACE_EDGES;
+    static const std::vector<std::vector<u8>> FACE_VERTICES;
 };
 
 class Pyramid5 {
 public:
     static constexpr ElementType TYPE = ElementType::PYRAMID5;
-    static constexpr int N_VERTICES = 5;
-    static constexpr int N_EDGES = 8;
-    static constexpr int N_FACES = 5;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
-    static const std::vector<std::vector<int>> FACE_EDGES;
-    static const std::vector<std::vector<int>> FACE_VERTICES;
+    static constexpr u8 N_VERTICES = 5;
+    static constexpr u8 N_EDGES = 8;
+    static constexpr u8 N_FACES = 5;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
+    static const std::vector<std::vector<u8>> FACE_EDGES;
+    static const std::vector<std::vector<u8>> FACE_VERTICES;
 };
 
 class Prism6 {
 public:
     static constexpr ElementType TYPE = ElementType::PRISM6;
-    static constexpr int N_VERTICES = 6;
-    static constexpr int N_EDGES = 9;
-    static constexpr int N_FACES = 5;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
-    static const std::vector<std::vector<int>> FACE_EDGES;
-    static const std::vector<std::vector<int>> FACE_VERTICES;
+    static constexpr u8 N_VERTICES = 6;
+    static constexpr u8 N_EDGES = 9;
+    static constexpr u8 N_FACES = 5;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
+    static const std::vector<std::vector<u8>> FACE_EDGES;
+    static const std::vector<std::vector<u8>> FACE_VERTICES;
 };
 
 class Hex8 {
 public:
     static constexpr ElementType TYPE = ElementType::HEX8;
-    static constexpr int N_VERTICES = 8;
-    static constexpr int N_EDGES = 12;
-    static constexpr int N_FACES = 6;
-    static const std::vector<int> EDGES;
-    static const std::vector<std::array<int, 2>> EDGE_VERTICES;
-    static const std::vector<std::vector<int>> FACE_EDGES;
-    static const std::vector<std::vector<int>> FACE_VERTICES;
+    static constexpr u8 N_VERTICES = 8;
+    static constexpr u8 N_EDGES = 12;
+    static constexpr u8 N_FACES = 6;
+    static const std::vector<u8> EDGES;
+    static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
+    static const std::vector<std::vector<u8>> FACE_EDGES;
+    static const std::vector<std::vector<u8>> FACE_VERTICES;
 };
 
 //
@@ -93,47 +93,47 @@ struct ElementSelector;
 
 template <>
 struct ElementSelector<ElementType::LINE2> {
-    static constexpr int N_VERTICES = Line2::N_VERTICES;
+    static constexpr u8 N_VERTICES = Line2::N_VERTICES;
 };
 
 template <>
 struct ElementSelector<ElementType::TRI3> {
-    static constexpr int N_VERTICES = Tri3::N_VERTICES;
+    static constexpr u8 N_VERTICES = Tri3::N_VERTICES;
 };
 
 template <>
 struct ElementSelector<ElementType::QUAD4> {
-    static constexpr int N_VERTICES = Quad4::N_VERTICES;
+    static constexpr u8 N_VERTICES = Quad4::N_VERTICES;
 };
 
 template <>
 struct ElementSelector<ElementType::TETRA4> {
-    static constexpr int N_VERTICES = Tetra4::N_VERTICES;
-    static constexpr int N_FACES = Tetra4::N_FACES;
+    static constexpr u8 N_VERTICES = Tetra4::N_VERTICES;
+    static constexpr u8 N_FACES = Tetra4::N_FACES;
 };
 
 template <>
 struct ElementSelector<ElementType::HEX8> {
-    static constexpr int N_VERTICES = Hex8::N_VERTICES;
-    static constexpr int N_FACES = Hex8::N_FACES;
+    static constexpr u8 N_VERTICES = Hex8::N_VERTICES;
+    static constexpr u8 N_FACES = Hex8::N_FACES;
 };
 
 template <>
 struct ElementSelector<ElementType::PRISM6> {
-    static constexpr int N_VERTICES = Prism6::N_VERTICES;
-    static constexpr int N_FACES = Prism6::N_FACES;
+    static constexpr u8 N_VERTICES = Prism6::N_VERTICES;
+    static constexpr u8 N_FACES = Prism6::N_FACES;
 };
 
 template <>
 struct ElementSelector<ElementType::PYRAMID5> {
-    static constexpr int N_VERTICES = Pyramid5::N_VERTICES;
-    static constexpr int N_FACES = Pyramid5::N_FACES;
+    static constexpr u8 N_VERTICES = Pyramid5::N_VERTICES;
+    static constexpr u8 N_FACES = Pyramid5::N_FACES;
 };
 
 /// Class that represents an element
 class Element {
 private:
-    static constexpr int MAX_INDICES = Hex8::N_VERTICES;
+    static constexpr u8 MAX_INDICES = Hex8::N_VERTICES;
 
     template <std::size_t N>
     Element(ElementType et, const std::array<Index, N> & vtx_ids) : elem_type_(et), n_ids_(N)
@@ -156,13 +156,13 @@ public:
     /// Get number of vertices
     ///
     /// @return Number of vertices
-    [[nodiscard]] int num_vertices() const;
+    [[nodiscard]] u8 num_vertices() const;
 
     /// Get vertex ID fom local index
     ///
     /// @param idx Local vertex index
     /// @return Vertex ID
-    [[nodiscard]] Index index(int idx) const;
+    [[nodiscard]] Index index(u8 idx) const;
 
     /// Get vertex IDs
     ///

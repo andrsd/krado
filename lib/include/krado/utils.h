@@ -76,10 +76,10 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
 [[nodiscard]] std::vector<Index> sub_connect(Span<const Index> element_connect,
-                                             const std::vector<int> & idxs);
+                                             const std::vector<u8> & idxs);
 
 [[nodiscard]] inline std::array<Index, 2>
-edge_connect(Span<const Index> element_connect, const std::array<int, 2> & idxs)
+edge_connect(Span<const Index> element_connect, const std::array<u8, 2> & idxs)
 {
     std::array<Index, 2> econ;
     econ[0] = element_connect[idxs[0]];

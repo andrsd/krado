@@ -38,7 +38,7 @@ to_lower(const std::string & text)
 }
 
 std::vector<Index>
-sub_connect(Span<const Index> element_connect, const std::vector<int> & idxs)
+sub_connect(Span<const Index> element_connect, const std::vector<u8> & idxs)
 {
     std::vector<Index> connect;
     for (auto i : idxs)
