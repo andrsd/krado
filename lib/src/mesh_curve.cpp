@@ -155,7 +155,7 @@ operator<<(std::ostream & stream, const krado::MeshCurve & curve)
     auto & gcurve = curve.geom_curve();
     stream << "type=" << gcurve.type() << ", ";
     auto & bnd_vtxs = curve.bounding_vertices();
-    std::vector<krado::int32> vids;
+    std::vector<krado::i32> vids;
     vids.reserve(vids.size());
     for (auto v : bnd_vtxs)
         vids.push_back(v->id());

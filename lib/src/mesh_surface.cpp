@@ -189,7 +189,7 @@ operator<<(std::ostream & stream, const krado::MeshSurface & srf)
 {
     stream << "Surface " << srf.id() << ": ";
     auto crvs = srf.curves();
-    std::vector<krado::int32> cids;
+    std::vector<krado::i32> cids;
     cids.reserve(crvs.size());
     for (auto c : crvs)
         cids.push_back(c->id());

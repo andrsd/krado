@@ -50,19 +50,19 @@ public:
     void
     set_uniform_mesh_size(double h)
     {
-        for (int64 i = 0; i < this->Gh.nbv; i++)
+        for (i64 i = 0; i < this->Gh.nbv; i++)
             this->Gh.vertices[i].m = bamg::Metric(h);
     }
 
     void
-    triangularize(int64 nbvx = 50000)
+    triangularize(i64 nbvx = 50000)
     {
         this->Th = new bamg::Triangles(nbvx, this->Gh);
         this->reft = new bamg::Int4[Th->nbt];
         this->nbInT = this->Th->ConsRefTriangle(this->reft);
     }
 
-    int64
+    i64
     num_of_triangles()
     {
         assert(this->Th != nullptr);
@@ -70,19 +70,19 @@ public:
     }
 
     bool
-    is_triangle_active(int64 idx) const
+    is_triangle_active(i64 idx) const
     {
         return this->reft[idx] >= 0;
     }
 
     const bamg::Triangle &
-    triangle(int64 idx) const
+    triangle(i64 idx) const
     {
         assert(this->Th != nullptr);
         return this->Th->triangles[idx];
     }
 
-    int64
+    i64
     num_of_edges() const
     {
         assert(this->Th != nullptr);
@@ -90,7 +90,7 @@ public:
     }
 
     const bamg::Edge &
-    edge(int64 idx) const
+    edge(i64 idx) const
     {
         assert(this->Th != nullptr);
         return this->Th->edges[idx];
@@ -103,11 +103,11 @@ private:
         this->local_vtx_id.clear();
         for (auto & curve : this->surface->curves()) {
             for (auto vtx : curve->bounding_vertices()) {
-                int64 id = this->local_vtx_id.size();
+                i64 id = this->local_vtx_id.size();
                 this->local_vtx_id.try_emplace(vtx, id);
             }
             for (auto vtx : curve->curve_vertices()) {
-                int64 id = this->local_vtx_id.size();
+                i64 id = this->local_vtx_id.size();
                 this->local_vtx_id.try_emplace(vtx, id);
             }
         }
@@ -132,10 +132,10 @@ private:
         }
     }
 
-    int64
+    i64
     get_number_of_edges()
     {
-        int64 n_edges = 0;
+        i64 n_edges = 0;
         for (auto & curve : this->surface->curves()) {
             assert(!curve.is_null());
             if (curve->is_meshed())
@@ -150,7 +150,7 @@ private:
     init_len()
     {
         this->len = new bamg::Real4[this->Gh.nbv];
-        for (int64 i = 0; i < this->Gh.nbv; i++)
+        for (i64 i = 0; i < this->Gh.nbv; i++)
             this->len[i] = 0;
     }
 
@@ -160,14 +160,13 @@ private:
         this->Gh.nbe = get_number_of_edges();
         this->Gh.edges = new bamg::GeometricalEdge[Gh.nbe];
 
-        for (int64 curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size();
-             curve_idx++) {
+        for (i64 curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size(); curve_idx++) {
             auto & curve = this->surface->curves()[curve_idx];
             assert(!curve.is_null());
             if (curve->is_meshed()) {
                 for (auto & segs : curve->segments()) {
-                    std::array<int64, 2> edge = { this->local_vtx_id[segs.vertex(0)],
-                                                  this->local_vtx_id[segs.vertex(1)] };
+                    std::array<i64, 2> edge = { this->local_vtx_id[segs.vertex(0)],
+                                                this->local_vtx_id[segs.vertex(1)] };
                     add_edge(eidx, edge, curve_idx, true);
                     eidx++;
                 }
@@ -175,8 +174,8 @@ private:
             else {
                 // add one straight edge
                 auto & bnd_vtxs = curve->bounding_vertices();
-                std::array<int64, 2> edge = { this->local_vtx_id[bnd_vtxs[0]],
-                                              this->local_vtx_id[bnd_vtxs[1]] };
+                std::array<i64, 2> edge = { this->local_vtx_id[bnd_vtxs[0]],
+                                            this->local_vtx_id[bnd_vtxs[1]] };
                 add_edge(eidx, edge, curve_idx, false);
                 eidx++;
             }
@@ -184,7 +183,7 @@ private:
     }
 
     void
-    add_edge(int64 edge_idx, const std::array<int64, 2> & edge, int64 curve_id, bool req)
+    add_edge(i64 edge_idx, const std::array<i64, 2> & edge, i64 curve_id, bool req)
     {
         bamg::R2 zero2(0, 0);
 
@@ -219,7 +218,7 @@ private:
     void
     initialize_vertex_metrics()
     {
-        for (int64 i = 0; i < this->Gh.nbv; i++)
+        for (i64 i = 0; i < this->Gh.nbv; i++)
             if (this->Gh.vertices[i].color > 0)
                 this->Gh.vertices[i].m =
                     bamg::Metric(this->len[i] / (bamg::Real4) this->Gh.vertices[i].color);
@@ -237,7 +236,7 @@ private:
     Ptr<MeshSurface> surface;
     bamg::Geometry Gh;
     bamg::Real8 Hmin;
-    std::map<Ptr<MeshVertexAbstract>, int64> local_vtx_id;
+    std::map<Ptr<MeshVertexAbstract>, i64> local_vtx_id;
     bamg::Real4 * len;
     bamg::Triangles * Th;
     bamg::Int4 * reft;
@@ -259,7 +258,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
     bamg_session.triangularize();
 
     SurfaceIndexMapper im(surface);
-    for (int64 i = 0; i < bamg_session.num_of_edges(); i++) {
+    for (i64 i = 0; i < bamg_session.num_of_edges(); i++) {
         auto & edge = bamg_session.edge(i);
         auto crv_idx = edge.ref;
         auto curve = surface->curves()[crv_idx];
@@ -268,7 +267,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
                              im.curve_vertex(crv_idx, edge[1].r.x, edge[1].r.y) });
     }
 
-    for (int64 i = 0; i < bamg_session.num_of_triangles(); i++) {
+    for (i64 i = 0; i < bamg_session.num_of_triangles(); i++) {
         if (bamg_session.is_triangle_active(i)) {
             std::array<Ptr<MeshVertexAbstract>, 3> tri;
             for (int j = 0; j < Tri3::N_VERTICES; j++) {
