@@ -220,24 +220,6 @@ struct fmt::formatter<krado::ElementType> {
     auto
     format(const krado::ElementType & obj, FormatContext & ctx) const -> decltype(ctx.out())
     {
-        switch (obj) {
-        case krado::ElementType::POINT:
-            return fmt::format_to(ctx.out(), "POINT");
-        case krado::ElementType::LINE2:
-            return fmt::format_to(ctx.out(), "LINE2");
-        case krado::ElementType::TRI3:
-            return fmt::format_to(ctx.out(), "TRI3");
-        case krado::ElementType::QUAD4:
-            return fmt::format_to(ctx.out(), "QUAD4");
-        case krado::ElementType::TETRA4:
-            return fmt::format_to(ctx.out(), "TETRA4");
-        case krado::ElementType::HEX8:
-            return fmt::format_to(ctx.out(), "HE8");
-        case krado::ElementType::PYRAMID5:
-            return fmt::format_to(ctx.out(), "PYRAMID5");
-        case krado::ElementType::PRISM6:
-            return fmt::format_to(ctx.out(), "PRISM6");
-        }
-        krado::utils::unreachable();
+        return fmt::format_to(ctx.out(), "{}", krado::Element::type(obj));
     }
 };
