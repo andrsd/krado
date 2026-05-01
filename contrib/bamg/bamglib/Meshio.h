@@ -78,7 +78,7 @@ namespace bamg {
       int cmm = 0;
       while (in.get(c) &&
              (isspace(c)
-                ? (((c == '\n' || c == char(12) || c == char(15)) && (LineNumber++, cmm = 0)), 1)
+                ? (((c == '\n' || c == char(12) || c == char(15)) && (LineNumber++, (cmm = 0))), 1)
                 : (cmm || (c == '#' && (cmm = 1)))))
         ((void)0);
       if (in.good( )) in.putback(c);

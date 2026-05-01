@@ -71,7 +71,6 @@ namespace bamg {
   }
 
 #else
-  static unsigned long myrand_next = 1;
 
   /* RAND_MAX assumed to be 32767 */
   int myrand(void) {
@@ -266,12 +265,12 @@ namespace bamg {
     int k = (*t)(0) ? (((*t)(1) ? ((*t)(2) ? -1 : 2) : 1)) : 0;
     int dir = 0;
     assert(k >= 0);
-    int kkk = 0;
+    // int kkk = 0;
     Icoor2 IJ_IA, IJ_AJ;
     TriangleAdjacent edge(t, OppositeEdge[k]);
     for (;; edge = dir > 0 ? Next(Adj(Next(edge))) : Previous(Adj(Previous(edge)))) {
 
-      assert(kkk++ < 1000);
+      // assert(kkk++ < 1000);
       Vertex &vI = *edge.EdgeVertex(0);
       Vertex &vJ = *edge.EdgeVertex(1);
       I2 I = vI, J = vJ, IJ = J - I;
@@ -355,7 +354,7 @@ namespace bamg {
     Icoor2 l0 = imax, l1 = imax;
     double dd2 = imax;    // infinity
     TriangleAdjacent er;
-    int cas = -2;
+    // int cas = -2;
     for (int j = 0; j < 3; j++) {
       TriangleAdjacent ta = t->FindBoundaryEdge(j);
       if (!(Triangle *)ta) continue;
@@ -376,7 +375,7 @@ namespace bamg {
           er = ta;
           l0 = ACAC;
           l1 = BCBC;
-          cas = 0;
+          // cas = 0;
           s = s0;
         }
       } else if (ABAC > AB2)    // DIST B
@@ -387,7 +386,7 @@ namespace bamg {
           er = Adj(ta);    // other direction
           l0 = BCBC;
           l1 = ACAC;
-          cas = 1;
+          // cas = 1;
           s = s1;
         }
       } else    // DIST AB
@@ -406,7 +405,7 @@ namespace bamg {
           l0 = (AC, AC);
           l1 = (BC, BC);
           s = 0;
-          cas = -1;
+          // cas = -1;
           //	 cout << " ABAC " <<  ABAC << " ABAC " << ABAC
           //	      << " AB2 " << AB2 << endl;
           b = ((double)ABAC / (double)AB2);
@@ -414,7 +413,7 @@ namespace bamg {
         }
       }
     }
-    assert(cas != -2);
+    // assert(cas != -2);
     // l1 = ||C s1||  , l0 = ||C s0||
     // where s0,s1 are the vertex of the edge er
 
@@ -422,14 +421,14 @@ namespace bamg {
       t = er;
       TriangleAdjacent edge(er);
 
-      int kkk = 0;
+      // int kkk = 0;
       int linkp = t->link == 0;
 
       Triangle *tt = t = edge = Adj(Previous(edge));
       //  cout << CurrentTh->Number(t) << " " << linkp << endl;
       do {    // loop around vertex s
 
-        assert(edge.EdgeVertex(0) == s && kkk++ < 10000);
+        assert(edge.EdgeVertex(0) == s);
 
         int link = tt->link == 0;
         //	 cout << CurrentTh->Number(tt) << " " << link << " " << CurrentTh->Number(s)
@@ -517,7 +516,7 @@ namespace bamg {
     Real8 ba[3];
     int nbt = 0, ifirst = -1, ilast;
     int i0, i1, i2;
-    int ocut, i, j, k = -1;
+    int ocut = 0, i, j = 0, k = -1;
     //  int OnAVertices =0;
     Icoor2 dt[3];
     I2 a = Bh.toI2(A), b = Bh.toI2(B);    // compute  the Icoor a,b
@@ -1060,11 +1059,14 @@ namespace bamg {
 #endif
     int NbSwap = 0;
     assert(a.t && b.t);    // the 2 vertex is in a mesh
-    int k = 0;
+    // int k = 0;
     taret = TriangleAdjacent(0, 0);    // erreur
 
     TriangleAdjacent tta(a.t, EdgesVertexTriangle[a.vint][0]);
-    Vertex *v1, *v2 = tta.EdgeVertex(0), *vbegin = v2;
+#ifdef DEBUG
+    Vertex *v1 = nullptr;
+#endif
+    Vertex *v2 = tta.EdgeVertex(0), *vbegin = v2;
     // we turn around a in the  direct sens
 
     Icoor2 det2 = v2 ? det(*v2, a, b) : -1, det1;
@@ -1086,7 +1088,9 @@ namespace bamg {
 
     while (v2 != &b) {
       TriangleAdjacent tc = Previous(Adj(tta));
+#ifdef DEBUG
       v1 = v2;
+#endif
       v2 = tc.EdgeVertex(0);
       det1 = det2;
 #ifdef DEBUG
@@ -1168,7 +1172,7 @@ namespace bamg {
         }
       }
       tta = tc;
-      assert(k++ < 2000);
+      // assert(k++ < 2000);
       if (vbegin == v2) return -1;    // error
     }
 
@@ -1451,7 +1455,7 @@ namespace bamg {
     int infv = t->infv( );       //&s0 ?  ((  &s1 ? ( &s2  ? -1 : 2) : 1  )) : 0;
                                  // infv = ordre of the infini vertex (null)
     int nbd0 = 0;                // number of zero det3
-    int izerodet = -1, iedge;    // izerodet = egde contening the vertex s
+    int izerodet = -1, iedge = 0;    // izerodet = egde contening the vertex s
     Icoor2 detOld = t->det;
 
     if (((infv < 0) && (detOld < 0)) || ((infv >= 0) && (detOld > 0))) {
@@ -1944,11 +1948,10 @@ namespace bamg {
 
     delete[] first_np_or_next_t;
 
-    Int4 NbSwapf = 0, NbSwp;
+    Int4 NbSwapf = 0;
 
     // bofbof
 
-    NbSwp = NbSwapf;
     for (i = 0; i < nbv; i++) NbSwapf += vertices[i].Optim(0);
     /*
     for (i=0;i<nbv;i++)
@@ -1979,7 +1982,7 @@ namespace bamg {
 #endif
     int step[3];
     Int4 *first_np_or_next_t = new Int4[nbtx];
-    Int4 ColorEdge[3];
+    // Int4 ColorEdge[3];
     Int4 color = -1;
     Triangle *t;
     // generation of the list of next Triangle
@@ -2017,7 +2020,7 @@ namespace bamg {
           // color++;// the color is 3i+j
           color = 3 * i + j;
           ;
-          ColorEdge[j] = color;
+          // ColorEdge[j] = color;
           BeginNewPoint[j] = nbv;
           EndNewPoint[j] = nbv - 1;
           step[j] = 1;    // right sens
@@ -2063,7 +2066,7 @@ namespace bamg {
             assert((*t)(VerticesOfTriangularEdge[j][0]) == (*ta)(VerticesOfTriangularEdge[kk][1]));
             assert((*t)(VerticesOfTriangularEdge[j][1]) == (*ta)(VerticesOfTriangularEdge[kk][0]));
             Int4 kolor = 3 * k + kk;
-            ColorEdge[j] = kolor;
+            // ColorEdge[j] = kolor;
             Int4 kkk = 1;
             step[j] = -1;    // other sens
             BeginNewPoint[j] = 0;
@@ -2154,16 +2157,9 @@ namespace bamg {
               Real8 c10 = vi0.m(D, V10);
               Real8 c11 = vi0.m(D, V11);
 
-              Real8 s;
+              // Real8 s;
               // cout << " --i0 = " << i0  << D  << V10 << V11 << endl ;
               // cout << "   c10 " <<  c10 << " c0 " << c0 << " c11 " << c11 << endl;
-              if ((c10 < c0) && (c0 < c11))
-                s = (c11 - c0) / (c11 - c10);
-              else if ((c11 < c0) && (c0 < c10))
-                s = (c11 - c0) / (c11 - c10);
-              else
-                break;
-              R2 VP = V10 * s + V11 * (1 - s);
               int sss = (c11 - c10) > 0 ? 1 : -1;
 #ifdef DRAWING1
               penthickness(2);
@@ -2749,7 +2745,6 @@ namespace bamg {
       for (Int4 i = 0; i < NbSubDomains; i++) {
         GeometricalEdge &eg = *Gh.subdomains[i].edge;
         subdomains[i].ref = Gh.subdomains[i].ref;
-        int ssdlab = subdomains[i].ref;
         // by careful is not easy to find a edge create from a GeometricalEdge
         // see routine MakeGeometricalEdgeToEdge
         Edge &e = *GeometricalEdgetoEdge[Gh.Number(eg)];
@@ -3256,7 +3251,7 @@ namespace bamg {
     //  0.0) compute the length and the number of vertex to do allocation
     //  1.0)  recompute the length
     //  1.1)   compute the  vertex
-    Int4 nbex = 0, NbVerticesOnGeomEdgex = 0;
+    // Int4 NbVerticesOnGeomEdgex = 0;
     for (int step = 0; step < 2; step++) {
       Int4 NbOfNewPoints = 0;
       Int4 NbOfNewEdge = 0;
@@ -3276,12 +3271,12 @@ namespace bamg {
         iedge = bcurve[icurve] / 2;
         int jedge = bcurve[icurve] % 2;
         if (!Gh.curves[icurve].master) continue;    // we skip all equi curve
-        Edge &ei = BTh.edges[iedge];
+        // Edge &ei = BTh.edges[iedge];
         // warning: ei.on->Mark() can be change in
         // loop for(jedge=0;jedge<2;jedge++)
         // new curve
         // good the find a starting edge
-        Real8 Lstep = 0, Lcurve = 0;      // step between two points   (phase==1)
+        Real8 Lstep = 0;      // step between two points   (phase==1)
         Int4 NbCreatePointOnCurve = 0;    // Nb of new points on curve     (phase==1)
 
         //    cout.precision(16);
@@ -3342,8 +3337,8 @@ namespace bamg {
                     assert(LAB);
 
                     assert(vertices && nbv < nbvx);
-                    assert(edges && nbe < nbex);
-                    assert(VerticesOnGeomEdge && NbVerticesOnGeomEdge < NbVerticesOnGeomEdgex);
+                    // assert(edges && nbe < nbex);
+                    // assert(VerticesOnGeomEdge && NbVerticesOnGeomEdge < NbVerticesOnGeomEdgex);
                     // new vertex on edge
                     A1 = vertices + nbv++;
                     GA1 = VerticesOnGeomEdge + NbVerticesOnGeomEdge;
@@ -3460,7 +3455,6 @@ namespace bamg {
           if (!phase) {                                           //
             Int4 NbSegOnCurve = Max((Int4)(L + 0.5), (Int4)1);    // nb of seg
             Lstep = L / NbSegOnCurve;
-            Lcurve = L;
             NbCreatePointOnCurve = NbSegOnCurve - 1;
 
             for (Curve *curve = Gh.curves + icurve; curve; curve = curve->next) {
@@ -3490,12 +3484,12 @@ namespace bamg {
         }
         // cout << " NbOfNewEdge" << NbOfNewEdge << " NbOfNewPoints " << NbOfNewPoints << endl;
         edges = new Edge[NbOfNewEdge];
-        nbex = NbOfNewEdge;
+        // nbex = NbOfNewEdge;
         if (NbOfNewPoints) {    //
           VerticesOnGeomEdge = new VertexOnGeom[NbOfNewPoints];
           NbVertexOnBThEdge = NbOfNewPoints;
           VertexOnBThEdge = new VertexOnEdge[NbOfNewPoints];
-          NbVerticesOnGeomEdgex = NbOfNewPoints;
+          // NbVerticesOnGeomEdgex = NbOfNewPoints;
         }
         NbOfNewPoints = 0;
         NbOfNewEdge = 0;
@@ -3533,7 +3527,7 @@ namespace bamg {
   void Triangles::GeomToTriangles0(Int4 inbvx) {
     Gh.NbRef++;    // add a ref to GH
 
-    Int4 i, NbOfCurves = 0, NbNewPoints, NbEdgeCurve;
+    Int4 i, NbNewPoints, NbEdgeCurve;
     Real8 lcurve, lstep, s;
 #ifdef DRAWING
     if (withrgraphique) {
@@ -3588,7 +3582,7 @@ namespace bamg {
       Int4 NbVerticesOnGeomEdge0 = NbVerticesOnGeomEdge;
       //  cout <<  "  -------------- step =" << step << endl;
       Gh.UnMarkEdges( );
-      NbOfCurves = 0;
+      // NbOfCurves = 0;
       for (i = 0; i < Gh.nbe; i++) {
         GeometricalEdge &ei = Gh.edges[i];
         if (!ei.Dup( ))    // a good curve (not dup )
@@ -3762,7 +3756,7 @@ namespace bamg {
                   NbNewPoints = NbEdgeCurve - 1;
                   if (!kstep) {
                     NbVerticesOnGeomEdge0 += NbNewPoints;
-                    NbOfCurves++;
+                    // NbOfCurves++;
                   }
 
                   nbvend = nbv + NbNewPoints;
@@ -4137,7 +4131,7 @@ namespace bamg {
       quadtree->Add(*v1);
 
       // on ajoute les sommets un a un
-      Int4 NbSwap = 0;
+      // Int4 NbSwap = 0;
       for (Int4 icount = 2; icount < nbvb; icount++) {
 
         Vertex *vi = ordre[icount];
@@ -4146,7 +4140,7 @@ namespace bamg {
         Triangle *tcvi = FindTriangleContening(vi->i, dete);
         quadtree->Add(*vi);
         Add(*vi, tcvi, dete);
-        NbSwap += vi->Optim(1, 1);
+        // NbSwap += vi->Optim(1, 1);
 
 #ifdef DRAWING2
         cout << Number(vi) << " " << NbSwap << endl;
@@ -4182,11 +4176,11 @@ namespace bamg {
       FindSubDomain(1);
       // remove all the hole
       // remove all the good sub domain
-      Int4 krm = 0;
+      // Int4 krm = 0;
       for (i = 0; i < nbt; i++)
         if (triangles[i].link)    // remove triangles
         {
-          krm++;
+          // krm++;
           for (int j = 0; j < 3; j++) {
             TriangleAdjacent ta = triangles[i].Adj(j);
             Triangle &tta = *(Triangle *)ta;
@@ -4400,7 +4394,7 @@ namespace bamg {
     Vertex *s = ns[i];
 #endif
     Triangle *t = this;
-    int k = 0, j = OppositeEdge[i];
+    int j = OppositeEdge[i];
     int jp = PreviousEdge[j];
     // initialise   tp, jp the previous triangle & edge
     Triangle *tp = at[jp];
@@ -4410,7 +4404,7 @@ namespace bamg {
 #endif
     do {
 #ifdef DEBUG
-      assert(k++ < 20000);
+      // assert(k++ < 20000);
       assert(s == &(*t)[OppositeVertex[j]]);
 #endif
       //    cout << *t << " " <<  j  << "\n\t try swap " ;
@@ -4600,21 +4594,21 @@ namespace bamg {
         cout << " 0 ";
       else
         cout << exp(lmin + i / delta);
-      cout.width( );
+      // cout.width( );
       cout << ",";
-      cout.width(10);
+      // cout.width(10);
       if (i == kmax)
         cout << " +infty ";
       else
         cout << exp(lmin + (i + 1) / delta);
-      cout.width( );
+      // cout.width( );
       cout << "   |   ";
 
-      cout.precision(4);
-      cout.width(6);
+      // cout.precision(4);
+      // cout.width(6);
       cout << ((long)((10000.0 * histo[i]) / nbedges)) / 100.0;
-      cout.width( );
-      cout.precision( );
+      // cout.width( );
+      // cout.precision( );
       cout << "   |   " << histo[i] << endl;
     }
     cout << "        ------------------- | ---------- | ----------- " << endl << endl;
@@ -4685,8 +4679,8 @@ namespace bamg {
         k++;
         Triangle *tt(ta);
         if (ta.Cracked( )) {
-          TriangleAdjacent tta = (ta.Adj( ));
-          assert(tta.Cracked( ));
+          // TriangleAdjacent tta = (ta.Adj( ));
+          // assert(tta.Cracked( ));
           if (kk == 0) tbegin = ta, kkk = 0;    //  begin by a cracked edge  => restart
           if (kkk) {
             kc = 1;
@@ -4696,8 +4690,8 @@ namespace bamg {
           kk++;    // number of cracked edge view
         }
         if (tt->link) {    // if good triangles store the value
-          int it = Number(tt);
-          assert(it < nt);
+          // int it = Number(tt);
+          // assert(it < nt);
           (*tt)(kv) = vv;    //   Change the vertex of triangle
           if (vv < vend) {
             *vv = v;
@@ -4897,7 +4891,7 @@ namespace bamg {
       assert(t >= triangles && t < triangles + nbt);
     }
     Icoor2 detop;
-    int kkkk = 0;    // number of test triangle
+    // int kkkk = 0;    // number of test triangle
 
     while (t->det < 0) {    // the initial triangles is outside
       int k0 = (*t)(0) ? (((*t)(1) ? ((*t)(2) ? -1 : 2) : 1)) : 0;
@@ -4908,7 +4902,7 @@ namespace bamg {
       if (dete[k0] > 0)    // outside B
         return t;
       t = t->TriangleAdj(OppositeEdge[k0]);
-      assert(kkkk++ < 2);
+      // assert(kkkk++ < 2);
     }
 
     jj = 0;

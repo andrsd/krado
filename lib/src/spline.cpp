@@ -40,7 +40,7 @@ Spline::create(const std::vector<Point> & points,
 {
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);
-    for (int idx = 0; idx < n; idx++)
+    for (std::size_t idx = 0; idx < n; idx++)
         pnts->SetValue(idx + 1, points[idx]);
     GeomAPI_Interpolate mk(pnts, false, 1e-8);
     mk.Load(initial_tg, final_tg);

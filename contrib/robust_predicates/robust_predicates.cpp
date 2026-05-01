@@ -129,6 +129,9 @@
 #include <fpu_control.h>
 #endif /* LINUX */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 namespace robust_predicates {
 
 /* On some machines, the exact arithmetic routines might be defeated by the  */
@@ -2560,3 +2563,5 @@ REAL insphere(const REAL* const __restrict__ pa,
 }
 
 } // end namespace
+
+#pragma GCC diagnostic pop

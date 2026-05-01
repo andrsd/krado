@@ -400,10 +400,14 @@ namespace bamg {
 
     IFortranUnFormattedFile f_in(ff);
 
+#ifdef DEBUG
     Int4 l = f_in.Record( );
+#endif
     assert(l == 2 * sizeof(Int4));
     f_in >> nbv >> nbt;
+#ifdef DEBUG
     l = f_in.Record( );
+#endif
     assert((size_t)l == nbt * sizeof(long) * 4 + nbv * (2 * sizeof(float) + sizeof(long)));
     if (verbosity > 3) cout << "    nbv = " << nbv << " nbt = " << nbt << endl;
 
@@ -532,7 +536,7 @@ namespace bamg {
     // cout << " nbv = " << nbv << " nbe4 " << nbe4 << endl;
     SetOfEdges4* edge4 = new SetOfEdges4(nbe4, nbv);
     Int4* refe = new Int4[nbe4];
-    Int4 kr = 0;
+    // Int4 kr = 0;
     for (i = 0; i < ne; i++) {
       // Int4 ng[4]={0,0,0,0};
       Int4 np[4], rv[4], re[4];
@@ -556,7 +560,7 @@ namespace bamg {
 
       if (ncopnp != 1) {
         f_in >> npo;
-        if (npo != 3 || npo != 4) {
+        if (npo != 3 && npo != 4) {
           cerr << " read nopo type element[" << i << "]= " << ncge << " not 3 or 4 " << endl;
           MeshError(115);
         }
@@ -581,7 +585,7 @@ namespace bamg {
         if (ining == 2)
           for (j = 0; j < npo; j++)
             if (re[j]) {
-              kr++;
+              // kr++;
               Int4 i0 = np[j];
               Int4 i1 = np[(j + 1) % npo];
               // cout << kr << " ref  edge " << i0 << " " << i1 << " " << re[j] << endl;

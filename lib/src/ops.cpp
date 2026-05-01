@@ -291,7 +291,7 @@ combine(const std::vector<Mesh> & parts)
     std::map<Marker, std::vector<Index>> cell_sets;
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
-    for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {
+    for (std::size_t i = 0; i < parts.size(); ++i) {
         auto & p = parts[i];
         for (auto & id : p.cell_set_ids()) {
             auto name = p.cell_set_name(id);

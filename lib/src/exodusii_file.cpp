@@ -59,7 +59,7 @@ std::vector<int>
 build_element(const Element & el)
 {
     std::vector<int> connect(el.indices().size());
-    for (int j = 0; j < el.indices().size(); ++j)
+    for (std::size_t j = 0; j < el.indices().size(); ++j)
         connect[j] = el.index(j) + 1;
     return connect;
 }

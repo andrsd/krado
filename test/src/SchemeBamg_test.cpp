@@ -41,7 +41,7 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
     EXPECT_EQ(vtx[9]->point(), Point(1.333333333333333, 1.333333331796651, 0.));
 
     EXPECT_EQ(quad->triangles().size(), 10);
-    auto & tris = quad->triangles();
+    // auto & tris = quad->triangles();
     // EXPECT_THAT(tris[0].ids(), ElementsAre(8, 7, 3));
     // EXPECT_THAT(tris[1].ids(), ElementsAre(9, 5, 6));
     // EXPECT_THAT(tris[2].ids(), ElementsAre(2, 6, 5));

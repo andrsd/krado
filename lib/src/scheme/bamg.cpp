@@ -160,7 +160,7 @@ private:
         this->Gh.nbe = get_number_of_edges();
         this->Gh.edges = new bamg::GeometricalEdge[Gh.nbe];
 
-        for (i64 curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size(); curve_idx++) {
+        for (std::size_t curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size(); curve_idx++) {
             auto & curve = this->surface->curves()[curve_idx];
             assert(!curve.is_null());
             if (curve->is_meshed()) {

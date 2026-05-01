@@ -17,15 +17,19 @@ jobs:
         include:
           - os: ubuntu-22.04
             build-type: Release
+            preset: ci-release
             python-version: "3.10"
           - os: ubuntu-22.04
             build-type: Release
+            preset: ci-release
             python-version: "3.11"
           - os: ubuntu-22.04
             build-type: Release
+            preset: ci-release
             python-version: "3.12"
           - os: ubuntu-22.04
             build-type: Release
+            preset: ci-release
             python-version: "3.13"
     runs-on: ubuntu-latest
     defaults:
@@ -64,7 +68,7 @@ jobs:
 
       - name: Configure
         run: |
-          cmake -S . -B ${{ github.workspace }}/build \
+          cmake --preset ${{ matrix.preset }} \
             -DGCOV_PATH=`which x86_64-conda-linux-gnu-gcov` \
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
             -DBUILD_SHARED_LIBS=ON \
@@ -72,7 +76,8 @@ jobs:
             -DKRADO_CODE_COVERAGE=ON
 
       - name: Build
-        run: make -C ${{ github.workspace }}/build
+        run: |
+          cmake --build --preset ${{ matrix.preset }} --parallel 4
 
       - name: Run tests
         run: |
