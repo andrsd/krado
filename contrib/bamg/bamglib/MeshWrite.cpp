@@ -204,7 +204,7 @@ namespace bamg {
     Int4 no5l[20];
 
     Int4 i5 = 0;
-    Int4 i, j, k = 0, l5;
+    Int4 i, j, l5;
     //  Int4 ining=0;
     Int4 imax, imin;
 
@@ -275,7 +275,7 @@ namespace bamg {
         else
           l5 -= 3, ining = 0;
       } else if (&t < ta) {
-        k++;
+        // k++;
         no5l[l5++] = Max(subdomains[reft[i]].ref, (Int4)1);
         np = 4;
         no5l[l5++] = np;
@@ -447,7 +447,7 @@ namespace bamg {
 
   void Triangles::Write_am(ostream &ff) const {
     OFortranUnFormattedFile f(ff);
-    Int4 i, j;
+    Int4 i;
     assert(nbt);
     Int4 *reft = new Int4[nbt];
     Int4 nbInT = ConsRefTriangle(reft);
@@ -465,7 +465,7 @@ namespace bamg {
       float y = vertices[i].r.y;
       f << x << y;
     }
-    for (j = i = 0; i < nbt; i++)
+    for (i = 0; i < nbt; i++)
       if (reft[i] >= 0) f << subdomains[reft[i]].ref;
     for (i = 0; i < nbv; i++) f << vertices[i].ref( );
     delete[] reft;

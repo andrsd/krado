@@ -412,7 +412,7 @@ namespace bamg {
     reffecran( );
 #endif
     Int4 k = nbv;
-    Int4 kk = 0;
+    // Int4 kk = 0;
     Int4 kvb = NbVertexOnBThEdge;
     Int4 kvg = NbVerticesOnGeomEdge;
     Int4 ie = 0;
@@ -430,7 +430,7 @@ namespace bamg {
       R2 A = edges[i][0], B = edges[i][1];
       // cout << " ie = " << ie <<"  v0 = " <<  Number(newedges[ie][0]) << endl;
 
-      kk += (i == edge4->addtrie(Number(edges[i][0]), Number(edges[i][1])));
+      // kk += (i == edge4->addtrie(Number(edges[i][0]), Number(edges[i][1])));
       if (ong)    // a geometrical edges
       {
         if (withBackground) {
@@ -676,7 +676,7 @@ namespace bamg {
       // cout << "nbmkadj " << nbmkadj << " it=" << i <<endl;
       assert(nbmkadj < 10);
       // --------------------------
-      TriangleAdjacent ta0(t0.Adj(i0)), ta1(t0.Adj(i1)), ta2(t0.Adj(i2));
+      // TriangleAdjacent ta0(t0.Adj(i0)), ta1(t0.Adj(i1)), ta2(t0.Adj(i2));
       // save the flag Hidden
       int hid[] = {t0.Hidden(0), t0.Hidden(1), t0.Hidden(2)};
       // un set all adj -- save Hidden flag --

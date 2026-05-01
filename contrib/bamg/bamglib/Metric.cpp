@@ -498,7 +498,6 @@ namespace bamg {
             if (choice) {
               int nbb = 0;
               Real8 dd = detT[i];
-              Real8 lla, llb, llc, llf;
               Real8 taa[3][3], bb[3];
               // construction of the trans of lin system
               for (int j = 0; j < 3; j++) {
@@ -520,8 +519,6 @@ namespace bamg {
                   // cout << " iv " << ss[iV*n] << " == " << (8*xx*xx+yy*yy)
                   //     << " l = " << lA << " " << lB << " " << lC
                   //     << " = " << lA+lB+lC << " " <<  V << " == " << A*lA+B*lB+C*lC << endl;
-
-                  lla = lA, llb = lB, llc = lC, llf = ss[iV * n];
 
                   bb[j] = ss[iV * n] - (sA * lA + sB * lB + sC * lC);
                 } else {
@@ -609,7 +606,6 @@ namespace bamg {
             }
 
           }    // for real all triangles
-        Int4 kk = 0;
         for (iv = 0, k = 0; iv < nbv; iv++, k += n)
           if (Mmassxx[iv] > 0) {
             dxdx[iv] /= 2 * Mmassxx[iv];
@@ -626,8 +622,7 @@ namespace bamg {
             dxdy[iv] = M.a21;
             dydy[iv] = M.a22;
             //  cout << " (abs)  iv M  = " <<  M <<  " aniso= " << Vp.Aniso() <<endl;
-          } else
-            kk++;
+          }
 
         // correction of second derivate
         // by a laplacien

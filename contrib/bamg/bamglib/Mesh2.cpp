@@ -71,7 +71,6 @@ namespace bamg {
   }
 
 #else
-  static unsigned long myrand_next = 1;
 
   /* RAND_MAX assumed to be 32767 */
   int myrand(void) {
@@ -1944,11 +1943,10 @@ namespace bamg {
 
     delete[] first_np_or_next_t;
 
-    Int4 NbSwapf = 0, NbSwp;
+    Int4 NbSwapf = 0;
 
     // bofbof
 
-    NbSwp = NbSwapf;
     for (i = 0; i < nbv; i++) NbSwapf += vertices[i].Optim(0);
     /*
     for (i=0;i<nbv;i++)
@@ -2154,16 +2152,9 @@ namespace bamg {
               Real8 c10 = vi0.m(D, V10);
               Real8 c11 = vi0.m(D, V11);
 
-              Real8 s;
+              // Real8 s;
               // cout << " --i0 = " << i0  << D  << V10 << V11 << endl ;
               // cout << "   c10 " <<  c10 << " c0 " << c0 << " c11 " << c11 << endl;
-              if ((c10 < c0) && (c0 < c11))
-                s = (c11 - c0) / (c11 - c10);
-              else if ((c11 < c0) && (c0 < c10))
-                s = (c11 - c0) / (c11 - c10);
-              else
-                break;
-              R2 VP = V10 * s + V11 * (1 - s);
               int sss = (c11 - c10) > 0 ? 1 : -1;
 #ifdef DRAWING1
               penthickness(2);
@@ -2749,7 +2740,6 @@ namespace bamg {
       for (Int4 i = 0; i < NbSubDomains; i++) {
         GeometricalEdge &eg = *Gh.subdomains[i].edge;
         subdomains[i].ref = Gh.subdomains[i].ref;
-        int ssdlab = subdomains[i].ref;
         // by careful is not easy to find a edge create from a GeometricalEdge
         // see routine MakeGeometricalEdgeToEdge
         Edge &e = *GeometricalEdgetoEdge[Gh.Number(eg)];
@@ -3281,7 +3271,7 @@ namespace bamg {
         // loop for(jedge=0;jedge<2;jedge++)
         // new curve
         // good the find a starting edge
-        Real8 Lstep = 0, Lcurve = 0;      // step between two points   (phase==1)
+        Real8 Lstep = 0;      // step between two points   (phase==1)
         Int4 NbCreatePointOnCurve = 0;    // Nb of new points on curve     (phase==1)
 
         //    cout.precision(16);
@@ -3460,7 +3450,6 @@ namespace bamg {
           if (!phase) {                                           //
             Int4 NbSegOnCurve = Max((Int4)(L + 0.5), (Int4)1);    // nb of seg
             Lstep = L / NbSegOnCurve;
-            Lcurve = L;
             NbCreatePointOnCurve = NbSegOnCurve - 1;
 
             for (Curve *curve = Gh.curves + icurve; curve; curve = curve->next) {
@@ -3533,7 +3522,7 @@ namespace bamg {
   void Triangles::GeomToTriangles0(Int4 inbvx) {
     Gh.NbRef++;    // add a ref to GH
 
-    Int4 i, NbOfCurves = 0, NbNewPoints, NbEdgeCurve;
+    Int4 i, NbNewPoints, NbEdgeCurve;
     Real8 lcurve, lstep, s;
 #ifdef DRAWING
     if (withrgraphique) {
@@ -3588,7 +3577,7 @@ namespace bamg {
       Int4 NbVerticesOnGeomEdge0 = NbVerticesOnGeomEdge;
       //  cout <<  "  -------------- step =" << step << endl;
       Gh.UnMarkEdges( );
-      NbOfCurves = 0;
+      // NbOfCurves = 0;
       for (i = 0; i < Gh.nbe; i++) {
         GeometricalEdge &ei = Gh.edges[i];
         if (!ei.Dup( ))    // a good curve (not dup )
@@ -3762,7 +3751,7 @@ namespace bamg {
                   NbNewPoints = NbEdgeCurve - 1;
                   if (!kstep) {
                     NbVerticesOnGeomEdge0 += NbNewPoints;
-                    NbOfCurves++;
+                    // NbOfCurves++;
                   }
 
                   nbvend = nbv + NbNewPoints;
@@ -4137,7 +4126,7 @@ namespace bamg {
       quadtree->Add(*v1);
 
       // on ajoute les sommets un a un
-      Int4 NbSwap = 0;
+      // Int4 NbSwap = 0;
       for (Int4 icount = 2; icount < nbvb; icount++) {
 
         Vertex *vi = ordre[icount];
@@ -4146,7 +4135,7 @@ namespace bamg {
         Triangle *tcvi = FindTriangleContening(vi->i, dete);
         quadtree->Add(*vi);
         Add(*vi, tcvi, dete);
-        NbSwap += vi->Optim(1, 1);
+        // NbSwap += vi->Optim(1, 1);
 
 #ifdef DRAWING2
         cout << Number(vi) << " " << NbSwap << endl;
@@ -4182,11 +4171,11 @@ namespace bamg {
       FindSubDomain(1);
       // remove all the hole
       // remove all the good sub domain
-      Int4 krm = 0;
+      // Int4 krm = 0;
       for (i = 0; i < nbt; i++)
         if (triangles[i].link)    // remove triangles
         {
-          krm++;
+          // krm++;
           for (int j = 0; j < 3; j++) {
             TriangleAdjacent ta = triangles[i].Adj(j);
             Triangle &tta = *(Triangle *)ta;
