@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/vector.h"
 #include <vector>
 #include <array>
 
@@ -19,7 +18,7 @@ public:
     BoundingBox3D(const Point & pt);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
-    [[nodiscard]] bool empty();
+    [[nodiscard]] bool empty() const;
 
     void reset();
 
@@ -43,11 +42,11 @@ public:
 
     void thicken(double factor);
 
-    [[nodiscard]] bool contains(const BoundingBox3D & bound);
+    [[nodiscard]] bool contains(const BoundingBox3D & bound) const;
 
-    [[nodiscard]] bool contains(const Point & p);
+    [[nodiscard]] bool contains(const Point & p) const;
 
-    [[nodiscard]] bool contains(double x, double y, double z);
+    [[nodiscard]] bool contains(double x, double y, double z) const;
 
     [[nodiscard]] bool transform(const std::vector<double> & tfo);
 
@@ -63,4 +62,12 @@ private:
     Point min_pt_, max_pt_;
 };
 
+/// Determine spatial dimension of a bounding box
+///
+/// @param bbox Boudning box
+/// @return Spatial dimension
+int determine_spatial_dim(const BoundingBox3D & bbox);
+
 } // namespace krado
+
+std::ostream & operator<<(std::ostream & stream, const krado::BoundingBox3D & bbox);

@@ -1,6 +1,9 @@
 #include "gmock/gmock.h"
 #include "krado/geom_surface.h"
 #include "krado/exception.h"
+#include "krado/vector.h"
+#include "krado/point.h"
+#include "krado/uv_param.h"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
 #include "builder.h"
@@ -9,8 +12,7 @@ using namespace krado;
 
 TEST(GeomSurfaceTest, point)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     auto pt_center = circ.point({ 0., 0. });
     EXPECT_EQ(pt_center, Point(0., 0., 0.));
@@ -18,16 +20,14 @@ TEST(GeomSurfaceTest, point)
 
 TEST(GeomSurfaceTest, surface_area)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     EXPECT_DOUBLE_EQ(circ.area(), 4. * M_PI);
 }
 
 TEST(GeomSurfaceTest, param_range)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     auto [u_lo, u_hi] = circ.param_range(0);
     EXPECT_DOUBLE_EQ(u_lo, -2);
@@ -42,8 +42,7 @@ TEST(GeomSurfaceTest, param_range)
 
 TEST(GeomSurfaceTest, d1_circ)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     auto [d1u, d1v] = circ.d1({ 0., 0. });
 
@@ -58,8 +57,7 @@ TEST(GeomSurfaceTest, d1_circ)
 
 TEST(GeomSurfaceTest, op_topods_face)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     GProp_GProps props;
     BRepGProp::SurfaceProperties(circ, props);
@@ -69,8 +67,7 @@ TEST(GeomSurfaceTest, op_topods_face)
 TEST(GeomSurfaceTest, curves)
 {
     constexpr double r = 2.;
-    auto qcirc_face = testing::build_triangle(Point(0, 0, 0), r);
-    GeomSurface circ(qcirc_face);
+    auto circ = testing::build_triangle(Point(0, 0, 0), r);
 
     auto crvs = circ.curves();
     EXPECT_EQ(crvs.size(), 3);
@@ -81,8 +78,7 @@ TEST(GeomSurfaceTest, curves)
 
 TEST(GeomSurfaceTest, normal)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     auto n = circ.normal({ 0., 0. });
     EXPECT_DOUBLE_EQ(n.x, 0.);
@@ -93,8 +89,7 @@ TEST(GeomSurfaceTest, normal)
 TEST(GeomSurfaceTest, param_from_pt)
 {
     constexpr double r = 2.;
-    auto qcirc_face = testing::build_triangle(Point(0, 0, 0), r);
-    GeomSurface circ(qcirc_face);
+    auto circ = testing::build_triangle(Point(0, 0, 0), r);
 
     auto [u, v] = circ.parameter_from_point(Point(0.5, 1, 0));
     EXPECT_DOUBLE_EQ(u, 0.2071067811865474);
@@ -106,8 +101,7 @@ TEST(GeomSurfaceTest, param_from_pt)
 
 TEST(GeomSurfaceTest, nearest_point)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     auto npt = circ.nearest_point(Point(1, 0.5, 0.1));
     EXPECT_EQ(npt, Point(1.0, 0.5, 0.0));
@@ -117,8 +111,7 @@ TEST(GeomSurfaceTest, nearest_point)
 
 TEST(GeomSurfaceTest, contains_point)
 {
-    auto circ_face = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface circ(circ_face);
+    auto circ = testing::build_circle(Point(0, 0, 0), 2.);
 
     EXPECT_TRUE(circ.contains_point(Point(0, 0, 0)));
     EXPECT_FALSE(circ.contains_point(Point(0, 0, -0.1)));
@@ -139,5 +132,5 @@ TEST(GeomSurfaceTest, op_shl)
     auto circ = testing::build_circle(Point(0, 0, 0), 2.);
     std::stringstream ss;
     ss << circ;
-    EXPECT_EQ(ss.str(), "Surface: u=[-2, 2], v=[-2, 2], area=12.5664");
+    EXPECT_EQ(ss.str(), "Surface: (u, v)=[-2, 2]x[-2, 2], area=12.5664");
 }

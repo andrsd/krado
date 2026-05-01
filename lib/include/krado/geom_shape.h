@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "krado/types.h"
 #include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"
@@ -44,6 +43,21 @@ public:
 
     /// Set color
     void set_color(const Color & color);
+
+    /// Compute the length of the edge
+    ///
+    /// @return Length of the edge
+    double length() const;
+
+    /// Compute the area of the face
+    ///
+    /// @return Area of the face
+    double area() const;
+
+    /// Compute the volume of the shape
+    ///
+    /// @return Volume of the shape
+    double volume() const;
 
     /// Return density
     ///

@@ -32,11 +32,11 @@ jobs:
           conda install \
             cmake \
             make \
-            exodusiicpp=3.* \
-            occt=7.9.* \
-            spdlog \
-            fmt=11.* \
-            eigen=3.* \
+            exodusiicpp=3.1 \
+            occt=7.9 \
+            spdlog=1.16 \
+            fmt=11 \
+            eigen=3.4 \
             libboost-devel>=1.88 \
             pybind11 \
             doxygen \

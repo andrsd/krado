@@ -3,6 +3,7 @@
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
 #include "krado/range.h"
+#include "krado/vector.h"
 #include <filesystem>
 
 using namespace krado;
@@ -153,13 +154,13 @@ TEST(MeshTest, add_mesh)
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
     EXPECT_EQ(elems[0].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
+    EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
     EXPECT_EQ(elems[1].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+    EXPECT_THAT(elems[1].indices(), ElementsAre(2, 1, 3));
     EXPECT_EQ(elems[2].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[2].ids(), ElementsAre(4, 5, 6));
+    EXPECT_THAT(elems[2].indices(), ElementsAre(4, 5, 6));
     EXPECT_EQ(elems[3].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[3].ids(), ElementsAre(6, 5, 7));
+    EXPECT_THAT(elems[3].indices(), ElementsAre(6, 5, 7));
 
     auto cell_set_ids = m.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
@@ -201,15 +202,15 @@ TEST(MeshTest, remove_duplicate_points)
     auto & elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
     EXPECT_EQ(elems[0].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[0].ids(), ElementsAre(0, 1, 2));
+    EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
     EXPECT_EQ(elems[1].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[1].ids(), ElementsAre(2, 1, 3));
+    EXPECT_THAT(elems[1].indices(), ElementsAre(2, 1, 3));
     EXPECT_EQ(elems[2].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[2].ids(), ElementsAre(1, 4, 3));
+    EXPECT_THAT(elems[2].indices(), ElementsAre(1, 4, 3));
     EXPECT_EQ(elems[3].type(), ElementType::TRI3);
-    EXPECT_THAT(elems[3].ids(), ElementsAre(3, 4, 5));
+    EXPECT_THAT(elems[3].indices(), ElementsAre(3, 4, 5));
 
-    auto bbox = m.compute_bounding_box();
+    auto bbox = compute_bounding_box(m);
     EXPECT_NEAR(bbox.size(0), 4., 1e-15);
     EXPECT_NEAR(bbox.size(1), 2., 1e-15);
 }

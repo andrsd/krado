@@ -6,6 +6,8 @@
 #include <vector>
 #include <ostream>
 
+class gp_Pnt;
+
 namespace krado {
 
 class Vector;
@@ -60,12 +62,17 @@ public:
     [[nodiscard]] bool operator<(const Point & p) const;
     void transform(const std::vector<double> & tfo);
 
+    operator gp_Pnt() const;
+
     /// X-component
     double x;
     /// Y-component
     double y;
     /// Z-component
     double z;
+
+public:
+    static Point create(const gp_Pnt & pt);
 };
 
 inline Point

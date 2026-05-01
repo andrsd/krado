@@ -5,6 +5,7 @@
 #include "krado/element.h"
 #include "krado/mesh.h"
 #include "krado/point.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
 
@@ -23,11 +24,11 @@ template <>
 Element
 extrude_element<ElementType::LINE2>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Quad4::N_VERTICES> ids;
-    ids[0] = el(0) + layer * layer_stride;
-    ids[1] = el(1) + layer * layer_stride;
-    ids[2] = el(1) + (layer + 1) * layer_stride;
-    ids[3] = el(0) + (layer + 1) * layer_stride;
+    std::array<Index, Quad4::N_VERTICES> ids;
+    ids[0] = el.index(0) + layer * layer_stride;
+    ids[1] = el.index(1) + layer * layer_stride;
+    ids[2] = el.index(1) + (layer + 1) * layer_stride;
+    ids[3] = el.index(0) + (layer + 1) * layer_stride;
     return Element::Quad4(ids);
 }
 
@@ -35,13 +36,13 @@ template <>
 Element
 extrude_element<ElementType::TRI3>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Prism6::N_VERTICES> ids;
-    ids[0] = el(0) + layer * layer_stride;
-    ids[1] = el(1) + layer * layer_stride;
-    ids[2] = el(2) + layer * layer_stride;
-    ids[3] = el(0) + (layer + 1) * layer_stride;
-    ids[4] = el(1) + (layer + 1) * layer_stride;
-    ids[5] = el(2) + (layer + 1) * layer_stride;
+    std::array<Index, Prism6::N_VERTICES> ids;
+    ids[0] = el.index(0) + layer * layer_stride;
+    ids[1] = el.index(1) + layer * layer_stride;
+    ids[2] = el.index(2) + layer * layer_stride;
+    ids[3] = el.index(0) + (layer + 1) * layer_stride;
+    ids[4] = el.index(1) + (layer + 1) * layer_stride;
+    ids[5] = el.index(2) + (layer + 1) * layer_stride;
     return Element::Prism6(ids);
 }
 
@@ -49,15 +50,15 @@ template <>
 Element
 extrude_element<ElementType::QUAD4>(const Element & el, std::size_t layer, std::size_t layer_stride)
 {
-    std::array<std::size_t, Hex8::N_VERTICES> ids;
-    ids[0] = el(0) + layer * layer_stride;
-    ids[1] = el(1) + layer * layer_stride;
-    ids[2] = el(2) + layer * layer_stride;
-    ids[3] = el(3) + layer * layer_stride;
-    ids[4] = el(0) + (layer + 1) * layer_stride;
-    ids[5] = el(1) + (layer + 1) * layer_stride;
-    ids[6] = el(2) + (layer + 1) * layer_stride;
-    ids[7] = el(3) + (layer + 1) * layer_stride;
+    std::array<Index, Hex8::N_VERTICES> ids;
+    ids[0] = el.index(0) + layer * layer_stride;
+    ids[1] = el.index(1) + layer * layer_stride;
+    ids[2] = el.index(2) + layer * layer_stride;
+    ids[3] = el.index(3) + layer * layer_stride;
+    ids[4] = el.index(0) + (layer + 1) * layer_stride;
+    ids[5] = el.index(1) + (layer + 1) * layer_stride;
+    ids[6] = el.index(2) + (layer + 1) * layer_stride;
+    ids[7] = el.index(3) + (layer + 1) * layer_stride;
     return Element::Hex8(ids);
 }
 
@@ -148,7 +149,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
         }
     }
 
-    std::map<Marker, std::vector<side_set_entry_t>> side_sets;
+    std::map<Marker, std::vector<SideEntry>> side_sets;
     if (dim == 1) {
         for (const auto & id : mesh.vertex_set_ids())
             side_sets[id] = utils::create_side_set(mesh, mesh.vertex_set(id));
@@ -163,7 +164,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     // extrude cell sets
     for (auto & id : mesh.cell_set_ids()) {
         auto & cells = mesh.cell_set(id);
-        std::vector<gidx_t> cell_set;
+        std::vector<Index> cell_set;
         cell_set.reserve(cells.size() * thicknesses.size());
         for (std::size_t i = 0; i < thicknesses.size(); ++i) {
             for (auto & cell : cells)
@@ -176,7 +177,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     // extrude side sets
     if (dim == 1) {
         for (auto & [id, ss] : side_sets) {
-            std::vector<side_set_entry_t> extruded_side_sets;
+            std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
             for (std::size_t i = 0; i < thicknesses.size(); ++i) {
                 for (auto & entry : ss) {
@@ -199,7 +200,7 @@ extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> &
     }
     else if (dim == 2) {
         for (auto & [id, ss] : side_sets) {
-            std::vector<side_set_entry_t> extruded_side_sets;
+            std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
             for (std::size_t i = 0; i < thicknesses.size(); ++i) {
                 for (auto & entry : ss) {

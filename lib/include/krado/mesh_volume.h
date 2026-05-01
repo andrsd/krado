@@ -3,20 +3,24 @@
 
 #pragma once
 
-#include "krado/ptr.h"
-#include "krado/geom_volume.h"
 #include "krado/meshable.h"
 #include "krado/scheme3d.h"
+#include "krado/ptr.h"
+#include "krado/mesh_element.h"
+#include <vector>
+#include <memory>
 
 namespace krado {
 
 class MeshSurface;
+class GeomVolume;
 
 class MeshVolume : public Meshable {
 public:
     MeshVolume(ShapeID id,
                const GeomVolume & gvolume,
                const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
+    ~MeshVolume();
 
     /// Get the unique identifier of the volume.
     ///
@@ -30,6 +34,16 @@ public:
 
     /// Get surfaces bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshSurface>> & surfaces() const;
+
+    /// Get mesh elements
+    ///
+    /// @return Mesh elements
+    [[nodiscard]] const std::vector<MeshElement> & tetrahedra() const;
+
+    /// Add a mesh element to the volume
+    ///
+    /// @param element Mesh element to add
+    void add_tetra(const std::array<Ptr<MeshVertexAbstract>, 4> & tetra);
 
     /// Set meshing scheme
     ///
@@ -45,11 +59,7 @@ public:
         return *sch_ptr;
     }
 
-    Scheme3D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme3D & scheme();
 
 private:
     ///
@@ -58,6 +68,8 @@ private:
     const GeomVolume & gvolume_;
     /// Mesh surfaces bounding this surface
     std::vector<Ptr<MeshSurface>> mesh_surfaces_;
+    /// Mesh elements
+    std::vector<MeshElement> tetras_;
     ///
     std::unique_ptr<Scheme3D> scheme_;
 };

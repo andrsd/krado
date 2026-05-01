@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 #include "krado/axis1.h"
+#include "krado/vector.h"
 
 using namespace krado;
 

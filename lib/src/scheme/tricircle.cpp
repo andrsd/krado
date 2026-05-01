@@ -12,9 +12,9 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme/equal.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
-#include <memory>
 
 namespace krado {
 
@@ -55,10 +55,6 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
 
     // Outer ring vertices (existing)
     auto & mesh_crv = mesh_surface->curves()[0];
-    for (auto & vtx : mesh_crv->bounding_vertices())
-        mesh_surface->add_vertex(vtx);
-    for (auto & vtx : mesh_crv->curve_vertices())
-        mesh_surface->add_vertex(vtx);
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings;
     rings.resize(n_radial + 1);
@@ -67,7 +63,13 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     rings.push_back({ ctr });
 
     // ring `n_radial` contains full boundary
-    auto circum_verts = mesh_crv->all_vertices();
+    std::vector<Ptr<MeshVertexAbstract>> circum_verts;
+    auto bnd_vtxs = mesh_crv->bounding_vertices();
+    circum_verts.push_back(bnd_vtxs[0]);
+    for (auto & v : mesh_crv->curve_vertices())
+        circum_verts.push_back(v);
+    if (bnd_vtxs.size() > 1)
+        circum_verts.push_back(bnd_vtxs[1]);
     rings[n_radial] = circum_verts;
 
     // Generate intermediate rings

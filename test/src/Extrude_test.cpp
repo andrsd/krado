@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/extrude.h"
 #include "krado/mesh.h"
+#include "krado/vector.h"
 #include "krado/types.h"
 
 using namespace krado;
@@ -18,8 +19,8 @@ TEST(ExtrudeTest, line_1d)
     line.set_up();
     line.set_cell_set(0, { 0, 1 });
     line.set_cell_set(1, { 2 });
-    line.set_vertex_set(10, std::vector<gidx_t> { 3 });
-    line.set_vertex_set(11, std::vector<gidx_t> { 6 });
+    line.set_vertex_set(10, std::vector<Index> { 3 });
+    line.set_vertex_set(11, std::vector<Index> { 6 });
 
     auto rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
@@ -79,8 +80,8 @@ TEST(ExtrudeTest, tri_2d)
     square.set_up();
     square.set_cell_set(0, { 0, 1, 3 });
     square.set_cell_set(1, { 2 });
-    square.set_edge_set(10, std::vector<gidx_t> { 9 });
-    square.set_edge_set(11, std::vector<gidx_t> { 14 });
+    square.set_edge_set(10, std::vector<Index> { 9 });
+    square.set_edge_set(11, std::vector<Index> { 14 });
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
@@ -144,10 +145,10 @@ TEST(ExtrudeTest, quad_2d)
     square.set_up();
     square.set_cell_set(0, { 0, 2, 3 });
     square.set_cell_set(1, { 1 });
-    square.set_edge_set(10, std::vector<gidx_t> { 13, 17 });
-    square.set_edge_set(11, std::vector<gidx_t> { 21, 24 });
-    square.set_edge_set(12, std::vector<gidx_t> { 18, 23 });
-    square.set_edge_set(13, std::vector<gidx_t> { 16, 22 });
+    square.set_edge_set(10, std::vector<Index> { 13, 17 });
+    square.set_edge_set(11, std::vector<Index> { 21, 24 });
+    square.set_edge_set(12, std::vector<Index> { 18, 23 });
+    square.set_edge_set(13, std::vector<Index> { 16, 22 });
 
     auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 

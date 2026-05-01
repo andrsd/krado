@@ -8,77 +8,82 @@
 
 namespace krado {
 
-const std::array<int, 2> Line2::EDGE_VERTICES = { 0, 1 };
+const std::array<u8, 2> Line2::EDGE_VERTICES = { 0, 1 };
 
-const std::vector<int> Tri3::EDGES = { 0, 1, 2 };
-const std::vector<std::array<int, 2>> Tri3::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
+const std::vector<u8> Tri3::EDGES = { 0, 1, 2 };
+const std::vector<std::array<u8, 2>> Tri3::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
 
-const std::vector<int> Quad4::EDGES = { 0, 1, 2, 3 };
-const std::vector<std::array<int, 2>> Quad4::EDGE_VERTICES = { { 0, 1 },
-                                                               { 1, 2 },
-                                                               { 2, 3 },
-                                                               { 3, 0 } };
+const std::vector<u8> Quad4::EDGES = { 0, 1, 2, 3 };
+const std::vector<std::array<u8, 2>> Quad4::EDGE_VERTICES = { { 0, 1 },
+                                                              { 1, 2 },
+                                                              { 2, 3 },
+                                                              { 3, 0 } };
 
-const std::vector<int> Tetra4::EDGES = { 0, 1, 2, 3, 4, 5 };
-const std::vector<std::array<int, 2>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
-                                                                { 0, 3 }, { 1, 3 }, { 2, 3 } };
-const std::vector<std::vector<int>> Tetra4::FACE_EDGES = { { 0, 1, 2 },
-                                                           { 0, 4, 3 },
-                                                           { 1, 5, 4 },
-                                                           { 2, 3, 5 } };
-const std::vector<std::vector<int>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
-                                                              { 0, 1, 3 },
-                                                              { 1, 2, 3 },
-                                                              { 2, 0, 3 } };
+const std::vector<u8> Tetra4::EDGES = { 0, 1, 2, 3, 4, 5 };
+const std::vector<std::array<u8, 2>> Tetra4::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
+                                                               { 0, 3 }, { 1, 3 }, { 2, 3 } };
+const std::vector<std::vector<u8>> Tetra4::FACE_EDGES = { { 0, 1, 2 },
+                                                          { 0, 4, 3 },
+                                                          { 1, 5, 4 },
+                                                          { 2, 3, 5 } };
+const std::vector<std::vector<u8>> Tetra4::FACE_VERTICES = { { 0, 1, 2 },
+                                                             { 0, 1, 3 },
+                                                             { 1, 2, 3 },
+                                                             { 2, 0, 3 } };
 
-const std::vector<int> Pyramid5::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7 };
-const std::vector<std::array<int, 2>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
-                                                                  { 3, 0 }, { 0, 4 }, { 1, 4 },
-                                                                  { 2, 4 }, { 3, 4 } };
-const std::vector<std::vector<int>> Pyramid5::FACE_EDGES = { { 0, 1, 2, 3 },
-                                                             { 0, 3, 4 },
-                                                             { 1, 6, 5 },
-                                                             { 2, 7, 6 },
-                                                             { 3, 4, 7 } };
-const std::vector<std::vector<int>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
-                                                                { 0, 1, 4 },
-                                                                { 1, 2, 4 },
-                                                                { 2, 3, 4 },
-                                                                { 3, 0, 4 } };
+const std::vector<u8> Pyramid5::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7 };
+const std::vector<std::array<u8, 2>> Pyramid5::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
+                                                                 { 3, 0 }, { 0, 4 }, { 1, 4 },
+                                                                 { 2, 4 }, { 3, 4 } };
+const std::vector<std::vector<u8>> Pyramid5::FACE_EDGES = { { 0, 1, 2, 3 },
+                                                            { 0, 3, 4 },
+                                                            { 1, 6, 5 },
+                                                            { 2, 7, 6 },
+                                                            { 3, 4, 7 } };
+const std::vector<std::vector<u8>> Pyramid5::FACE_VERTICES = { { 0, 1, 2, 3 },
+                                                               { 0, 1, 4 },
+                                                               { 1, 2, 4 },
+                                                               { 2, 3, 4 },
+                                                               { 3, 0, 4 } };
 
-const std::vector<int> Prism6::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-const std::vector<std::array<int, 2>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
-                                                                { 0, 3 }, { 1, 4 }, { 2, 5 },
-                                                                { 3, 4 }, { 4, 5 }, { 5, 3 } };
-const std::vector<std::vector<int>> Prism6::FACE_EDGES = { { 2, 1, 0 },
-                                                           { 0, 4, 6, 3 },
-                                                           { 1, 5, 7, 4 },
-                                                           { 2, 3, 8, 6 },
-                                                           { 6, 7, 8 } };
-const std::vector<std::vector<int>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
-                                                              { 0, 1, 4, 3 },
-                                                              { 1, 2, 5, 4 },
-                                                              { 2, 0, 3, 5 },
-                                                              { 3, 4, 5 } };
+const std::vector<u8> Prism6::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+const std::vector<std::array<u8, 2>> Prism6::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 0 },
+                                                               { 0, 3 }, { 1, 4 }, { 2, 5 },
+                                                               { 3, 4 }, { 4, 5 }, { 5, 3 } };
+const std::vector<std::vector<u8>> Prism6::FACE_EDGES = { { 2, 1, 0 },
+                                                          { 0, 4, 6, 3 },
+                                                          { 1, 5, 7, 4 },
+                                                          { 2, 3, 8, 6 },
+                                                          { 6, 7, 8 } };
+const std::vector<std::vector<u8>> Prism6::FACE_VERTICES = { { 0, 2, 1 },
+                                                             { 0, 1, 4, 3 },
+                                                             { 1, 2, 5, 4 },
+                                                             { 2, 0, 3, 5 },
+                                                             { 3, 4, 5 } };
 
-const std::vector<int> Hex8::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-const std::vector<std::array<int, 2>> Hex8::EDGE_VERTICES = { { 0, 1 }, { 1, 2 }, { 2, 3 },
-                                                              { 3, 0 }, { 0, 4 }, { 1, 5 },
-                                                              { 2, 6 }, { 3, 7 }, { 4, 5 },
-                                                              { 5, 6 }, { 6, 7 }, { 7, 4 } };
-const std::vector<std::vector<int>> Hex8::FACE_EDGES = { { 0, 5, 8, 4 },  { 2, 7, 10, 6 },
-                                                         { 3, 4, 11, 7 }, { 1, 6, 9, 5 },
-                                                         { 3, 2, 1, 0 },  { 8, 9, 10, 11 } };
-const std::vector<std::vector<int>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2, 3, 7, 6 },
-                                                            { 3, 0, 4, 7 }, { 1, 2, 6, 5 },
-                                                            { 0, 3, 2, 1 }, { 4, 5, 6, 7 } };
+const std::vector<u8> Hex8::EDGES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+const std::vector<std::array<u8, 2>> Hex8::EDGE_VERTICES = {
+    { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 0, 4 }, { 1, 5 },
+    { 2, 6 }, { 3, 7 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }
+};
+const std::vector<std::vector<u8>> Hex8::FACE_EDGES = { { 0, 5, 8, 4 },  { 2, 7, 10, 6 },
+                                                        { 3, 4, 11, 7 }, { 1, 6, 9, 5 },
+                                                        { 3, 2, 1, 0 },  { 8, 9, 10, 11 } };
+const std::vector<std::vector<u8>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2, 3, 7, 6 },
+                                                           { 3, 0, 4, 7 }, { 1, 2, 6, 5 },
+                                                           { 0, 3, 2, 1 }, { 4, 5, 6, 7 } };
 
 //
 
-Element::Element(ElementType type, const std::vector<gidx_t> & vtx_ids) :
-    elem_type_(type),
-    vtx_id_(vtx_ids)
+Element::Element(ElementType type, const std::vector<Index> & vtx_ids) : elem_type_(type)
 {
+    if (vtx_ids.size() < MAX_INDICES) {
+        this->n_ids_ = vtx_ids.size();
+        for (int i = 0; i < this->n_ids_; i++)
+            this->vtx_id_[i] = vtx_ids[i];
+    }
+    else
+        throw Exception("Unable to handle more then {} indices", MAX_INDICES);
 }
 
 ElementType
@@ -87,91 +92,74 @@ Element::type() const
     return this->elem_type_;
 }
 
-int
+u8
 Element::num_vertices() const
 {
-    return this->vtx_id_.size();
+    return this->n_ids_;
 }
 
-gidx_t
-Element::vertex_id(int idx) const
+Index
+Element::index(u8 idx) const
 {
-    return this->vtx_id_[idx];
+    if (idx < MAX_INDICES)
+        return this->vtx_id_[idx];
+    else
+        throw Exception("Access out of range. `idx` can be 0..{}", MAX_INDICES);
 }
 
-gidx_t
-Element::operator()(int idx) const
+Span<const Index>
+Element::indices() const
 {
-    return this->vtx_id_[idx];
-}
-
-const std::vector<gidx_t> &
-Element::ids() const
-{
-    return this->vtx_id_;
-}
-
-gidx_t
-Element::id(int idx) const
-{
-    return this->vtx_id_[idx];
+    return { this->vtx_id_.data(), this->n_ids_ };
 }
 
 void
-Element::set_ids(const std::vector<gidx_t> & ids)
+Element::shift(Index ofst)
 {
-    if (this->vtx_id_.size() == ids.size())
-        this->vtx_id_ = ids;
-    else
-        throw Exception("Element::set_ids: size mismatch");
+    for (int i = 0; i < this->n_ids_; i++)
+        this->vtx_id_[i] += ofst;
 }
 
 Element
-Element::Line2(const std::array<gidx_t, 2> & ids)
+Element::Line2(const std::array<Index, 2> & ids)
 {
-    Element line2(ElementType::LINE2, { ids[0], ids[1] });
-    return line2;
+    return Element(ElementType::LINE2, ids);
 }
 
 Element
-Element::Tri3(const std::array<gidx_t, 3> & ids)
+Element::Tri3(const std::array<Index, 3> & ids)
 {
-    return Element(ElementType::TRI3, { ids[0], ids[1], ids[2] });
+    return Element(ElementType::TRI3, ids);
 }
 
 Element
-Element::Quad4(const std::array<gidx_t, 4> & ids)
+Element::Quad4(const std::array<Index, 4> & ids)
 {
-    return Element(ElementType::QUAD4, { ids[0], ids[1], ids[2], ids[3] });
+    return Element(ElementType::QUAD4, ids);
 }
 
 Element
-Element::Tetra4(const std::array<gidx_t, 4> & ids)
+Element::Tetra4(const std::array<Index, 4> & ids)
 {
-    Element tet4(ElementType::TETRA4, { ids[0], ids[1], ids[2], ids[3] });
-    return tet4;
+    return Element(ElementType::TETRA4, ids);
 }
 
 Element
-Element::Pyramid5(const std::array<gidx_t, 5> & ids)
+Element::Pyramid5(const std::array<Index, 5> & ids)
 {
-    Element pyr5(ElementType::PYRAMID5, { ids[0], ids[1], ids[2], ids[3], ids[4] });
-    return pyr5;
+    return Element(ElementType::PYRAMID5, ids);
 }
 
 Element
-Element::Prism6(const std::array<gidx_t, 6> & ids)
+Element::Prism6(const std::array<Index, 6> & ids)
 {
-    Element wed6(ElementType::PRISM6, { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5] });
-    return wed6;
+    return Element(ElementType::PRISM6, ids);
 }
 
 Element
-Element::Hex8(const std::array<gidx_t, 8> & ids)
+Element::Hex8(const std::array<Index, 8> & ids)
 {
-    Element hex8(ElementType::HEX8,
-                 { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7] });
-    return hex8;
+    return Element(ElementType::HEX8, ids);
 }
 
 std::string
@@ -206,7 +194,7 @@ operator==(const Element & a, const Element & b)
     if (a.num_vertices() != b.num_vertices())
         return false;
     for (int i = 0; i < a.num_vertices(); ++i)
-        if (a.vertex_id(i) != b.vertex_id(i))
+        if (a.index(i) != b.index(i))
             return false;
     return true;
 }

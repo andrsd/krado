@@ -4,18 +4,22 @@
 #pragma once
 
 #include "krado/geom_volume.h"
-#include "krado/axis2.h"
 
 namespace krado {
 
+class Axis2;
+
 class Cylinder : public GeomVolume {
+private:
+    Cylinder(const TopoDS_Solid & solid);
+
 public:
     /// Create a cylinder
     ///
     /// @param location Location in space
     /// @param radius Radius
     /// @param height Height
-    Cylinder(const Axis2 & location, double radius, double height);
+    static Cylinder create(const Axis2 & location, double radius, double height);
 };
 
 } // namespace krado

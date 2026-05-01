@@ -3,8 +3,8 @@
 #include "krado/geom_model.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_vertex.h"
 #include "krado/mesh_surface.h"
-#include "krado/mesh_surface_vertex.h"
 #include "krado/scheme/equal.h"
 #include "krado/step_file.h"
 #include "builder.h"
@@ -24,17 +24,17 @@ TEST(SchemeEqualTest, line)
     model.mesh_curve(1);
 
     auto line = model.curve(1);
-    ASSERT_EQ(line->all_vertices().size(), 6);
-    auto first_vtx = line->all_vertices().front();
-    auto last_vtx = line->all_vertices().back();
-    EXPECT_NE(first_vtx, last_vtx);
+    auto & bv = line->bounding_vertices();
+    ASSERT_EQ(bv.size(), 2);
+    EXPECT_TRUE(bv[0]->point().is_equal(Point(0, 0, 0), 1e-10));
+    EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
-    ASSERT_EQ(line->curve_vertices().size(), 4);
     auto & cv = line->curve_vertices();
-    EXPECT_DOUBLE_EQ(cv[0]->point().x, 0.2);
-    EXPECT_DOUBLE_EQ(cv[1]->point().x, 0.4);
-    EXPECT_DOUBLE_EQ(cv[2]->point().x, 0.6);
-    EXPECT_DOUBLE_EQ(cv[3]->point().x, 0.8);
+    ASSERT_EQ(cv.size(), 4);
+    EXPECT_TRUE(cv[0]->point().is_equal(Point(0.2, 0, 0), 1e-10));
+    EXPECT_TRUE(cv[1]->point().is_equal(Point(0.4, 0, 0), 1e-10));
+    EXPECT_TRUE(cv[2]->point().is_equal(Point(0.6, 0, 0), 1e-10));
+    EXPECT_TRUE(cv[3]->point().is_equal(Point(0.8, 0, 0), 1e-10));
 
     ASSERT_EQ(line->segments().size(), 5);
 }
@@ -53,16 +53,19 @@ TEST(SchemeEqualTest, circle)
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
 
-    auto & all_vtxs = curv->all_vertices();
-    ASSERT_EQ(all_vtxs.size(), 8);
-    EXPECT_EQ(all_vtxs[0]->point(), Point(1., 0, 0));
-    EXPECT_EQ(all_vtxs[1]->point(), Point(SQRT2_2, SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[2]->point(), Point(0, 1., 0));
-    EXPECT_EQ(all_vtxs[3]->point(), Point(-SQRT2_2, SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[4]->point(), Point(-1., 0, 0));
-    EXPECT_EQ(all_vtxs[5]->point(), Point(-SQRT2_2, -SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[6]->point(), Point(0, -1., 0));
-    EXPECT_EQ(all_vtxs[7]->point(), Point(SQRT2_2, -SQRT2_2, 0));
+    auto & bv = curv->bounding_vertices();
+    ASSERT_EQ(bv.size(), 1);
+    EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
+
+    auto & cv = curv->curve_vertices();
+    ASSERT_EQ(cv.size(), 7);
+    EXPECT_TRUE(cv[0]->point().is_equal(Point(SQRT2_2, SQRT2_2, 0), 1e-10));
+    EXPECT_TRUE(cv[1]->point().is_equal(Point(0, 1., 0), 1e-10));
+    EXPECT_TRUE(cv[2]->point().is_equal(Point(-SQRT2_2, SQRT2_2, 0), 1e-10));
+    EXPECT_TRUE(cv[3]->point().is_equal(Point(-1., 0, 0), 1e-10));
+    EXPECT_TRUE(cv[4]->point().is_equal(Point(-SQRT2_2, -SQRT2_2, 0), 1e-10));
+    EXPECT_TRUE(cv[5]->point().is_equal(Point(0, -1., 0), 1e-10));
+    EXPECT_TRUE(cv[6]->point().is_equal(Point(SQRT2_2, -SQRT2_2, 0), 1e-10));
 
     EXPECT_EQ(curv->segments().size(), 8);
 }
@@ -81,12 +84,14 @@ TEST(SchemeEqualTest, quarter_circle)
     model.mesh_curve(1);
 
     auto curv = model.curve(1);
-    auto & all_vtxs = curv->all_vertices();
-    ASSERT_EQ(all_vtxs.size(), 5);
+    auto & bv = curv->bounding_vertices();
+    ASSERT_EQ(bv.size(), 2);
+    EXPECT_TRUE(bv[0]->point().is_equal(Point(-1, 0, 0), 1e-10));
+    EXPECT_TRUE(bv[1]->point().is_equal(Point(0, 1, 0), 1e-10));
 
-    EXPECT_EQ(all_vtxs[0]->point(), Point(-1., 0, 0));
-    EXPECT_EQ(all_vtxs[1]->point(), Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0));
-    EXPECT_EQ(all_vtxs[2]->point(), Point(-std::cos(M_PI / 4.), std::sin(M_PI / 4.), 0));
-    EXPECT_EQ(all_vtxs[3]->point(), Point(-std::cos(3 * M_PI / 8.), std::sin(3. * M_PI / 8.), 0));
-    EXPECT_EQ(all_vtxs[4]->point(), Point(0., 1., 0));
+    auto & cv = curv->curve_vertices();
+    ASSERT_EQ(cv.size(), 3);
+    EXPECT_TRUE(cv[0]->point().is_equal(Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0), 1e-10));
+    EXPECT_TRUE(cv[1]->point().is_equal(Point(-std::cos(M_PI / 4.), std::sin(M_PI / 4.), 0), 1e-10));
+    EXPECT_TRUE(cv[2]->point().is_equal(Point(-std::cos(3 * M_PI / 8.), std::sin(3. * M_PI / 8.), 0), 1e-10));
 }

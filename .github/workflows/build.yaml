@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - 3.x
   pull_request:
     branches:
       - main
+      - 3.x
 
 jobs:
   build:
@@ -41,20 +43,19 @@ jobs:
           channels: andrsd,defaults
 
       - name: Install conda packages
-        shell: bash -l {0}
         run: |
           conda install \
             cmake \
             make \
             gcc_linux-64 \
             gxx_linux-64 \
-            exodusiicpp=3.* \
-            occt=7.9.* \
-            spdlog \
-            fmt=11.* \
-            eigen=3.* \
+            exodusiicpp=3.1 \
+            occt=7.9 \
+            spdlog=1.16 \
+            fmt=11 \
+            eigen=3.4 \
             libboost-devel>=1.88 \
-            gtest \
+            gtest=1.17 \
             pybind11 \
             pytest \
             flake8 \

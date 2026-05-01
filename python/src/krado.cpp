@@ -4,9 +4,29 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "krado/arc_of_circle.h"
 #include "krado/axis1.h"
 #include "krado/axis2.h"
+#include "krado/box.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/scheme/bamg.h"
+#include "krado/scheme/bias.h"
+#include "krado/scheme/curvature.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/pinpoint.h"
+#include "krado/scheme/size.h"
+#include "krado/scheme/structured.h"
+#include "krado/scheme/triangle.h"
+#include "krado/scheme/tricircle.h"
+#include "krado/scheme/trisurf.h"
+#include "krado/circle.h"
+#include "krado/circumscribed_polygon.h"
+#include "krado/cone.h"
+#include "krado/cylinder.h"
+#include "krado/helix.h"
+#include "krado/inscribed_polygon.h"
+#include "krado/sphere.h"
+#include "krado/spline.h"
 #include "krado/classifier.h"
 #include "krado/dagmc_file.h"
 #include "krado/extrude.h"
@@ -34,6 +54,8 @@
 #include "krado/hexagonal_pattern.h"
 #include "krado/element.h"
 #include "krado/point.h"
+#include "krado/polygon.h"
+#include "krado/wire.h"
 #include "krado/tetrahedralize.h"
 #include "krado/transform.h"
 #include "krado/vector.h"
@@ -43,6 +65,8 @@
 
 namespace py = pybind11;
 using namespace krado;
+
+PYBIND11_DECLARE_HOLDER_TYPE(T, krado::Ptr<T>);
 
 class PyMeshVertexAbstract : public MeshVertexAbstract {
 public:
@@ -199,21 +223,20 @@ PYBIND11_MODULE(krado, m)
         .def("diag", &BoundingBox3D::diag)
         .def("make_cube", &BoundingBox3D::make_cube)
         .def("thicken", &BoundingBox3D::thicken)
-        .def("contains", static_cast<bool (BoundingBox3D::*)(const BoundingBox3D &)>(&BoundingBox3D::contains))
-        .def("contains", static_cast<bool (BoundingBox3D::*)(const Point &)>(&BoundingBox3D::contains))
-        .def("contains", static_cast<bool (BoundingBox3D::*)(double, double, double)>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(const BoundingBox3D &) const>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(const Point &) const>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(double, double, double) const>(&BoundingBox3D::contains))
         .def("transform", &BoundingBox3D::transform)
         .def("size", static_cast<std::array<double, 3> (BoundingBox3D::*)() const>(&BoundingBox3D::size))
         .def("size", static_cast<double (BoundingBox3D::*)(int) const>(&BoundingBox3D::size))
     ;
 
     py::class_<Element>(m, "Element")
-        .def(py::init<ElementType, const std::vector<gidx_t> &>())
+        .def(py::init<ElementType, const std::vector<Index> &>())
         .def("type", py::overload_cast<>(&Element::type, py::const_))
         .def("num_vertices", &Element::num_vertices)
-        .def("vertex_id", &Element::vertex_id)
-        .def("ids", &Element::ids)
-        .def("set_ids", &Element::set_ids)
+        .def("index", &Element::index)
+        .def("indices", &Element::indices)
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
@@ -228,25 +251,62 @@ PYBIND11_MODULE(krado, m)
         .def("density", &GeomShape::density)
     ;
 
+    py::class_<Wire, GeomShape>(m, "Wire")
+        .def("length", &Wire::length)
+    ;
+
+    py::class_<Polygon, Wire>(m, "Polygon")
+        .def(py::init([](const std::vector<Point> & points, bool closed) {
+                 return Polygon::create(points, closed);
+             }),
+             py::arg("points"), py::arg("closed") = true)
+    ;
+
+    py::class_<InscribedPolygon, Polygon>(m, "InscribedPolygon")
+        .def(py::init([](const Axis2 & ax2, double radius, int n_sides) {
+                 return InscribedPolygon::create(ax2, radius, n_sides);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("n_sides"))
+        .def(py::init([](const Axis2 & ax2, const Point & pt1, int n_sides) {
+                 return InscribedPolygon::create(ax2, pt1, n_sides);
+             }),
+             py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
+    ;
+
+    py::class_<CircumscribedPolygon, Polygon>(m, "CircumscribedPolygon")
+        .def(py::init([](const Axis2 & ax2, double radius, int n_sides) {
+                 return CircumscribedPolygon::create(ax2, radius, n_sides);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("n_sides"))
+        .def(py::init([](const Axis2 & ax2, const Point & pt1, int n_sides) {
+                 return CircumscribedPolygon::create(ax2, pt1, n_sides);
+             }),
+             py::arg("ax2"), py::arg("pt1"), py::arg("n_sides"))
+    ;
+
     py::class_<GeomModel>(m, "GeomModel")
         .def(py::init<const GeomShape &>())
         .def("vertices", &GeomModel::vertices, py::return_value_policy::reference)
-        .def("vertex", py::overload_cast<ShapeID>(&GeomModel::vertex), py::return_value_policy::reference)
+        .def("vertex", py::overload_cast<ShapeID>(&GeomModel::vertex))
         .def("curves", &GeomModel::curves, py::return_value_policy::reference)
-        .def("curve", py::overload_cast<ShapeID>(&GeomModel::curve), py::return_value_policy::reference)
+        .def("curve", py::overload_cast<ShapeID>(&GeomModel::curve))
         .def("surfaces", &GeomModel::surfaces, py::return_value_policy::reference)
-        .def("surface", py::overload_cast<ShapeID>(&GeomModel::surface), py::return_value_policy::reference)
+        .def("surface", py::overload_cast<ShapeID>(&GeomModel::surface))
         .def("volumes", &GeomModel::volumes, py::return_value_policy::reference)
-        .def("volume", py::overload_cast<ShapeID>(&GeomModel::volume), py::return_value_policy::reference)
+        .def("volume", py::overload_cast<ShapeID>(&GeomModel::volume))
         .def("mesh_vertex", py::overload_cast<ShapeID>(&GeomModel::mesh_vertex))
         .def("mesh_curve", py::overload_cast<ShapeID>(&GeomModel::mesh_curve))
         .def("mesh_surface", py::overload_cast<ShapeID>(&GeomModel::mesh_surface))
         .def("mesh_volume", py::overload_cast<ShapeID>(&GeomModel::mesh_volume))
-        .def("build_mesh", &GeomModel::build_mesh)
-        .def("build_surface_mesh", &GeomModel::build_surface_mesh)
+        .def("set_block_name", &GeomModel::set_block_name)
+        .def("block_name", &GeomModel::block_name)
+        .def("set_side_set_name", &GeomModel::set_side_set_name)
+        .def("side_set_name", &GeomModel::side_set_name)
+        .def("set_node_set_name", &GeomModel::set_node_set_name)
+        .def("node_set_name", &GeomModel::node_set_name)
     ;
 
-    py::class_<GeomVertex>(m, "GeomVertex")
+    py::class_<GeomVertex, GeomShape>(m, "GeomVertex")
         .def(py::init<const TopoDS_Vertex &>())
         .def("x", &GeomVertex::x)
         .def("y", &GeomVertex::y)
@@ -255,7 +315,7 @@ PYBIND11_MODULE(krado, m)
         .def("is_null", &GeomVertex::is_null)
     ;
 
-    py::class_<GeomCurve>(m, "GeomCurve")
+    py::class_<GeomCurve, GeomShape>(m, "GeomCurve")
         .def(py::init<const TopoDS_Edge &>())
         .def("type", &GeomCurve::type)
         .def("is_degenerated", &GeomCurve::is_degenerated)
@@ -272,8 +332,69 @@ PYBIND11_MODULE(krado, m)
         .def("is_seam", &GeomCurve::is_seam)
     ;
 
-    py::class_<GeomSurface>(m, "GeomSurface")
-        .def(py::init<const TopoDS_Face &>())
+    py::class_<Circle, GeomCurve>(m, "Circle")
+        .def(py::init([](const Axis2 & origin, double radius) {
+                 return Circle::create(origin, radius);
+             }),
+             py::arg("origin"), py::arg("radius"))
+        .def(py::init([](const Point & center, double radius, const Vector & normal) {
+                 return Circle::create(center, radius, normal);
+             }),
+             py::arg("center"), py::arg("radius"), py::arg("normal") = Vector(0., 0., 1.))
+        .def(py::init([](const Point & center, const Point & pt, const Vector & normal) {
+                 return Circle::create(center, pt, normal);
+             }),
+             py::arg("center"), py::arg("pt"), py::arg("normal") = Vector(0., 0., 1.))
+        .def(py::init([](const Point & pt1, const Point & pt2, const Point & pt3) {
+                 return Circle::create(pt1, pt2, pt3);
+             }),
+             py::arg("pt1"), py::arg("pt2"), py::arg("pt3"))
+        .def("area", &Circle::area)
+        .def("radius", &Circle::radius)
+        .def("location", &Circle::location)
+    ;
+
+    py::class_<ArcOfCircle, GeomCurve>(m, "ArcOfCircle")
+        .def(py::init([](const Point & pt1, const Point & pt2, const Point & pt3) {
+                 return ArcOfCircle::create(pt1, pt2, pt3);
+             }),
+             py::arg("pt1"), py::arg("pt2"), py::arg("pt3"))
+        .def(py::init([](const Circle & circ, const Point & pt1, const Point & pt2, bool sense) {
+                 return ArcOfCircle::create(circ, pt1, pt2, sense);
+             }),
+             py::arg("circ"), py::arg("pt1"), py::arg("pt2"), py::arg("sense") = true)
+        .def(py::init([](const Point & pt1, const Vector & tangent, const Point & pt2) {
+                 return ArcOfCircle::create(pt1, tangent, pt2);
+             }),
+             py::arg("pt1"), py::arg("tangent"), py::arg("pt2"))
+        .def("start_point", &ArcOfCircle::start_point)
+        .def("end_point", &ArcOfCircle::end_point)
+    ;
+
+    py::class_<Spline, GeomCurve>(m, "Spline")
+        .def(py::init([](const std::vector<Point> & points) { return Spline::create(points); }),
+             py::arg("points"))
+        .def(py::init([](const std::vector<Point> & points, const Vector & initial_tg,
+                         const Vector & final_tg) {
+                 return Spline::create(points, initial_tg, final_tg);
+             }),
+             py::arg("points"), py::arg("initial_tg"), py::arg("final_tg"))
+    ;
+
+    py::class_<Helix, GeomCurve>(m, "Helix")
+        .def(py::init([](const Axis2 & ax2, double radius, double height, double turns,
+                         double start_angle) {
+                 return Helix::create(ax2, radius, height, turns, start_angle);
+             }),
+             py::arg("ax2"), py::arg("radius"), py::arg("height"), py::arg("turns"),
+             py::arg("start_angle") = 0.)
+    ;
+
+    py::class_<GeomSurface, GeomShape>(m, "GeomSurface")
+        .def(py::init([](const Wire & wire) {
+                return GeomSurface::create(wire);
+             }),
+             py::arg("wire"))
         .def("point", &GeomSurface::point)
         .def("normal", &GeomSurface::normal)
         .def("d1", &GeomSurface::d1)
@@ -285,10 +406,33 @@ PYBIND11_MODULE(krado, m)
         .def("contains_point", &GeomSurface::contains_point)
     ;
 
-    py::class_<GeomVolume>(m, "GeomVolume")
+    py::class_<GeomVolume, GeomShape>(m, "GeomVolume")
         .def(py::init<const TopoDS_Solid &>())
         .def("volume", &GeomVolume::volume)
         .def("surfaces", &GeomVolume::surfaces)
+    ;
+
+    py::class_<Sphere, GeomVolume>(m, "Sphere")
+        .def(py::init([](const Point & center, double radius) { return Sphere::create(center, radius); }),
+             py::arg("center"), py::arg("radius"))
+    ;
+
+    py::class_<Cylinder, GeomVolume>(m, "Cylinder")
+        .def(py::init([](const Axis2 & location, double radius, double height) {
+                 return Cylinder::create(location, radius, height);
+             }),
+             py::arg("location"), py::arg("radius"), py::arg("height"))
+    ;
+
+    py::class_<Cone, GeomVolume>(m, "Cone")
+        .def(py::init([](const Axis2 & location, double radius1, double radius2, double height) {
+                 return Cone::create(location, radius1, radius2, height);
+             }),
+             py::arg("location"), py::arg("radius1"), py::arg("radius2"), py::arg("height"))
+    ;
+
+    py::class_<Box, GeomVolume>(m, "Box")
+        .def(py::init([](const Point & pt1, const Point & pt2) { return Box::create(pt1, pt2); }))
     ;
 
     py::class_<Mesh>(m, "Mesh")
@@ -310,7 +454,6 @@ PYBIND11_MODULE(krado, m)
         .def("transform", &Mesh::transform)
         .def("add", &Mesh::add)
         .def("remove_duplicate_points", &Mesh::remove_duplicate_points)
-        .def("compute_bounding_box", &Mesh::compute_bounding_box)
         .def("duplicate", &Mesh::duplicate)
 
         .def("set_cell_set", &Mesh::set_cell_set)
@@ -349,11 +492,17 @@ PYBIND11_MODULE(krado, m)
         .def("outward_normal", &Mesh::outward_normal)
     ;
 
-    py::class_<Meshable>(m, "Meshable")
+    py::class_<Meshable, Ptr<Meshable>>(m, "Meshable")
         .def(py::init<>())
         .def("is_meshed", &Meshable::is_meshed)
         .def("set_marker", &Meshable::set_marker)
-        .def("marker", &Meshable::marker)
+        .def("marker", [](const Meshable & self) -> py::object {
+            if (self.marker().has_value()) {
+                return py::cast(self.marker().value());
+            } else {
+                return py::none();
+            }
+        })
     ;
 
     py::class_<MeshElement>(m, "MeshElement")
@@ -366,13 +515,11 @@ PYBIND11_MODULE(krado, m)
         .def("swap_vertices", &MeshElement::swap_vertices)
     ;
 
-    py::class_<MeshVertexAbstract, PyMeshVertexAbstract>(m, "MeshVertexAbstract")
+    py::class_<MeshVertexAbstract, PyMeshVertexAbstract, Ptr<MeshVertexAbstract>>(m, "MeshVertexAbstract")
         .def("point", &MeshVertexAbstract::point)
-        .def("global_id", &MeshVertexAbstract::global_id)
-        .def("set_global_id", &MeshVertexAbstract::set_global_id)
     ;
 
-    py::class_<MeshVertex, MeshVertexAbstract>(m, "MeshVertex")
+    py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
         .def(py::init<ShapeID, const GeomVertex &>())
         .def("id", &MeshVertex::id)
         .def("point", &MeshVertex::point)
@@ -380,26 +527,24 @@ PYBIND11_MODULE(krado, m)
         .def("set_mesh_size", &MeshVertex::set_mesh_size)
     ;
 
-    py::class_<MeshCurveVertex, MeshVertexAbstract>(m, "MeshCurveVertex")
+    py::class_<MeshCurveVertex, MeshVertexAbstract, Ptr<MeshCurveVertex>>(m, "MeshCurveVertex")
         .def(py::init<const GeomCurve &, double>())
         .def("parameter", &MeshCurveVertex::parameter)
         .def("point", &MeshCurveVertex::point)
     ;
 
-    py::class_<MeshSurfaceVertex, MeshVertexAbstract>(m, "MeshSurfaceVertex")
+    py::class_<MeshSurfaceVertex, MeshVertexAbstract, Ptr<MeshSurfaceVertex>>(m, "MeshSurfaceVertex")
         .def(py::init<const GeomSurface &, double, double>())
         .def(py::init<const GeomSurface &, UVParam>())
         .def("parameter", &MeshSurfaceVertex::parameter)
         .def("point", &MeshSurfaceVertex::point)
     ;
 
-    py::class_<MeshCurve, Meshable>(m, "MeshCurve")
+    py::class_<MeshCurve, Meshable, Ptr<MeshCurve>>(m, "MeshCurve")
         .def(py::init<ShapeID, const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
-        .def("all_vertices", &MeshCurve::all_vertices, py::return_value_policy::reference)
         .def("bounding_vertices", &MeshCurve::bounding_vertices, py::return_value_policy::reference)
         .def("curve_vertices", py::overload_cast<>(&MeshCurve::curve_vertices, py::const_), py::return_value_policy::reference)
-        .def("add_vertex", py::overload_cast<Ptr<MeshVertex>>(&MeshCurve::add_vertex))
         .def("add_vertex", py::overload_cast<Ptr<MeshCurveVertex>>(&MeshCurve::add_vertex))
         .def("add_segment", &MeshCurve::add_segment)
         .def("segments", &MeshCurve::segments, py::return_value_policy::reference)
@@ -407,17 +552,54 @@ PYBIND11_MODULE(krado, m)
         .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
         .def("mesh_size", &MeshCurve::mesh_size)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
+        .def("set_scheme",
+             [](MeshCurve & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "equal") {
+                     SchemeEqual::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeEqual>(opts);
+                 }
+                 else if (name == "bias") {
+                     SchemeBias::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     if (kwargs.contains("factor"))
+                         opts.factor = kwargs["factor"].cast<double>();
+                     self.set_scheme<SchemeBias>(opts);
+                 }
+                 else if (name == "curvature") {
+                     SchemeCurvature::Options opts;
+                     if (kwargs.contains("min_size"))
+                         opts.min_size = kwargs["min_size"].cast<double>();
+                     if (kwargs.contains("max_size"))
+                         opts.max_size = kwargs["max_size"].cast<double>();
+                     if (kwargs.contains("deflection"))
+                         opts.deflection = kwargs["deflection"].cast<double>();
+                     self.set_scheme<SchemeCurvature>(opts);
+                 }
+                 else if (name == "pinpoint") {
+                     SchemePinpoint::Options opts;
+                     if (kwargs.contains("positions"))
+                         opts.positions = kwargs["positions"].cast<std::vector<double>>();
+                     self.set_scheme<SchemePinpoint>(opts);
+                 }
+                 else if (name == "size") {
+                     SchemeSize::Options opts;
+                     if (kwargs.contains("intervals"))
+                         opts.intervals = kwargs["intervals"].cast<int>();
+                     self.set_scheme<SchemeSize>(opts);
+                 }
+             },
+             "Set the meshing scheme for the curve.")
     ;
 
-    py::class_<MeshSurface, Meshable>(m, "MeshSurface")
+    py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
         .def(py::init<ShapeID, const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
         .def("curves", &MeshSurface::curves, py::return_value_policy::reference)
-        .def("all_vertices", py::overload_cast<>(&MeshSurface::all_vertices, py::const_), py::return_value_policy::reference)
         .def("surface_vertices", py::overload_cast<>(&MeshSurface::surface_vertices, py::const_), py::return_value_policy::reference)
         .def("triangles", py::overload_cast<>(&MeshSurface::triangles, py::const_), py::return_value_policy::reference)
-        .def("add_vertex", py::overload_cast<Ptr<MeshVertex>>(&MeshSurface::add_vertex))
-        .def("add_vertex", py::overload_cast<Ptr<MeshCurveVertex>>(&MeshSurface::add_vertex))
         .def("add_vertex", py::overload_cast<Ptr<MeshSurfaceVertex>>(&MeshSurface::add_vertex))
         .def("add_triangle", &MeshSurface::add_triangle)
         .def("add_quadrangle", &MeshSurface::add_quadrangle)
@@ -427,18 +609,75 @@ PYBIND11_MODULE(krado, m)
         .def("elements", &MeshSurface::elements)
         .def("remove_all_triangles", &MeshSurface::remove_all_triangles)
         .def("delete_mesh", &MeshSurface::delete_mesh)
+        .def("quads_to_tris", [](MeshSurface & self, py::kwargs kwargs) {
+                QuadSplitMode split = QuadSplitMode::SPLIT2;
+                if (kwargs.contains("split")) {
+                    auto n = kwargs["split"].cast<int>();
+                    if (n == 2)
+                        split = QuadSplitMode::SPLIT2;
+                    else if (n == 4)
+                        split = QuadSplitMode::SPLIT4;
+                    else
+                        throw Exception("Unsupported split");
+                }
+                self.quads_to_tris(split);
+            })
+        .def("set_scheme",
+             [](MeshSurface & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "bamg") {
+                     SchemeBAMG::Options opts;
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeBAMG>(opts);
+                 }
+                 else if (name == "structured") {
+                     SchemeStructured::Options opts;
+                     self.set_scheme<SchemeStructured>(opts);
+                 }
+                 else if (name == "triangle") {
+                     SchemeTriangle::Options opts;
+                     if (kwargs.contains("region_point"))
+                         opts.region_point =
+                             kwargs["region_point"].cast<std::tuple<double, double>>();
+                     if (kwargs.contains("max_area"))
+                         opts.max_area = kwargs["max_area"].cast<double>();
+                     self.set_scheme<SchemeTriangle>(opts);
+                 }
+                 else if (name == "tricircle") {
+                     SchemeTriCircle::Options opts;
+                     if (kwargs.contains("radial_intervals"))
+                         opts.radial_intervals = kwargs["radial_intervals"].cast<int>();
+                     self.set_scheme<SchemeTriCircle>(opts);
+                 }
+             },
+             "Set the meshing scheme for the surface.")
     ;
 
-    py::class_<MeshVolume, Meshable>(m, "MeshVolume")
+    py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
         .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
         .def("surfaces", &MeshVolume::surfaces, py::return_value_policy::reference)
+        .def("set_scheme",
+             [](MeshVolume & self, const std::string & name, py::kwargs kwargs) {
+                 if (name == "trisurf") {
+                     SchemeTriSurf::Options opts;
+                     if (kwargs.contains("linear_deflection"))
+                         opts.linear_deflection = kwargs["linear_deflection"].cast<double>();
+                     if (kwargs.contains("angular_deflection"))
+                         opts.angular_deflection = kwargs["angular_deflection"].cast<double>();
+                     if (kwargs.contains("is_relative"))
+                         opts.is_relative = kwargs["is_relative"].cast<bool>();
+                     self.set_scheme<SchemeTriSurf>(opts);
+                 }
+             },
+             "Set the meshing scheme for the volume.")
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
-        .def("write", &ExodusIIFile::write)
+        .def("write", py::overload_cast<const Mesh &>(&ExodusIIFile::write))
+        .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))
     ;
 
     py::class_<DAGMCFile>(m, "DAGMCFile")
@@ -478,7 +717,14 @@ PYBIND11_MODULE(krado, m)
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
 
-    m.def("compute_volume", &compute_volume);
+    m.def("compute_volume", [](const Mesh & mesh) {
+        auto vols = compute_volume(mesh);
+        py::dict py_vols;
+        for (const auto & [marker, volume] : vols) {
+            py_vols[py::cast(marker)] = volume;
+        }
+        return py_vols;
+    });
     m.def("combine", &combine);
 
     m.def("tetrahedralize", &tetrahedralize);

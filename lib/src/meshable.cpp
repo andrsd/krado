@@ -5,7 +5,7 @@
 
 namespace krado {
 
-Meshable::Meshable() : meshed_(false), marker_(0) {}
+Meshable::Meshable() : meshed_(false), marker_(std::nullopt) {}
 
 bool
 Meshable::is_meshed() const
@@ -25,7 +25,7 @@ Meshable::set_marker(Marker marker)
     this->marker_ = marker;
 }
 
-Marker
+Optional<Marker>
 Meshable::marker() const
 {
     return this->marker_;

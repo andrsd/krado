@@ -28,13 +28,13 @@ public:
     /// Get entity marker
     ///
     /// @return Marker associated with this entity
-    Marker marker() const;
+    Optional<Marker> marker() const;
 
 private:
     /// Flag indicating if the entity is meshed
     bool meshed_;
     ///
-    Marker marker_;
+    Optional<Marker> marker_;
 };
 
 } // namespace krado

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/classifier.h"
-#include "gp_Pnt.hxx"
-#include <TopAbs_State.hxx>
+#include "krado/geom_shape.h"
+#include "TopAbs_State.hxx"
 
 namespace krado {
 
@@ -12,8 +12,7 @@ SolidClassifier::SolidClassifier(const GeomShape & shape) : classifier_(shape) {
 bool
 SolidClassifier::inside(const Point & pt)
 {
-    gp_Pnt gp_pt(pt.x, pt.y, pt.z);
-    this->classifier_.Perform(gp_pt, Precision::Confusion());
+    this->classifier_.Perform(pt, Precision::Confusion());
     auto state = this->classifier_.State();
     return (state == TopAbs_IN || state == TopAbs_ON);
 }
@@ -21,8 +20,7 @@ SolidClassifier::inside(const Point & pt)
 bool
 SolidClassifier::outside(const Point & pt)
 {
-    gp_Pnt gp_pt(pt.x, pt.y, pt.z);
-    this->classifier_.Perform(gp_pt, Precision::Confusion());
+    this->classifier_.Perform(pt, Precision::Confusion());
     auto state = this->classifier_.State();
     return (state == TopAbs_OUT);
 }

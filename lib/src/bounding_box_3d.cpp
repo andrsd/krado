@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "krado/bounding_box_3d.h"
+#include "krado/point.h"
+#include "krado/vector.h"
+#include "krado/exception.h"
 #include <limits>
 
 namespace krado {
@@ -24,7 +27,7 @@ BoundingBox3D::BoundingBox3D(double xmin,
 }
 
 bool
-BoundingBox3D::empty()
+BoundingBox3D::empty() const
 {
     if (this->min_pt_.x == MAX || this->min_pt_.y == MAX || this->min_pt_.z == MAX ||
         this->max_pt_.x == -MAX || this->max_pt_.y == -MAX || this->max_pt_.z == -MAX)
@@ -142,31 +145,31 @@ BoundingBox3D::thicken(double factor)
 }
 
 bool
-BoundingBox3D::contains(const BoundingBox3D & bound)
+BoundingBox3D::contains(const BoundingBox3D & other) const
 {
-    if (bound.min_pt_.x >= this->min_pt_.x && bound.min_pt_.y >= this->min_pt_.y &&
-        bound.min_pt_.z >= this->min_pt_.z && bound.max_pt_.x <= this->max_pt_.x &&
-        bound.max_pt_.y <= this->max_pt_.y && bound.max_pt_.z <= this->max_pt_.z)
+    if (other.min_pt_.x >= this->min_pt_.x && other.min_pt_.y >= this->min_pt_.y &&
+        other.min_pt_.z >= this->min_pt_.z && other.max_pt_.x <= this->max_pt_.x &&
+        other.max_pt_.y <= this->max_pt_.y && other.max_pt_.z <= this->max_pt_.z)
         return true;
     else
         return false;
 }
 
 bool
-BoundingBox3D::contains(const Point & p)
+BoundingBox3D::contains(const Point & pt) const
 {
-    if (p.x >= this->min_pt_.x && p.y >= this->min_pt_.y && p.z >= this->min_pt_.z &&
-        p.x <= this->max_pt_.x && p.y <= this->max_pt_.y && p.z <= this->max_pt_.z)
+    if (pt.x >= this->min_pt_.x && pt.y >= this->min_pt_.y && pt.z >= this->min_pt_.z &&
+        pt.x <= this->max_pt_.x && pt.y <= this->max_pt_.y && pt.z <= this->max_pt_.z)
         return true;
     else
         return false;
 }
 
 bool
-BoundingBox3D::contains(double x, double y, double z)
+BoundingBox3D::contains(double x, double y, double z) const
 {
-    if (x >= this->min_pt_.x && y >= this->min_pt_.y && z >= this->min_pt_.z && x <= this->max_pt_.x &&
-        y <= this->max_pt_.y && z <= this->max_pt_.z)
+    if (x >= this->min_pt_.x && y >= this->min_pt_.y && z >= this->min_pt_.z &&
+        x <= this->max_pt_.x && y <= this->max_pt_.y && z <= this->max_pt_.z)
         return true;
     else
         return false;
@@ -204,4 +207,30 @@ BoundingBox3D::size(int n) const
         return std::numeric_limits<double>::infinity();
 }
 
+int
+determine_spatial_dim(const BoundingBox3D & bbox)
+{
+    auto sz = bbox.size();
+    if ((sz[0] > 0) && (sz[1] < 1e-15) && (sz[2] < 1e-15))
+        return 1;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] < 1e-15))
+        return 2;
+    else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
+        return 3;
+    else
+        throw Exception("Unusual mesh, unable to write.");
+}
+
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::BoundingBox3D & bbox)
+{
+    auto mn = bbox.min();
+    auto mx = bbox.max();
+    stream << "BoundingBox: ";
+    stream << "min=(x=" << mn.x << ", y=" << mn.y << ", z=" << mn.z << ")";
+    stream << ", ";
+    stream << "max=(x=" << mx.x << ", y=" << mx.y << ", z=" << mx.z << ")";
+    return stream;
+}

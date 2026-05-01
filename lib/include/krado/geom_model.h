@@ -3,18 +3,13 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include "krado/ptr.h"
 #include "krado/geom_shape.h"
 #include "krado/geom_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
-#include "krado/mesh_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_surface.h"
-#include "krado/mesh_volume.h"
-#include "krado/mesh.h"
-#include "krado/bounding_box_3d.h"
 #include "TopTools_DataMapOfShapeInteger.hxx"
 #include <map>
 
@@ -26,14 +21,17 @@ class TopoDS_Solid;
 
 namespace krado {
 
+class Mesh;
 class MeshVertex;
 class MeshCurve;
 class MeshSurface;
 class MeshVolume;
+class BoundingBox3D;
 
 class GeomModel {
 public:
     explicit GeomModel(const GeomShape & root_shape);
+    ~GeomModel();
 
     /// Get vertex with specified ID
     ///
@@ -111,11 +109,41 @@ public:
     void mesh_volume(ShapeID id);
     void mesh_volume(Ptr<MeshVolume> volume);
 
-    /// Build the mesh from meshed entities
-    [[nodiscard]] Mesh build_mesh();
+    /// Set block name
+    ///
+    /// @param marker Block marker
+    /// @param name Block name
+    void set_block_name(Marker marker, const std::string & name);
 
-    /// Build the surface mesh from meshed entities
-    [[nodiscard]] Mesh build_surface_mesh();
+    /// Get block name
+    ///
+    /// @param marker Block marker
+    /// @return Block name
+    [[nodiscard]] std::string block_name(Marker marker) const;
+
+    /// Set side set name
+    ///
+    /// @param marker Side set marker
+    /// @param name Side set name
+    void set_side_set_name(Marker marker, const std::string & name);
+
+    /// Get side set name
+    ///
+    /// @param marker Side set marker
+    /// @return Side set name
+    [[nodiscard]] std::string side_set_name(Marker marker) const;
+
+    /// Set node set name
+    ///
+    /// @param marker Node set marker
+    /// @param name Node set name
+    void set_node_set_name(Marker marker, const std::string & name);
+
+    /// Get node set name
+    ///
+    /// @param marker Node set marker
+    /// @return Node set name
+    [[nodiscard]] std::string node_set_name(Marker marker) const;
 
 protected:
     /// Get vertex ID
@@ -156,13 +184,6 @@ private:
     void bind_solids(const GeomShape & shape);
     void initialize();
 
-    [[nodiscard]] BoundingBox3D compute_mesh_bounding_box();
-    [[nodiscard]] std::vector<Point> build_points();
-    [[nodiscard]] std::vector<Element> build_elements();
-    [[nodiscard]] std::vector<Element> build_surface_elements();
-    [[nodiscard]] std::vector<Element> build_1d_elements();
-    [[nodiscard]] std::vector<Element> build_2d_elements();
-
     GeomShape root_shape_;
 
     std::map<ShapeID, GeomVertex> vtxs_;
@@ -179,10 +200,16 @@ private:
     std::map<ShapeID, Ptr<MeshCurve>> mcrvs_;
     std::map<ShapeID, Ptr<MeshSurface>> msurfs_;
     std::map<ShapeID, Ptr<MeshVolume>> mvols_;
-    /// Mesh points
-    std::vector<Point> pnts_;
-    /// Mesh elements
-    std::vector<Element> elems_;
+
+    std::map<Marker, std::string> block_names_;
+    std::map<Marker, std::string> side_set_names_;
+    std::map<Marker, std::string> node_set_names_;
 };
+
+/// Compute bounding box of a meshed geometrical model
+///
+/// @param model Geometrical model
+/// @return Bounding box
+BoundingBox3D compute_bounding_box(const GeomModel & model);
 
 } // namespace krado

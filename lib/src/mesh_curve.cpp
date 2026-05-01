@@ -7,6 +7,7 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_element.h"
 #include "krado/types.h"
+#include "krado/utils.h"
 #include "krado/log.h"
 #include "krado/consts.h"
 #include <array>
@@ -25,6 +26,8 @@ MeshCurve::MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, P
     }
 }
 
+MeshCurve::~MeshCurve() = default;
+
 ShapeID
 MeshCurve::id() const
 {
@@ -37,12 +40,6 @@ MeshCurve::geom_curve() const
     return this->gcurve_;
 }
 
-const std::vector<Ptr<MeshVertexAbstract>> &
-MeshCurve::all_vertices() const
-{
-    return this->vtxs_;
-}
-
 const std::vector<Ptr<MeshVertex>> &
 MeshCurve::bounding_vertices() const
 {
@@ -50,16 +47,9 @@ MeshCurve::bounding_vertices() const
 }
 
 void
-MeshCurve::add_vertex(Ptr<MeshVertex> vertex)
-{
-    this->vtxs_.push_back(vertex);
-}
-
-void
 MeshCurve::add_vertex(Ptr<MeshCurveVertex> curve_vertex)
 {
     this->curve_vtx_.push_back(curve_vertex);
-    this->vtxs_.push_back(curve_vertex);
 }
 
 const std::vector<Ptr<MeshCurveVertex>> &
@@ -92,10 +82,11 @@ MeshCurve::is_mesh_degenerated() const
 {
     if (this->too_smoll)
         Log::debug("Degenerated mesh on curve {}: too small", id());
-    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->vtxs_.size() < 2)
-        Log::debug("Degenerated mesh on curve {}: {} mesh nodes", id(), (int) this->vtxs_.size());
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
+        this->curve_vtx_.size() == 0)
+        Log::debug("Degenerated mesh on curve {}", id());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-                               this->vtxs_.size() < 2);
+                               this->curve_vtx_.size() == 0);
 }
 
 double
@@ -141,4 +132,36 @@ MeshCurve::mesh_size_at_param(double u) const
         return MAX_LC;
 }
 
+bool
+MeshCurve::has_scheme() const
+{
+    return this->scheme_.get() != nullptr;
+}
+
+Scheme1D &
+MeshCurve::scheme()
+{
+    if (this->scheme_ == nullptr)
+        throw Exception("No scheme assigned on curve {}", id());
+    return *this->scheme_.get();
+}
+
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::MeshCurve & curve)
+{
+    stream << "Curve " << curve.id() << ": ";
+    auto & gcurve = curve.geom_curve();
+    stream << "type=" << gcurve.type() << ", ";
+    auto & bnd_vtxs = curve.bounding_vertices();
+    std::vector<krado::i32> vids;
+    vids.reserve(vids.size());
+    for (auto v : bnd_vtxs)
+        vids.push_back(v->id());
+    stream << "vertices=[" << krado::join(", ", vids) << "], ";
+    auto [umin, umax] = gcurve.param_range();
+    stream << "u=[" << umin << ", " << umax << "], ";
+    stream << "length=" << gcurve.length();
+    return stream;
+}

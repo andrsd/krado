@@ -6,9 +6,10 @@
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_vertex.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/log.h"
+#include "krado/geom_surface.h"
+#include "krado/geom_volume.h"
 #include "BRepMesh_IncrementalMesh.hxx"
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
@@ -38,7 +39,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
     auto angl_deflection = this->opts_.angular_deflection;
     auto is_relative = this->opts_.is_relative;
 
-    const TopoDS_Shape & shape = volume->geom_volume();
+    auto shape = volume->geom_volume();
 
     Standard_Boolean is_rel = is_relative ? Standard_True : Standard_False;
     BRepMesh_IncrementalMesh mesh(shape, lin_deflection, is_rel, angl_deflection, true);
@@ -60,7 +61,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
                 srf->add_vertex(Ptr<MeshSurfaceVertex>::alloc(geom_surface, uv.X(), uv.Y()));
             }
 
-            auto & vertices = srf->all_vertices();
+            auto & vertices = srf->surface_vertices();
             for (int i = 0; i < triangulation->NbTriangles(); ++i) {
                 auto tri = triangulation->Triangle(i + 1);
                 Standard_Integer n1, n2, n3;

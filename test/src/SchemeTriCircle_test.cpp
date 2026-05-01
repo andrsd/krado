@@ -1,13 +1,13 @@
 #include "gmock/gmock.h"
-#include "krado/geom_shape.h"
+#include "ExceptionTestMacros.h"
+#include "builder.h"
 #include "krado/geom_model.h"
+#include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
-#include "ExceptionTestMacros.h"
-#include "builder.h"
 #include "krado/scheme/equal.h"
 #include "krado/scheme/tricircle.h"
 
@@ -31,17 +31,19 @@ TEST(SchemeCircleTest, circle)
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
 
-    auto & all_vtxs = surf->all_vertices();
-    ASSERT_EQ(all_vtxs.size(), 9);
-    EXPECT_EQ(all_vtxs[0]->point(), Point(0, 0, 0));
-    EXPECT_EQ(all_vtxs[1]->point(), Point(1., 0, 0));
-    EXPECT_EQ(all_vtxs[2]->point(), Point(SQRT2_2, SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[3]->point(), Point(0, 1., 0));
-    EXPECT_EQ(all_vtxs[4]->point(), Point(-SQRT2_2, SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[5]->point(), Point(-1., 0, 0));
-    EXPECT_EQ(all_vtxs[6]->point(), Point(-SQRT2_2, -SQRT2_2, 0));
-    EXPECT_EQ(all_vtxs[7]->point(), Point(0, -1., 0));
-    EXPECT_EQ(all_vtxs[8]->point(), Point(SQRT2_2, -SQRT2_2, 0));
+    auto & sv = surf->surface_vertices();
+    ASSERT_EQ(sv.size(), 1);
+    EXPECT_EQ(sv[0]->point(), Point(0, 0, 0));
+
+    auto crv = model.curve(1);
+    auto cv = crv->curve_vertices();
+    EXPECT_TRUE(cv[0]->point().is_equal(Point(SQRT2_2, SQRT2_2, 0), 1e-5));
+    EXPECT_TRUE(cv[1]->point().is_equal(Point(0, 1., 0), 1e-5));
+    EXPECT_TRUE(cv[2]->point().is_equal(Point(-SQRT2_2, SQRT2_2, 0), 1e-5));
+    EXPECT_TRUE(cv[3]->point().is_equal(Point(-1., 0, 0), 1e-5));
+    EXPECT_TRUE(cv[4]->point().is_equal(Point(-SQRT2_2, -SQRT2_2, 0), 1e-5));
+    EXPECT_TRUE(cv[5]->point().is_equal(Point(0, -1., 0), 1e-5));
+    EXPECT_TRUE(cv[6]->point().is_equal(Point(SQRT2_2, -SQRT2_2, 0), 1e-5));
 
     EXPECT_EQ(surf->triangles().size(), 8);
 }

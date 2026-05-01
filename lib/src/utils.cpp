@@ -12,6 +12,10 @@
 #include "boost/functional/hash.hpp"
 #include "krado/geom_surface.h"
 #include "krado/predicates.h"
+#include "krado/mesh_curve.h"
+#include "krado/geom_curve.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve_vertex.h"
 #include <cstdint>
 
 namespace krado {
@@ -33,19 +37,19 @@ to_lower(const std::string & text)
     return lower;
 }
 
-std::vector<gidx_t>
-sub_connect(const std::vector<gidx_t> & element_connect, const std::vector<int> & idxs)
+std::vector<Index>
+sub_connect(Span<const Index> element_connect, const std::vector<u8> & idxs)
 {
-    std::vector<gidx_t> connect;
+    std::vector<Index> connect;
     for (auto i : idxs)
         connect.emplace_back(element_connect[i]);
     return connect;
 }
 
 std::size_t
-key(const std::vector<gidx_t> & idxs)
+key(const std::vector<Index> & idxs)
 {
-    std::vector<gidx_t> vertices(idxs.begin(), idxs.end());
+    std::vector<Index> vertices(idxs.begin(), idxs.end());
     std::sort(vertices.begin(), vertices.end());
 
     std::size_t hash_value = 0;
@@ -104,10 +108,10 @@ distance(const UVParam & p1, const UVParam & p2)
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);
 }
 
-std::vector<side_set_entry_t>
-create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst)
+std::vector<SideEntry>
+create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst)
 {
-    std::vector<side_set_entry_t> sset;
+    std::vector<SideEntry> sset;
     sset.reserve(facets.size());
     for (auto & f : facets) {
         auto support = mesh.support(f);
@@ -122,10 +126,10 @@ create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size
     return sset;
 }
 
-std::vector<gidx_t>
-set_from_side_set(const Mesh & mesh, const std::vector<side_set_entry_t> & side_set)
+std::vector<Index>
+set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
 {
-    std::vector<gidx_t> sset;
+    std::vector<Index> sset;
     sset.reserve(side_set.size());
     for (auto & ent : side_set) {
         auto cell_connect = mesh.cone(ent.elem);
@@ -133,6 +137,37 @@ set_from_side_set(const Mesh & mesh, const std::vector<side_set_entry_t> & side_
         sset.push_back(facet);
     }
     return sset;
+}
+
+void
+build_curve_segments(Ptr<MeshCurve> curve)
+{
+    auto & geom_curve = curve->geom_curve();
+    auto bnd_verts = curve->bounding_vertices();
+    if ((geom_curve.type() == GeomCurve::CurveType::Circle) && (bnd_verts.size() == 1)) {
+        std::vector<Ptr<MeshVertexAbstract>> all;
+        // curve is a full circle
+        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]));
+        for (auto & cv : curve->curve_vertices())
+            all.push_back(static_ptr_cast<MeshVertexAbstract>(cv));
+
+        for (std::size_t i = 0; i + 1 < all.size(); ++i)
+            curve->add_segment({ all[i], all[i + 1] });
+        curve->add_segment({ all.back(), static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]) });
+    }
+    else {
+        if (bnd_verts.size() != 2)
+            throw Exception("Curve {} must have 2 bounding vertices", curve->id());
+
+        std::vector<Ptr<MeshVertexAbstract>> all;
+        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]));
+        for (auto & cv : curve->curve_vertices())
+            all.push_back(static_ptr_cast<MeshVertexAbstract>(cv));
+        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[1]));
+
+        for (std::size_t i = 0; i + 1 < all.size(); ++i)
+            curve->add_segment({ all[i], all[i + 1] });
+    }
 }
 
 } // namespace utils
@@ -154,6 +189,26 @@ ccw_triangle(const GeomSurface & gsurf,
         return std::array<Ptr<MeshVertexAbstract>, 3> { a, c, b };
     else
         throw Exception("Degenerate triangle detected. Points are collinear.");
+}
+
+std::array<Ptr<MeshVertexAbstract>, 4>
+ccw_quadrangle(const GeomSurface & gsurf,
+               Ptr<MeshVertexAbstract> a,
+               Ptr<MeshVertexAbstract> b,
+               Ptr<MeshVertexAbstract> c,
+               Ptr<MeshVertexAbstract> d)
+{
+    auto uv_a = gsurf.parameter_from_point(a->point());
+    auto uv_b = gsurf.parameter_from_point(b->point());
+    auto uv_c = gsurf.parameter_from_point(c->point());
+
+    auto orientation = orient2d(uv_a, uv_b, uv_c);
+    if (orientation > 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, b, c, d };
+    else if (orientation < 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, d, c, b };
+    else
+        throw Exception("Degenerate quadrangle detected.");
 }
 
 } // namespace krado

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "krado/mesh.h"
-
 namespace krado {
+
+class Mesh;
 
 /// Tetrahedralize a mesh
 ///

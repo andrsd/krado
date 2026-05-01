@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "krado/point.h"
-
 namespace krado {
+
+class Point;
 
 /// Transformation
 ///

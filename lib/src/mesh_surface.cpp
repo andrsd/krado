@@ -9,6 +9,8 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/consts.h"
+#include "krado/utils.h"
 #include <array>
 #include <cassert>
 
@@ -22,6 +24,8 @@ MeshSurface::MeshSurface(ShapeID id,
     mesh_curves_(mesh_curves)
 {
 }
+
+MeshSurface::~MeshSurface() = default;
 
 ShapeID
 MeshSurface::id() const
@@ -41,16 +45,28 @@ MeshSurface::curves() const
     return this->mesh_curves_;
 }
 
-const std::vector<Ptr<MeshVertexAbstract>> &
-MeshSurface::all_vertices() const
+double
+MeshSurface::mesh_size() const
 {
-    return this->vtxs_;
+    assert(this->mesh_size_.has_value());
+    return this->mesh_size_.value();
 }
 
-std::vector<Ptr<MeshVertexAbstract>> &
-MeshSurface::all_vertices()
+void
+MeshSurface::set_mesh_size(double size)
 {
-    return this->vtxs_;
+    this->mesh_size_ = size;
+}
+
+double
+MeshSurface::mesh_size_at_param(UVParam par) const
+{
+    if (this->mesh_size_.has_value())
+        return this->mesh_size_.value();
+
+    // TODO: if no surface size set, figure it out from edges and vertices
+
+    return MAX_LC;
 }
 
 const std::vector<Ptr<MeshSurfaceVertex>> &
@@ -77,22 +93,21 @@ MeshSurface::triangles()
     return this->tris_;
 }
 
-void
-MeshSurface::add_vertex(Ptr<MeshVertex> vertex)
+const std::vector<MeshElement> &
+MeshSurface::quadrangles() const
 {
-    this->vtxs_.push_back(vertex);
+    return this->quads_;
 }
 
-void
-MeshSurface::add_vertex(Ptr<MeshCurveVertex> vertex)
+std::vector<MeshElement> &
+MeshSurface::quadrangles()
 {
-    this->vtxs_.push_back(vertex);
+    return this->quads_;
 }
 
 void
 MeshSurface::add_vertex(Ptr<MeshSurfaceVertex> vertex)
 {
-    this->vtxs_.push_back(vertex);
     this->surf_vtxs_.push_back(vertex);
 }
 
@@ -115,14 +130,43 @@ MeshSurface::add_element(MeshElement tri)
 {
     if (tri.type() == ElementType::TRI3)
         this->tris_.emplace_back(tri);
+    else if (tri.type() == ElementType::QUAD4)
+        this->quads_.emplace_back(tri);
     else
         throw Exception("Unsupported element type");
 }
 
 void
+MeshSurface::quads_to_tris(QuadSplitMode mode)
+{
+    if (this->quads_.empty())
+        return;
+
+    for (const auto & quad : this->quads_) {
+        auto v = quad.vertices();
+        if (mode == QuadSplitMode::SPLIT2) {
+            add_triangle({ v[0], v[1], v[2] });
+            add_triangle({ v[2], v[3], v[0] });
+        }
+        else if (mode == QuadSplitMode::SPLIT4) {
+            const auto & gsurf = geom_surface();
+            Point center_pt =
+                0.25 * (v[0]->point() + v[1]->point() + v[2]->point() + v[3]->point());
+            auto uv = gsurf.parameter_from_point(center_pt);
+
+            auto center_vtx = Ptr<MeshSurfaceVertex>::alloc(this->gsurface_, uv);
+            add_triangle({ v[0], v[1], center_vtx });
+            add_triangle({ v[1], v[2], center_vtx });
+            add_triangle({ v[2], v[3], center_vtx });
+            add_triangle({ v[3], v[0], center_vtx });
+        }
+    }
+    this->quads_.clear();
+}
+
+void
 MeshSurface::reserve_mem(std::size_t n_vtxs, std::size_t n_tris)
 {
-    this->vtxs_.reserve(n_vtxs);
     this->tris_.reserve(n_tris);
 }
 
@@ -147,9 +191,42 @@ MeshSurface::remove_all_triangles()
 void
 MeshSurface::delete_mesh()
 {
-    this->vtxs_.clear();
     this->surf_vtxs_.clear();
     this->tris_.clear();
+    this->quads_.clear();
+}
+
+bool
+MeshSurface::has_scheme() const
+{
+    return this->scheme_.get() != nullptr;
+}
+
+Scheme2D &
+MeshSurface::scheme()
+{
+    if (this->scheme_ == nullptr)
+        throw Exception("No scheme assigned on surface {}", id());
+    return *this->scheme_.get();
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::MeshSurface & srf)
+{
+    stream << "Surface " << srf.id() << ": ";
+    auto crvs = srf.curves();
+    std::vector<krado::i32> cids;
+    cids.reserve(crvs.size());
+    for (auto c : crvs)
+        cids.push_back(c->id());
+    stream << "curves=[" << krado::join(", ", cids) << "], ";
+    auto & gsurf = srf.geom_surface();
+    auto [u_min, u_max] = gsurf.param_range(0);
+    auto [v_min, v_max] = gsurf.param_range(1);
+    stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
+    stream << "[" << v_min << ", " << v_max << "], ";
+    stream << "area=" << gsurf.area();
+    return stream;
+}

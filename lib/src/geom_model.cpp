@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/geom_model.h"
+#include "krado/bounding_box_3d.h"
 #include "krado/exception.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
+#include "krado/mesh.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
@@ -24,6 +26,25 @@
 
 namespace krado {
 
+BoundingBox3D
+compute_bounding_box(const GeomModel & model)
+{
+    Log::debug("Computing mesh bounding box");
+
+    BoundingBox3D bbox;
+    for (auto & [id, v] : model.vertices())
+        bbox += v->point();
+    for (auto & [id, curve] : model.curves())
+        for (auto & v : curve->curve_vertices())
+            bbox += v->point();
+    for (auto & [id, surface] : model.surfaces())
+        for (auto & v : surface->surface_vertices())
+            bbox += v->point();
+    return bbox;
+}
+
+//
+
 GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
 {
     Log::debug("Creating geometrical model");
@@ -31,6 +52,8 @@ GeomModel::GeomModel(const GeomShape & root_shape) : root_shape_(root_shape)
     bind_shape(root_shape);
     initialize();
 }
+
+GeomModel::~GeomModel() = default;
 
 const GeomVertex &
 GeomModel::geom_vertex(ShapeID id) const
@@ -181,7 +204,7 @@ GeomModel::bind_solids(const GeomShape & shape)
         TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
             auto id = get_shape_id(solid);
-            this->vol_id_.Bind(solid, id.value());
+            this->vol_id_.Bind(solid, id);
 
             GeomVolume gvol(solid);
             gvol.set_material(shape.material(), shape.density());
@@ -198,7 +221,7 @@ GeomModel::bind_faces(const GeomShape & shape)
         TopoDS_Face face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
             auto id = get_shape_id(face);
-            this->srf_id_.Bind(face, id.value());
+            this->srf_id_.Bind(face, id);
 
             GeomSurface gsurf(face);
             gsurf.set_material(shape.material(), shape.density());
@@ -215,7 +238,7 @@ GeomModel::bind_edges(const GeomShape & shape)
         TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
             auto id = get_shape_id(edge);
-            this->crv_id_.Bind(edge, id.value());
+            this->crv_id_.Bind(edge, id);
 
             GeomCurve gedge(edge);
             gedge.set_material(shape.material(), shape.density());
@@ -232,7 +255,7 @@ GeomModel::bind_vertices(const GeomShape & shape)
         TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
             auto id = get_shape_id(vertex);
-            this->vtx_id_.Bind(vertex, id.value());
+            this->vtx_id_.Bind(vertex, id);
 
             GeomVertex gvtx(vertex);
             gvtx.set_material(shape.material(), shape.density());
@@ -457,148 +480,55 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
         Log::debug("Volume {} is already meshed", volume->id());
 }
 
-std::vector<Point>
-GeomModel::build_points()
+void
+GeomModel::set_block_name(Marker marker, const std::string & name)
 {
-    std::vector<Point> pnts;
-    gidx_t gid = 0;
+    this->block_names_[marker] = name;
+}
 
-    for (auto & [id, v] : this->mvtxs_) {
-        v->set_global_id(gid);
-        pnts.emplace_back(v->point());
-        gid++;
+std::string
+GeomModel::block_name(Marker marker) const
+{
+    try {
+        return this->block_names_.at(marker);
     }
-    for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve->curve_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface->surface_vertices()) {
-            v->set_global_id(gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    return pnts;
-}
-
-BoundingBox3D
-GeomModel::compute_mesh_bounding_box()
-{
-    Log::debug("Computing mesh bounding box");
-
-    BoundingBox3D bbox;
-    for (auto & [id, v] : this->mvtxs_)
-        bbox += v->point();
-    for (auto & [id, curve] : this->mcrvs_)
-        for (auto & v : curve->curve_vertices())
-            bbox += v->point();
-    for (auto & [id, surface] : this->msurfs_)
-        for (auto & v : surface->surface_vertices())
-            bbox += v->point();
-    return bbox;
-}
-
-std::vector<Element>
-GeomModel::build_elements()
-{
-    Log::debug("Building elements");
-
-    auto bbox = compute_mesh_bounding_box();
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        return build_1d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_2d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        throw Exception("3D element construction is not implemented yet");
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-std::vector<Element>
-GeomModel::build_surface_elements()
-{
-    Log::debug("Building surface elements");
-
-    auto bbox = compute_mesh_bounding_box();
-    auto dims = bbox.size();
-
-    if ((dims[0] > 0) && (dims[1] < 1e-15) && (dims[2] < 1e-15))
-        throw Exception("Surface mesh in 1D is not implemented yet");
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] < 1e-15))
-        return build_1d_elements();
-    else if ((dims[0] > 0) && (dims[1] > 0) && (dims[2] > 0))
-        return build_2d_elements();
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
-std::vector<Element>
-GeomModel::build_1d_elements()
-{
-    Log::debug("Building 1D elements");
-
-    std::vector<Element> elems;
-    for (auto & [id, curve] : this->mcrvs_) {
-        std::array<gidx_t, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve->segments()) {
-            for (int i = 0; i < Line2::N_VERTICES; ++i) {
-                auto vtx = local_elem.vertex(i);
-                line[i] = vtx->global_id();
-            }
-            elems.emplace_back(Element::Line2(line));
-        }
+    catch (const std::out_of_range & e) {
+        return "";
     }
-    return elems;
 }
 
-std::vector<Element>
-GeomModel::build_2d_elements()
+void
+GeomModel::set_side_set_name(Marker marker, const std::string & name)
 {
-    Log::debug("Building 2D elements");
+    this->side_set_names_[marker] = name;
+}
 
-    if (this->msurfs_.size() > 0) {
-        std::vector<Element> elems;
-        for (auto & [id, surface] : this->msurfs_) {
-            auto & tris = surface->triangles();
-            std::array<gidx_t, Tri3::N_VERTICES> tri;
-            for (auto & local_elem : tris) {
-                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
-                    auto vtx = local_elem.vertex(i);
-                    tri[i] = vtx->global_id();
-                }
-                elems.emplace_back(Element::Tri3(tri));
-            }
-        }
-        return elems;
+std::string
+GeomModel::side_set_name(Marker marker) const
+{
+    try {
+        return this->side_set_names_.at(marker);
     }
-    else
-        return build_1d_elements();
+    catch (const std::out_of_range & e) {
+        return "";
+    }
 }
 
-Mesh
-GeomModel::build_mesh()
+void
+GeomModel::set_node_set_name(Marker marker, const std::string & name)
 {
-    Log::debug("Building mesh");
-
-    auto points = build_points();
-    auto elements = build_elements();
-    Mesh mesh(points, elements);
-    return mesh;
+    this->node_set_names_[marker] = name;
 }
 
-Mesh
-GeomModel::build_surface_mesh()
+std::string
+GeomModel::node_set_name(Marker marker) const
 {
-    Log::debug("Building surface mesh");
-
-    auto points = build_points();
-    auto elements = build_surface_elements();
-    Mesh mesh(points, elements);
-    return mesh;
+    try {
+        return this->node_set_names_.at(marker);
+    }
+    catch (const std::out_of_range & e) {
+        return "";
+    }
 }
 
 ShapeID
@@ -606,7 +536,7 @@ GeomModel::get_shape_id(const TopoDS_Vertex & vertex)
 {
     if (!this->vtx_id_.IsBound(vertex)) {
         ShapeID id = this->vtxs_.size() + 1;
-        this->vtx_id_.Bind(vertex, id.value());
+        this->vtx_id_.Bind(vertex, id);
         return id;
     }
     else {
@@ -619,7 +549,7 @@ GeomModel::get_shape_id(const TopoDS_Edge & edge)
 {
     if (!this->crv_id_.IsBound(edge)) {
         ShapeID id = this->crvs_.size() + 1;
-        this->crv_id_.Bind(edge, id.value());
+        this->crv_id_.Bind(edge, id);
         return id;
     }
     else {
@@ -632,7 +562,7 @@ GeomModel::get_shape_id(const TopoDS_Face & face)
 {
     if (!this->srf_id_.IsBound(face)) {
         ShapeID id = this->srfs_.size() + 1;
-        this->srf_id_.Bind(face, id.value());
+        this->srf_id_.Bind(face, id);
         return id;
     }
     else {
@@ -645,7 +575,7 @@ GeomModel::get_shape_id(const TopoDS_Shell & shell)
 {
     if (!this->vol_id_.IsBound(shell)) {
         ShapeID id = this->vols_.size() + 1;
-        this->vol_id_.Bind(shell, id.value());
+        this->vol_id_.Bind(shell, id);
         return id;
     }
     else {
@@ -658,7 +588,7 @@ GeomModel::get_shape_id(const TopoDS_Solid & solid)
 {
     if (!this->vol_id_.IsBound(solid)) {
         ShapeID id = this->vols_.size() + 1;
-        this->vol_id_.Bind(solid, id.value());
+        this->vol_id_.Bind(solid, id);
         return id;
     }
     else {

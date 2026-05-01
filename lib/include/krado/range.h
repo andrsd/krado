@@ -13,7 +13,7 @@ class Range {
 public:
     struct Iterator {
         using iterator_category = std::forward_iterator_tag;
-        using value_type = gidx_t;
+        using value_type = Index;
 
         explicit Iterator(value_type idx) : idx_(idx) {}
 
@@ -53,10 +53,10 @@ public:
         };
 
     private:
-        gidx_t idx_;
+        Index idx_;
     };
 
-    Range(gidx_t start, gidx_t end) : start_idx_(start), end_idx_(end) {}
+    Range(Index start, Index end) : start_idx_(start), end_idx_(end) {}
 
     Iterator
     begin() const
@@ -70,35 +70,35 @@ public:
         return Iterator(this->end_idx_);
     }
 
-    [[nodiscard]] gidx_t
+    [[nodiscard]] Index
     first() const
     {
         return this->start_idx_;
     }
 
-    [[nodiscard]] gidx_t
+    [[nodiscard]] Index
     last() const
     {
         return this->end_idx_;
     }
 
     /// Get the number of indices in the range
-    [[nodiscard]] gidx_t
+    [[nodiscard]] Index
     size() const
     {
         return this->end_idx_ - this->start_idx_;
     }
 
     void
-    expand(gidx_t v)
+    expand(Index v)
     {
         this->start_idx_ = std::min(this->start_idx_, v);
         this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
 private:
-    gidx_t start_idx_;
-    gidx_t end_idx_;
+    Index start_idx_;
+    Index end_idx_;
 };
 
 inline bool

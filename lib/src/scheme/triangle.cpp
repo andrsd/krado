@@ -3,16 +3,14 @@
 
 #include "krado/scheme/triangle.h"
 #include "krado/element.h"
-#include "krado/mesh.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
-#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
 #include <map>
 #include <array>
-#include <set>
 #include <cassert>
 
 #ifdef KRADO_WITH_TRIANGLE
@@ -74,14 +72,14 @@ public:
         triangulate((char *) switches.c_str(), &this->in_, &this->out_, nullptr);
     }
 
-    int64
+    i64
     n_triangles()
     {
         return this->out_.numberoftriangles;
     }
 
     Point
-    point(int64 i, int64 j)
+    point(i64 i, i64 j)
     {
         auto idx = this->out_.trianglelist[i * Tri3::N_VERTICES + j];
         double x = this->out_.pointlist[idx * 2 + 0];
@@ -127,17 +125,22 @@ private:
         io.numberofedges = 0;
     }
 
-    std::map<Point, int64>
+    std::map<Point, i64>
     build_point_map()
     {
-        std::map<Point, int64> pt_id;
+        std::map<Point, i64> pt_id;
         auto & curves = this->surface_->curves();
         for (auto & c : curves) {
-            auto & verts = c->all_vertices();
-            for (auto & vtx : verts) {
+            for (auto & vtx : c->bounding_vertices()) {
                 assert(vtx != nullptr);
                 auto pt = vtx->point();
-                auto id = pt_id.size();
+                i64 id = pt_id.size();
+                pt_id.try_emplace(pt, id);
+            }
+            for (auto & vtx : c->curve_vertices()) {
+                assert(vtx != nullptr);
+                auto pt = vtx->point();
+                i64 id = pt_id.size();
                 pt_id.try_emplace(pt, id);
             }
         }
@@ -145,31 +148,31 @@ private:
     }
 
     void
-    create_point_list(const std::map<Point, int64> & pt_id)
+    create_point_list(const std::map<Point, i64> & pt_id)
     {
         this->in_.numberofpoints = (int) pt_id.size();
         this->in_.pointlist = (double *) malloc(this->in_.numberofpoints * 2 * sizeof(double));
         for (auto & [pt, id] : pt_id) {
-            int64 k = 2 * id;
+            i64 k = 2 * id;
             this->in_.pointlist[k + 0] = pt.x;
             this->in_.pointlist[k + 1] = pt.y;
         }
     }
 
     void
-    create_segment_list(const std::map<Point, int64> & pt_id)
+    create_segment_list(const std::map<Point, i64> & pt_id)
     {
         // segments
-        int64 n_segments = 0;
+        i64 n_segments = 0;
         auto & curves = this->surface_->curves();
         for (auto & c : curves) {
             assert(c != nullptr);
-            n_segments += (int64) c->segments().size();
+            n_segments += (i64) c->segments().size();
         }
         this->in_.numberofsegments = n_segments;
         this->in_.segmentlist = (int *) malloc(n_segments * 2 * sizeof(int));
 
-        int64 k = 0;
+        i64 k = 0;
         for (auto & c : curves) {
             assert(c != nullptr);
             auto & segments = c->segments();
@@ -240,9 +243,9 @@ SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
     triangle.triangularize();
 
     SurfaceIndexMapper im(surface);
-    for (int64 i = 0; i < triangle.n_triangles(); i++) {
+    for (i64 i = 0; i < triangle.n_triangles(); i++) {
         std::array<Ptr<MeshVertexAbstract>, Tri3::N_VERTICES> tri;
-        for (int j = 0; j < Tri3::N_VERTICES; j++) {
+        for (u8 j = 0; j < Tri3::N_VERTICES; j++) {
             auto pt = triangle.point(i, j);
             tri[j] = im.surface_vertex(pt.x, pt.y);
         }

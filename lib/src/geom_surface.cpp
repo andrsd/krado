@@ -3,13 +3,18 @@
 
 #include "krado/geom_surface.h"
 #include "krado/geom_shape.h"
+#include "krado/wire.h"
 #include "krado/geom_model.h"
+#include "krado/point.h"
+#include "krado/vector.h"
+#include "krado/uv_param.h"
 #include "krado/exception.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
 #include "BRepLProp_SLProps.hxx"
 #include "BRepAdaptor_Surface.hxx"
+#include "BRepBuilderAPI_MakeFace.hxx"
 #include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
@@ -72,8 +77,7 @@ GeomSurface::GeomSurface(GeomSurface && other) :
 Point
 GeomSurface::point(const UVParam & param) const
 {
-    gp_Pnt pnt = this->surface_->Value(param.u, param.v);
-    return Point(pnt.X(), pnt.Y(), pnt.Z());
+    return Point::create(this->surface_->Value(param.u, param.v));
 }
 
 Vector
@@ -150,8 +154,7 @@ GeomSurface::operator const TopoDS_Face &() const
 std::tuple<bool, UVParam>
 GeomSurface::project(const Point & pt) const
 {
-    gp_Pnt pnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface_.Perform(pnt);
+    this->proj_pt_on_surface_.Perform(pt);
 
     if (this->proj_pt_on_surface_.NbPoints() > 0) {
         double u, v;
@@ -165,12 +168,9 @@ GeomSurface::project(const Point & pt) const
 Point
 GeomSurface::nearest_point(const Point & pt) const
 {
-    gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    this->proj_pt_on_surface_.Perform(gpnt);
-    if (this->proj_pt_on_surface_.NbPoints()) {
-        gpnt = this->proj_pt_on_surface_.NearestPoint();
-        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
-    }
+    this->proj_pt_on_surface_.Perform(pt);
+    if (this->proj_pt_on_surface_.NbPoints())
+        return Point::create(this->proj_pt_on_surface_.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
 }
@@ -184,6 +184,16 @@ GeomSurface::contains_point(const Point & pt) const
         return true;
     else
         return false;
+}
+
+GeomSurface
+GeomSurface::create(const Wire & wire)
+{
+    BRepBuilderAPI_MakeFace make_face(wire);
+    make_face.Build();
+    if (!make_face.IsDone())
+        throw Exception("Face was not created");
+    return GeomSurface(make_face.Face());
 }
 
 // - - -
@@ -201,3 +211,15 @@ is_circular_face(const GeomSurface & surface)
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomSurface & srf)
+{
+    stream << "Surface: ";
+    auto [u_min, u_max] = srf.param_range(0);
+    auto [v_min, v_max] = srf.param_range(1);
+    stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
+    stream << "[" << v_min << ", " << v_max << "], ";
+    stream << "area=" << srf.area();
+    return stream;
+}

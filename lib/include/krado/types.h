@@ -7,137 +7,38 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <span>
 
 namespace krado {
 
-/// Local indexing type
-using lidx_t = unsigned int;
+// signed integers
+using i8 = std::int8_t;
+using i16 = std::int16_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
+
+// unsigned integers
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
+
 /// Global indexing type
-using gidx_t = std::size_t;
+using Index = std::uint32_t;
 ///
 template <typename T>
 using Optional = std::optional<T>;
 
-/// 32-bit integer
-using int32 = std::int32_t;
-
-/// 64-bit integer
-using int64 = std::int64_t;
+template <typename T>
+using Span = std::span<T>;
 
 /// Shape identifier
-class ShapeID {
-public:
-    explicit constexpr ShapeID() : value_(-1) {}
-    constexpr ShapeID(int32 id) : value_(id) {}
-    constexpr ShapeID(std::size_t id) : value_(id) {}
-
-    constexpr ShapeID &
-    operator=(std::size_t id)
-    {
-        this->value_ = id;
-        return *this;
-    }
-
-    constexpr int32
-    value() const
-    {
-        return this->value_;
-    }
-
-    constexpr bool
-    operator==(int32 other) const
-    {
-        return this->value_ == other;
-    }
-
-    constexpr bool
-    operator!=(int32 other) const
-    {
-        return this->value_ != other;
-    }
-
-    constexpr bool
-    operator<(ShapeID other) const
-    {
-        return this->value_ < other.value_;
-    }
-
-    constexpr bool
-    operator<(int32 other) const
-    {
-        return this->value_ < other;
-    }
-
-    ShapeID &
-    operator++()
-    {
-        ++this->value_;
-        return *this;
-    }
-
-private:
-    int32 value_;
-
-public:
-    static const ShapeID INVALID;
-};
-
-inline constexpr ShapeID ShapeID::INVALID { -1 };
+using ShapeID = std::int32_t;
 
 /// Marker type
-class Marker {
-public:
-    explicit constexpr Marker() : value_(-1) {}
-    constexpr Marker(int32 id) : value_(id) {}
+using Marker = std::int32_t;
 
-    constexpr Marker &
-    operator=(std::size_t id)
-    {
-        this->value_ = id;
-        return *this;
-    }
-
-    constexpr int32
-    value() const
-    {
-        return this->value_;
-    }
-
-    constexpr bool
-    operator==(int32 other) const
-    {
-        return this->value_ == other;
-    }
-
-    constexpr bool
-    operator==(Marker other) const
-    {
-        return this->value_ == other.value_;
-    }
-
-    constexpr bool
-    operator!=(int32 other) const
-    {
-        return this->value_ != other;
-    }
-
-    constexpr bool
-    operator<(Marker other) const
-    {
-        return this->value_ < other.value_;
-    }
-
-    constexpr bool
-    operator<(int32 other) const
-    {
-        return this->value_ < other;
-    }
-
-private:
-    int32 value_;
-};
-
-enum class ElementType {
+enum class ElementType : u8 {
     /// 0-D element
     POINT,
     /// 1-D element
@@ -153,78 +54,33 @@ enum class ElementType {
     /// Prism
     PRISM6,
     /// Hexahedron
-    HEX8
+    HEX8,
+    /// Invalid
+    INVALID
 };
 
 /// Side set entry
-struct side_set_entry_t {
+struct SideEntry {
     /// Element ID
-    gidx_t elem;
+    Index elem;
     /// Local side number
     std::size_t side;
 
-    side_set_entry_t(gidx_t elem, std::size_t side) : elem(elem), side(side) {}
+    SideEntry(Index elem, std::size_t side) : elem(elem), side(side) {}
 };
 
 /// Equality operator for side set entry
 inline bool
-operator==(const side_set_entry_t & lhs, const side_set_entry_t & rhs)
+operator==(const SideEntry & lhs, const SideEntry & rhs)
 {
     return lhs.elem == rhs.elem && lhs.side == rhs.side;
 }
 
+enum class QuadSplitMode {
+    /// Split into 2 triangles
+    SPLIT2,
+    /// Split into 4 triangles
+    SPLIT4
+};
+
 } // namespace krado
-
-inline std::ostream &
-operator<<(std::ostream & stream, const krado::ShapeID & id)
-{
-    stream << id.value();
-    return stream;
-}
-
-template <>
-struct fmt::formatter<krado::ShapeID> {
-    constexpr auto
-    parse(format_parse_context & ctx) -> decltype(ctx.begin())
-    {
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto
-    format(const krado::ShapeID & obj, FormatContext & ctx) const -> decltype(ctx.out())
-    {
-        return fmt::format_to(ctx.out(), "{}", obj.value());
-    }
-};
-
-// Marker-related functions
-
-namespace std {
-
-template <>
-struct hash<krado::Marker> {
-    size_t
-    operator()(const krado::Marker & s) const
-    {
-        return hash<std::size_t>()(s.value());
-    }
-};
-
-} // namespace std
-
-template <>
-struct fmt::formatter<krado::Marker> {
-    constexpr auto
-    parse(format_parse_context & ctx) -> decltype(ctx.begin())
-    {
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto
-    format(const krado::Marker & obj, FormatContext & ctx) const -> decltype(ctx.out())
-    {
-        return fmt::format_to(ctx.out(), "{}", obj.value());
-    }
-};

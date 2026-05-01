@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/size.h"
-#include "krado/scheme/equal.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/log.h"
+#include "krado/utils.h"
 #include "GCPnts_AbscissaPoint.hxx"
 
 namespace krado {
@@ -36,8 +36,6 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
     if (bnd_verts.size() != 2)
         throw Exception("Curve {} must have 2 bounding vertices", curve->id());
 
-    curve->add_vertex(bnd_verts[0]);
-
     double s = 0.0;
     double t = t0;
     while (s < total_length - tol) {
@@ -62,12 +60,7 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
             break;
     }
 
-    curve->add_vertex(bnd_verts[1]);
-
-    const auto & all = curve->all_vertices();
-    for (std::size_t i = 0; i + 1 < all.size(); ++i) {
-        curve->add_segment({ all[i], all[i + 1] });
-    }
+    utils::build_curve_segments(curve);
 }
 
 } // namespace krado

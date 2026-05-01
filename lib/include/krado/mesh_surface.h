@@ -3,15 +3,18 @@
 
 #pragma once
 
-#include "krado/mesh_vertex.h"
 #include "krado/mesh_element.h"
 #include "krado/meshable.h"
 #include "krado/scheme2d.h"
+#include "krado/ptr.h"
 #include <vector>
+#include <memory>
 
 namespace krado {
 
+class UVParam;
 class GeomSurface;
+class MeshVertex;
 class MeshVertexAbstract;
 class MeshCurveVertex;
 class MeshSurfaceVertex;
@@ -22,6 +25,7 @@ public:
     MeshSurface(ShapeID id,
                 const GeomSurface & gcurve,
                 const std::vector<Ptr<MeshCurve>> & mesh_curves);
+    ~MeshSurface();
 
     /// Get the unique identifier of the surface.
     ///
@@ -36,12 +40,21 @@ public:
     /// Get curves bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
 
-    /// Get vertices on this surface
+    /// Get the mesh size for this surface
     ///
-    /// @return Surface vertices
-    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
+    /// @return The mesh size
+    [[nodiscard]] double mesh_size() const;
 
-    [[nodiscard]] std::vector<Ptr<MeshVertexAbstract>> & all_vertices();
+    /// Set the mesh size for this surface
+    ///
+    /// @param size The new mesh size
+    void set_mesh_size(double size);
+
+    /// Get mesh size at given surface parameter
+    ///
+    /// @param par Surface parameter (u, v)
+    /// @return Mesh size at the parameter
+    [[nodiscard]] double mesh_size_at_param(UVParam par) const;
 
     /// Get (internal) vertices on the surface
     ///
@@ -57,11 +70,16 @@ public:
 
     [[nodiscard]] std::vector<MeshElement> & triangles();
 
+    /// Get quadrangles on this surface
+    ///
+    /// @return Quadrangles on this surface
+    [[nodiscard]] const std::vector<MeshElement> & quadrangles() const;
+
+    [[nodiscard]] std::vector<MeshElement> & quadrangles();
+
     /// Add vertex
     ///
     /// @param vertex Vertex to add
-    void add_vertex(Ptr<MeshVertex> vertex);
-    void add_vertex(Ptr<MeshCurveVertex> vertex);
     void add_vertex(Ptr<MeshSurfaceVertex> vertex);
 
     /// Add new triangle
@@ -75,6 +93,11 @@ public:
     void add_quadrangle(const std::array<Ptr<MeshVertexAbstract>, 4> & quad);
 
     void add_element(MeshElement tri);
+
+    /// Convert all quadrangles to triangles
+    ///
+    /// @param mode Splitting mode
+    void quads_to_tris(QuadSplitMode mode = QuadSplitMode::SPLIT2);
 
     /// Reserve memory for vertices and triangles
     void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
@@ -101,17 +124,9 @@ public:
         return *sch_ptr;
     }
 
-    bool
-    has_scheme() const
-    {
-        return this->scheme_.get() != nullptr;
-    }
+    bool has_scheme() const;
 
-    Scheme2D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme2D & scheme();
 
 private:
     ///
@@ -120,16 +135,18 @@ private:
     const GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
     std::vector<Ptr<MeshCurve>> mesh_curves_;
-    /// All vertices on this surface
-    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
-    /// Surface vertices
+    /// Surface vertices (not including boundary and mesh vertices)
     std::vector<Ptr<MeshSurfaceVertex>> surf_vtxs_;
     /// Triangles
     std::vector<MeshElement> tris_;
     /// Quadrangles
     std::vector<MeshElement> quads_;
+    /// Mesh size for the surface
+    Optional<double> mesh_size_;
     ///
     std::unique_ptr<Scheme2D> scheme_;
 };
 
 } // namespace krado
+
+std::ostream & operator<<(std::ostream & stream, const krado::MeshSurface & srf);

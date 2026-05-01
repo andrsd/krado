@@ -4,6 +4,7 @@
 #pragma once
 
 #include "fmt/format.h"
+#include "gp_Vec.hxx"
 #include <ostream>
 
 namespace krado {
@@ -67,6 +68,10 @@ public:
     /// @param tol Absolute tolerance used in comparison
     /// @return `true` if they are the same up to a tolerance `tol`
     bool is_equal(const Vector & other, double tol = 1e-10) const;
+
+    operator gp_Vec() const;
+
+    operator gp_Dir() const;
 
     /// X-component
     double x;

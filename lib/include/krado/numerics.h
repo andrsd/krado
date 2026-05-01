@@ -3,13 +3,9 @@
 
 #pragma once
 
-#include "krado/point.h"
-#include "krado/uv_param.h"
 #include <Eigen/Eigen>
 
 namespace krado {
-
-class Vector;
 
 /// Sign function
 ///

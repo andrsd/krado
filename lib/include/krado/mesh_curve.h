@@ -9,10 +9,10 @@
 #include "krado/ptr.h"
 #include "krado/types.h"
 #include <vector>
+#include <memory>
 
 namespace krado {
 
-class GeomVertex;
 class GeomCurve;
 class MeshVertex;
 class MeshCurveVertex;
@@ -20,6 +20,7 @@ class MeshCurveVertex;
 class MeshCurve : public Meshable {
 public:
     MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
+    ~MeshCurve();
 
     /// Get the unique identifier of the curve.
     ///
@@ -31,18 +32,8 @@ public:
     /// @return Geometrical curve associated with this curve
     [[nodiscard]] const GeomCurve & geom_curve() const;
 
-    /// Get vertices on this curve
-    ///
-    /// @return Curve vertices
-    [[nodiscard]] const std::vector<Ptr<MeshVertexAbstract>> & all_vertices() const;
-
     ///
     [[nodiscard]] const std::vector<Ptr<MeshVertex>> & bounding_vertices() const;
-
-    /// Add vertex
-    ///
-    /// @param vertex Vertex to add
-    void add_vertex(Ptr<MeshVertex> vertex);
 
     /// Add curve vertex
     ///
@@ -103,25 +94,15 @@ public:
         return *sch_ptr;
     }
 
-    bool
-    has_scheme() const
-    {
-        return this->scheme_.get() != nullptr;
-    }
+    bool has_scheme() const;
 
-    Scheme1D &
-    scheme()
-    {
-        return *this->scheme_.get();
-    }
+    Scheme1D & scheme();
 
 private:
     ///
     ShapeID id_;
     ///
     const GeomCurve & gcurve_;
-    /// All vertices on this curve
-    std::vector<Ptr<MeshVertexAbstract>> vtxs_;
     /// Bounding vertices
     std::vector<Ptr<MeshVertex>> bnd_vtxs_;
     /// Vertices on the curve (excluding the bounding vertices)
@@ -137,3 +118,5 @@ private:
 };
 
 } // namespace krado
+
+std::ostream & operator<<(std::ostream & stream, const krado::MeshCurve & vtx);

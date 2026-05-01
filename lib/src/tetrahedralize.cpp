@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/tetrahedralize.h"
+#include "krado/mesh.h"
 #include "krado/exception.h"
 #include "krado/types.h"
 #include "krado/element.h"
@@ -18,22 +19,22 @@ namespace krado {
 namespace {
 
 template <ElementType ET>
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
-nodes_to_tet_nodes_determiner(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el);
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
+nodes_to_tet_nodes_determiner(const std::array<Index, ElementSelector<ET>::N_VERTICES> & el);
 
 /// Split a given element into a series of TET4 elements
 ///
 /// @param el The element to be split
 /// @return A vector of TET4 elements
 template <ElementType ET>
-std::vector<std::array<gidx_t, Tetra4::N_VERTICES>>
-elem_splitter(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el)
+std::vector<std::array<Index, Tetra4::N_VERTICES>>
+elem_splitter(const std::array<Index, ElementSelector<ET>::N_VERTICES> & el)
 {
     auto optimized_node_list = nodes_to_tet_nodes_determiner<ET>(el);
-    std::vector<std::array<gidx_t, Tetra4::N_VERTICES>> tet4_elems;
+    std::vector<std::array<Index, Tetra4::N_VERTICES>> tet4_elems;
     for (size_t i = 0; i < optimized_node_list.size(); i++) {
-        std::array<gidx_t, Tetra4::N_VERTICES> new_elem;
-        for (gidx_t j = 0; j < Tetra4::N_VERTICES; j++)
+        std::array<Index, Tetra4::N_VERTICES> new_elem;
+        for (u8 j = 0; j < Tetra4::N_VERTICES; j++)
             new_elem[j] = el[optimized_node_list[i][j]];
         tet4_elems.push_back(new_elem);
     }
@@ -45,10 +46,10 @@ elem_splitter(const std::array<gidx_t, ElementSelector<ET>::N_VERTICES> & el)
 /// @param elem The element to be split
 /// @return A vector of TET4 elements
 template <ElementType ET>
-std::vector<std::array<gidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<Index, Tetra4::N_VERTICES>>
 split_elem(const Element & elem)
 {
-    auto connect = utils::to_array<ElementSelector<ET>::N_VERTICES>(elem.ids().cbegin());
+    auto connect = utils::to_array<ElementSelector<ET>::N_VERTICES>(elem.indices());
     return elem_splitter<ET>(connect);
 }
 
@@ -74,10 +75,10 @@ num_of_tets(ElementType type)
 ///
 /// @param min_id_index The index of the node with the minimum id
 /// @return a vector of the three neighboring nodes
-std::array<lidx_t, Tri3::N_VERTICES>
-neighbor_node_indices_hex8(lidx_t min_id_index)
+std::array<u8, Tri3::N_VERTICES>
+neighbor_node_indices_hex8(u8 min_id_index)
 {
-    const std::vector<std::array<lidx_t, Tri3::N_VERTICES>> preset_indices = {
+    const std::vector<std::array<u8, Tri3::N_VERTICES>> preset_indices = {
         { 1, 3, 4 }, { 0, 2, 5 }, { 3, 1, 6 }, { 2, 0, 7 },
         { 5, 7, 0 }, { 4, 6, 1 }, { 7, 5, 2 }, { 6, 4, 3 }
     };
@@ -88,7 +89,7 @@ neighbor_node_indices_hex8(lidx_t min_id_index)
 }
 
 bool
-quad_face_diagonal_direction(const std::array<gidx_t, Quad4::N_VERTICES> & quad)
+quad_face_diagonal_direction(const std::array<Index, Quad4::N_VERTICES> & quad)
 {
     auto min_id_index =
         std::distance(std::begin(quad), std::min_element(std::begin(quad), std::end(quad)));
@@ -99,20 +100,20 @@ quad_face_diagonal_direction(const std::array<gidx_t, Quad4::N_VERTICES> & quad)
 }
 
 std::array<bool, Hex8::N_FACES>
-hex8_face_diagonal_directions(const std::array<gidx_t, Hex8::N_VERTICES> & hex)
+hex8_face_diagonal_directions(const std::array<Index, Hex8::N_VERTICES> & hex)
 {
     // Bottom/Top; Front/Back; Right/Left
-    const std::vector<std::array<lidx_t, Quad4::N_VERTICES>> face_indices = {
+    const std::vector<std::array<u8, Quad4::N_VERTICES>> face_indices = {
         { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 0, 1, 5, 4 },
         { 2, 3, 7, 6 }, { 1, 2, 6, 5 }, { 3, 0, 4, 7 }
     };
     std::array<bool, Hex8::N_FACES> diagonal_directions;
-    for (lidx_t i = 0; i < Hex8::N_FACES; i++) {
+    for (u8 i = 0; i < Hex8::N_FACES; i++) {
         auto & face_index = face_indices[i];
-        std::array<gidx_t, Quad4::N_VERTICES> quad = { hex[face_index[0]],
-                                                       hex[face_index[1]],
-                                                       hex[face_index[2]],
-                                                       hex[face_index[3]] };
+        std::array<Index, Quad4::N_VERTICES> quad = { hex[face_index[0]],
+                                                      hex[face_index[1]],
+                                                      hex[face_index[2]],
+                                                      hex[face_index[3]] };
         diagonal_directions[i] = quad_face_diagonal_direction(quad);
     }
     return diagonal_directions;
@@ -120,7 +121,7 @@ hex8_face_diagonal_directions(const std::array<gidx_t, Hex8::N_VERTICES> & hex)
 
 //
 
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
 tet4_nodes_for_hex8(const std::array<bool, Hex8::N_FACES> & diagonal_directions)
 {
     const std::vector<std::array<bool, Hex8::N_FACES>> possible_inputs = {
@@ -170,14 +171,14 @@ tet4_nodes_for_hex8(const std::array<bool, Hex8::N_FACES> & diagonal_directions)
 /// @param sec_min_pos The index of the node among its three neighboring nodes with the minimum
 ///        id (see comments in the function for more details about how the index is defined)
 /// @return node_rotation - A vector of node indices that can form a HEX8 element
-std::array<lidx_t, Hex8::N_VERTICES>
-hex8_rotation(lidx_t min_id_index, lidx_t sec_min_pos)
+std::array<u8, Hex8::N_VERTICES>
+hex8_rotation(u8 min_id_index, u8 sec_min_pos)
 {
     // Assuming the original hex element is a cube, the vectors formed by nodes 0-1, 0-2, and 0-4
     // are overlapped with the x, y, and z axes, respectively. sec_min_pos = 0 means the second
     // minimum node is in the x direction, sec_min_pos = 1 means the second minimum node is in the y
     // direction, and sec_min_pos = 2 means the second minimum node is in the z direction.
-    const std::vector<std::vector<std::array<lidx_t, Hex8::N_VERTICES>>> node_indices = {
+    const std::vector<std::vector<std::array<u8, Hex8::N_VERTICES>>> node_indices = {
         { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 0, 3, 7, 4, 1, 2, 6, 5 }, { 0, 4, 5, 1, 3, 7, 6, 2 } },
         { { 1, 0, 4, 5, 2, 3, 7, 6 }, { 1, 2, 3, 0, 5, 6, 7, 4 }, { 1, 5, 6, 2, 0, 4, 7, 3 } },
         { { 2, 3, 0, 1, 6, 7, 4, 5 }, { 2, 1, 5, 6, 3, 0, 4, 7 }, { 2, 6, 7, 3, 1, 5, 4, 0 } },
@@ -195,8 +196,8 @@ hex8_rotation(lidx_t min_id_index, lidx_t sec_min_pos)
 }
 
 template <>
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
-nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<gidx_t, Hex8::N_VERTICES> & hex)
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
+nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<Index, Hex8::N_VERTICES> & hex)
 {
     // Find the node with the minimum id
     auto min_node_id_index =
@@ -219,8 +220,8 @@ nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<gidx_t, Hex8::
     // 0 This makes the splitting process simpler
     auto node_rotation = hex8_rotation(min_node_id_index, sec_min_pos);
 
-    std::array<gidx_t, Hex8::N_VERTICES> rotated_hex_nodes;
-    for (lidx_t i = 0; i < Hex8::N_VERTICES; i++)
+    std::array<Index, Hex8::N_VERTICES> rotated_hex_nodes;
+    for (u8 i = 0; i < Hex8::N_VERTICES; i++)
         rotated_hex_nodes[i] = hex[node_rotation[i]];
 
     // Find the selection of each face's cutting direction
@@ -230,7 +231,7 @@ nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<gidx_t, Hex8::
     // resulting TET4 elements after the splitting.
     auto tet_nodes_set = tet4_nodes_for_hex8(diagonal_directions);
 
-    std::vector<std::array<lidx_t, Tetra4::N_VERTICES>> tet_nodes_list;
+    std::vector<std::array<u8, Tetra4::N_VERTICES>> tet_nodes_list;
     for (const auto & tet_nodes : tet_nodes_set)
         tet_nodes_list.push_back(tet_nodes);
     return tet_nodes_list;
@@ -238,23 +239,21 @@ nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<gidx_t, Hex8::
 
 // PYRAMID5
 
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
 tet4_nodes_for_pyramid5()
 {
-    const std::vector<std::array<lidx_t, Tetra4::N_VERTICES>> node_indices = { { 0, 1, 2, 4 },
-                                                                               { 0, 2, 3, 4 } };
+    const std::vector<std::array<u8, Tetra4::N_VERTICES>> node_indices = { { 0, 1, 2, 4 },
+                                                                           { 0, 2, 3, 4 } };
     return node_indices;
 }
 
-std::array<lidx_t, Pyramid5::N_VERTICES>
-pyramid5_rotation(gidx_t min_id_index)
+std::array<u8, Pyramid5::N_VERTICES>
+pyramid5_rotation(Index min_id_index)
 {
-    const std::vector<std::array<lidx_t, Pyramid5::N_VERTICES>> node_indices = {
-        { 0, 1, 2, 3, 4 },
-        { 1, 2, 3, 0, 4 },
-        { 2, 3, 0, 1, 4 },
-        { 3, 0, 1, 2, 4 }
-    };
+    const std::vector<std::array<u8, Pyramid5::N_VERTICES>> node_indices = { { 0, 1, 2, 3, 4 },
+                                                                             { 1, 2, 3, 0, 4 },
+                                                                             { 2, 3, 0, 1, 4 },
+                                                                             { 3, 0, 1, 2, 4 } };
 
     if (min_id_index <= 3)
         return node_indices[min_id_index];
@@ -263,9 +262,9 @@ pyramid5_rotation(gidx_t min_id_index)
 }
 
 template <>
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
 nodes_to_tet_nodes_determiner<ElementType::PYRAMID5>(
-    const std::array<gidx_t, Pyramid5::N_VERTICES> & pyramid)
+    const std::array<Index, Pyramid5::N_VERTICES> & pyramid)
 {
     auto min_node_id_index =
         std::distance(std::begin(pyramid),
@@ -276,14 +275,14 @@ nodes_to_tet_nodes_determiner<ElementType::PYRAMID5>(
     // This makes the splitting process simpler
     auto node_rotation = pyramid5_rotation(min_node_id_index);
 
-    std::array<gidx_t, Pyramid5::N_VERTICES> rotated_pyramid_nodes;
-    for (lidx_t i = 0; i < Pyramid5::N_VERTICES; i++)
+    std::array<Index, Pyramid5::N_VERTICES> rotated_pyramid_nodes;
+    for (u8 i = 0; i < Pyramid5::N_VERTICES; i++)
         rotated_pyramid_nodes[i] = pyramid[node_rotation[i]];
 
     // There is only one quad face in a pyramid element, so the splitting selection is binary
     auto tet_nodes_set = tet4_nodes_for_pyramid5();
 
-    std::vector<std::array<lidx_t, Tetra4::N_VERTICES>> tet_nodes_list;
+    std::vector<std::array<u8, Tetra4::N_VERTICES>> tet_nodes_list;
     for (const auto & tet_nodes : tet_nodes_set)
         tet_nodes_list.push_back(tet_nodes);
     return tet_nodes_list;
@@ -297,7 +296,7 @@ nodes_to_tet_nodes_determiner<ElementType::PYRAMID5>(
 /// @param diagonal_direction A boolean value indicating the direction of the diagonal line of
 ///        face 2
 /// @return A vector of vectors of node indices that can form TET4 elements
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
 tet4_nodes_for_prism6(bool diagonal_direction)
 {
     if (diagonal_direction) {
@@ -312,10 +311,10 @@ tet4_nodes_for_prism6(bool diagonal_direction)
 ///
 /// @param min_id_index The index of the node, within the prism nodes, with the minimum id
 /// @return A vector of node indices that can form a PRISM6 element
-std::array<lidx_t, Prism6::N_VERTICES>
-prism6_rotation(lidx_t min_id_index)
+std::array<u8, Prism6::N_VERTICES>
+prism6_rotation(u8 min_id_index)
 {
-    const std::vector<std::array<lidx_t, Prism6::N_VERTICES>> node_indices = {
+    const std::vector<std::array<u8, Prism6::N_VERTICES>> node_indices = {
         { 0, 1, 2, 3, 4, 5 }, { 1, 2, 0, 4, 5, 3 }, { 2, 0, 1, 5, 3, 4 },
         { 3, 5, 4, 0, 2, 1 }, { 4, 3, 5, 1, 0, 2 }, { 5, 4, 3, 2, 1, 0 }
     };
@@ -327,9 +326,9 @@ prism6_rotation(lidx_t min_id_index)
 }
 
 template <>
-std::vector<std::array<lidx_t, Tetra4::N_VERTICES>>
+std::vector<std::array<u8, Tetra4::N_VERTICES>>
 nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
-    const std::array<gidx_t, Prism6::N_VERTICES> & prism)
+    const std::array<Index, Prism6::N_VERTICES> & prism)
 {
     auto min_node_id_index =
         std::distance(std::begin(prism), std::min_element(std::begin(prism), std::end(prism)));
@@ -339,14 +338,14 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
     // This makes the splitting process simpler
     auto node_rotation = prism6_rotation(min_node_id_index);
 
-    std::array<gidx_t, Prism6::N_VERTICES> rotated_prism_nodes;
-    for (lidx_t i = 0; i < Prism6::N_VERTICES; i++)
+    std::array<Index, Prism6::N_VERTICES> rotated_prism_nodes;
+    for (u8 i = 0; i < Prism6::N_VERTICES; i++)
         rotated_prism_nodes[i] = prism[node_rotation[i]];
 
-    std::array<gidx_t, Quad4::N_VERTICES> key_quad_nodes = { rotated_prism_nodes[1],
-                                                             rotated_prism_nodes[2],
-                                                             rotated_prism_nodes[5],
-                                                             rotated_prism_nodes[4] };
+    std::array<Index, Quad4::N_VERTICES> key_quad_nodes = { rotated_prism_nodes[1],
+                                                            rotated_prism_nodes[2],
+                                                            rotated_prism_nodes[5],
+                                                            rotated_prism_nodes[4] };
 
     // Find the selection of each face's cutting direction
     auto diagonal_direction = quad_face_diagonal_direction(key_quad_nodes);
@@ -355,7 +354,7 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
     // resulting TET4 elements after the splitting.
     auto tet_nodes_set = tet4_nodes_for_prism6(diagonal_direction);
 
-    std::vector<std::array<lidx_t, Tetra4::N_VERTICES>> tet_nodes_list;
+    std::vector<std::array<u8, Tetra4::N_VERTICES>> tet_nodes_list;
     for (const auto & tet_nodes : tet_nodes_set)
         tet_nodes_list.push_back(tet_nodes);
     return tet_nodes_list;
@@ -374,10 +373,10 @@ tetrahedralize(const Mesh & mesh)
     for (auto & el : mesh.elements())
         n_tets += num_of_tets(el.type());
 
-    std::map<gidx_t, std::vector<gidx_t>> elem_map;
+    std::map<Index, std::vector<Index>> elem_map;
     std::vector<Element> elems;
     elems.reserve(n_tets);
-    for (gidx_t cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
+    for (Index cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
         auto & el = mesh.element(cell_id);
         if (el.type() == ElementType::HEX8) {
             auto tet4s = split_elem<ElementType::HEX8>(el);
@@ -409,7 +408,7 @@ tetrahedralize(const Mesh & mesh)
     Mesh tet_mesh(points, elems);
     for (auto id : mesh.cell_set_ids()) {
         auto & cells = mesh.cell_set(id);
-        std::vector<gidx_t> new_cell_set;
+        std::vector<Index> new_cell_set;
         for (auto & cell_id : cells) {
             auto & tet_elems = elem_map[cell_id];
             new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());

@@ -10,8 +10,7 @@ namespace krado {
 GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex_(vertex)
 {
     if (!this->vertex_.IsNull()) {
-        gp_Pnt pnt = BRep_Tool::Pnt(this->vertex_);
-        this->pt_ = Point(pnt.X(), pnt.Y(), pnt.Z());
+        this->pt_ = Point::create(BRep_Tool::Pnt(this->vertex_));
     }
 }
 
@@ -51,3 +50,11 @@ GeomVertex::operator const TopoDS_Shape &() const
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomVertex & vtx)
+{
+    auto pt = vtx.point();
+    stream << "Vertex: location=(x=" << pt.x << ", y=" << pt.y << ", z=" << pt.z << ")";
+    return stream;
+}

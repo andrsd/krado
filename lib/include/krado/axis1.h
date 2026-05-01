@@ -4,13 +4,16 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/vector.h"
 #include "gp_Ax1.hxx"
 
 namespace krado {
 
+class Vector;
+
 class Axis1 {
 public:
+    explicit Axis1(const gp_Ax1 & ax1);
+
     /// @param pt `Point` the location point
     /// @param direction `Vector` the direction of the axis
     Axis1(const Point & pt, const Vector & dir);
@@ -26,6 +29,8 @@ public:
     Vector direction() const;
 
     bool is_equal(const Axis1 & other, double tol) const;
+
+    operator gp_Ax1() const;
 
 private:
     gp_Ax1 ax1_;

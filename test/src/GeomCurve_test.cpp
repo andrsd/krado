@@ -3,9 +3,9 @@
 #include "krado/geom_surface.h"
 #include "krado/ops.h"
 #include "krado/exception.h"
-#include "krado/geom_model.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/vector.h"
 #include "builder.h"
 
 using namespace krado;
@@ -69,11 +69,10 @@ TEST(GeomCurveTest, curvature_line)
 TEST(GeomCurveTest, curvature_arc)
 {
     auto arc = testing::build_arc();
-    GeomCurve curve(arc);
-    auto [lo, hi] = curve.param_range();
-    EXPECT_DOUBLE_EQ(curve.curvature(lo), 1.);
-    EXPECT_DOUBLE_EQ(curve.curvature((lo + hi) / 2.), 1.);
-    EXPECT_DOUBLE_EQ(curve.curvature(hi), 1.);
+    auto [lo, hi] = arc.param_range();
+    EXPECT_DOUBLE_EQ(arc.curvature(lo), 1.);
+    EXPECT_DOUBLE_EQ(arc.curvature((lo + hi) / 2.), 1.);
+    EXPECT_DOUBLE_EQ(arc.curvature(hi), 1.);
 }
 
 TEST(GeomCurveTest, d1_line)
@@ -94,22 +93,21 @@ TEST(GeomCurveTest, d1_line)
 TEST(GeomCurveTest, d1_arc)
 {
     auto arc = testing::build_arc();
-    GeomCurve curve(arc);
-    EXPECT_EQ(curve.type(), GeomCurve::CurveType::Circle);
+    EXPECT_EQ(arc.type(), GeomCurve::CurveType::Circle);
 
-    auto [lo, hi] = curve.param_range();
+    auto [lo, hi] = arc.param_range();
 
-    auto v_0 = curve.d1(lo);
+    auto v_0 = arc.d1(lo);
     EXPECT_NEAR(v_0.x, 0., 1e-10);
     EXPECT_NEAR(v_0.y, 1., 1e-10);
     EXPECT_NEAR(v_0.z, 0., 1e-10);
 
-    auto v_1 = curve.d1((lo + hi) / 2.);
+    auto v_1 = arc.d1((lo + hi) / 2.);
     EXPECT_NEAR(v_1.x, 1., 1e-10);
     EXPECT_NEAR(v_1.y, 0., 1e-10);
     EXPECT_NEAR(v_1.z, 0., 1e-10);
 
-    auto v_2 = curve.d1(hi);
+    auto v_2 = arc.d1(hi);
     EXPECT_NEAR(v_2.x, 0., 1e-10);
     EXPECT_NEAR(v_2.y, -1., 1e-10);
     EXPECT_NEAR(v_2.z, 0., 1e-10);
@@ -166,8 +164,7 @@ TEST(GeomCurveTest, contains_point)
 TEST(GeomCurveTest, circle)
 {
     auto circ = testing::build_circle(Point(0, 0, 0), 2.);
-    GeomSurface gsurf(circ);
-    auto curves = gsurf.curves();
+    auto curves = circ.curves();
     ASSERT_EQ(curves.size(), 1);
     auto [lo, hi] = curves[0].param_range();
     EXPECT_DOUBLE_EQ(lo, 0.);
@@ -177,8 +174,7 @@ TEST(GeomCurveTest, circle)
 TEST(GeomCurveTest, split)
 {
     auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 0.5, 0));
-    GeomSurface gsurf(rect);
-    auto curves = gsurf.curves();
+    auto curves = rect.curves();
     auto [lower, upper] = split_curve(curves[0], 0.25);
     EXPECT_DOUBLE_EQ(lower.length(), 0.25);
     EXPECT_DOUBLE_EQ(upper.length(), 0.75);
@@ -190,4 +186,10 @@ TEST(GeomCurveTest, op_shl)
     std::stringstream ss;
     ss << line;
     EXPECT_EQ(ss.str(), "Curve: type=line, u=[0, 5], length=5");
+}
+
+TEST(GeomCurveTest, orientation)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    EXPECT_EQ(line.orientation(), GeomCurve::Orientation::Forward);
 }

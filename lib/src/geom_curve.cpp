@@ -5,6 +5,8 @@
 #include "krado/geom_surface.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -50,6 +52,15 @@ GeomCurve::type() const
     return this->crv_type_;
 }
 
+GeomCurve::Orientation
+GeomCurve::orientation() const
+{
+    if (this->edge_.Orientation() == TopAbs_FORWARD)
+        return Orientation::Forward;
+    else
+        return Orientation::Reversed;
+}
+
 bool
 GeomCurve::is_degenerated() const
 {
@@ -59,8 +70,7 @@ GeomCurve::is_degenerated() const
 Point
 GeomCurve::point(double u) const
 {
-    gp_Pnt pnt = this->curve_->Value(u);
-    return Point(pnt.X(), pnt.Y(), pnt.Z());
+    return Point::create(this->curve_->Value(u));
 }
 
 Vector
@@ -119,8 +129,7 @@ GeomCurve::parameter_from_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    gp_Pnt pnt(pt.x, pt.y, pt.z);
-    proj_pt_on_curve.Perform(pnt);
+    proj_pt_on_curve.Perform(pt);
     if (proj_pt_on_curve.NbPoints() > 0) {
         auto u = proj_pt_on_curve.LowerDistanceParameter();
         return u;
@@ -134,12 +143,9 @@ GeomCurve::nearest_point(const Point & pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
-    gp_Pnt gpnt(pt.x, pt.y, pt.z);
-    proj_pt_on_curve.Perform(gpnt);
-    if (proj_pt_on_curve.NbPoints()) {
-        gpnt = proj_pt_on_curve.NearestPoint();
-        return Point(gpnt.X(), gpnt.Y(), gpnt.Z());
-    }
+    proj_pt_on_curve.Perform(pt);
+    if (proj_pt_on_curve.NbPoints())
+        return Point::create(proj_pt_on_curve.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
 }
@@ -187,8 +193,46 @@ get_circle_center(const GeomCurve & crv)
         throw Exception("Curve is not a circle");
 
     const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
-    gp_Pnt center = circle->Location();
-    return Point(center.X(), center.Y(), center.Z());
+    return Point::create(circle->Location());
 }
 
 } // namespace krado
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type)
+{
+    switch (type) {
+    case krado::GeomCurve::CurveType::Line:
+        stream << "line";
+        break;
+
+    case krado::GeomCurve::CurveType::Circle:
+        stream << "circle";
+        break;
+
+    case krado::GeomCurve::CurveType::BSpline:
+        stream << "bspline";
+        break;
+
+    case krado::GeomCurve::CurveType::Bezier:
+        stream << "bezier";
+        break;
+
+    case krado::GeomCurve::CurveType::Unknown:
+    default:
+        stream << "unknown";
+        break;
+    }
+    return stream;
+}
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve & crv)
+{
+    stream << "Curve: ";
+    stream << "type=" << crv.type() << ", ";
+    auto [umin, umax] = crv.param_range();
+    stream << "u=[" << umin << ", " << umax << "], ";
+    stream << "length=" << crv.length();
+    return stream;
+}

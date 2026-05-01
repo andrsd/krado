@@ -6,13 +6,10 @@
 #include "krado/range.h"
 #include "boost/graph/adjacency_list.hpp"
 #include "boost/graph/graph_traits.hpp"
+#include <vector>
 #include <cstddef>
 #include <limits>
-#include <set>
-#include <map>
 #include <iostream>
-#include <unordered_map>
-#include <algorithm>
 
 namespace krado {
 
@@ -61,7 +58,7 @@ public:
     }
 
     void
-    add_node(gidx_t id, NodeType type)
+    add_node(Index id, NodeType type)
     {
         auto nd = boost::add_vertex(this->grph_);
         this->grph_[nd].type = type;
@@ -77,7 +74,7 @@ public:
     }
 
     void
-    add_edge(gidx_t parent_id, gidx_t child_id)
+    add_edge(Index parent_id, Index child_id)
     {
         auto edge_result = boost::edge(parent_id, child_id, this->grph_);
         if (!edge_result.second)
@@ -85,7 +82,7 @@ public:
     }
 
     NodeType
-    node_type(gidx_t id) const
+    node_type(Index id) const
     {
         return this->grph_[id].type;
     }
@@ -94,31 +91,31 @@ public:
     clear()
     {
         this->grph_ = Graph();
-        this->vertex_rng_ = { std::numeric_limits<gidx_t>::max(),
-                              std::numeric_limits<gidx_t>::min() };
-        this->edge_rng_ = { std::numeric_limits<gidx_t>::max(),
-                            std::numeric_limits<gidx_t>::min() };
-        this->face_rng_ = { std::numeric_limits<gidx_t>::max(),
-                            std::numeric_limits<gidx_t>::min() };
-        this->cell_rng_ = { std::numeric_limits<gidx_t>::max(),
-                            std::numeric_limits<gidx_t>::min() };
+        this->vertex_rng_ = { std::numeric_limits<Index>::max(),
+                              std::numeric_limits<Index>::min() };
+        this->edge_rng_ = { std::numeric_limits<Index>::max(),
+                            std::numeric_limits<Index>::min() };
+        this->face_rng_ = { std::numeric_limits<Index>::max(),
+                            std::numeric_limits<Index>::min() };
+        this->cell_rng_ = { std::numeric_limits<Index>::max(),
+                            std::numeric_limits<Index>::min() };
     }
 
-    std::vector<gidx_t>
+    std::vector<Index>
     get_out_vertices(Node v1) const
     {
         auto range = boost::adjacent_vertices(v1, this->grph_);
-        std::vector<gidx_t> vtxs;
+        std::vector<Index> vtxs;
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(*it);
         return vtxs;
     }
 
-    std::vector<gidx_t>
+    std::vector<Index>
     get_in_vertices(Node v1) const
     {
         auto range = boost::in_edges(v1, this->grph_);
-        std::vector<gidx_t> vtxs;
+        std::vector<Index> vtxs;
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(boost::source(*it, this->grph_));
         return vtxs;
@@ -149,10 +146,10 @@ public:
     }
 
 private:
-    Range vertex_rng_ = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
-    Range edge_rng_ = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
-    Range face_rng_ = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
-    Range cell_rng_ = { std::numeric_limits<gidx_t>::max(), std::numeric_limits<gidx_t>::min() };
+    Range vertex_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
+    Range edge_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
+    Range face_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
+    Range cell_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
 
     Graph grph_;
 };

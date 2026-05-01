@@ -15,15 +15,15 @@
 #include <array>
 
 namespace krado {
+
 class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
 class Mesh;
 class GeomSurface;
-} // namespace krado
+class MeshCurve;
 
-namespace krado {
 namespace utils {
 
 /// Convert supplied string to upper case.
@@ -75,13 +75,13 @@ in<const char *>(const char * value, const std::vector<const char *> & options)
 /// @param element_connect The connectivity of the element
 /// @param idxs The indices to extract
 /// @return The sub-connectivity
-[[nodiscard]] std::vector<gidx_t> sub_connect(const std::vector<gidx_t> & element_connect,
-                                              const std::vector<int> & idxs);
+[[nodiscard]] std::vector<Index> sub_connect(Span<const Index> element_connect,
+                                             const std::vector<u8> & idxs);
 
-[[nodiscard]] inline std::array<gidx_t, 2>
-edge_connect(const std::vector<gidx_t> & element_connect, const std::array<int, 2> & idxs)
+[[nodiscard]] inline std::array<Index, 2>
+edge_connect(Span<const Index> element_connect, const std::array<u8, 2> & idxs)
 {
-    std::array<gidx_t, 2> econ;
+    std::array<Index, 2> econ;
     econ[0] = element_connect[idxs[0]];
     econ[1] = element_connect[idxs[1]];
     return econ;
@@ -92,7 +92,7 @@ edge_connect(const std::vector<gidx_t> & element_connect, const std::array<int, 
 /// @param id The index to create a key from
 /// @return The key
 [[nodiscard]] inline std::size_t
-key(const std::size_t id)
+key(const Index id)
 {
     std::size_t hash_value = 0;
     boost::hash_combine(hash_value, id);
@@ -100,9 +100,9 @@ key(const std::size_t id)
 }
 
 [[nodiscard]] inline std::size_t
-key(const std::array<gidx_t, 2> & idxs)
+key(const std::array<Index, 2> & idxs)
 {
-    std::array<gidx_t, 2> vertices;
+    std::array<Index, 2> vertices;
     if (idxs[0] <= idxs[1]) {
         vertices[0] = idxs[0];
         vertices[1] = idxs[1];
@@ -123,7 +123,7 @@ key(const std::array<gidx_t, 2> & idxs)
 ///
 /// @param idxs The indices to create a key from
 /// @return The key
-[[nodiscard]] std::size_t key(const std::vector<gidx_t> & idxs);
+[[nodiscard]] std::size_t key(const std::vector<Index> & idxs);
 
 /// Get map keys
 template <typename K, typename V>
@@ -166,6 +166,15 @@ template <std::size_t N,
 to_array(Iter iter) -> std::array<T, N>
 {
     return to_array<T>(iter, std::make_index_sequence<N> {});
+}
+
+template <std::size_t N, typename T>
+[[nodiscard]] constexpr auto
+to_array(Span<const T> span) -> std::array<T, N>
+{
+    std::array<T, N> arr;
+    std::memcpy(arr.data(), span.data(), N * sizeof(T));
+    return arr;
 }
 
 template <typename T>
@@ -234,16 +243,20 @@ unreachable()
 /// @param mesh Mesh object
 /// @param facets Facets/edges
 /// @return Side set
-std::vector<side_set_entry_t>
-create_side_set(const Mesh & mesh, const std::vector<gidx_t> & facets, std::size_t ofst = 0);
+std::vector<SideEntry>
+create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst = 0);
 
 /// Create an edge/face set from a side set
 ///
 /// @param mesh Mesh object
 /// @param side_set Side set
 /// @return Edge/face set
-std::vector<gidx_t> set_from_side_set(const Mesh & mesh,
-                                      const std::vector<side_set_entry_t> & side_set);
+std::vector<Index> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
+
+/// Build segments for a curve
+///
+/// @param curve Mesh curve
+void build_curve_segments(Ptr<MeshCurve> curve);
 
 } // namespace utils
 
@@ -275,5 +288,19 @@ std::array<Ptr<MeshVertexAbstract>, 3> ccw_triangle(const GeomSurface & gsurf,
                                                     Ptr<MeshVertexAbstract> a,
                                                     Ptr<MeshVertexAbstract> b,
                                                     Ptr<MeshVertexAbstract> c);
+
+/// Create a counter-clock-wise quadrangle
+///
+/// @param gsurf Geomterical surface
+/// @param a Vertex A
+/// @param b Vertex B
+/// @param c Vertex C
+/// @param d Vertex D
+/// @return Counter-clockwise quadrangle
+std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
+                                                      Ptr<MeshVertexAbstract> a,
+                                                      Ptr<MeshVertexAbstract> b,
+                                                      Ptr<MeshVertexAbstract> c,
+                                                      Ptr<MeshVertexAbstract> d);
 
 } // namespace krado

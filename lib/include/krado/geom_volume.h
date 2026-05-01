@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/geom_shape.h"
-#include "krado/geom_surface.h"
 #include "TopoDS_Solid.hxx"
 #include <vector>
 

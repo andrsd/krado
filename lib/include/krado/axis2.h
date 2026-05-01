@@ -4,14 +4,17 @@
 #pragma once
 
 #include "krado/point.h"
-#include "krado/vector.h"
-#include "krado/axis1.h"
 #include "gp_Ax2.hxx"
 
 namespace krado {
 
+class Vector;
+class Axis1;
+
 class Axis2 {
 public:
+    explicit Axis2(const gp_Ax2 & ax2);
+
     Axis2(const Point & pt, const Vector & direction);
 
     /// Creates an axis placement with an origin `pt` such that:
@@ -46,6 +49,8 @@ public:
     ///
     /// @return x-direction
     Vector y_direction() const;
+
+    operator gp_Ax2() const;
 
 private:
     gp_Ax2 ax2_;
