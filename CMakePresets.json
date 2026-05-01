@@ -8,8 +8,8 @@
             "binaryDir": "build-debug-dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -Wall",
-                "CMAKE_C_FLAGS_DEBUG": "-g -Wall",
+                "CMAKE_CXX_FLAGS_DEBUG": "-Wall",
+                "CMAKE_C_FLAGS_DEBUG": "-Wall",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
                 "KRADO_BUILD_TESTS": "YES"
             }
@@ -21,8 +21,6 @@
             "binaryDir": "build-release-dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_CXX_FLAGS_RELEASE": "-O3",
-                "CMAKE_C_FLAGS_RELEASE": "-O3",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "NO",
                 "KRADO_BUILD_TESTS": "NO",
                 "KRADO_CODE_COVERAGE": "NO"
@@ -35,8 +33,8 @@
             "binaryDir": "build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -O1 -Wall -Werror",
-                "CMAKE_C_FLAGS_DEBUG": "-g -O1 -Wall -Werror",
+                "CMAKE_CXX_FLAGS_DEBUG": "-Wall -Werror",
+                "CMAKE_C_FLAGS_DEBUG": "-Wall -Werror",
                 "KRADO_CODE_COVERAGE": "YES",
                 "KRADO_BUILD_TESTS": "YES"
             }
@@ -48,8 +46,8 @@
             "binaryDir": "build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_CXX_FLAGS_RELEASE": "-O3 -Wall -Werror -DNDEBUG",
-                "CMAKE_C_FLAGS_RELEASE": "-O3 -Wall -Werror -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELEASE": "-Wall -Werror",
+                "CMAKE_C_FLAGS_RELEASE": "-Wall -Werror",
                 "KRADO_CODE_COVERAGE": "YES",
                 "KRADO_BUILD_TESTS": "YES"
             }
@@ -61,8 +59,8 @@
             "binaryDir": "build-asan-dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_CXX_FLAGS": "-g -O2 -Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
-                "CMAKE_C_FLAGS": "-g -O2 -Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
+                "CMAKE_CXX_FLAGS": "-Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
+                "CMAKE_C_FLAGS": "-Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
                 "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fsanitize-address-use-after-scope -fno-sanitize-recover",
                 "KRADO_CODE_COVERAGE": "NO",
                 "KRADO_BUILD_TESTS": "YES"
