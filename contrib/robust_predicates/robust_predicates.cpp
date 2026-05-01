@@ -129,8 +129,10 @@
 #include <fpu_control.h>
 #endif /* LINUX */
 
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 namespace robust_predicates {
 
@@ -2564,4 +2566,6 @@ REAL insphere(const REAL* const __restrict__ pa,
 
 } // end namespace
 
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif

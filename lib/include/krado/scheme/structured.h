@@ -19,7 +19,6 @@ public:
     void mesh_surface(Ptr<MeshSurface> surface) override;
 
 private:
-    Options opts_;
 };
 
 } // namespace krado

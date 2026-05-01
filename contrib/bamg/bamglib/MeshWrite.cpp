@@ -483,7 +483,9 @@ namespace bamg {
     Int4 nqua = NbOfQuad;
 
     f << nbv << " " << nele << " " << ntri << " " << nqua << endl;
+#ifndef NDEBUG
     Int4 k = 0;
+#endif
     for (i = 0; i < nbt; i++) {
       Triangle &t = triangles[i];
       Triangle *ta;    //
@@ -493,10 +495,14 @@ namespace bamg {
       if (!ta) {    // a triangles
         f << "3 " << Number(triangles[i][0]) + 1 << " " << Number(triangles[i][1]) + 1 << " "
           << Number(triangles[i][2]) + 1 << " " << subdomains[reft[i]].ref << endl;
+#ifndef NDEBUG
         k++;
+#endif
       }
       if (&t < ta) {
+#ifndef NDEBUG
         k++;
+#endif
         f << "4 " << Number(v0) + 1 << " " << Number(v1) + 1 << " " << Number(v2) + 1 << " "
           << Number(v3) + 1 << " " << subdomains[reft[i]].ref << endl;
       }

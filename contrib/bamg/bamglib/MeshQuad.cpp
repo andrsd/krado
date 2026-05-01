@@ -212,7 +212,7 @@ namespace bamg {
     R2 AB = B - A;
 
     Real8 cosE01AB = (((R2)(*e)[1] - (R2)(*e)[0]), AB);
-#ifdef DEBUG
+#ifndef NDEBUG
     int kkk = 0;
 #endif
     int sens = (cosE01AB > 0) ? 1 : 0;
@@ -655,7 +655,7 @@ namespace bamg {
       //     cout << "Triangle " << i << " " << ksplit[i] << ":" << triangles[i]
       //	   << "  ----------------------------------------------- " <<endl;
       // Triangle * tc=0;
-#ifdef DEBUG
+#ifndef NDEBUG
       int nbmkadj = 0;
       Int4 mkadj[100];
       mkadj[0] = i;

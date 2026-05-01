@@ -522,7 +522,7 @@ namespace bamg {
     GeometricalEdge *on = start, *pon = 0;
     // walk with the cos on geometry
     //  cout << P ;
-#ifdef DEBUG
+#ifndef NDEBUG
     int k = 0;
 #endif
     while (pon != on) {
