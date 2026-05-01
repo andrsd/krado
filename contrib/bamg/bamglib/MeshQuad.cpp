@@ -212,7 +212,9 @@ namespace bamg {
     R2 AB = B - A;
 
     Real8 cosE01AB = (((R2)(*e)[1] - (R2)(*e)[0]), AB);
+#ifdef DEBUG
     int kkk = 0;
+#endif
     int sens = (cosE01AB > 0) ? 1 : 0;
 
     //   Real8 l=0; // length of the edge AB
@@ -222,7 +224,7 @@ namespace bamg {
       //    1 for computing the length l
       //    2 for find the vertex
       int iii;
-      Vertex *v0 = pvA, *v1;
+      Vertex *v0 = pvA, *v1 = nullptr;
       Edge *neee, *eee;
       Real8 lg = 0;    // length of the curve
       Real8 te0;
@@ -653,9 +655,11 @@ namespace bamg {
       //     cout << "Triangle " << i << " " << ksplit[i] << ":" << triangles[i]
       //	   << "  ----------------------------------------------- " <<endl;
       // Triangle * tc=0;
+#ifdef DEBUG
       int nbmkadj = 0;
       Int4 mkadj[100];
       mkadj[0] = i;
+#endif
       Int4 kk = ksplit[i] / 10;
       int ke = (int)(ksplit[i] % 10);
       assert(kk < 7 && kk > 0);
@@ -792,13 +796,17 @@ namespace bamg {
       // cout << "  -- " << i << " " << nbmkadj << " " << kkk << " " << tc << endl;
       //  t0.SetDetf();
       // save all the new triangles
+#ifdef DEBUG
       mkadj[nbmkadj++] = i;
+#endif
       Int4 jj;
       if (t0.link)
         for (jj = nbt; jj < kkk; jj++) {
           triangles[jj].link = t0.link;
           t0.link = triangles + jj;
+#ifdef DEBUG
           mkadj[nbmkadj++] = jj;
+#endif
           // triangles[jj].SetDet();
         }
       // cout << "  -- " << i << " " << nbmkadj << endl;

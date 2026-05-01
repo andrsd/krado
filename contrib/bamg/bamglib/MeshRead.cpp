@@ -400,10 +400,14 @@ namespace bamg {
 
     IFortranUnFormattedFile f_in(ff);
 
+#ifdef DEBUG
     Int4 l = f_in.Record( );
+#endif
     assert(l == 2 * sizeof(Int4));
     f_in >> nbv >> nbt;
+#ifdef DEBUG
     l = f_in.Record( );
+#endif
     assert((size_t)l == nbt * sizeof(long) * 4 + nbv * (2 * sizeof(float) + sizeof(long)));
     if (verbosity > 3) cout << "    nbv = " << nbv << " nbt = " << nbt << endl;
 

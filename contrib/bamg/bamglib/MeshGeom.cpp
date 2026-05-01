@@ -337,7 +337,9 @@ namespace bamg {
       Int4 j;
       for (i = 0; i < nbv; i++)
         if ((j = colorV[i]) >= 0) {
+#ifdef DEBUG
           int k = Gh.vertices[j].cas;
+#endif
           Gh.vertices[j].Set(vertices[i]);
           //  Vertex & v = Gh.vertices[j];
           // v = vertices[i];
@@ -520,7 +522,9 @@ namespace bamg {
     GeometricalEdge *on = start, *pon = 0;
     // walk with the cos on geometry
     //  cout << P ;
+#ifdef DEBUG
     int k = 0;
+#endif
     while (pon != on) {
       pon = on;
       assert(k++ < 100);
