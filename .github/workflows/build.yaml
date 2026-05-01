@@ -71,9 +71,7 @@ jobs:
           cmake --preset ${{ matrix.preset }} \
             -DGCOV_PATH=`which x86_64-conda-linux-gnu-gcov` \
             -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
-            -DBUILD_SHARED_LIBS=ON \
-            -DKRADO_BUILD_TESTS=ON \
-            -DKRADO_CODE_COVERAGE=ON
+            -DBUILD_SHARED_LIBS=ON
 
       - name: Build
         run: |

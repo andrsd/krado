@@ -11,8 +11,7 @@
                 "CMAKE_CXX_FLAGS_DEBUG": "-g -Wall",
                 "CMAKE_C_FLAGS_DEBUG": "-g -Wall",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-                "KRADO_BUILD_TESTS": "YES",
-                "KRADO_CODE_COVERAGE": "YES"
+                "KRADO_BUILD_TESTS": "YES"
             }
         },
         {
@@ -38,7 +37,7 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_CXX_FLAGS_DEBUG": "-g -O1 -Wall -Werror",
                 "CMAKE_C_FLAGS_DEBUG": "-g -O1 -Wall -Werror",
-                "KRADO_BUILD_EXAMPLES": "YES",
+                "KRADO_CODE_COVERAGE": "YES",
                 "KRADO_BUILD_TESTS": "YES"
             }
         },
@@ -51,7 +50,21 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_CXX_FLAGS_RELEASE": "-O3 -Wall -Werror -DNDEBUG",
                 "CMAKE_C_FLAGS_RELEASE": "-O3 -Wall -Werror -DNDEBUG",
-                "KRADO_BUILD_EXAMPLES": "YES",
+                "KRADO_CODE_COVERAGE": "YES",
+                "KRADO_BUILD_TESTS": "YES"
+            }
+        },
+        {
+            "name": "asan",
+            "displayName": "Sanitizer build",
+            "generator": "Unix Makefiles",
+            "binaryDir": "build-asan-dev",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS": "-g -O2 -Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
+                "CMAKE_C_FLAGS": "-g -O2 -Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer",
+                "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fsanitize-address-use-after-scope -fno-sanitize-recover",
+                "KRADO_CODE_COVERAGE": "NO",
                 "KRADO_BUILD_TESTS": "YES"
             }
         }
@@ -79,6 +92,12 @@
             "name": "ci-release",
             "displayName": "Release Build for CI",
             "configurePreset": "ci-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "asan",
+            "displayName": "Sanitizer build",
+            "configurePreset": "asan",
             "configuration": "Release"
         }
     ]
