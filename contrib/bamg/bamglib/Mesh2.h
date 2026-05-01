@@ -1361,9 +1361,13 @@ namespace bamg {
     TriangleAdjacent ta(t, EdgesVertexTriangle[i][0]);    // Previous edge
     assert(t && i >= 0 && i < 3);
     assert(a == (*t)(i));
+#ifndef NDEBUG
     int k = 0;
+#endif
     do {    // turn around vertex in direct sens (trigo)
+#ifndef NDEBUG
       k++;
+#endif
       assert(k < 20000);
       //  in no crack => ta.EdgeVertex(1) == a otherwise ???
       if (ta.EdgeVertex(1) == a && ta.EdgeVertex(0) == b) return ta;    // find
@@ -1383,9 +1387,13 @@ namespace bamg {
     TriangleAdjacent ta(t, EdgesVertexTriangle[i][0]);    // Previous edge
     assert(t && i >= 0 && i < 3);
     assert(a == (*t)(i));
+#ifndef NDEBUG
     int k = 0;
+#endif
     do {    // turn around vertex in direct sens (trigo)
+#ifndef NDEBUG
       k++;
+#endif
       assert(k < 20000);
       //  in no crack => ta.EdgeVertex(1) == a
       if ((rr = ta.EdgeVertex(0)) < r) r = rr;
