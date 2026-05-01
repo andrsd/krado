@@ -49,11 +49,11 @@ jobs:
             make \
             gcc_linux-64 \
             gxx_linux-64 \
-            exodusiicpp=3.* \
-            occt=7.9.* \
-            spdlog \
-            fmt=11.* \
-            eigen=3.* \
+            exodusiicpp=3.1 \
+            occt=7.9 \
+            spdlog=1.16 \
+            fmt=11 \
+            eigen=3.4 \
             libboost-devel>=1.88 \
             gtest=1.17 \
             pybind11 \
