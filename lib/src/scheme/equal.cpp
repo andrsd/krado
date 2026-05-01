@@ -38,7 +38,6 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
         const auto d = (double) num_pts * b;
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             const auto dt = pt2.t - pt1.t;
-            const auto dlc = pt2.lc - pt1.lc;
             const auto dp = pt2.p - pt1.p;
             const auto t = pt1.t + dt / dp * (d - pt1.p);
             curve->add_vertex(Ptr<MeshCurveVertex>::alloc(geom_curve, t));

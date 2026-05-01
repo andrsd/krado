@@ -24,7 +24,7 @@ SurfaceIndexMapper::SurfaceIndexMapper(Ptr<MeshSurface> surface) : surface_(surf
         }
     }
 
-    for (int cidx = 0; cidx < surface->curves().size(); cidx++) {
+    for (std::size_t cidx = 0; cidx < surface->curves().size(); cidx++) {
         auto curve = surface->curves()[cidx];
         for (auto & v : curve->bounding_vertices()) {
             auto pt = v->point();

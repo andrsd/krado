@@ -33,13 +33,12 @@ SchemePinpoint::mesh_curve(Ptr<MeshCurve> curve)
 
     // place mesh curve vertices
     std::sort(apos.begin(), apos.end());
-    for (int count = 1, num_pts = 0; num_pts < apos.size() && count < igrl.num_point();) {
+    for (std::size_t count = 1, num_pts = 0; num_pts < apos.size() && count < igrl.num_point();) {
         auto & pt1 = igrl.point(count - 1);
         auto & pt2 = igrl.point(count);
         const auto d = apos[num_pts];
         if ((std::abs(pt1.p) < std::abs(d)) && (std::abs(d) <= std::abs(pt2.p))) {
             const auto dt = pt2.t - pt1.t;
-            const auto dlc = pt2.lc - pt1.lc;
             const auto dp = pt2.p - pt1.p;
             const auto t = pt1.t + dt / dp * (d - pt1.p);
             curve->add_vertex(Ptr<MeshCurveVertex>::alloc(geom_curve, t));

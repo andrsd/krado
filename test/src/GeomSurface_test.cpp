@@ -37,7 +37,7 @@ TEST(GeomSurfaceTest, param_range)
     EXPECT_DOUBLE_EQ(v_lo, -2.);
     EXPECT_DOUBLE_EQ(v_hi, 2.);
 
-    EXPECT_THROW({ auto r = circ.param_range(2); }, Exception);
+    EXPECT_THROW({ [[maybe_unused ]] auto r = circ.param_range(2); }, Exception);
 }
 
 TEST(GeomSurfaceTest, d1_circ)
@@ -96,7 +96,7 @@ TEST(GeomSurfaceTest, param_from_pt)
     EXPECT_DOUBLE_EQ(v, 0.2928932188134525);
 
     // point "outside" the surface
-    EXPECT_THROW(auto u = circ.parameter_from_point(Point(3, 3, 0)), Exception);
+    EXPECT_THROW([[ maybe_unused ]] auto u = circ.parameter_from_point(Point(3, 3, 0)), Exception);
 }
 
 TEST(GeomSurfaceTest, nearest_point)
@@ -106,7 +106,7 @@ TEST(GeomSurfaceTest, nearest_point)
     auto npt = circ.nearest_point(Point(1, 0.5, 0.1));
     EXPECT_EQ(npt, Point(1.0, 0.5, 0.0));
 
-    EXPECT_THROW(auto pt = circ.nearest_point(Point(5, 6, 7)), Exception);
+    EXPECT_THROW([[ maybe_unused ]] auto pt = circ.nearest_point(Point(5, 6, 7)), Exception);
 }
 
 TEST(GeomSurfaceTest, contains_point)
@@ -115,7 +115,7 @@ TEST(GeomSurfaceTest, contains_point)
 
     EXPECT_TRUE(circ.contains_point(Point(0, 0, 0)));
     EXPECT_FALSE(circ.contains_point(Point(0, 0, -0.1)));
-    EXPECT_THROW({ auto b = circ.contains_point(Point(2.1, 0, 0)); }, Exception);
+    EXPECT_THROW({ [[ maybe_unused ]] auto b = circ.contains_point(Point(2.1, 0, 0)); }, Exception);
 }
 
 TEST(GeomSurfaceTest, is_circular_face)

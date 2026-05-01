@@ -34,7 +34,8 @@ private:
 class Base {
 public:
     Base() : a(1) {}
-
+    virtual ~Base() = default;
+    
     virtual int
     value() const
     {

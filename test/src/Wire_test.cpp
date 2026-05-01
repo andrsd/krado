@@ -7,16 +7,6 @@
 
 using namespace krado;
 
-namespace {
-
-double
-radians(double deg)
-{
-    return deg * M_PI / 180.;
-}
-
-} // namespace
-
 TEST(WireTest, empty)
 {
     std::vector<GeomCurve> edges;
