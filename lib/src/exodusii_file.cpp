@@ -501,7 +501,7 @@ build_coords(const Mesh & mesh, int dim)
 }
 
 std::tuple<BlocksMap, NamesMap>
-build_blocks(const Mesh & mesh, std::map<std::size_t, int> & exii_elem_ids)
+build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
 {
     BlocksMap blocks;
     NamesMap names;
@@ -562,7 +562,7 @@ build_blocks(const Mesh & mesh, std::map<std::size_t, int> & exii_elem_ids)
 SideSet
 create_side_set(const Mesh & mesh,
                 const std::vector<Index> & elem_ids,
-                const std::map<std::size_t, int> & exii_elem_ids)
+                const std::map<Index, int> & exii_elem_ids)
 {
     SideSet side_set;
     auto n = elem_ids.size();
@@ -585,7 +585,7 @@ create_side_set(const Mesh & mesh,
 }
 
 std::tuple<SideSetMap, NamesMap>
-build_side_sets(const Mesh & mesh, int dim, const std::map<std::size_t, int> & exii_elem_ids)
+build_side_sets(const Mesh & mesh, int dim, const std::map<Index, int> & exii_elem_ids)
 {
     SideSetMap side_sets;
     NamesMap names;
@@ -1017,7 +1017,7 @@ ExodusIIFile::write(const Mesh & mesh)
     auto dim = determine_spatial_dim(bbox);
 
     auto [x, y, z] = build_coords(mesh, dim);
-    std::map<std::size_t, int> exii_elem_ids;
+    std::map<Index, int> exii_elem_ids;
     auto [blocks, block_names] = build_blocks(mesh, exii_elem_ids);
     auto [side_sets, side_set_names] = build_side_sets(mesh, dim, exii_elem_ids);
     auto [node_sets, node_set_names] = build_node_sets(mesh);
