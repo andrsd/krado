@@ -36,6 +36,12 @@ MeshVolume::surfaces() const
     return this->mesh_surfaces_;
 }
 
+std::vector<Ptr<MeshSurface>> &
+MeshVolume::surfaces()
+{
+    return this->mesh_surfaces_;
+}
+
 const std::vector<MeshElement> &
 MeshVolume::tetrahedra() const
 {

@@ -34,6 +34,7 @@ public:
 
     ///
     [[nodiscard]] const std::vector<Ptr<MeshVertex>> & bounding_vertices() const;
+    [[nodiscard]] std::vector<Ptr<MeshVertex>> & bounding_vertices();
 
     /// Add curve vertex
     ///

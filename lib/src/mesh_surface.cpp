@@ -45,6 +45,12 @@ MeshSurface::curves() const
     return this->mesh_curves_;
 }
 
+std::vector<Ptr<MeshCurve>> &
+MeshSurface::curves()
+{
+    return this->mesh_curves_;
+}
+
 double
 MeshSurface::mesh_size() const
 {

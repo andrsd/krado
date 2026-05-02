@@ -34,6 +34,7 @@ public:
 
     /// Get surfaces bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshSurface>> & surfaces() const;
+    [[nodiscard]] std::vector<Ptr<MeshSurface>> & surfaces();
 
     /// Get mesh elements
     ///

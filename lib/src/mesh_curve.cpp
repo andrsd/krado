@@ -46,6 +46,12 @@ MeshCurve::bounding_vertices() const
     return this->bnd_vtxs_;
 }
 
+std::vector<Ptr<MeshVertex>> &
+MeshCurve::bounding_vertices()
+{
+    return this->bnd_vtxs_;
+}
+
 void
 MeshCurve::add_vertex(Ptr<MeshCurveVertex> curve_vertex)
 {

@@ -39,6 +39,7 @@ public:
 
     /// Get curves bounding this surface
     [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
+    [[nodiscard]] std::vector<Ptr<MeshCurve>> & curves();
 
     /// Get the mesh size for this surface
     ///
