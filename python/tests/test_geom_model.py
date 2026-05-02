@@ -8,7 +8,7 @@ assets_dir = os.path.join(root_dir, "test", "assets")
 
 
 def test_geom_model_indexing():
-    file_name = os.path.join(assets_dir, "box.step")
+    file_name = os.path.join(assets_dir, "geo", "box.step")
     step = krado.STEPFile(file_name)
     shapes = step.load()
     model = krado.GeomModel(shapes[0])

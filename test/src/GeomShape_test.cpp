@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 
 TEST(GeomShapeTest, clean)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
     STEPFile file(input_file.string());
     auto shapes = file.load();
     auto shape = shapes[0];
@@ -22,7 +22,7 @@ TEST(GeomShapeTest, clean)
 
 TEST(GeomShapeTest, heal)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
     STEPFile file(input_file.string());
     auto shapes = file.load();
     auto shape = shapes[0];

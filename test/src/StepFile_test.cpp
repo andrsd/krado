@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 TEST(STEPFileTest, load)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());
@@ -31,7 +31,7 @@ TEST(STEPFileTest, load_non_existing)
 
 TEST(STEPFileTest, load_materials)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box-w-mat.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "box-w-mat.step";
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());

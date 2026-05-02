@@ -6,7 +6,7 @@ root_dir = os.path.normpath(os.path.join(__file__, "..", "..", ".."))
 assets_dir = os.path.join(root_dir, "test", "assets")
 
 def test_set_scheme_curve():
-    file_name = os.path.join(assets_dir, "box.step")
+    file_name = os.path.join(assets_dir, "geo", "box.step")
     step = krado.STEPFile(file_name)
     shapes = step.load()
     model = krado.GeomModel(shapes[0])
@@ -17,7 +17,7 @@ def test_set_scheme_curve():
     # but we can at least check that the method doesn't throw.
 
 def test_set_scheme_surface():
-    file_name = os.path.join(assets_dir, "box.step")
+    file_name = os.path.join(assets_dir, "geo", "box.step")
     step = krado.STEPFile(file_name)
     shapes = step.load()
     model = krado.GeomModel(shapes[0])
@@ -26,7 +26,7 @@ def test_set_scheme_surface():
     surface.set_scheme("triangle", max_area=0.1)
 
 def test_set_scheme_volume():
-    file_name = os.path.join(assets_dir, "box.step")
+    file_name = os.path.join(assets_dir, "geo", "box.step")
     step = krado.STEPFile(file_name)
     shapes = step.load()
     model = krado.GeomModel(shapes[0])

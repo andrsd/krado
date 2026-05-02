@@ -7,7 +7,7 @@ assets_dir = os.path.join(root_dir, "test", "assets")
 
 
 def DISABLED_test_scheme_equal():
-    file_name = os.path.join(assets_dir, "line.step")
+    file_name = os.path.join(assets_dir, "geo", "line.step")
     step = krado.STEPFile(file_name)
     shapes = step.load()
     model = krado.GeomModel(shapes[0])

@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 TEST(GeomModelTest, load)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "line.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
 
     STEPFile file(input_file.string());
     auto shapes = file.load();
@@ -31,7 +31,7 @@ TEST(GeomModelTest, load)
 
 TEST(GeomModelTest, load_quad)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quad.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quad.step";
 
     STEPFile file(input_file.string());
     auto shapes = file.load();
@@ -45,7 +45,7 @@ TEST(GeomModelTest, load_quad)
 
 TEST(GeomModelTest, load_box)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "box.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "box.step";
 
     STEPFile file(input_file.string());
     auto shapes = file.load();

@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 
 TEST(MeshTest, point)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     EXPECT_THAT(mesh.point(0), Point(0, 0));
     EXPECT_THAT(mesh.point(1), Point(2, 0));
@@ -22,7 +22,7 @@ TEST(MeshTest, point)
 
 TEST(MeshTest, scaled)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read().scaled(0.25);
     auto & pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
@@ -49,7 +49,7 @@ TEST(MeshTest, scaled)
 
 TEST(MeshTest, scale)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     mesh.scale(0.25);
     auto & pnts = mesh.points();
@@ -77,7 +77,7 @@ TEST(MeshTest, scale)
 
 TEST(MeshTest, translated)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read().translated(2, 3);
     auto & pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
@@ -104,7 +104,7 @@ TEST(MeshTest, translated)
 
 TEST(MeshTest, translate)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     mesh.translate(2, 3);
     auto & pnts = mesh.points();
@@ -132,7 +132,7 @@ TEST(MeshTest, translate)
 
 TEST(MeshTest, add_mesh)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
 
     Mesh m;
@@ -180,7 +180,7 @@ TEST(MeshTest, add_mesh)
 
 TEST(MeshTest, remove_duplicate_points)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
 
     Mesh m;
@@ -217,7 +217,7 @@ TEST(MeshTest, remove_duplicate_points)
 
 TEST(MeshTest, duplicate)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
 
     auto dup = square.duplicate();
@@ -242,7 +242,7 @@ TEST(MeshTest, duplicate)
 
 TEST(MeshTest, remap_block_ids)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
     square.set_cell_set(0, { 0, 1 });
     square.remap_block_ids({ { 0, 1000 } });
@@ -301,7 +301,7 @@ TEST(MeshTest, element_ids_3d)
 
 TEST(MeshTest, element_ids_from_file_2d)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto m = f.read();
 
     EXPECT_EQ(m.cell_range(), krado::Range(0, 2));
@@ -336,7 +336,7 @@ TEST(MeshTest, element_ids_from_file_2d)
 
 TEST(MeshTest, element_ids_from_file_3d)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "cube-tet.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "cube-tet.e");
     auto m = f.read();
 
     EXPECT_EQ(m.cell_range(), krado::Range(0, 6));
@@ -507,7 +507,7 @@ TEST(MeshTest, outward_normal_3d)
 
 TEST(MeshTest, remove_edge_sets)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     mesh.remove_edge_sets();
     auto edge_set_ids = mesh.edge_set_ids();

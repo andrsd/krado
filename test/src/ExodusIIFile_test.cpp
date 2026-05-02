@@ -88,7 +88,7 @@ TEST(ExodusIIFileTest, write_geom_model_2d)
 
 TEST(ExodusIIFileTest, read_2d)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
 
     auto & pnts = mesh.points();

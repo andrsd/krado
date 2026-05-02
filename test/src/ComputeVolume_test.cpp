@@ -32,7 +32,7 @@ TEST(ComputeVolumeTest, DISABLED_length_of_a_line)
 
 TEST(ComputeVolumeTest, area_of_a_square)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "square-half-tri.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     auto vols = compute_volume(mesh);
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(4., 1e-10))));
@@ -40,7 +40,7 @@ TEST(ComputeVolumeTest, area_of_a_square)
 
 TEST(ComputeVolumeTest, volume_of_a_cube_tet4)
 {
-    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "cube-tet.e");
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "cube-tet.e");
     auto mesh = f.read();
     auto vols = compute_volume(mesh);
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(1., 1e-10))));

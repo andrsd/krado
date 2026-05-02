@@ -46,7 +46,7 @@ TEST(SchemeCurvatureTest, line)
 
 TEST(SchemeCurvatureTest, quarter_circle)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "quarter-circle.step";
+    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
     auto shapes = file.load();
     auto shape = shapes[0];
