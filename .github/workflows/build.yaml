@@ -68,14 +68,13 @@ jobs:
 
       - name: Configure
         run: |
-          cmake --preset ${{ matrix.preset }} \
+          cmake -B build --preset ${{ matrix.preset }} \
             -DGCOV_PATH=`which x86_64-conda-linux-gnu-gcov` \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
             -DBUILD_SHARED_LIBS=ON
 
       - name: Build
         run: |
-          cmake --build --preset ${{ matrix.preset }} --parallel 4
+          cmake --build build --preset ${{ matrix.preset }} --parallel 4
 
       - name: Run tests
         run: |
