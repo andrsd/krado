@@ -67,7 +67,7 @@ public:
     {
         if (this != &other) {
             release();
-            this->ctrl_ = other.ctrl_;
+            this->ctrl_ = reinterpret_cast<ControlBlock *>(other.ctrl_);
             if (this->ctrl_)
                 ++this->ctrl_->strong;
         }
@@ -81,7 +81,7 @@ public:
     {
         if (reinterpret_cast<const void *>(this) != reinterpret_cast<const void *>(&other)) {
             release();
-            this->ctrl_ = other.ctrl_;
+            this->ctrl_ = reinterpret_cast<ControlBlock *>(other.ctrl_);
             if (this->ctrl_)
                 ++this->ctrl_->strong;
         }
