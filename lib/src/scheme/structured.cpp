@@ -75,7 +75,7 @@ sort_curves(std::vector<Ptr<MeshCurve>> curves)
 
 } // namespace
 
-SchemeStructured::SchemeStructured(Options options) : Scheme2D("structured") {}
+SchemeStructured::SchemeStructured(Options /*options*/) : Scheme2D("structured") {}
 
 void
 SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)

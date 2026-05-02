@@ -54,6 +54,7 @@ GeomSurface
 build_circle(const Point & center, double radius)
 {
     gp_Ax2 ax2;
+    ax2.SetLocation(center);
     gp_Circ circ(ax2, radius);
     BRepLib_MakeEdge make_edge(circ);
     make_edge.Build();
@@ -124,7 +125,9 @@ build_box(const Point & v1, const Point & v2)
 GeomVolume
 build_cylinder(const Point & center, double radius, double height)
 {
-    BRepPrimAPI_MakeCylinder maker(radius, height);
+    gp_Ax2 ax2;
+    ax2.SetLocation(center);
+    BRepPrimAPI_MakeCylinder maker(ax2, radius, height);
     maker.Build();
     return GeomVolume(maker.Solid());
 }

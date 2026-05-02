@@ -233,7 +233,11 @@ private:
 #endif
 
 void
+#ifdef KRADO_WITH_TRIANGLE
 SchemeTriangle::mesh_surface(Ptr<MeshSurface> surface)
+#else
+SchemeTriangle::mesh_surface(Ptr<MeshSurface> /*surface*/)
+#endif
 {
 #ifdef KRADO_WITH_TRIANGLE
     Log::info("Meshing surface {}: scheme='triangle'", surface->id());

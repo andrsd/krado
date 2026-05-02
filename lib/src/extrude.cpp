@@ -15,7 +15,7 @@ namespace {
 
 template <ElementType T>
 Element
-extrude_element(const Element & el, std::size_t layer, std::size_t layer_stride)
+extrude_element(const Element & /* el */, std::size_t /* layer */, std::size_t /* layer_stride */)
 {
     throw Exception("Extrusion of element type '{}' not supported", Element::type(T));
 }
@@ -66,14 +66,14 @@ extrude_element<ElementType::QUAD4>(const Element & el, std::size_t layer, std::
 
 template <ElementType T>
 int
-extrude_element_side(const Element & el, int side)
+extrude_element_side(const Element & /* el */, int /* side */)
 {
     throw Exception("Extrusion of element side for '{}' not supported", Element::type(T));
 }
 
 template <>
 int
-extrude_element_side<ElementType::LINE2>(const Element & el, int side)
+extrude_element_side<ElementType::LINE2>(const Element & /* el */, int side)
 {
     // this maps edge side to quad side
     std::array<int, 2> quad_side = { 3, 1 };
@@ -82,7 +82,7 @@ extrude_element_side<ElementType::LINE2>(const Element & el, int side)
 
 template <>
 int
-extrude_element_side<ElementType::TRI3>(const Element & el, int side)
+extrude_element_side<ElementType::TRI3>(const Element & /* el */, int side)
 {
     // this maps triangle side to prism side
     return side + 1;
@@ -90,7 +90,7 @@ extrude_element_side<ElementType::TRI3>(const Element & el, int side)
 
 template <>
 int
-extrude_element_side<ElementType::QUAD4>(const Element & el, int side)
+extrude_element_side<ElementType::QUAD4>(const Element & /* el */, int side)
 {
     // this maps quad side to hex side
     std::array<int, 4> hex_side = { 0, 3, 1, 2 };

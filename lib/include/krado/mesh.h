@@ -401,7 +401,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_face_edges(Index id, const Element & elem)
+    hasse_add_face_edges(Index /*id*/, const Element & elem)
     {
         auto elem_connect = elem.indices();
         for (u8 i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
@@ -433,7 +433,7 @@ private:
 
     template <class ELEMENT_TYPE>
     void
-    hasse_add_edge_vertices(Index id, const Element & elem)
+    hasse_add_edge_vertices(Index /*id*/, const Element & elem)
     {
         auto elem_connect = elem.indices();
         for (u8 j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {

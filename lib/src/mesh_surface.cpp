@@ -59,7 +59,7 @@ MeshSurface::set_mesh_size(double size)
 }
 
 double
-MeshSurface::mesh_size_at_param(UVParam par) const
+MeshSurface::mesh_size_at_param(UVParam /* par */) const
 {
     if (this->mesh_size_.has_value())
         return this->mesh_size_.value();
@@ -165,7 +165,7 @@ MeshSurface::quads_to_tris(QuadSplitMode mode)
 }
 
 void
-MeshSurface::reserve_mem(std::size_t n_vtxs, std::size_t n_tris)
+MeshSurface::reserve_mem(std::size_t /* n_vtxs */, std::size_t n_tris)
 {
     this->tris_.reserve(n_tris);
 }

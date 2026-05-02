@@ -22,7 +22,11 @@ Helix::Helix(const TopoDS_Edge & edge, Handle(Geom_BSplineCurve) spline) :
 }
 
 Helix
-Helix::create(const Axis2 & ax2, double radius, double height, double turns, double start_angle)
+Helix::create(const Axis2 & ax2,
+              double radius,
+              double height,
+              double turns,
+              double /* start_angle */)
 {
     auto ax1 = ax2.axis();
     auto n_pts = turns * N_SEGS_PER_TURN;

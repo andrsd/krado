@@ -76,13 +76,13 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 }
 
 void
-SchemeTriSurf::mesh_surface(Ptr<MeshSurface> surface)
+SchemeTriSurf::mesh_surface(Ptr<MeshSurface> /*surface*/)
 {
     // do nothing
 }
 
 void
-SchemeTriSurf::mesh_curve(Ptr<MeshCurve> mcurve)
+SchemeTriSurf::mesh_curve(Ptr<MeshCurve> /*mcurve*/)
 {
     // do nothing
 }

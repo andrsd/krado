@@ -420,7 +420,7 @@ DAGMCFile::DAGMCFile(const std::string & file_name) : file_name_(file_name)
 }
 
 void
-DAGMCFile::write(const GeomModel & model)
+DAGMCFile::write(const GeomModel &)
 {
     // do nothing
 }

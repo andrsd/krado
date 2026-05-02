@@ -144,16 +144,21 @@ AGoodNumberPrimeWith(Int4 n)
 }
 
 class Triangles;
+#ifdef NOTFREEFEM
+void
+MeshError(int Err, const Triangles * /*Th*/)
+{
+    cerr << " Fatal error in the mesh generator " << Err << endl;
+    exit(1);
+}
+#else
 void
 MeshError(int Err, const Triangles * Th)
 {
     cerr << " Fatal error in the mesh generator " << Err << endl;
-#ifdef NOTFREEFEM
-    exit(1);
-#else
     throw(ErrorMesh("Bamg", Err, Th));
-#endif
 }
+#endif
 
 ostream &
 operator<<(ostream & f, const Triangle & ta)
