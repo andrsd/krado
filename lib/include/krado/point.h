@@ -24,6 +24,8 @@ public:
     /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);
 
+    explicit Point(gp_Pnt pt);
+
     /// Check if two points are equal within a tolerance
     ///
     /// @param other Other point

@@ -17,6 +17,8 @@ Point::Point(const UVParam & uv) : x(uv.u), y(uv.v), z(0.) {}
 
 Point::Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
+Point::Point(gp_Pnt pt) : x(pt.X()), y(pt.Y()), z(pt.Z()) {}
+
 bool
 Point::is_equal(const Point & other, double tol) const
 {
