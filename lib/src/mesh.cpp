@@ -9,6 +9,13 @@
 #include "krado/utils.h"
 #include "krado/vector.h"
 #include "krado/log.h"
+#include "krado/geom_model.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_volume.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <unordered_map>
@@ -894,6 +901,144 @@ compute_bounding_box(const Mesh & mesh)
     for (const auto & pt : mesh.points())
         bbox += pt;
     return bbox;
+}
+
+//
+
+std::tuple<std::vector<Point>, std::map<Ptr<MeshVertexAbstract>, Index>>
+build_points(const GeomModel & model)
+{
+    Log::debug("Building points");
+
+    std::vector<Point> pnts;
+    std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
+    Index gid = 0;
+
+    for (auto & [id, v] : model.vertices()) {
+        vtx_map.emplace(v, gid);
+        pnts.emplace_back(v->point());
+        gid++;
+    }
+    for (auto & [id, curve] : model.curves())
+        for (auto & v : curve->curve_vertices()) {
+            vtx_map.emplace(v, gid);
+            pnts.emplace_back(v->point());
+            gid++;
+        }
+    for (auto & [id, surface] : model.surfaces())
+        for (auto & v : surface->surface_vertices()) {
+            vtx_map.emplace(v, gid);
+            pnts.emplace_back(v->point());
+            gid++;
+        }
+    return { pnts, vtx_map };
+}
+
+std::vector<Element>
+build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
+{
+    Log::debug("Building 1D elements");
+
+    std::vector<Element> elems;
+    for (auto & [id, curve] : model.curves()) {
+        std::array<Index, Line2::N_VERTICES> line;
+        for (auto & local_elem : curve->segments()) {
+            for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                auto vtx = local_elem.vertex(i);
+                auto gid = vtx_map.at(vtx);
+                line[i] = gid;
+            }
+            elems.emplace_back(Element::Line2(line));
+        }
+    }
+    return elems;
+}
+
+std::vector<Element>
+build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
+{
+    Log::debug("Building 2D elements");
+
+    std::vector<Element> elems;
+    for (auto & [id, surface] : model.surfaces()) {
+        std::array<Index, Tri3::N_VERTICES> tri;
+        for (auto & local_elem : surface->triangles()) {
+            for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                auto vtx = local_elem.vertex(i);
+                auto gid = vtx_map.at(vtx);
+                tri[i] = gid;
+            }
+            elems.emplace_back(Element::Tri3(tri));
+        }
+
+        std::array<Index, Quad4::N_VERTICES> quad;
+        for (auto & local_elem : surface->quadrangles()) {
+            for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+                auto vtx = local_elem.vertex(i);
+                auto gid = vtx_map.at(vtx);
+                quad[i] = gid;
+            }
+            elems.emplace_back(Element::Quad4(quad));
+        }
+    }
+    return elems;
+}
+
+std::vector<Element>
+build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
+{
+    Log::debug("Building 3D elements");
+
+    std::vector<Element> elems;
+    for (auto & [id, volume] : model.volumes()) {
+        std::array<Index, Tetra4::N_VERTICES> tet;
+        for (auto & local_elem : volume->tetrahedra()) {
+            for (int i = 0; i < Tetra4::N_VERTICES; ++i) {
+                auto vtx = local_elem.vertex(i);
+                auto gid = vtx_map.at(vtx);
+                tet[i] = gid;
+            }
+            elems.emplace_back(Element::Tetra4(tet));
+        }
+    }
+    return elems;
+}
+
+std::vector<Element>
+build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
+{
+    Log::debug("Building elements");
+
+    auto bbox = compute_bounding_box(model);
+    auto dim = determine_spatial_dim(bbox);
+
+    if (dim == 1)
+        return build_1d_elements(model, vtx_map);
+    else if (dim == 2) {
+        if (model.surfaces().size() > 0)
+            return build_2d_elements(model, vtx_map);
+        else
+            return build_1d_elements(model, vtx_map);
+    }
+    else if (dim == 3)
+        return build_3d_elements(model, vtx_map);
+    else
+        throw Exception("Element construction for your setup is not implemented yet");
+}
+
+Mesh
+build_mesh(const GeomModel & model)
+{
+    Log::debug("Building mesh");
+
+    auto [points, vtx_map] = build_points(model);
+    auto elements = build_elements(model, vtx_map);
+    Mesh mesh(points, elements);
+    mesh.set_up();
+    // TODO: create cell sets
+    // TODO: create face sets
+    // TODO: create vertex sets
+    return mesh;
 }
 
 } // namespace krado

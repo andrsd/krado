@@ -18,6 +18,8 @@
 
 namespace krado {
 
+class GeomModel;
+
 /// Class representing a mesh
 ///
 /// A mesh is a collection of points and elements. Each element is a collection of points.
@@ -482,5 +484,11 @@ private:
 ///
 /// @return Bounding box
 BoundingBox3D compute_bounding_box(const Mesh & mesh);
+
+/// Build mesh from geometric model
+///
+/// @param model
+/// @return Mesh
+Mesh build_mesh(const GeomModel & model);
 
 } // namespace krado
