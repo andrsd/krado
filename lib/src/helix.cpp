@@ -26,7 +26,7 @@ Helix::create(const Axis2 & ax2,
               double radius,
               double height,
               double turns,
-              double /* start_angle */)
+              double start_angle)
 {
     auto ax1 = ax2.axis();
     auto n_pts = turns * N_SEGS_PER_TURN;
@@ -43,6 +43,11 @@ Helix::create(const Axis2 & ax2,
 
     gp_Pnt pt = ax1.location();
     pt.Translate(radius * ax2.x_direction());
+    if (start_angle != 0.0) {
+        gp_Trsf start_rotate;
+        start_rotate.SetRotation(ax1, start_angle);
+        pt.Transform(start_rotate);
+    }
     TColgp_HArray1OfPnt pnts(0, n_pts);
     for (int idx = 0; idx < n_pts; idx++) {
         pnts.SetValue(idx, pt);

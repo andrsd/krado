@@ -25,7 +25,7 @@ public:
     /// @param radius Helix radius
     /// @param height Helix height
     /// @param turns Number of turns
-    /// @param start_angle Starting angle
+    /// @param start_angle Starting angle [radians]
     static Helix
     create(const Axis2 & ax2, double radius, double height, double turns, double start_angle = 0.);
 };

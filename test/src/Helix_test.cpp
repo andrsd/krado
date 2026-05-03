@@ -11,3 +11,9 @@ TEST(HelixTest, ctor1)
     Axis2 ctr(Point(0, 0, 0), Vector(1, 0, 0));
     auto helix = Helix::create(ctr, 2., 8., 4);
 }
+
+TEST(HelixTest, startAngle)
+{
+    Axis2 ctr(Point(0, 0, 0), Vector(0, 0, 1));
+    auto helix = Helix::create(ctr, 2., 8., 4, M_PI / 2.);
+}
