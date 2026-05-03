@@ -101,7 +101,7 @@ public:
     void quads_to_tris(QuadSplitMode mode = QuadSplitMode::SPLIT2);
 
     /// Reserve memory for vertices and triangles
-    void reserve_mem(std::size_t n_vtxs, std::size_t n_tris);
+    void reserve_mem(std::size_t n_tris);
 
     void set_triangles(const std::vector<MeshElement> & new_tris);
 

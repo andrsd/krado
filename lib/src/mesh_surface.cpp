@@ -171,7 +171,7 @@ MeshSurface::quads_to_tris(QuadSplitMode mode)
 }
 
 void
-MeshSurface::reserve_mem(std::size_t /* n_vtxs */, std::size_t n_tris)
+MeshSurface::reserve_mem(std::size_t n_tris)
 {
     this->tris_.reserve(n_tris);
 }

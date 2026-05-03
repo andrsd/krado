@@ -60,7 +60,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
         if (triangulation.IsNull())
             continue;
 
-        srf->reserve_mem(triangulation->NbNodes(), triangulation->NbTriangles());
+        srf->reserve_mem(triangulation->NbTriangles());
         std::map<Standard_Integer, Ptr<MeshVertexAbstract>> vertices;
 
         for (auto & curve : srf->curves()) {
