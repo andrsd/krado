@@ -84,7 +84,7 @@ to_str(ElementType val)
 }
 
 double
-angle(const Point & p1, const Point & p2, const Point & p3)
+angle(Point p1, Point p2, Point p3)
 {
     auto a = p1 - p2;
     auto b = p3 - p2;
@@ -95,14 +95,14 @@ angle(const Point & p1, const Point & p2, const Point & p3)
 }
 
 double
-distance(const Point & p1, const Point & p2)
+distance(Point p1, Point p2)
 {
     auto delta = p1 - p2;
     return std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
 }
 
 double
-distance(const UVParam & p1, const UVParam & p2)
+distance(UVParam p1, UVParam p2)
 {
     UVParam delta(p1.u - p2.u, p1.v - p2.v);
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);

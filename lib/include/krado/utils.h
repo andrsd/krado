@@ -186,16 +186,16 @@ std::string to_str(T val);
 /// @param p2 The second point
 /// @param p3 The third point
 /// @return The angle at (p2) between the three points [radians]
-[[nodiscard]] double angle(const Point & p1, const Point & p2, const Point & p3);
+[[nodiscard]] double angle(Point p1, Point p2, Point p3);
 
 /// Compute the distance between two points
 ///
 /// @param p1 The first point
 /// @param p2 The second point
 /// @return The distance between the two points
-[[nodiscard]] double distance(const Point & p1, const Point & p2);
+[[nodiscard]] double distance(Point p1, Point p2);
 
-[[nodiscard]] double distance(const UVParam & p1, const UVParam & p2);
+[[nodiscard]] double distance(UVParam p1, UVParam p2);
 
 /// Print number in human readable format
 ///
