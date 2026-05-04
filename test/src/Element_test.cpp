@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "krado/element.h"
+#include "krado/point.h"
 
 using namespace krado;
 
@@ -19,6 +20,22 @@ TEST(ElementTest, tri3)
     EXPECT_EQ(elem.index(0), 1);
     EXPECT_EQ(elem.index(1), 2);
     EXPECT_EQ(elem.index(2), 5);
+}
+
+TEST(ElementTest, tri3_gamma)
+{
+    Point a(0., 0., 0.);
+    Point b(1., 0., 0.);
+    Point c(1., 1., 0.);
+    EXPECT_NEAR(Tri3::gamma(a, b, c), 0.82842712, 1e-8);
+}
+
+TEST(ElementTest, tri3_eta)
+{
+    Point a(0., 0., 0.);
+    Point b(1., 0., 0.);
+    Point c(1., 1., 0.);
+    EXPECT_NEAR(Tri3::eta(a, b, c), 0.75, 1e-10);
 }
 
 TEST(ElementTest, tet4)

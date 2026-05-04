@@ -4,6 +4,8 @@
 #include "krado/element.h"
 #include "krado/exception.h"
 #include "krado/types.h"
+#include "krado/point.h"
+#include "krado/vector.h"
 #include <array>
 
 namespace krado {
@@ -197,6 +199,35 @@ operator==(const Element & a, const Element & b)
         if (a.index(i) != b.index(i))
             return false;
     return true;
+}
+
+double
+Tri3::gamma(Point pa, Point pb, Point pc)
+{
+    const auto a = (pc - pb).normalized();
+    const auto b = (pa - pc).normalized();
+    const auto c = (pb - pa).normalized();
+    const auto pva = cross_product(b, c);
+    const double sina = pva.magnitude();
+    const auto pvb = cross_product(c, a);
+    const double sinb = pvb.magnitude();
+    const auto pvc = cross_product(a, b);
+    const double sinc = pvc.magnitude();
+    if (sina == 0.0 && sinb == 0.0 && sinc == 0.0)
+        return 0.0;
+    else
+        return 2 * (2 * sina * sinb * sinc / (sina + sinb + sinc));
+}
+
+double
+Tri3::eta(Point pa, Point pb, Point pc)
+{
+    const auto a1 = 180. * utils::angle(pa, pb, pc) / M_PI;
+    const auto a2 = 180. * utils::angle(pb, pc, pa) / M_PI;
+    const auto a3 = 180. * utils::angle(pc, pa, pb) / M_PI;
+    const auto amin = std::min(std::min(a1, a2), a3);
+    const auto angle = std::abs(60. - amin);
+    return 1. - angle / 60.;
 }
 
 } // namespace krado

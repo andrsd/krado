@@ -95,6 +95,14 @@ public:
     static constexpr u8 N_EDGES = 3;
     static const std::vector<u8> EDGES;
     static const std::vector<std::array<u8, 2>> EDGE_VERTICES;
+
+    /// Quality of element
+    ///
+    /// @param elem
+    /// @return Quality [0..1]
+    static double gamma(Point pa, Point pb, Point pc);
+
+    static double eta(Point pa, Point pb, Point pc);
 };
 
 class Quad4 {
