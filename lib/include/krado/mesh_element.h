@@ -61,6 +61,12 @@ public:
     static MeshElement Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx);
 };
 
+/// Compute circum radius using quality norm
+double circum_radius_quality(const MeshElement & tri);
+
+/// Compute circum radius using euclidina norm
+double circum_radius_euclidian(const MeshElement & tri, double lc);
+
 } // namespace krado
 
 inline std::ostream & operator<<(std::ostream & stream, const krado::MeshElement & el);

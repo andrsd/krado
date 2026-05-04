@@ -6,6 +6,7 @@
 #include "krado/types.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/numerics.h"
 #include <array>
 
 namespace krado {
@@ -228,6 +229,23 @@ Tri3::eta(Point pa, Point pb, Point pc)
     const auto amin = std::min(std::min(a1, a2), a3);
     const auto angle = std::abs(60. - amin);
     return 1. - angle / 60.;
+}
+
+double
+Tri3::circum_radius_quality(Point pa, Point pb, Point pc)
+{
+    auto denom = Tri3::gamma(pa, pb, pc);
+    if (denom == 0.)
+        throw Exception("Quality metric gamma is 0.");
+    return 1. / denom;
+}
+
+double
+Tri3::circum_radius_euclidian(Point pa, Point pb, Point pc, double lc)
+{
+    const auto center = circum_center(pa, pb, pc);
+    const auto delta = pa - center;
+    return delta.magnitude() / lc;
 }
 
 } // namespace krado

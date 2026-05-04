@@ -103,6 +103,12 @@ public:
     static double gamma(Point pa, Point pb, Point pc);
 
     static double eta(Point pa, Point pb, Point pc);
+
+    /// Compute circum radius using quality norm
+    static double circum_radius_quality(Point pa, Point pb, Point pc);
+
+    /// Compute circum radius using euclidian norm
+    static double circum_radius_euclidian(Point pa, Point pb, Point pc, double lc);
 };
 
 class Quad4 {

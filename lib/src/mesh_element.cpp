@@ -6,6 +6,8 @@
 #include "krado/utils.h"
 #include "krado/types.h"
 #include "krado/exception.h"
+#include "krado/point.h"
+#include "krado/element.h"
 #include <cassert>
 
 namespace krado {
@@ -82,6 +84,32 @@ MeshElement
 MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
 {
     return MeshElement(ElementType::QUAD4, { vtx[0], vtx[1], vtx[2], vtx[3] });
+}
+
+double
+circum_radius_quality(const MeshElement & tri)
+{
+    if (tri.type() == ElementType::TRI3) {
+        const auto pa = tri.vertex(0)->point();
+        const auto pb = tri.vertex(1)->point();
+        const auto pc = tri.vertex(2)->point();
+        return Tri3::circum_radius_quality(pa, pb, pc);
+    }
+    else
+        throw Exception("Not implemented");
+}
+
+double
+circum_radius_euclidian(const MeshElement & tri, double lc)
+{
+    if (tri.type() == ElementType::TRI3) {
+        const auto pa = tri.vertex(0)->point();
+        const auto pb = tri.vertex(1)->point();
+        const auto pc = tri.vertex(2)->point();
+        return Tri3::circum_radius_euclidian(pa, pb, pc, lc);
+    }
+    else
+        throw Exception("Not implemented");
 }
 
 } // namespace krado

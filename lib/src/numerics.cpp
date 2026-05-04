@@ -5,6 +5,7 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/uv_param.h"
+#include "krado/mesh_vertex_abstract.h"
 
 namespace krado {
 

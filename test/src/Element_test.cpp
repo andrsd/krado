@@ -38,6 +38,22 @@ TEST(ElementTest, tri3_eta)
     EXPECT_NEAR(Tri3::eta(a, b, c), 0.75, 1e-10);
 }
 
+TEST(ElementTest, tri3_circum_radius_quality)
+{
+    Point a(0., 0., 0.);
+    Point b(1., 0., 0.);
+    Point c(1., 1., 0.);
+    EXPECT_NEAR(Tri3::circum_radius_quality(a, b, c), 1.20710678, 1e-8);
+}
+
+TEST(ElementTest, tri3_circum_radius_euclidian)
+{
+    Point a(0., 0., 0.);
+    Point b(1., 0., 0.);
+    Point c(1., 1., 0.);
+    EXPECT_NEAR(Tri3::circum_radius_euclidian(a, b, c, 0.5), std::sqrt(2.), 1e-10);
+}
+
 TEST(ElementTest, tet4)
 {
     auto elem = Element::Tetra4({ 2, 5, 6, 8 });
