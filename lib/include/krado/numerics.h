@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "krado/types.h"
+#include <array>
+
 namespace krado {
 
 /// Sign function
@@ -16,5 +19,13 @@ sign(T const & value)
 {
     return (T(0) < value) - (value < T(0));
 }
+
+/// Solve linear system of 2x2
+///
+/// @param mat Matrix
+/// @param b Right-hand side
+/// @param Solution if invertible, `nullopt` if singular
+Optional<std::array<double, 2>> sys2x2(std::array<std::array<double, 2>, 2> mat,
+                                       std::array<double, 2> b);
 
 } // namespace krado
