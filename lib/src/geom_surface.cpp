@@ -9,6 +9,7 @@
 #include "krado/vector.h"
 #include "krado/uv_param.h"
 #include "krado/exception.h"
+#include "krado/log.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -173,6 +174,18 @@ GeomSurface::nearest_point(const Point & pt) const
         return Point::create(this->proj_pt_on_surface_.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
+}
+
+std::tuple<Point, UVParam>
+GeomSurface::closest_point(Point qp, UVParam uv) const
+{
+    auto pt = nearest_point(qp);
+    this->proj_pt_on_surface_.LowerDistanceParameters(uv.u, uv.v);
+
+    if (uv.u < this->umin_ || uv.u > this->umax_ || uv.v < this->vmin_ || uv.v > this->vmax_)
+        Log::debug("Point projection is out of surface parameter bounds");
+
+    return { pt, uv };
 }
 
 bool

@@ -72,6 +72,9 @@ public:
     /// @return Point on the curve, nearest to `pt`
     [[nodiscard]] Point nearest_point(const Point & pt) const;
 
+    ///
+    std::tuple<Point, UVParam> closest_point(Point qp, UVParam uv) const;
+
     /// Check if point is on the curve
     ///
     /// @param pt Point to investigate
