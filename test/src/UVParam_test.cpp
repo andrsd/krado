@@ -75,3 +75,11 @@ TEST(UVParamTest, non_member_operator_multiply_scalar)
     EXPECT_EQ(result.u, 6.0);
     EXPECT_EQ(result.v, 8.0);
 }
+
+TEST(UVParamTest, dot_product)
+{
+    UVParam a(3.0, 4.0);
+    UVParam b(-1., 2.);
+    auto result = dot_product(a, b);
+    EXPECT_NEAR(result, 5.0, 1e-16);
+}

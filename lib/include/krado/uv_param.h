@@ -59,6 +59,12 @@ determinant(const UVParam & a, const UVParam & b)
     return a.u * b.v - a.v * b.u;
 }
 
+[[nodiscard]] inline double
+dot_product(const UVParam & a, const UVParam & b)
+{
+    return a.u * b.u + a.v * b.v;
+}
+
 } // namespace krado
 
 inline std::ostream &
