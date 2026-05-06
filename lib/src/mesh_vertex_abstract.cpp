@@ -5,12 +5,28 @@
 
 namespace krado {
 
-MeshVertexAbstract::MeshVertexAbstract(const GeomShape & geom_shape) : geom_shape_(geom_shape) {}
+namespace {
+
+int vertex_counter = 0;
+
+}
+
+MeshVertexAbstract::MeshVertexAbstract(const GeomShape & geom_shape) :
+    geom_shape_(geom_shape),
+    num_(vertex_counter++)
+{
+}
 
 const GeomShape &
 MeshVertexAbstract::geom_shape() const
 {
     return this->geom_shape_;
+}
+
+int
+MeshVertexAbstract::num() const
+{
+    return this->num_;
 }
 
 } // namespace krado

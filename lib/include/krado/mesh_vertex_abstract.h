@@ -23,9 +23,18 @@ public:
     /// @return Geometrical shape associated with this vertex
     const GeomShape & geom_shape() const;
 
+    /// Get vertex number (this is globally unique number)
+    ///
+    /// This is/can be used by meshing algorithms that require vertex numbering
+    ///
+    /// @return Global vertex number
+    int num() const;
+
 private:
     /// Geometrical shape associated with this vertex
     const GeomShape & geom_shape_;
+    /// vertex number
+    int num_;
 };
 
 } // namespace krado
