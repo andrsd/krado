@@ -140,3 +140,17 @@ TEST(GeomSurfaceTest, op_shl)
     ss << circ;
     EXPECT_EQ(ss.str(), "Surface: (u, v)=[-2, 2]x[-2, 2], area=12.5664");
 }
+
+TEST(GeomSurfaceTest, reparam_on_surface)
+{
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(2., 1., 0.));
+    auto crv = rect.curves()[0];
+    auto uv = reparam_on_surface(rect, crv, 0.1);
+    EXPECT_NEAR(uv.u, -0.9, 1e-10);
+    EXPECT_NEAR(uv.v, -0.5, 1e-10);
+
+    auto p = rect.point(uv);
+    EXPECT_NEAR(p.x, 0.1, 1e-10);
+    EXPECT_NEAR(p.y, 0., 1e-10);
+    EXPECT_NEAR(p.z, 0., 1e-10);
+}

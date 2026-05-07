@@ -110,6 +110,13 @@ public:
 /// @return `true` if the surface is circular, `false` otherwise
 bool is_circular_face(const GeomSurface & surface);
 
+/// Reparametrize the point onto the given surface
+///
+/// @param surface Geometric surface to reparametrize onto
+/// @param curve Geometric curve
+/// @param u Curve parameter
+UVParam reparam_on_surface(const GeomSurface & surface, const GeomCurve & curve, double u);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::GeomSurface & srf);

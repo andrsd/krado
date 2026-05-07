@@ -229,6 +229,13 @@ is_circular_face(const GeomSurface & surface)
     return !curve.IsNull() && curve->IsKind(STANDARD_TYPE(Geom_Circle));
 }
 
+UVParam
+reparam_on_surface(const GeomSurface & surface, const GeomCurve & curve, double u)
+{
+    const auto pt = curve.point(u);
+    return surface.parameter_from_point(pt);
+}
+
 } // namespace krado
 
 std::ostream &
