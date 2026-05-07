@@ -8,6 +8,10 @@
 
 namespace krado {
 
+class UVParam;
+class Point;
+class Vector;
+
 /// Sign function
 ///
 /// @tparam T C++ type
@@ -27,5 +31,21 @@ sign(T const & value)
 /// @param Solution if invertible, `nullopt` if singular
 Optional<std::array<double, 2>> sys2x2(std::array<std::array<double, 2>, 2> mat,
                                        std::array<double, 2> b);
+
+/// Compute normal from 3 points in 3D space (using left-hand rule)
+///
+/// @param a First point
+/// @param b Second point
+/// @param c Third point
+/// @return Normal
+Vector normal(Point p0, Point p1, Point p2);
+
+/// Compute normal from 3 points in 2D parameterical space (using left-hand rule)
+///
+/// @param a First point
+/// @param b Second point
+/// @param c Third point
+/// @return Normal
+Vector normal(UVParam uv0, UVParam uv1, UVParam uv2);
 
 } // namespace krado
