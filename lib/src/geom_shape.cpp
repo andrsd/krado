@@ -45,7 +45,21 @@ get_next_color()
 
 } // namespace
 
-GeomShape::GeomShape(const TopoDS_Shape & shape) : shape_(shape) {}
+GeomShape::GeomShape(const TopoDS_Shape & shape) : id_(-1), shape_(shape) {}
+
+GeomShape::~GeomShape() = default;
+
+int
+GeomShape::dim() const
+{
+    return -1;
+}
+
+int
+GeomShape::id() const
+{
+    return this->id_;
+}
 
 bool
 GeomShape::has_material() const

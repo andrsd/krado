@@ -5,6 +5,12 @@
 
 using namespace krado;
 
+TEST(GeomVolumeTest, dim)
+{
+    auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
+    EXPECT_EQ(box.dim(), 3);
+}
+
 TEST(GeomVolumeTest, volume)
 {
     auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));

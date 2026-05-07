@@ -46,6 +46,12 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(edge), edge_(edge), u
     this->len_ = props.Mass();
 }
 
+int
+GeomCurve::dim() const
+{
+    return 1;
+}
+
 GeomCurve::CurveType
 GeomCurve::type() const
 {

@@ -10,6 +10,12 @@ namespace krado {
 
 GeomShell::GeomShell(const TopoDS_Shell & shell) : GeomShape(shell), shell_(shell) {}
 
+int
+GeomShell::dim() const
+{
+    return 3;
+}
+
 std::vector<GeomSurface>
 GeomShell::surfaces() const
 {

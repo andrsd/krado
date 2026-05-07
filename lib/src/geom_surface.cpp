@@ -75,6 +75,12 @@ GeomSurface::GeomSurface(GeomSurface && other) :
                                    this->vmax_);
 }
 
+int
+GeomSurface::dim() const
+{
+    return 2;
+}
+
 Point
 GeomSurface::point(const UVParam & param) const
 {

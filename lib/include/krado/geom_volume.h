@@ -16,6 +16,8 @@ class GeomVolume : public GeomShape {
 public:
     explicit GeomVolume(const TopoDS_Solid & solid);
 
+    int dim() const final;
+
     /// Get volume of the volume
     ///
     /// @return Volume of the volume

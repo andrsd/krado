@@ -14,6 +14,12 @@ TEST(GeomVertexTest, ctor)
     EXPECT_FALSE(v.is_null());
 }
 
+TEST(GeomVertexTest, dim)
+{
+    auto v = testing::build_vertex(Point(1, 2, 3));
+    EXPECT_EQ(v.dim(), 0);
+}
+
 TEST(GeomVertexTest, null_vertex)
 {
     TopoDS_Vertex vtx;

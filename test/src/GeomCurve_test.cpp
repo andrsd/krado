@@ -12,6 +12,12 @@ using namespace krado;
 
 const double PI = std::acos(-1);
 
+TEST(GeomCurveTest, dim)
+{
+    auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
+    EXPECT_EQ(line.dim(), 1);
+}
+
 TEST(GeomCurveTest, curve_type)
 {
     auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
@@ -138,7 +144,7 @@ TEST(GeomCurveTest, param_from_pt)
     EXPECT_DOUBLE_EQ(u, umid);
 
     // point "outside" the curve
-    EXPECT_THROW([[ maybe_unused ]] auto u = line.parameter_from_point(Point(5, 6, 7)), Exception);
+    EXPECT_THROW([[maybe_unused]] auto u = line.parameter_from_point(Point(5, 6, 7)), Exception);
 }
 
 TEST(GeomCurveTest, nearest_point)
@@ -148,7 +154,7 @@ TEST(GeomCurveTest, nearest_point)
     auto npt = line.nearest_point(Point(1.2, 2.3, 3.1));
     EXPECT_EQ(npt, Point(1.2, 2.2, 3.2));
 
-    EXPECT_THROW([[ maybe_unused ]] auto pt = line.nearest_point(Point(5, 6, 7)), Exception);
+    EXPECT_THROW([[maybe_unused]] auto pt = line.nearest_point(Point(5, 6, 7)), Exception);
 }
 
 TEST(GeomCurveTest, contains_point)

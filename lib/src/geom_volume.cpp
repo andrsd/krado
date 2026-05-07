@@ -18,6 +18,12 @@ GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(solid), solid_(so
     this->volume_ = props.Mass();
 }
 
+int
+GeomVolume::dim() const
+{
+    return 3;
+}
+
 double
 GeomVolume::volume() const
 {

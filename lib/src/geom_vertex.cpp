@@ -14,6 +14,12 @@ GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex
     }
 }
 
+int
+GeomVertex::dim() const
+{
+    return 0;
+}
+
 bool
 GeomVertex::is_null() const
 {

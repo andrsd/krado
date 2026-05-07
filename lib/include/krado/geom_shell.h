@@ -16,6 +16,8 @@ class GeomShell : public GeomShape {
 public:
     explicit GeomShell(const TopoDS_Shell & shell);
 
+    int dim() const final;
+
     /// Get surfaces bounding this volume
     ///
     /// @return Curves bounding the surface

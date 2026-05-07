@@ -15,6 +15,8 @@ class GeomVertex : public GeomShape {
 public:
     explicit GeomVertex(const TopoDS_Vertex & vertex);
 
+    int dim() const final;
+
     /// Is this a null vertex.  Infinite curves report null vertices as their bounding vertices.
     ///
     /// @return `true` if this is null vertex, `false` otherwise

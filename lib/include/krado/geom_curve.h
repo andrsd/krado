@@ -25,6 +25,8 @@ public:
 
     explicit GeomCurve(const TopoDS_Edge & edge);
 
+    int dim() const final;
+
     /// Get curve type
     ///
     /// @return Curve type

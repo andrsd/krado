@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/types.h"
 #include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"
@@ -15,6 +16,12 @@ public:
 
     GeomShape() = default;
     explicit GeomShape(const TopoDS_Shape & shape);
+    virtual ~GeomShape();
+
+    virtual int dim() const;
+
+    /// Get shape ID
+    int id() const;
 
     void clean();
     void heal(double tolerance,
@@ -80,6 +87,9 @@ private:
     void sew_faces(double tolerance);
     void make_solids(double tolerance);
 
+    /// Shape ID
+    ShapeID id_;
+    ///
     TopoDS_Shape shape_;
     /// Color of this shape
     Color clr_;
@@ -89,6 +99,8 @@ private:
     std::string material_description_;
     /// Density
     double density_;
+
+    friend class GeomModel;
 };
 
 } // namespace krado

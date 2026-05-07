@@ -207,6 +207,7 @@ GeomModel::bind_solids(const GeomShape & shape)
             this->vol_id_.Bind(solid, id);
 
             GeomVolume gvol(solid);
+            gvol.id_ = id;
             gvol.set_material(shape.material(), shape.density());
             this->vols_.emplace(id, gvol);
         }
@@ -224,6 +225,7 @@ GeomModel::bind_faces(const GeomShape & shape)
             this->srf_id_.Bind(face, id);
 
             GeomSurface gsurf(face);
+            gsurf.id_ = id;
             gsurf.set_material(shape.material(), shape.density());
             this->srfs_.emplace(id, gsurf);
         }
@@ -241,6 +243,7 @@ GeomModel::bind_edges(const GeomShape & shape)
             this->crv_id_.Bind(edge, id);
 
             GeomCurve gedge(edge);
+            gedge.id_ = id;
             gedge.set_material(shape.material(), shape.density());
             this->crvs_.emplace(id, gedge);
         }
@@ -258,6 +261,7 @@ GeomModel::bind_vertices(const GeomShape & shape)
             this->vtx_id_.Bind(vertex, id);
 
             GeomVertex gvtx(vertex);
+            gvtx.id_ = id;
             gvtx.set_material(shape.material(), shape.density());
             this->vtxs_.emplace(id, gvtx);
         }

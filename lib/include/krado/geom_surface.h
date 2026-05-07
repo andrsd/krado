@@ -24,6 +24,8 @@ public:
     GeomSurface(const GeomSurface & other);
     GeomSurface(GeomSurface && other);
 
+    int dim() const final;
+
     /// Get physical location from parametrical position
     ///
     /// @param u Parameter specifying location
