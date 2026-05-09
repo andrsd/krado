@@ -9,6 +9,7 @@
 #include "krado/exception.h"
 #include "krado/point.h"
 #include "krado/element.h"
+#include <ranges>
 #include <cassert>
 
 namespace krado {
@@ -85,6 +86,23 @@ MeshElement
 MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
 {
     return MeshElement(ElementType::QUAD4, { vtx[0], vtx[1], vtx[2], vtx[3] });
+}
+
+std::vector<int>
+sorted_vertex_nums(const MeshElement & elem)
+{
+    std::vector<int> nums;
+    // clang-format off
+    std::ranges::transform(
+        elem.vertices(),
+        std::back_inserter(nums),
+        [](Ptr<MeshVertexAbstract> v) {
+            return v->num();
+        }
+    );
+    // clang-format on
+    std::sort(nums.begin(), nums.end());
+    return nums;
 }
 
 double
