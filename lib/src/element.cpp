@@ -292,10 +292,12 @@ double
 Tri3::circum_radius_euclidian(Point pa, Point pb, Point pc, double lc)
 {
     const auto center = circum_center(pa, pb, pc);
-    // NOTE: promote this into runtime error?
-    assert(center.has_value());
-    const auto delta = pa - center.value();
-    return delta.magnitude() / lc;
+    if (center.has_value()) {
+        const auto delta = pa - center.value();
+        return delta.magnitude() / lc;
+    }
+    else
+        return std::numeric_limits<double>::lowest();
 }
 
 } // namespace krado
