@@ -78,7 +78,7 @@ operator<<(std::ostream & stream, const krado::UVParam & param)
 template <>
 struct fmt::formatter<krado::UVParam> {
     constexpr auto
-    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    parse(format_parse_context & ctx) const -> decltype(ctx.begin())
     {
         return ctx.begin();
     }
@@ -86,7 +86,7 @@ struct fmt::formatter<krado::UVParam> {
     // Define how the object is formatted
     template <typename FormatContext>
     auto
-    format(const krado::UVParam & obj, FormatContext & ctx) -> decltype(ctx.out())
+    format(const krado::UVParam & obj, FormatContext & ctx) const -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "({}, {})", obj.u, obj.v);
     }
