@@ -83,3 +83,10 @@ TEST(UVParamTest, dot_product)
     auto result = dot_product(a, b);
     EXPECT_NEAR(result, 5.0, 1e-16);
 }
+
+TEST(UVParamTest, fmt_format)
+{
+    UVParam a(3.0, 4.0);
+    auto s = fmt::format("{}", a);
+    EXPECT_EQ(s, "(3, 4)");
+}
