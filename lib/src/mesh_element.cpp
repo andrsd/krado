@@ -3,6 +3,7 @@
 
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/point.h"
 #include "krado/utils.h"
 #include "krado/types.h"
 #include "krado/exception.h"
@@ -110,6 +111,19 @@ circum_radius_euclidian(const MeshElement & tri, double lc)
     }
     else
         throw Exception("Not implemented");
+}
+
+Point
+barycenter(const MeshElement & elem)
+{
+    Point p(0., 0., 0.);
+    auto n = elem.num_vertices();
+    for (int i = 0; i < n; i++) {
+        const auto v = elem.vertex(i);
+        p += v->point();
+    }
+    p *= 1. / n;
+    return p;
 }
 
 } // namespace krado
