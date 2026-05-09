@@ -12,6 +12,7 @@ class UVParam {
 public:
     UVParam();
     UVParam(double u, double v);
+    explicit UVParam(std::array<double, 2> uv);
 
     UVParam & operator+=(const UVParam & a);
     UVParam & operator/=(double alpha);

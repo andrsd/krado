@@ -11,6 +11,8 @@ UVParam::UVParam() : u(0.), v(0.) {}
 
 UVParam::UVParam(double u, double v) : u(u), v(v) {}
 
+UVParam::UVParam(std::array<double, 2> uv) : u(uv[0]), v(uv[1]) {}
+
 UVParam &
 UVParam::operator+=(const UVParam & a)
 {
