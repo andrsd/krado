@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ostream>
+#include <array>
 #include <fmt/format.h>
 
 namespace krado {
