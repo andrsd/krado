@@ -104,6 +104,22 @@ public:
 
     static double eta(Point pa, Point pb, Point pc);
 
+    /// Compute circum center in (u, v) parameter space
+    ///
+    /// @param p1 Point one
+    /// @param p2 Point two
+    /// @param p3 Point three
+    /// @return Circum center, nullopt if points are colinear
+    static Optional<UVParam> circum_center(UVParam p1, UVParam p2, UVParam p3);
+
+    /// Compute circum center
+    ///
+    /// @param p1 Point one
+    /// @param p2 Point two
+    /// @param p3 Point three
+    /// @return Circum center
+    static Optional<Point> circum_center(Point p1, Point p2, Point p3);
+
     /// Compute circum radius using quality norm
     static double circum_radius_quality(Point pa, Point pb, Point pc);
 

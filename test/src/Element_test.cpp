@@ -38,6 +38,31 @@ TEST(ElementTest, tri3_eta)
     EXPECT_NEAR(Tri3::eta(a, b, c), 0.75, 1e-10);
 }
 
+TEST(ElementTest, tri3_circum_center_uv)
+{
+    UVParam pa(0, 0);
+    UVParam pb(1, 0);
+    UVParam pc(1, 1);
+    auto center = Tri3::circum_center(pa, pb, pc);
+    ASSERT_TRUE(center.has_value());
+    auto ctr = center.value();
+    EXPECT_NEAR(ctr.u, 0.5, 1e-10);
+    EXPECT_NEAR(ctr.v, 0.5, 1e-10);
+}
+
+TEST(ElementTest, tri3_circum_center_xyz)
+{
+    Point pa(0, 0, 0);
+    Point pb(1, 0, 0);
+    Point pc(1, 1, 0);
+    auto center = Tri3::circum_center(pa, pb, pc);
+    ASSERT_TRUE(center.has_value());
+    auto ctr = center.value();
+    EXPECT_NEAR(ctr.x, 0.5, 1e-10);
+    EXPECT_NEAR(ctr.y, 0.5, 1e-10);
+    EXPECT_NEAR(ctr.z, 0., 1e-10);
+}
+
 TEST(ElementTest, tri3_circum_radius_quality)
 {
     Point a(0., 0., 0.);
