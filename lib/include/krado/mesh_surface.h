@@ -8,6 +8,7 @@
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
 #include "krado/ptr.h"
+#include "krado/types.h"
 #include <vector>
 #include <memory>
 
@@ -40,10 +41,9 @@ public:
     [[nodiscard]] Span<const Ptr<MeshCurve>> curves() const;
     [[nodiscard]] Span<Ptr<MeshCurve>> curves();
 
-    /// Get the mesh size for this surface
-    ///
-    /// @return The mesh size
-    [[nodiscard]] double mesh_size() const;
+    [[nodiscard]] Span<const Ptr<MeshVertex>> embedded_vertices() const;
+
+    [[nodiscard]] Span<const Ptr<MeshCurve>> embedded_curves() const;
 
     /// Set the mesh size for this surface
     ///
@@ -132,6 +132,10 @@ private:
     std::vector<Ptr<MeshCurve>> mesh_curves_;
     /// Surface vertices (not including boundary and mesh vertices)
     std::vector<Ptr<MeshSurfaceVertex>> surf_vtxs_;
+    ///
+    std::vector<Ptr<MeshVertex>> embedded_vtxs_;
+    ///
+    std::vector<Ptr<MeshCurve>> embedded_curves_;
     /// Triangles
     std::vector<MeshElement> tris_;
     /// Quadrangles

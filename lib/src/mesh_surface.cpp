@@ -50,6 +50,18 @@ MeshSurface::curves()
     return this->mesh_curves_;
 }
 
+Span<const Ptr<MeshVertex>>
+MeshSurface::embedded_vertices() const
+{
+    return this->embedded_vtxs_;
+}
+
+Span<const Ptr<MeshCurve>>
+MeshSurface::embedded_curves() const
+{
+    return this->embedded_curves_;
+}
+
 void
 MeshSurface::set_mesh_size(double size)
 {
