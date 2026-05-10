@@ -41,6 +41,10 @@ public:
     [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
     [[nodiscard]] std::vector<Ptr<MeshCurve>> & curves();
 
+    Span<const Ptr<MeshVertex>> embedded_vertices() const;
+
+    Span<const Ptr<MeshCurve>> embedded_curves() const;
+
     /// Get the mesh size for this surface
     ///
     /// @return The mesh size
@@ -138,6 +142,10 @@ private:
     std::vector<Ptr<MeshCurve>> mesh_curves_;
     /// Surface vertices (not including boundary and mesh vertices)
     std::vector<Ptr<MeshSurfaceVertex>> surf_vtxs_;
+    ///
+    std::vector<Ptr<MeshVertex>> embedded_vtxs_;
+    ///
+    std::vector<Ptr<MeshCurve>> embedded_curves_;
     /// Triangles
     std::vector<MeshElement> tris_;
     /// Quadrangles
