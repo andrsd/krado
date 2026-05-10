@@ -89,6 +89,24 @@ MeshElement::Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx)
     return MeshElement(ElementType::QUAD4, { vtx[0], vtx[1], vtx[2], vtx[3] });
 }
 
+bool
+MeshElementLessThan::operator()(const MeshElement & f1, const MeshElement & f2) const
+{
+    if (f1.num_vertices() == f2.num_vertices()) {
+        auto vtx1 = sorted_vertex_nums(f1);
+        auto vtx2 = sorted_vertex_nums(f2);
+        for (int i = 0; i < f1.num_vertices(); i++) {
+            if (vtx1[i] < vtx2[i])
+                return true;
+            if (vtx1[i] > vtx2[i])
+                return false;
+        }
+        return false;
+    }
+    else
+        return f1.num_vertices() < f2.num_vertices();
+}
+
 std::vector<int>
 sorted_vertex_nums(const MeshElement & elem)
 {
