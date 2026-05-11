@@ -54,7 +54,7 @@ SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
         }
     }
 
-    utils::build_curve_segments(curve);
+    build_curve_segments(curve);
 }
 
 } // namespace krado

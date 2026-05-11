@@ -20,10 +20,7 @@ MeshCurve::MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, P
     too_smoll(false)
 {
     this->bnd_vtxs_.push_back(v1);
-    if (v1 && v2) {
-        if (utils::distance(v1->point(), v2->point()) > 1e-12)
-            this->bnd_vtxs_.push_back(v2);
-    }
+    this->bnd_vtxs_.push_back(v2);
 }
 
 MeshCurve::~MeshCurve() = default;

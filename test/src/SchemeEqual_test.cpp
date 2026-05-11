@@ -54,8 +54,9 @@ TEST(SchemeEqualTest, circle)
     auto SQRT2_2 = std::sqrt(2.) / 2.;
 
     auto & bv = curv->bounding_vertices();
-    ASSERT_EQ(bv.size(), 1);
+    ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
+    EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
     auto & cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 7);
@@ -72,7 +73,8 @@ TEST(SchemeEqualTest, circle)
 
 TEST(SchemeEqualTest, quarter_circle)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
+    fs::path input_file =
+        fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
     auto shapes = file.load();
     auto shape = shapes[0];
@@ -91,7 +93,11 @@ TEST(SchemeEqualTest, quarter_circle)
 
     auto & cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 3);
-    EXPECT_TRUE(cv[0]->point().is_equal(Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0), 1e-10));
-    EXPECT_TRUE(cv[1]->point().is_equal(Point(-std::cos(M_PI / 4.), std::sin(M_PI / 4.), 0), 1e-10));
-    EXPECT_TRUE(cv[2]->point().is_equal(Point(-std::cos(3 * M_PI / 8.), std::sin(3. * M_PI / 8.), 0), 1e-10));
+    EXPECT_TRUE(
+        cv[0]->point().is_equal(Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0), 1e-10));
+    EXPECT_TRUE(
+        cv[1]->point().is_equal(Point(-std::cos(M_PI / 4.), std::sin(M_PI / 4.), 0), 1e-10));
+    EXPECT_TRUE(
+        cv[2]->point().is_equal(Point(-std::cos(3 * M_PI / 8.), std::sin(3. * M_PI / 8.), 0),
+                                1e-10));
 }
