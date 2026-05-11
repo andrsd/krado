@@ -46,7 +46,8 @@ TEST(SchemeCurvatureTest, line)
 
 TEST(SchemeCurvatureTest, quarter_circle)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
+    fs::path input_file =
+        fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
     auto shapes = file.load();
     auto shape = shapes[0];
@@ -96,8 +97,9 @@ TEST(SchemeCurvatureTest, circle)
     ASSERT_EQ(curv->segments().size(), 8);
 
     auto & bv = curv->bounding_vertices();
-    ASSERT_EQ(bv.size(), 1);
+    ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
+    EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
     auto & cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 7);

@@ -22,6 +22,12 @@ public:
         return this->name_;
     }
 
+protected:
+    /// Build segments for a curve
+    ///
+    /// @param curve Mesh curve
+    void build_curve_segments(Ptr<MeshCurve> curve);
+
 private:
     std::string name_;
 };

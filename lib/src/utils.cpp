@@ -139,37 +139,6 @@ set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
     return sset;
 }
 
-void
-build_curve_segments(Ptr<MeshCurve> curve)
-{
-    auto & geom_curve = curve->geom_curve();
-    auto bnd_verts = curve->bounding_vertices();
-    if ((geom_curve.type() == GeomCurve::CurveType::Circle) && (bnd_verts.size() == 1)) {
-        std::vector<Ptr<MeshVertexAbstract>> all;
-        // curve is a full circle
-        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]));
-        for (auto & cv : curve->curve_vertices())
-            all.push_back(static_ptr_cast<MeshVertexAbstract>(cv));
-
-        for (std::size_t i = 0; i + 1 < all.size(); ++i)
-            curve->add_segment({ all[i], all[i + 1] });
-        curve->add_segment({ all.back(), static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]) });
-    }
-    else {
-        if (bnd_verts.size() != 2)
-            throw Exception("Curve {} must have 2 bounding vertices", curve->id());
-
-        std::vector<Ptr<MeshVertexAbstract>> all;
-        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[0]));
-        for (auto & cv : curve->curve_vertices())
-            all.push_back(static_ptr_cast<MeshVertexAbstract>(cv));
-        all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[1]));
-
-        for (std::size_t i = 0; i + 1 < all.size(); ++i)
-            curve->add_segment({ all[i], all[i + 1] });
-    }
-}
-
 } // namespace utils
 
 std::array<Ptr<MeshVertexAbstract>, 3>

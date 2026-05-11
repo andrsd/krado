@@ -253,11 +253,6 @@ create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_
 /// @return Edge/face set
 std::vector<Index> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
 
-/// Build segments for a curve
-///
-/// @param curve Mesh curve
-void build_curve_segments(Ptr<MeshCurve> curve);
-
 } // namespace utils
 
 template <typename RANGE>

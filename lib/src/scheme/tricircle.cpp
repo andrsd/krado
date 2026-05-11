@@ -91,9 +91,9 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // Create triangles
 
     // center fan (ring 0 -> ring 1)
-    for (size_t i = 0; i < rings[1].size(); ++i) {
-        size_t j = (i + 1) % rings[1].size();
-        mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, rings[1][i], rings[1][j]));
+    for (size_t i = 1; i < rings[1].size(); ++i) {
+        size_t j = i - 1;
+        mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, rings[1][j], rings[1][i]));
     }
 
     // ring-to-ring tessellation
@@ -101,13 +101,13 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
         auto & inner = rings[r];
         auto & outer = rings[r + 1];
 
-        for (size_t i = 0; i < inner.size(); ++i) {
-            size_t j = (i + 1) % inner.size();
+        for (size_t i = 1; i < inner.size(); ++i) {
+            size_t j = i - 1;
 
-            auto a = inner[i];
-            auto b = inner[j];
-            auto c = outer[i];
-            auto d = outer[j];
+            auto a = inner[j];
+            auto b = inner[i];
+            auto c = outer[j];
+            auto d = outer[i];
 
             // split the quad into 2 triangles
             mesh_surface->add_triangle(ccw_triangle(gsurf, a, c, d));
