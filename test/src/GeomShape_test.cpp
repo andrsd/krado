@@ -14,7 +14,7 @@ TEST(GeomShapeTest, clean)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
     STEPFile file(input_file.string());
-    auto shapes = file.load();
+    auto shapes = file.read();
     auto shape = shapes[0];
     shape.clean();
     // TODO: actual check that clean happened
@@ -24,7 +24,7 @@ TEST(GeomShapeTest, heal)
 {
     fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
     STEPFile file(input_file.string());
-    auto shapes = file.load();
+    auto shapes = file.read();
     auto shape = shapes[0];
     shape.heal(1e-10);
     // TODO: actual check that things were healed
@@ -50,7 +50,7 @@ TEST(GeomShapeTest, material)
 {
     auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
     EXPECT_FALSE(box.has_material());
-    box.set_material("steel", 8);
+    box.set_material("steel", "", 8);
     EXPECT_TRUE(box.has_material());
     EXPECT_EQ(box.material(), "steel");
     EXPECT_DOUBLE_EQ(box.density(), 8.);

@@ -13,7 +13,7 @@ TEST(STEPFileTest, load)
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());
-        auto shapes = file.load();
+        auto shapes = file.read();
     });
 }
 
@@ -24,7 +24,7 @@ TEST(STEPFileTest, load_non_existing)
     EXPECT_THAT_THROW_MSG(
         {
             STEPFile file(input_file.string());
-            auto shapes = file.load();
+            auto shapes = file.read();
         },
         HasSubstr("Failed to load STEP file"));
 }
@@ -35,7 +35,7 @@ TEST(STEPFileTest, load_materials)
 
     EXPECT_NO_THROW({
         STEPFile file(input_file.string());
-        auto shapes = file.load();
+        auto shapes = file.read();
         ASSERT_EQ(shapes.size(), 1);
         auto box = shapes[0];
         EXPECT_EQ(box.material(), "steel");

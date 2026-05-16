@@ -76,7 +76,7 @@ TEST(SchemeEqualTest, quarter_circle)
     fs::path input_file =
         fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
-    auto shapes = file.load();
+    auto shapes = file.read();
     auto shape = shapes[0];
     GeomModel model(shape);
 

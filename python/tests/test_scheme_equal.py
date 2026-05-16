@@ -1,6 +1,7 @@
-import pytest
-import krado
 import os
+
+import krado
+import pytest
 
 root_dir = os.path.normpath(os.path.join(__file__, "..", "..", ".."))
 assets_dir = os.path.join(root_dir, "test", "assets")
@@ -9,7 +10,7 @@ assets_dir = os.path.join(root_dir, "test", "assets")
 def DISABLED_test_scheme_equal():
     file_name = os.path.join(assets_dir, "geo", "line.step")
     step = krado.STEPFile(file_name)
-    shapes = step.load()
+    shapes = step.read()
     model = krado.GeomModel(shapes[0])
     model.curve(1).set_scheme("equal").set(intervals=4)
 

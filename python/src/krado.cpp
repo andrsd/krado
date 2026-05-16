@@ -151,7 +151,8 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<STEPFile>(m, "STEPFile")
         .def(py::init<const std::string &>())
-        .def("load", &STEPFile::load, py::return_value_policy::move)
+        .def("read", &STEPFile::read, py::return_value_policy::move)
+        .def("write", &STEPFile::write)
     ;
 
     py::class_<Point>(m, "Point")

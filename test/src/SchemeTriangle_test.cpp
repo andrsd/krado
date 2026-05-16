@@ -18,9 +18,10 @@ namespace fs = std::filesystem;
 
 TEST(SchemeTriangleTest, mesh_quarter_circle)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
+    fs::path input_file =
+        fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
-    auto shapes = file.load();
+    auto shapes = file.read();
     auto shape = shapes[0];
     GeomModel model(shape);
 
@@ -57,9 +58,10 @@ TEST(SchemeTriangleTest, mesh_quarter_circle)
 
 TEST(SchemeTriangleTest, mesh)
 {
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
+    fs::path input_file =
+        fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
     STEPFile file(input_file.string());
-    auto shapes = file.load();
+    auto shapes = file.read();
     auto shape = shapes[0];
     GeomModel model(shape);
 
