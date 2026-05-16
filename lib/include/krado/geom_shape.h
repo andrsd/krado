@@ -29,6 +29,16 @@ public:
                                       SEW_FACES | MAKE_SOLIDS);
     void scale(double scale_factor);
 
+    /// Get shape name
+    ///
+    /// @return Shape name
+    std::string name() const;
+
+    /// Set shape name
+    ///
+    /// @param name New shape name
+    void set_name(const std::string & name);
+
     /// Query if this shape has material assigned to it
     ///
     /// @return `true` if material is assigned, `false` otherwise
@@ -91,6 +101,8 @@ private:
     ShapeID id_;
     ///
     TopoDS_Shape shape_;
+    /// Shape name
+    std::string name_;
     /// Color of this shape
     Color clr_;
     /// Material name

@@ -61,6 +61,18 @@ GeomShape::id() const
     return this->id_;
 }
 
+std::string
+GeomShape::name() const
+{
+    return this->name_;
+}
+
+void
+GeomShape::set_name(const std::string & name)
+{
+    this->name_ = name;
+}
+
 bool
 GeomShape::has_material() const
 {
