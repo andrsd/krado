@@ -48,7 +48,14 @@ public:
     ///
     /// @param name Material name
     /// @param density Density [g/cm^3]
-    void set_material(const std::string & name, double density = 0.);
+    void set_material(const std::string & name,
+                      const std::string & description = "",
+                      double density = 0.);
+
+    /// Get material description
+    ///
+    /// @return Material description
+    const std::string & material_description() const;
 
     /// Get material
     ///

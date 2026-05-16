@@ -79,10 +79,17 @@ GeomShape::has_material() const
     return !this->material_name_.empty();
 }
 
+const std::string &
+GeomShape::material_description() const
+{
+    return this->material_description_;
+}
+
 void
-GeomShape::set_material(const std::string & name, double density)
+GeomShape::set_material(const std::string & name, const std::string & description, double density)
 {
     this->material_name_ = name;
+    this->material_description_ = description;
     this->density_ = density;
 }
 
