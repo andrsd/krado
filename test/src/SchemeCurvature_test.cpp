@@ -31,12 +31,12 @@ TEST(SchemeCurvatureTest, line)
     // Length 1.0 / 0.2 = 5 intervals.
     ASSERT_EQ(line->segments().size(), 5);
 
-    auto & bv = line->bounding_vertices();
+    auto bv = line->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(0, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
-    auto & cv = line->curve_vertices();
+    auto cv = line->curve_vertices();
     ASSERT_EQ(cv.size(), 4);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(0.2, 0, 0), 1e-10));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(0.4, 0, 0), 1e-10));
@@ -66,12 +66,12 @@ TEST(SchemeCurvatureTest, quarter_circle)
     // We expect PI/2 / (PI/8) = 4 intervals.
     ASSERT_EQ(curv->segments().size(), 4);
 
-    auto & bv = curv->bounding_vertices();
+    auto bv = curv->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(-1, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(0, 1, 0), 1e-10));
 
-    auto & cv = curv->curve_vertices();
+    auto cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 3);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(-0.92388, 0.382683, 0), 1e-6));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(-0.707107, 0.707107, 0), 1e-6));
@@ -96,12 +96,12 @@ TEST(SchemeCurvatureTest, circle)
     // We expect 2*PI / (PI/4) = 8 intervals.
     ASSERT_EQ(curv->segments().size(), 8);
 
-    auto & bv = curv->bounding_vertices();
+    auto bv = curv->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
-    auto & cv = curv->curve_vertices();
+    auto cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 7);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(0.707107, 0.707107, 0), 1e-5));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(0., 1, 0), 1e-5));
@@ -129,12 +129,12 @@ TEST(SchemeCurvatureTest, spline)
     // Just check that it meshed and has more than 1 segment
     ASSERT_GT(curv->segments().size(), 1);
 
-    auto & bv = curv->bounding_vertices();
+    auto bv = curv->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(0, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(2, 0, 0), 1e-10));
 
-    auto & cv = curv->curve_vertices();
+    auto cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 22);
     EXPECT_TRUE(cv[3]->point().is_equal(Point(0.643486, 0.872898, 0), 1e-5));
     EXPECT_TRUE(cv[7]->point().is_equal(Point(0.904346, 0.99085, 0), 1e-5));

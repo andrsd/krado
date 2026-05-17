@@ -235,8 +235,8 @@ build_2d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
     NamesMap names;
     for (auto & [id, surface] : model.surfaces()) {
         auto blk_id = surface->marker().value();
-        auto & tris = surface->triangles();
-        auto & quads = surface->quadrangles();
+        auto tris = surface->triangles();
+        auto quads = surface->quadrangles();
         if (tris.size() > 0 and quads.size() == 0) {
             for (auto & mt : tris) {
                 auto tri = elem2idxs<Tri3::N_VERTICES>(mt, pnt_map);
@@ -267,7 +267,7 @@ build_3d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
     NamesMap names;
     for (auto & [id, volume] : model.volumes()) {
         auto blk_id = volume->marker().value();
-        auto & tets = volume->tetrahedra();
+        auto tets = volume->tetrahedra();
         for (auto & mt : tets) {
             auto tetra = elem2idxs<Tetra4::N_VERTICES>(mt, pnt_map);
             blocks[blk_id].emplace_back(Element::Tetra4(tetra));

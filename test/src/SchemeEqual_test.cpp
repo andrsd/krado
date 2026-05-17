@@ -24,12 +24,12 @@ TEST(SchemeEqualTest, line)
     model.mesh_curve(1);
 
     auto line = model.curve(1);
-    auto & bv = line->bounding_vertices();
+    auto bv = line->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(0, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
-    auto & cv = line->curve_vertices();
+    auto cv = line->curve_vertices();
     ASSERT_EQ(cv.size(), 4);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(0.2, 0, 0), 1e-10));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(0.4, 0, 0), 1e-10));
@@ -53,12 +53,12 @@ TEST(SchemeEqualTest, circle)
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
 
-    auto & bv = curv->bounding_vertices();
+    auto bv = curv->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(1, 0, 0), 1e-10));
 
-    auto & cv = curv->curve_vertices();
+    auto cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 7);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(SQRT2_2, SQRT2_2, 0), 1e-10));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(0, 1., 0), 1e-10));
@@ -86,12 +86,12 @@ TEST(SchemeEqualTest, quarter_circle)
     model.mesh_curve(1);
 
     auto curv = model.curve(1);
-    auto & bv = curv->bounding_vertices();
+    auto bv = curv->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(-1, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(0, 1, 0), 1e-10));
 
-    auto & cv = curv->curve_vertices();
+    auto cv = curv->curve_vertices();
     ASSERT_EQ(cv.size(), 3);
     EXPECT_TRUE(
         cv[0]->point().is_equal(Point(-std::cos(M_PI / 8.), std::sin(M_PI / 8.), 0), 1e-10));

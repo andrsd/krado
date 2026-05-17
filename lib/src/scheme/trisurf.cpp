@@ -70,7 +70,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
             if (polygon.IsNull())
                 continue;
 
-            auto & bnd_vtxs = curve->bounding_vertices();
+            auto bnd_vtxs = curve->bounding_vertices();
 
             // Build cache for this curve if not already done
             auto [it, inserted] = curve_vertex_caches.try_emplace(curve);

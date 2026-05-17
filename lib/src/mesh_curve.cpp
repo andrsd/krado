@@ -37,13 +37,13 @@ MeshCurve::geom_curve() const
     return this->gcurve_;
 }
 
-const std::vector<Ptr<MeshVertex>> &
+Span<const Ptr<MeshVertex>>
 MeshCurve::bounding_vertices() const
 {
     return this->bnd_vtxs_;
 }
 
-std::vector<Ptr<MeshVertex>> &
+Span<Ptr<MeshVertex>>
 MeshCurve::bounding_vertices()
 {
     return this->bnd_vtxs_;
@@ -55,13 +55,13 @@ MeshCurve::add_vertex(Ptr<MeshCurveVertex> curve_vertex)
     this->curve_vtx_.push_back(curve_vertex);
 }
 
-const std::vector<Ptr<MeshCurveVertex>> &
+Span<const Ptr<MeshCurveVertex>>
 MeshCurve::curve_vertices() const
 {
     return this->curve_vtx_;
 }
 
-std::vector<Ptr<MeshCurveVertex>> &
+Span<Ptr<MeshCurveVertex>>
 MeshCurve::curve_vertices()
 {
     return this->curve_vtx_;
@@ -74,7 +74,7 @@ MeshCurve::add_segment(const std::array<Ptr<MeshVertexAbstract>, 2> & seg)
     this->segs_.emplace_back(line2);
 }
 
-const std::vector<MeshElement> &
+Span<const MeshElement>
 MeshCurve::segments() const
 {
     return this->segs_;
@@ -157,7 +157,7 @@ operator<<(std::ostream & stream, const krado::MeshCurve & curve)
     stream << "Curve " << curve.id() << ": ";
     auto & gcurve = curve.geom_curve();
     stream << "type=" << gcurve.type() << ", ";
-    auto & bnd_vtxs = curve.bounding_vertices();
+    auto bnd_vtxs = curve.bounding_vertices();
     std::vector<krado::i32> vids;
     vids.reserve(vids.size());
     for (auto v : bnd_vtxs)

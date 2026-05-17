@@ -39,7 +39,7 @@ TEST(MeshSurfaceTest, api)
     msurface->add_vertex(mvtx2);
 
     msurface->add_triangle({ mvtx2, mvtx0, mvtx1 });
-    auto & triangles = msurface->triangles();
+    auto triangles = msurface->triangles();
     ASSERT_EQ(triangles.size(), 1);
     EXPECT_EQ(triangles[0].vertex(0), mvtx2);
     EXPECT_EQ(triangles[0].vertex(1), mvtx0);

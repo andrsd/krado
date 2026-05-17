@@ -160,7 +160,8 @@ private:
         this->Gh.nbe = get_number_of_edges();
         this->Gh.edges = new bamg::GeometricalEdge[Gh.nbe];
 
-        for (std::size_t curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size(); curve_idx++) {
+        for (std::size_t curve_idx = 0, eidx = 0; curve_idx < this->surface->curves().size();
+             curve_idx++) {
             auto & curve = this->surface->curves()[curve_idx];
             assert(!curve.is_null());
             if (curve->is_meshed()) {
@@ -173,7 +174,7 @@ private:
             }
             else {
                 // add one straight edge
-                auto & bnd_vtxs = curve->bounding_vertices();
+                auto bnd_vtxs = curve->bounding_vertices();
                 std::array<i64, 2> edge = { this->local_vtx_id[bnd_vtxs[0]],
                                             this->local_vtx_id[bnd_vtxs[1]] };
                 add_edge(eidx, edge, curve_idx, false);

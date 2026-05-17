@@ -30,19 +30,19 @@ MeshVolume::geom_volume() const
     return this->gvolume_;
 }
 
-const std::vector<Ptr<MeshSurface>> &
+Span<const Ptr<MeshSurface>>
 MeshVolume::surfaces() const
 {
     return this->mesh_surfaces_;
 }
 
-std::vector<Ptr<MeshSurface>> &
+Span<Ptr<MeshSurface>>
 MeshVolume::surfaces()
 {
     return this->mesh_surfaces_;
 }
 
-const std::vector<MeshElement> &
+Span<const MeshElement>
 MeshVolume::tetrahedra() const
 {
     return this->tetras_;

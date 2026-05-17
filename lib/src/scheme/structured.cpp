@@ -41,11 +41,11 @@ get_ordered_vertices(Ptr<MeshCurve> curve)
 
 // Sort curves into a closed loop.
 Optional<std::vector<Ptr<MeshCurve>>>
-sort_curves(std::vector<Ptr<MeshCurve>> curves)
+sort_curves(Span<Ptr<MeshCurve>> curves)
 {
     // We'll use the bounding vertices of the GeomCurve to match them.
     std::vector<Ptr<MeshCurve>> sorted_curves;
-    std::vector<Ptr<MeshCurve>> remaining_curves = curves;
+    std::vector<Ptr<MeshCurve>> remaining_curves(curves.begin(), curves.end());
 
     sorted_curves.push_back(remaining_curves.back());
     remaining_curves.pop_back();
