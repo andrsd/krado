@@ -108,7 +108,7 @@ TEST(ExodusIIFileTest, read_2d)
     auto cell_set_ids = mesh.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = mesh.cell_set(0);
+    auto cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
 #if 0
@@ -171,7 +171,7 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
         auto mesh_read = f_read.read();
         auto side_set_ids = mesh_read.edge_set_ids();
         EXPECT_THAT(side_set_ids, ElementsAre(10));
-        auto & ss10 = mesh_read.edge_set(10);
+        auto ss10 = mesh_read.edge_set(10);
         EXPECT_EQ(ss10.size(), 1);
     }
 }

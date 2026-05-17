@@ -56,10 +56,10 @@ TEST(ExtrudeTest, line_1d)
     auto ss_ids = rectangle.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = rectangle.edge_set(10);
+    auto ss0 = rectangle.edge_set(10);
     EXPECT_THAT(ss0, ElementsAre(21, 30));
 
-    auto & ss1 = rectangle.edge_set(11);
+    auto ss1 = rectangle.edge_set(11);
     EXPECT_THAT(ss1, ElementsAre(26, 33));
 }
 
@@ -122,10 +122,10 @@ TEST(ExtrudeTest, tri_2d)
     auto ss_ids = box.face_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = box.face_set(10);
+    auto ss0 = box.face_set(10);
     EXPECT_THAT(ss0, testing::ElementsAre(24, 39));
 
-    auto & ss1 = box.face_set(11);
+    auto ss1 = box.face_set(11);
     EXPECT_THAT(ss1, testing::ElementsAre(33, 46));
 }
 
@@ -201,15 +201,15 @@ TEST(ExtrudeTest, quad_2d)
     auto ss_ids = box.face_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11, 12, 13));
 
-    auto & ss0 = box.face_set(10);
+    auto ss0 = box.face_set(10);
     EXPECT_THAT(ss0, testing::ElementsAre(35, 41, 55, 60));
 
-    auto & ss1 = box.face_set(11);
+    auto ss1 = box.face_set(11);
     EXPECT_THAT(ss1, testing::ElementsAre(46, 51, 64, 68));
 
-    auto & ss2 = box.face_set(12);
+    auto ss2 = box.face_set(12);
     EXPECT_THAT(ss2, testing::ElementsAre(43, 52, 62, 69));
 
-    auto & ss3 = box.face_set(13);
+    auto ss3 = box.face_set(13);
     EXPECT_THAT(ss3, testing::ElementsAre(37, 47, 57, 65));
 }

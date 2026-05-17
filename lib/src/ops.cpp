@@ -279,7 +279,7 @@ combine(const std::vector<Mesh> & parts)
     std::unordered_map<Marker, std::size_t> cell_sets_size;
     for (auto & p : parts) {
         for (auto id : p.cell_set_ids()) {
-            auto & cell_set = p.cell_set(id);
+            auto cell_set = p.cell_set(id);
             auto it = cell_sets_size.find(id);
             if (it == cell_sets_size.end())
                 cell_sets_size[id] = cell_set.size();
@@ -298,7 +298,7 @@ combine(const std::vector<Mesh> & parts)
             if (cell_set_names.find(id) == cell_set_names.end())
                 cell_set_names[id] = p.cell_set_name(id);
 
-            auto & cell_set = p.cell_set(id);
+            auto cell_set = p.cell_set(id);
             for (auto & c : cell_set)
                 cell_sets[id].push_back(c + elem_shift[i]);
         }

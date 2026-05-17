@@ -167,7 +167,7 @@ public:
     ///
     /// @param id Cell set ID
     /// @return Cell set
-    [[nodiscard]] const std::vector<Index> & cell_set(Marker id) const;
+    [[nodiscard]] Span<const Index> cell_set(Marker id) const;
 
     /// Set cell set
     ///
@@ -201,7 +201,7 @@ public:
     ///
     /// @param id Face set ID
     /// @return Face set
-    [[nodiscard]] const std::vector<Index> & face_set(Marker id) const;
+    [[nodiscard]] Span<const Index> face_set(Marker id) const;
 
     /// Set face set
     ///
@@ -235,7 +235,7 @@ public:
     ///
     /// @param id Edge set ID
     /// @return Edge set
-    [[nodiscard]] const std::vector<Index> & edge_set(Marker id) const;
+    [[nodiscard]] Span<const Index> edge_set(Marker id) const;
 
     /// Set edge set
     ///
@@ -271,7 +271,7 @@ public:
     ///
     /// @param id Vertex set ID
     /// @return Vertex set
-    [[nodiscard]] const std::vector<Index> & vertex_set(Marker id) const;
+    [[nodiscard]] Span<const Index> vertex_set(Marker id) const;
 
     /// Set vertex set
     ///

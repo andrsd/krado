@@ -538,7 +538,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
         std::vector<std::string> blk_names;
         auto cell_set_ids = mesh.cell_set_ids();
         for (auto & blk_id : cell_set_ids) {
-            auto & elem_ids = mesh.cell_set(blk_id);
+            auto elem_ids = mesh.cell_set(blk_id);
             if (!elem_ids.empty()) {
                 auto & block = blocks[blk_id];
                 for (auto & id : elem_ids) {
@@ -561,7 +561,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
 /// @param exii_elem_ids Map that converts from krado cell IDs to exodus element numbers
 SideSet
 create_side_set(const Mesh & mesh,
-                const std::vector<Index> & elem_ids,
+                Span<const Index> elem_ids,
                 const std::map<Index, int> & exii_elem_ids)
 {
     SideSet side_set;
@@ -614,7 +614,7 @@ build_node_sets(const Mesh & mesh)
     auto rng = mesh.vertex_range();
     auto set_ids = mesh.vertex_set_ids();
     for (auto & id : set_ids) {
-        auto & vtx_ids = mesh.vertex_set(id);
+        auto vtx_ids = mesh.vertex_set(id);
         auto n = vtx_ids.size();
         auto & nodes = node_sets[id];
         nodes.reserve(n);
