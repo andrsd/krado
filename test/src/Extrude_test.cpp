@@ -24,7 +24,7 @@ TEST(ExtrudeTest, line_1d)
 
     auto rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
-    auto & pnts = rectangle.points();
+    auto pnts = rectangle.points();
     EXPECT_EQ(pnts.size(), 12);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.1, 0.0));
@@ -39,7 +39,7 @@ TEST(ExtrudeTest, line_1d)
     EXPECT_EQ(pnts[10], Point(0.2, 0.4));
     EXPECT_EQ(pnts[11], Point(0.3, 0.4));
 
-    auto & elems = rectangle.elements();
+    auto elems = rectangle.elements();
     EXPECT_EQ(elems.size(), 6);
     EXPECT_EQ(elems[0], Element::Quad4({ 0, 1, 5, 4 }));
     EXPECT_EQ(elems[1], Element::Quad4({ 1, 2, 6, 5 }));
@@ -85,7 +85,7 @@ TEST(ExtrudeTest, tri_2d)
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
-    auto & pnts = box.points();
+    auto pnts = box.points();
     EXPECT_EQ(pnts.size(), 15);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(1.0, 0.0, 0.0));
@@ -103,7 +103,7 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_EQ(pnts[13], Point(0.0, 1.0, 0.4));
     EXPECT_EQ(pnts[14], Point(0.5, 0.5, 0.4));
 
-    auto & elems = box.elements();
+    auto elems = box.elements();
     EXPECT_EQ(elems.size(), 8);
     EXPECT_EQ(elems[0], Element::Prism6({ 0, 1, 4, 5, 6, 9 }));
     EXPECT_EQ(elems[1], Element::Prism6({ 1, 2, 4, 6, 7, 9 }));
@@ -152,7 +152,7 @@ TEST(ExtrudeTest, quad_2d)
 
     auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
-    auto & pnts = box.points();
+    auto pnts = box.points();
     EXPECT_EQ(pnts.size(), 27);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.5, 0.0, 0.0));
@@ -182,7 +182,7 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_EQ(pnts[25], Point(0.5, 1.0, 0.4));
     EXPECT_EQ(pnts[26], Point(1.0, 1.0, 0.4));
 
-    auto & elems = box.elements();
+    auto elems = box.elements();
     EXPECT_EQ(elems.size(), 8);
     EXPECT_EQ(elems[0], Element::Hex8({ 0, 1, 4, 3, 9, 10, 13, 12 }));
     EXPECT_EQ(elems[1], Element::Hex8({ 1, 2, 5, 4, 10, 11, 14, 13 }));

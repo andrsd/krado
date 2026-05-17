@@ -19,6 +19,7 @@
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <unordered_map>
+#include <algorithm>
 
 namespace krado {
 
@@ -27,7 +28,7 @@ namespace {
 struct PointCloud {
     PointCloud(const Mesh & mesh) : points(mesh.points()) {}
 
-    const std::vector<Point> & points;
+    Span<const Point> points;
 
     inline std::size_t
     kdtree_get_point_count() const
@@ -221,7 +222,7 @@ Mesh::num_elements() const
     return this->elems_.size();
 }
 
-const std::vector<Point> &
+Span<const Point>
 Mesh::points() const
 {
     return this->pnts_;
@@ -233,7 +234,7 @@ Mesh::point(Index idx) const
     return this->pnts_.at(idx);
 }
 
-const std::vector<Element> &
+Span<const Element>
 Mesh::elements() const
 {
     return this->elems_;
@@ -290,9 +291,16 @@ Mesh::translate(double tx, double ty, double tz)
 Mesh
 Mesh::transformed(const Trsf & tr) const
 {
-    auto pts = points();
-    for (auto & p : pts)
-        p = tr * p;
+    std::vector<Point> pts;
+    pts.reserve(this->pnts_.size());
+    // clang-format off
+    std::ranges::transform(
+        this->pnts_, std::back_inserter(pts),
+        [=](Point p) {
+            return tr * p;
+        }
+    );
+    // clang-format on
 
     Mesh mesh(pts, this->elems_);
     mesh.cell_sets_ = this->cell_sets_;
