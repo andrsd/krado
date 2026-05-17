@@ -66,7 +66,7 @@ public:
     /// Get elements
     ///
     /// @return Mesh elements
-    [[nodiscard]] const std::vector<Element> & elements() const;
+    [[nodiscard]] Span<const Element> elements() const;
 
     /// Get element of the mesh
     ///

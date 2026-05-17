@@ -98,7 +98,7 @@ TEST(ExodusIIFileTest, read_2d)
     EXPECT_EQ(pnts[2], Point(0, 2));
     EXPECT_EQ(pnts[3], Point(2, 2));
 
-    auto & elems = mesh.elements();
+    auto elems = mesh.elements();
     EXPECT_EQ(elems.size(), 2);
     EXPECT_THAT(elems[0].type(), Eq(ElementType::TRI3));
     EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));

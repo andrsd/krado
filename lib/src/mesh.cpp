@@ -237,7 +237,7 @@ Mesh::point(Index idx) const
     return this->pnts_.at(idx);
 }
 
-const std::vector<Element> &
+Span<const Element>
 Mesh::elements() const
 {
     return this->elems_;

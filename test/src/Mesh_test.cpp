@@ -151,7 +151,7 @@ TEST(MeshTest, add_mesh)
     EXPECT_EQ(pnts[6], Point(0, 4));
     EXPECT_EQ(pnts[7], Point(2, 4));
 
-    auto & elems = m.elements();
+    auto elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
     EXPECT_EQ(elems[0].type(), ElementType::TRI3);
     EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
@@ -199,7 +199,7 @@ TEST(MeshTest, remove_duplicate_points)
     EXPECT_EQ(pnts[4], Point(4, 0));
     EXPECT_EQ(pnts[5], Point(4, 2));
 
-    auto & elems = m.elements();
+    auto elems = m.elements();
     EXPECT_EQ(elems.size(), 4);
     EXPECT_EQ(elems[0].type(), ElementType::TRI3);
     EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
@@ -222,7 +222,7 @@ TEST(MeshTest, duplicate)
 
     auto dup = square.duplicate();
     EXPECT_TRUE(std::ranges::equal(square.points(), dup.points()));
-    EXPECT_THAT(square.elements(), Eq(dup.elements()));
+    EXPECT_TRUE(std::ranges::equal(square.elements(), dup.elements()));
 
     auto cell_set_ids = dup.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
