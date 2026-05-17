@@ -23,6 +23,7 @@
 #include "krado/cone.h"
 #include "krado/cylinder.h"
 #include "krado/helix.h"
+#include "krado/iges_file.h"
 #include "krado/inscribed_polygon.h"
 #include "krado/sphere.h"
 #include "krado/spline.h"
@@ -152,6 +153,12 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<const std::string &>())
         .def("read", &STEPFile::read, py::return_value_policy::move)
         .def("write", &STEPFile::write)
+    ;
+
+    py::class_<IGESFile>(m, "IGESFile")
+        .def(py::init<const std::string &>())
+        .def("read", &IGESFile::read, py::return_value_policy::move)
+        .def("write", &IGESFile::write)
     ;
 
     py::class_<Point>(m, "Point")
