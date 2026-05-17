@@ -17,7 +17,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
 option(KRADO_BUILD_TESTS "Build tests" NO)
-option(KRADO_WITH_TRIANGLE "Build with triangle support, set TRIANGLE_DIR to the location with triangle source files" NO)
 option(KRADO_WITH_MOAB "Build with MOAB support" NO)
 
 find_package(fmt 11 REQUIRED)
@@ -35,9 +34,6 @@ if (KRADO_WITH_MOAB)
     find_package(MOAB REQUIRED)
 endif()
 
-if (KRADO_WITH_TRIANGLE)
-    add_subdirectory(contrib/triangle)
-endif()
 add_subdirectory(contrib/bamg)
 add_subdirectory(contrib/robust_predicates)
 
