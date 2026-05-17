@@ -166,20 +166,17 @@ remove_duplicates(const PointCloud & cloud, double threshold)
 std::vector<Index>
 boundary_entities(const Mesh & mesh, const Range & range)
 {
-    std::size_t n = 0;
-    for (auto & id : range) {
-        auto supp = mesh.support(id);
-        if (supp.size() == 1)
-            n++;
-    }
+    namespace ranges = std::ranges;
 
+    auto is_boundary = [&](Index id) {
+        return mesh.support(id).size() == 1;
+    };
+
+    std::size_t n = ranges::count_if(range, is_boundary);
     std::vector<Index> bnd_ents;
     bnd_ents.reserve(n);
-    for (auto & id : range) {
-        auto supp = mesh.support(id);
-        if (supp.size() == 1)
-            bnd_ents.push_back(id);
-    }
+    ranges::copy_if(range, std::back_inserter(bnd_ents), is_boundary);
+
     return bnd_ents;
 }
 
