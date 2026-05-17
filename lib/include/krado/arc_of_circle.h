@@ -32,7 +32,7 @@ public:
     /// @param pt1 First point
     /// @param pt2 Second point
     /// @param pt3 Third point
-    static ArcOfCircle create(const Point & pt1, const Point & pt2, const Point & pt3);
+    static ArcOfCircle create(Point pt1, Point pt2, Point pt3);
 
     /// Construct an arc of a circle from a circle and 2 points on the circle.
     ///
@@ -40,15 +40,14 @@ public:
     /// @param pt1 First point
     /// @param pt2 Second point
     /// @param sense Sense of the circle
-    static ArcOfCircle
-    create(const Circle & circ, const Point & pt1, const Point & pt2, bool sense = true);
+    static ArcOfCircle create(const Circle & circ, Point pt1, Point pt2, bool sense = true);
 
     /// Construct an arc of a circle from a point, tangent at the point, and another point.
     ///
     /// @param pt1 First point
     /// @param tangent Tangent at point `pt1`
     /// @param pt2 Second point
-    static ArcOfCircle create(const Point & pt1, Vector tangent, const Point & pt2);
+    static ArcOfCircle create(Point pt1, Vector tangent, Point pt2);
 };
 
 } // namespace krado

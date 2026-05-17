@@ -20,7 +20,7 @@ public:
     /// Construct vector with given coordinates
     explicit Vector(double x, double y = 0., double z = 0.);
     /// Construct vector from point
-    explicit Vector(const Point & pt);
+    explicit Vector(Point pt);
 
     [[nodiscard]] double operator()(int idx) const;
 

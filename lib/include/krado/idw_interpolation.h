@@ -44,14 +44,14 @@ public:
     ///
     /// @param pt Point in 3D space
     /// @param w Weight for the point
-    void add_point(const Point & pt, double w);
+    void add_point(Point pt, double w);
 
     /// Sample the function at a given point
     ///
     /// @param pt Point in 3D space
     /// @param power Power parameter
     /// @return Interpolated value
-    [[nodiscard]] double sample(const Point & pt, double power = 2.) const;
+    [[nodiscard]] double sample(Point pt, double power = 2.) const;
 
 private:
     /// Point sin 3D space

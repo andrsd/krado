@@ -34,7 +34,7 @@ public:
     ///
     /// @param pt1 Point defining the circle and the first point of the polygon
     /// @param n_sides Number of sides (must be 3 or more)
-    static InscribedPolygon create(const Axis2 & ax2, const Point & pt1, int n_sides);
+    static InscribedPolygon create(const Axis2 & ax2, Point pt1, int n_sides);
 };
 
 } // namespace krado

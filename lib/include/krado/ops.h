@@ -36,7 +36,7 @@ GeomShape translate(const GeomShape & shape, Vector v);
 /// @param p1 Point one of the translation vector
 /// @param p2 Point two of the translation vector
 /// @return Translated shape
-GeomShape translate(const GeomShape & shape, const Point & p1, const Point & p2);
+GeomShape translate(const GeomShape & shape, Point p1, Point p2);
 
 /// Scale a shape
 ///

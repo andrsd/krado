@@ -14,7 +14,7 @@ private:
     Line(const TopoDS_Edge & curve);
 
 public:
-    static Line create(const Point & pt1, const Point & pt2);
+    static Line create(Point pt1, Point pt2);
 };
 
 } // namespace krado

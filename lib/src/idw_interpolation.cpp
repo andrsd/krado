@@ -19,14 +19,14 @@ IDWInterpolation::IDWInterpolation(const std::vector<Point> & pnts,
 }
 
 void
-IDWInterpolation::add_point(const Point & pt, double w)
+IDWInterpolation::add_point(Point pt, double w)
 {
     this->pts_.push_back(pt);
     this->weights_.push_back(w);
 }
 
 double
-IDWInterpolation::sample(const Point & pt, double power) const
+IDWInterpolation::sample(Point pt, double power) const
 {
     if (this->pts_.empty())
         throw Exception("No points for interpolation");

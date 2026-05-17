@@ -27,7 +27,7 @@ InscribedPolygon::create(const Axis2 & ax2, double radius, int n_sides)
 }
 
 InscribedPolygon
-InscribedPolygon::create(const Axis2 & ax2, const Point & pt1, int n_sides)
+InscribedPolygon::create(const Axis2 & ax2, Point pt1, int n_sides)
 {
     if (n_sides < 3)
         throw Exception("CircumscribedPolygon needs at least 3 sides");

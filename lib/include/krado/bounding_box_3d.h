@@ -15,7 +15,7 @@ namespace krado {
 class BoundingBox3D {
 public:
     BoundingBox3D();
-    BoundingBox3D(const Point & pt);
+    BoundingBox3D(Point pt);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
     [[nodiscard]] bool empty() const;
@@ -44,7 +44,7 @@ public:
 
     [[nodiscard]] bool contains(const BoundingBox3D & bound) const;
 
-    [[nodiscard]] bool contains(const Point & p) const;
+    [[nodiscard]] bool contains(Point p) const;
 
     [[nodiscard]] bool contains(double x, double y, double z) const;
 

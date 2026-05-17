@@ -135,7 +135,7 @@ Point::operator*(double alpha)
 }
 
 double
-Point::distance(const Point & p) const
+Point::distance(Point p) const
 {
     double dx = x - p.x;
     double dy = y - p.y;

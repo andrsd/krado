@@ -13,7 +13,7 @@ constexpr auto MAX = std::numeric_limits<double>::max();
 
 BoundingBox3D::BoundingBox3D() : min_pt_(MAX, MAX, MAX), max_pt_(-MAX, -MAX, -MAX) {}
 
-BoundingBox3D::BoundingBox3D(const Point & pt) : min_pt_(pt), max_pt_(pt) {}
+BoundingBox3D::BoundingBox3D(Point pt) : min_pt_(pt), max_pt_(pt) {}
 
 BoundingBox3D::BoundingBox3D(double xmin,
                              double ymin,
@@ -156,7 +156,7 @@ BoundingBox3D::contains(const BoundingBox3D & other) const
 }
 
 bool
-BoundingBox3D::contains(const Point & pt) const
+BoundingBox3D::contains(Point pt) const
 {
     if (pt.x >= this->min_pt_.x && pt.y >= this->min_pt_.y && pt.z >= this->min_pt_.z &&
         pt.x <= this->max_pt_.x && pt.y <= this->max_pt_.y && pt.z <= this->max_pt_.z)

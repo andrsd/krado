@@ -30,7 +30,7 @@ ArcOfCircle::end_point() const
 }
 
 ArcOfCircle
-ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
+ArcOfCircle::create(Point pt1, Point pt2, Point pt3)
 {
     GC_MakeArcOfCircle mk_circ(pt1, pt2, pt3);
     if (!mk_circ.IsDone())
@@ -44,7 +44,7 @@ ArcOfCircle::create(const Point & pt1, const Point & pt2, const Point & pt3)
 }
 
 ArcOfCircle
-ArcOfCircle::create(const Circle & circ, const Point & pt1, const Point & pt2, bool sense)
+ArcOfCircle::create(const Circle & circ, Point pt1, Point pt2, bool sense)
 {
     GC_MakeArcOfCircle mk_circ(circ, pt1, pt2, sense);
     if (!mk_circ.IsDone())
@@ -58,7 +58,7 @@ ArcOfCircle::create(const Circle & circ, const Point & pt1, const Point & pt2, b
 }
 
 ArcOfCircle
-ArcOfCircle::create(const Point & pt1, Vector tangent, const Point & pt2)
+ArcOfCircle::create(Point pt1, Vector tangent, Point pt2)
 {
     GC_MakeArcOfCircle mk_circ(pt1, tangent, pt2);
     if (!mk_circ.IsDone())

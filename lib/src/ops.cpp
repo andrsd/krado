@@ -54,7 +54,7 @@ translate(const GeomShape & shape, Vector v)
 }
 
 GeomShape
-translate(const GeomShape & shape, const Point & p1, const Point & p2)
+translate(const GeomShape & shape, Point p1, Point p2)
 {
     gp_Trsf trsf;
     trsf.SetTranslation(p1, p2);

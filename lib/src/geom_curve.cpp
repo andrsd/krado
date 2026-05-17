@@ -131,7 +131,7 @@ GeomCurve::last_vertex() const
 }
 
 double
-GeomCurve::parameter_from_point(const Point & pt) const
+GeomCurve::parameter_from_point(Point pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
@@ -145,7 +145,7 @@ GeomCurve::parameter_from_point(const Point & pt) const
 }
 
 Point
-GeomCurve::nearest_point(const Point & pt) const
+GeomCurve::nearest_point(Point pt) const
 {
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
@@ -157,7 +157,7 @@ GeomCurve::nearest_point(const Point & pt) const
 }
 
 bool
-GeomCurve::contains_point(const Point & pt) const
+GeomCurve::contains_point(Point pt) const
 {
     Point xyz = nearest_point(pt);
     const Standard_Real tolerance = BRep_Tool::Tolerance(this->edge_);

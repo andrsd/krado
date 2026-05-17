@@ -59,7 +59,7 @@ public:
     void operator*=(double alpha);
     void operator/=(double mult);
     [[nodiscard]] Point operator*(double alpha);
-    [[nodiscard]] double distance(const Point & p) const;
+    [[nodiscard]] double distance(Point p) const;
     // lexicographic
     [[nodiscard]] bool operator<(const Point & p) const;
     void transform(const std::vector<double> & tfo);
