@@ -19,7 +19,7 @@ public:
     /// Construct point at origin
     Point();
 
-    explicit Point(const UVParam & uv);
+    explicit Point(UVParam uv);
 
     /// Construct point with given coordinates
     explicit Point(double x, double y = 0, double z = 0);

@@ -31,21 +31,21 @@ public:
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Location in 3D space corresponding to the parametrical position
-    [[nodiscard]] Point point(const UVParam & uv) const;
+    [[nodiscard]] Point point(UVParam uv) const;
 
     /// Get normal vector at parametrical location
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Normal vector at location (u, v)
-    [[nodiscard]] Vector normal(const UVParam & param) const;
+    [[nodiscard]] Vector normal(UVParam param) const;
 
     /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return First derivative
-    [[nodiscard]] std::tuple<Vector, Vector> d1(const UVParam & param) const;
+    [[nodiscard]] std::tuple<Vector, Vector> d1(UVParam param) const;
 
     /// Get area of the surface
     ///

@@ -82,13 +82,13 @@ GeomSurface::dim() const
 }
 
 Point
-GeomSurface::point(const UVParam & param) const
+GeomSurface::point(UVParam param) const
 {
     return Point::create(this->surface_->Value(param.u, param.v));
 }
 
 Vector
-GeomSurface::normal(const UVParam & param) const
+GeomSurface::normal(UVParam param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
@@ -98,7 +98,7 @@ GeomSurface::normal(const UVParam & param) const
 }
 
 std::tuple<Vector, Vector>
-GeomSurface::d1(const UVParam & param) const
+GeomSurface::d1(UVParam param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
