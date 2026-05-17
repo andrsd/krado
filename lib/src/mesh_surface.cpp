@@ -18,10 +18,10 @@ namespace krado {
 
 MeshSurface::MeshSurface(ShapeID id,
                          const GeomSurface & gsurface,
-                         const std::vector<Ptr<MeshCurve>> & mesh_curves) :
+                         std::vector<Ptr<MeshCurve>> mesh_curves) :
     id_(id),
     gsurface_(gsurface),
-    mesh_curves_(mesh_curves)
+    mesh_curves_(std::move(mesh_curves))
 {
 }
 

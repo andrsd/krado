@@ -295,7 +295,7 @@ GeomModel::initialize()
             mesh_curves.push_back(mcurve);
         }
 
-        auto mesh_surf = Ptr<MeshSurface>::alloc(id, geom_surface, mesh_curves);
+        auto mesh_surf = Ptr<MeshSurface>::alloc(id, geom_surface, std::move(mesh_curves));
         this->msurfs_.emplace(id, mesh_surf);
     }
 
@@ -308,7 +308,7 @@ GeomModel::initialize()
             mesh_surfaces.push_back(msurface);
         }
 
-        auto mesh_vol = Ptr<MeshVolume>::alloc(id, geom_volume, mesh_surfaces);
+        auto mesh_vol = Ptr<MeshVolume>::alloc(id, geom_volume, std::move(mesh_surfaces));
         this->mvols_.emplace(id, mesh_vol);
     }
 }

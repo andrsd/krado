@@ -17,9 +17,7 @@ class GeomVolume;
 
 class MeshVolume : public Meshable {
 public:
-    MeshVolume(ShapeID id,
-               const GeomVolume & gvolume,
-               const std::vector<Ptr<MeshSurface>> & mesh_surfaces);
+    MeshVolume(ShapeID id, const GeomVolume & gvolume, std::vector<Ptr<MeshSurface>> mesh_surfaces);
     ~MeshVolume();
 
     /// Get the unique identifier of the volume.
