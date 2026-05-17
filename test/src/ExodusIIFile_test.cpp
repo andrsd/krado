@@ -91,7 +91,7 @@ TEST(ExodusIIFileTest, read_2d)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
 
-    auto & pnts = mesh.points();
+    auto pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(2, 0));

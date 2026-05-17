@@ -55,7 +55,7 @@ public:
     /// Get mesh points
     ///
     /// @return Mesh points
-    [[nodiscard]] const std::vector<Point> & points() const;
+    [[nodiscard]] Span<const Point> points() const;
 
     /// Get a point by index
     ///

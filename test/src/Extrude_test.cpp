@@ -24,7 +24,7 @@ TEST(ExtrudeTest, line_1d)
 
     auto rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
-    auto & pnts = rectangle.points();
+    auto pnts = rectangle.points();
     EXPECT_EQ(pnts.size(), 12);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.1, 0.0));
@@ -85,7 +85,7 @@ TEST(ExtrudeTest, tri_2d)
 
     Mesh box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
-    auto & pnts = box.points();
+    auto pnts = box.points();
     EXPECT_EQ(pnts.size(), 15);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(1.0, 0.0, 0.0));
@@ -152,7 +152,7 @@ TEST(ExtrudeTest, quad_2d)
 
     auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
-    auto & pnts = box.points();
+    auto pnts = box.points();
     EXPECT_EQ(pnts.size(), 27);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.5, 0.0, 0.0));

@@ -367,7 +367,9 @@ tetrahedralize(const Mesh & mesh)
 {
     Log::info("Tetrahedralizing mesh");
 
-    std::vector<Point> points = mesh.points();
+    std::vector<Point> points;
+    points.reserve(mesh.num_points());
+    std::ranges::copy(mesh.points(), points.begin());
 
     gid_t n_tets = 0;
     for (auto & el : mesh.elements())

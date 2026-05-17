@@ -24,7 +24,7 @@ TEST(MeshTest, scaled)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read().scaled(0.25);
-    auto & pnts = mesh.points();
+    auto pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(0.5, 0));
@@ -52,7 +52,7 @@ TEST(MeshTest, scale)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     mesh.scale(0.25);
-    auto & pnts = mesh.points();
+    auto pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(0.5, 0));
@@ -79,7 +79,7 @@ TEST(MeshTest, translated)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read().translated(2, 3);
-    auto & pnts = mesh.points();
+    auto pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(2, 3));
     EXPECT_EQ(pnts[1], Point(4, 3));
@@ -107,7 +107,7 @@ TEST(MeshTest, translate)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
     mesh.translate(2, 3);
-    auto & pnts = mesh.points();
+    auto pnts = mesh.points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(2, 3));
     EXPECT_EQ(pnts[1], Point(4, 3));
@@ -140,7 +140,7 @@ TEST(MeshTest, add_mesh)
     auto sq2 = square.translated(0, 2);
     m.add(sq2);
 
-    auto & pnts = m.points();
+    auto pnts = m.points();
     EXPECT_EQ(pnts.size(), 8);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(2, 0));
@@ -189,7 +189,7 @@ TEST(MeshTest, remove_duplicate_points)
     m.add(sq2);
 
     m.remove_duplicate_points();
-    auto & pnts = m.points();
+    auto pnts = m.points();
 
     EXPECT_EQ(pnts.size(), 6);
     EXPECT_EQ(pnts[0], Point(0, 0));
@@ -221,7 +221,7 @@ TEST(MeshTest, duplicate)
     auto square = f.read();
 
     auto dup = square.duplicate();
-    EXPECT_THAT(square.points(), Eq(dup.points()));
+    EXPECT_TRUE(std::ranges::equal(square.points(), dup.points()));
     EXPECT_THAT(square.elements(), Eq(dup.elements()));
 
     auto cell_set_ids = dup.cell_set_ids();
