@@ -294,22 +294,22 @@ public:
     /// Get mesh vertex ID range
     ///
     /// @return Mesh point ID range
-    [[nodiscard]] const Range & vertex_range() const;
+    [[nodiscard]] Range vertex_range() const;
 
     /// Get mesh edge ID range
     ///
     /// @return Mesh edge ID range
-    [[nodiscard]] const Range & edge_range() const;
+    [[nodiscard]] Range edge_range() const;
 
     /// Get mesh face ID range
     ///
     /// @return Mesh face ID range
-    [[nodiscard]] const Range & face_range() const;
+    [[nodiscard]] Range face_range() const;
 
     /// Get mesh cell ID range
     ///
     /// @return Mesh cell ID range
-    [[nodiscard]] const Range & cell_range() const;
+    [[nodiscard]] Range cell_range() const;
 
     /// Get support of a mesh node
     ///
