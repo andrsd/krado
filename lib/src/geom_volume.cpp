@@ -48,4 +48,13 @@ GeomVolume::operator const TopoDS_Shape &() const
     return this->solid_;
 }
 
+GeomVolume
+GeomVolume::create(const GeomShape & shape)
+{
+    auto solid = TopoDS::Solid(shape);
+    if (solid.IsNull())
+        throw Exception("Failed to create geometrical volume from a shape");
+    return GeomVolume(solid);
+}
+
 } // namespace krado

@@ -34,6 +34,9 @@ private:
     TopoDS_Solid solid_;
     /// volume
     double volume_;
+
+public:
+    static GeomVolume create(const GeomShape & shape);
 };
 
 } // namespace krado
