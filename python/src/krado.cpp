@@ -16,7 +16,6 @@
 #include "krado/scheme/pinpoint.h"
 #include "krado/scheme/size.h"
 #include "krado/scheme/structured.h"
-#include "krado/scheme/triangle.h"
 #include "krado/scheme/tricircle.h"
 #include "krado/scheme/trisurf.h"
 #include "krado/circle.h"
@@ -634,15 +633,6 @@ PYBIND11_MODULE(krado, m)
                  else if (name == "structured") {
                      SchemeStructured::Options opts;
                      self.set_scheme<SchemeStructured>(opts);
-                 }
-                 else if (name == "triangle") {
-                     SchemeTriangle::Options opts;
-                     if (kwargs.contains("region_point"))
-                         opts.region_point =
-                             kwargs["region_point"].cast<std::tuple<double, double>>();
-                     if (kwargs.contains("max_area"))
-                         opts.max_area = kwargs["max_area"].cast<double>();
-                     self.set_scheme<SchemeTriangle>(opts);
                  }
                  else if (name == "tricircle") {
                      SchemeTriCircle::Options opts;

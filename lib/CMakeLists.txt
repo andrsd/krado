@@ -68,10 +68,6 @@ target_link_libraries(
 
 target_compile_definitions(libkrado PRIVATE SPDLOG_HEADER_ONLY)
 
-if (KRADO_WITH_TRIANGLE)
-    target_link_libraries(libkrado PUBLIC triangle)
-endif()
-
 if (KRADO_WITH_MOAB)
     target_link_libraries(libkrado PRIVATE MOAB)
     target_compile_definitions(libkrado PRIVATE KRADO_WITH_MOAB)
