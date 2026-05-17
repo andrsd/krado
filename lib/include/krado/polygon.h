@@ -26,7 +26,7 @@ public:
     static Polygon create(const std::vector<Point> & points, bool closed = true);
 
 protected:
-    static std::vector<Point> build_points(const Axis2 & ax2, const Vector & vec, int n_sides);
+    static std::vector<Point> build_points(const Axis2 & ax2, Vector vec, int n_sides);
     static BRepBuilderAPI_MakePolygon build_polygon(const std::vector<Point> & points, bool closed);
 };
 

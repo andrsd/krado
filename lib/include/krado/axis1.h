@@ -16,7 +16,7 @@ public:
 
     /// @param pt `Point` the location point
     /// @param direction `Vector` the direction of the axis
-    Axis1(const Point & pt, const Vector & dir);
+    Axis1(const Point & pt, Vector dir);
 
     /// Get location
     ///

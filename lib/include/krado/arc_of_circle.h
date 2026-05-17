@@ -48,7 +48,7 @@ public:
     /// @param pt1 First point
     /// @param tangent Tangent at point `pt1`
     /// @param pt2 Second point
-    static ArcOfCircle create(const Point & pt1, const Vector & tangent, const Point & pt2);
+    static ArcOfCircle create(const Point & pt1, Vector tangent, const Point & pt2);
 };
 
 } // namespace krado

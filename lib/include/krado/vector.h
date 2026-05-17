@@ -94,13 +94,13 @@ operator-(const Vector & a)
 }
 
 [[nodiscard]] inline Vector
-cross_product(const Vector & a, const Vector & b)
+cross_product(Vector a, Vector b)
 {
     return Vector(a.y * b.z - b.y * a.z, -(a.x * b.z - b.x * a.z), a.x * b.y - b.x * a.y);
 }
 
 [[nodiscard]] inline double
-dot_product(const Vector & v1, const Vector & v2)
+dot_product(Vector v1, Vector v2)
 {
     return v1(0) * v2(0) + v1(1) * v2(1) + v1(2) * v2(2);
 }

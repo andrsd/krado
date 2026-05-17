@@ -705,8 +705,8 @@ PYBIND11_MODULE(krado, m)
         .def("outside", &SolidClassifier::outside)
     ;
 
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, int, double)>(&extrude));
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, const std::vector<double> &)>(&extrude));
 
     m.def("compute_volume", [](const Mesh & mesh) {
         auto vols = compute_volume(mesh);

@@ -11,9 +11,9 @@ namespace krado {
 
 Axis2::Axis2(const gp_Ax2 & ax2) : ax2_(ax2) {}
 
-Axis2::Axis2(const Point & pt, const Vector & direction) : ax2_(pt, direction) {}
+Axis2::Axis2(const Point & pt, Vector direction) : ax2_(pt, direction) {}
 
-Axis2::Axis2(const Point & pt, const Vector & n, const Vector & v_x)
+Axis2::Axis2(const Point & pt, Vector n, Vector v_x)
 {
     try {
         this->ax2_ = gp_Ax2(pt, n, v_x);

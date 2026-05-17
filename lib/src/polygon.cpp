@@ -12,7 +12,7 @@ namespace krado {
 Polygon::Polygon(const TopoDS_Wire & wire) : Wire(wire) {}
 
 std::vector<Point>
-Polygon::build_points(const Axis2 & ax2, const Vector & start_vec, int n_sides)
+Polygon::build_points(const Axis2 & ax2, Vector start_vec, int n_sides)
 {
     std::vector<Point> points;
     auto ctr_pt = ax2.location();

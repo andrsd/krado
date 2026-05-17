@@ -48,8 +48,7 @@ public:
     /// @param center Center point
     /// @param radius Radius
     /// @param norm Normal of the plane
-    static Circle
-    create(const Point & center, double radius, const Vector & normal = Vector(0., 0., 1.));
+    static Circle create(const Point & center, double radius, Vector normal = Vector(0., 0., 1.));
 
     /// Construct a circle from a center point and another point
     ///
@@ -57,7 +56,7 @@ public:
     /// @param pt Point that is part of the circle
     /// @param normal Normal of the plane
     static Circle
-    create(const Point & center, const Point & pt, const Vector & normal = Vector(0., 0., 1.));
+    create(const Point & center, const Point & pt, Vector normal = Vector(0., 0., 1.));
 
     /// Construct a circle from three points
     ///

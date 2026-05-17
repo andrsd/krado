@@ -28,7 +28,7 @@ class Plane;
 /// @param shape Shape to translate
 /// @param v Translation vector
 /// @return Translated shape
-GeomShape translate(const GeomShape & shape, const Vector & v);
+GeomShape translate(const GeomShape & shape, Vector v);
 
 /// Translate a shape
 ///
@@ -145,7 +145,7 @@ GeomShape hollow(const GeomShape & shape,
 /// @param shape Shape to extrude
 /// @param vec Vector of extrusion
 /// @return Resulting shape
-GeomShape extrude(const GeomShape & shape, const Vector & vec);
+GeomShape extrude(const GeomShape & shape, Vector vec);
 
 /// Revolve shape about an axis
 ///

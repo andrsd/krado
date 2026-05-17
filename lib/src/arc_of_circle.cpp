@@ -58,7 +58,7 @@ ArcOfCircle::create(const Circle & circ, const Point & pt1, const Point & pt2, b
 }
 
 ArcOfCircle
-ArcOfCircle::create(const Point & pt1, const Vector & tangent, const Point & pt2)
+ArcOfCircle::create(const Point & pt1, Vector tangent, const Point & pt2)
 {
     GC_MakeArcOfCircle mk_circ(pt1, tangent, pt2);
     if (!mk_circ.IsDone())
