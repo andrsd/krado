@@ -14,13 +14,22 @@ public:
     struct Iterator {
         using iterator_category = std::forward_iterator_tag;
         using value_type = Index;
+        using difference_type = std::ptrdiff_t;
+        using pointer = const value_type *;
 
+        Iterator() = default;
         explicit Iterator(value_type idx) : idx_(idx) {}
 
         const value_type &
         operator*() const
         {
             return this->idx_;
+        }
+
+        pointer
+        operator->() const
+        {
+            return &this->idx_;
         }
 
         /// Prefix increment
@@ -53,7 +62,7 @@ public:
         };
 
     private:
-        Index idx_;
+        Index idx_ = 0;
     };
 
     Range(Index start, Index end) : start_idx_(start), end_idx_(end) {}
