@@ -30,8 +30,7 @@ public:
     /// @param points Array of points
     /// @param initial_tg Initial tangent
     /// @param final_tg Final tangent
-    static Spline
-    create(const std::vector<Point> & points, const Vector & initial_tg, const Vector & final_tg);
+    static Spline create(const std::vector<Point> & points, Vector initial_tg, Vector final_tg);
 };
 
 } // namespace krado

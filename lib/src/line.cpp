@@ -11,7 +11,7 @@ namespace krado {
 Line::Line(const TopoDS_Edge & curve) : GeomCurve(curve) {}
 
 Line
-Line::create(const Point & pt1, const Point & pt2)
+Line::create(Point pt1, Point pt2)
 {
     BRepBuilderAPI_MakeEdge maker(pt1, pt2);
     maker.Build();

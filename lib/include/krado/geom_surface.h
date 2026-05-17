@@ -31,21 +31,21 @@ public:
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Location in 3D space corresponding to the parametrical position
-    [[nodiscard]] Point point(const UVParam & uv) const;
+    [[nodiscard]] Point point(UVParam uv) const;
 
     /// Get normal vector at parametrical location
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return Normal vector at location (u, v)
-    [[nodiscard]] Vector normal(const UVParam & param) const;
+    [[nodiscard]] Vector normal(UVParam param) const;
 
     /// Compute first derivative at parametrical position
     ///
     /// @param u Parameter specifying location
     /// @param v Parameter specifying location
     /// @return First derivative
-    [[nodiscard]] std::tuple<Vector, Vector> d1(const UVParam & param) const;
+    [[nodiscard]] std::tuple<Vector, Vector> d1(UVParam param) const;
 
     /// Get area of the surface
     ///
@@ -66,13 +66,13 @@ public:
     ///
     /// @param pt Physical location
     /// @return Parameters (u, v)
-    [[nodiscard]] UVParam parameter_from_point(const Point & pt) const;
+    [[nodiscard]] UVParam parameter_from_point(Point pt) const;
 
     /// Find nearest point
     ///
     /// @param pt Physical point
     /// @return Point on the curve, nearest to `pt`
-    [[nodiscard]] Point nearest_point(const Point & pt) const;
+    [[nodiscard]] Point nearest_point(Point pt) const;
 
     ///
     std::tuple<Point, UVParam> closest_point(Point qp, UVParam uv) const;
@@ -81,14 +81,14 @@ public:
     ///
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
-    [[nodiscard]] bool contains_point(const Point & pt) const;
+    [[nodiscard]] bool contains_point(Point pt) const;
 
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Face &() const;
 
 private:
-    std::tuple<bool, UVParam> project(const Point & pt) const;
+    std::tuple<bool, UVParam> project(Point pt) const;
 
     TopoDS_Face face_;
     Handle(Geom_Surface) surface_;

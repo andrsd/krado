@@ -23,13 +23,13 @@ public:
     ///
     /// @param pt Point to test
     /// @return `true` if the point is inside, `false` otherwise
-    bool inside(const Point & pt);
+    bool inside(Point pt);
 
     /// Test if a point is outside the shape
     ///
     /// @param pt Point to test
     /// @return `true` if the point is outside, `false` otherwise
-    bool outside(const Point & pt);
+    bool outside(Point pt);
 
 private:
     BRepClass3d_SolidClassifier classifier_;

@@ -15,7 +15,7 @@ class Axis2 {
 public:
     explicit Axis2(const gp_Ax2 & ax2);
 
-    Axis2(const Point & pt, const Vector & direction);
+    Axis2(Point pt, Vector direction);
 
     /// Creates an axis placement with an origin `pt` such that:
     /// - `n` is the Direction, and
@@ -23,7 +23,7 @@ public:
     ///   "X Direction" = (n ^ v_x) ^ n,
     ///
     /// Raises `Exception` if N and Vx are parallel (same or opposite orientation).
-    Axis2(const Point & pt, const Vector & n, const Vector & v_x);
+    Axis2(Point pt, Vector n, Vector v_x);
 
     /// Get location
     ///

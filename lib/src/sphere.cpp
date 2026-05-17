@@ -15,7 +15,7 @@ Sphere::Sphere(const TopoDS_Solid & solid) : GeomVolume(solid)
 }
 
 Sphere
-Sphere::create(const Point & center, double radius)
+Sphere::create(Point center, double radius)
 {
     BRepPrimAPI_MakeSphere sphere(center, radius);
     sphere.Build();

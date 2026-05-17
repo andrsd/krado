@@ -56,13 +56,13 @@ operator*(double alpha, const UVParam & param)
 }
 
 inline double
-determinant(const UVParam & a, const UVParam & b)
+determinant(UVParam a, UVParam b)
 {
     return a.u * b.v - a.v * b.u;
 }
 
 [[nodiscard]] inline double
-dot_product(const UVParam & a, const UVParam & b)
+dot_product(UVParam a, UVParam b)
 {
     return a.u * b.u + a.v * b.v;
 }

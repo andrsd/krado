@@ -45,7 +45,7 @@
 namespace krado {
 
 GeomShape
-translate(const GeomShape & shape, const Vector & v)
+translate(const GeomShape & shape, Vector v)
 {
     gp_Trsf trsf;
     trsf.SetTranslation(v);
@@ -54,7 +54,7 @@ translate(const GeomShape & shape, const Vector & v)
 }
 
 GeomShape
-translate(const GeomShape & shape, const Point & p1, const Point & p2)
+translate(const GeomShape & shape, Point p1, Point p2)
 {
     gp_Trsf trsf;
     trsf.SetTranslation(p1, p2);
@@ -396,7 +396,7 @@ hollow(const GeomShape & shape,
 }
 
 GeomShape
-extrude(const GeomShape & shape, const Vector & vec)
+extrude(const GeomShape & shape, Vector vec)
 {
     BRepPrimAPI_MakePrism result(shape, (gp_Dir) vec);
     result.Build();

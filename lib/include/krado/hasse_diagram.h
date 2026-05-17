@@ -27,25 +27,25 @@ private:
 public:
     using Node = boost::graph_traits<Graph>::vertex_descriptor;
 
-    const Range &
+    Range
     vertices() const
     {
         return this->vertex_rng_;
     }
 
-    const Range &
+    Range
     edges() const
     {
         return this->edge_rng_;
     }
 
-    const Range &
+    Range
     faces() const
     {
         return this->face_rng_;
     }
 
-    const Range &
+    Range
     cells() const
     {
         return this->cell_rng_;
@@ -93,12 +93,9 @@ public:
         this->grph_ = Graph();
         this->vertex_rng_ = { std::numeric_limits<Index>::max(),
                               std::numeric_limits<Index>::min() };
-        this->edge_rng_ = { std::numeric_limits<Index>::max(),
-                            std::numeric_limits<Index>::min() };
-        this->face_rng_ = { std::numeric_limits<Index>::max(),
-                            std::numeric_limits<Index>::min() };
-        this->cell_rng_ = { std::numeric_limits<Index>::max(),
-                            std::numeric_limits<Index>::min() };
+        this->edge_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
+        this->face_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
+        this->cell_rng_ = { std::numeric_limits<Index>::max(), std::numeric_limits<Index>::min() };
     }
 
     std::vector<Index>

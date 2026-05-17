@@ -13,7 +13,7 @@ namespace krado {
 
 Point::Point() : x(0.), y(0.), z(0.) {}
 
-Point::Point(const UVParam & uv) : x(uv.u), y(uv.v), z(0.) {}
+Point::Point(UVParam uv) : x(uv.u), y(uv.v), z(0.) {}
 
 Point::Point(double x, double y, double z) : x(x), y(y), z(z) {}
 
@@ -135,7 +135,7 @@ Point::operator*(double alpha)
 }
 
 double
-Point::distance(const Point & p) const
+Point::distance(Point p) const
 {
     double dx = x - p.x;
     double dy = y - p.y;

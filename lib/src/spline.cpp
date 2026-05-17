@@ -34,9 +34,7 @@ Spline::create(const std::vector<Point> & points)
 }
 
 Spline
-Spline::create(const std::vector<Point> & points,
-               const Vector & initial_tg,
-               const Vector & final_tg)
+Spline::create(const std::vector<Point> & points, Vector initial_tg, Vector final_tg)
 {
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);

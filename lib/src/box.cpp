@@ -14,7 +14,7 @@ Box::Box(const TopoDS_Solid & solid) : GeomVolume(solid)
 }
 
 Box
-Box::create(const Point & pt1, const Point & pt2)
+Box::create(Point pt1, Point pt2)
 {
     BRepPrimAPI_MakeBox box(pt1, pt2);
     box.Build();

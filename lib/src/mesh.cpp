@@ -165,7 +165,7 @@ remove_duplicates(const PointCloud & cloud, double threshold)
 }
 
 std::vector<Index>
-boundary_entities(const Mesh & mesh, const Range & range)
+boundary_entities(const Mesh & mesh, Range range)
 {
     namespace ranges = std::ranges;
 
@@ -667,25 +667,25 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     return *this;
 }
 
-const Range &
+Range
 Mesh::vertex_range() const
 {
     return this->hasse_.vertices();
 }
 
-const Range &
+Range
 Mesh::edge_range() const
 {
     return this->hasse_.edges();
 }
 
-const Range &
+Range
 Mesh::face_range() const
 {
     return this->hasse_.faces();
 }
 
-const Range &
+Range
 Mesh::cell_range() const
 {
     return this->hasse_.cells();

@@ -84,19 +84,19 @@ public:
     ///
     /// @param pt Physical location
     /// @return Parameter
-    [[nodiscard]] double parameter_from_point(const Point & pt) const;
+    [[nodiscard]] double parameter_from_point(Point pt) const;
 
     /// Find nearest point
     ///
     /// @param pt Physical point
     /// @return Point on the curve, nearest to `pt`
-    [[nodiscard]] Point nearest_point(const Point & pt) const;
+    [[nodiscard]] Point nearest_point(Point pt) const;
 
     /// Check if point is on the curve
     ///
     /// @param pt Point to investigate
     /// @return `true` if the point is on the curve, `false` otherwise
-    [[nodiscard]] bool contains_point(const Point & pt) const;
+    [[nodiscard]] bool contains_point(Point pt) const;
 
     bool is_seam(const GeomSurface & surface) const;
 

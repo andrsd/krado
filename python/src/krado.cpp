@@ -231,7 +231,7 @@ PYBIND11_MODULE(krado, m)
         .def("make_cube", &BoundingBox3D::make_cube)
         .def("thicken", &BoundingBox3D::thicken)
         .def("contains", static_cast<bool (BoundingBox3D::*)(const BoundingBox3D &) const>(&BoundingBox3D::contains))
-        .def("contains", static_cast<bool (BoundingBox3D::*)(const Point &) const>(&BoundingBox3D::contains))
+        .def("contains", static_cast<bool (BoundingBox3D::*)(Point) const>(&BoundingBox3D::contains))
         .def("contains", static_cast<bool (BoundingBox3D::*)(double, double, double) const>(&BoundingBox3D::contains))
         .def("transform", &BoundingBox3D::transform)
         .def("size", static_cast<std::array<double, 3> (BoundingBox3D::*)() const>(&BoundingBox3D::size))
@@ -712,8 +712,8 @@ PYBIND11_MODULE(krado, m)
         .def("outside", &SolidClassifier::outside)
     ;
 
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, int, double)>(&extrude));
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, const Vector &, const std::vector<double> &)>(&extrude));
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, int, double)>(&extrude));
+    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, const std::vector<double> &)>(&extrude));
 
     m.def("compute_volume", [](const Mesh & mesh) {
         auto vols = compute_volume(mesh);

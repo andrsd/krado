@@ -9,7 +9,7 @@ namespace krado {
 
 Axis1::Axis1(const gp_Ax1 & ax1) : ax1_(ax1) {}
 
-Axis1::Axis1(const Point & pt, const Vector & dir) : ax1_(pt, dir) {}
+Axis1::Axis1(Point pt, Vector dir) : ax1_(pt, dir) {}
 
 Point
 Axis1::location() const

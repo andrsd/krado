@@ -100,7 +100,7 @@ extrude_element_side<ElementType::QUAD4>(const Element & /* el */, int side)
 } // namespace
 
 Mesh
-extrude(const Mesh & mesh, const Vector & normal, int layers, double thickness)
+extrude(const Mesh & mesh, Vector normal, int layers, double thickness)
 {
     Log::info("Extruding mesh: normal={}, layers={}, thickness={}", normal, layers, thickness);
 
@@ -109,7 +109,7 @@ extrude(const Mesh & mesh, const Vector & normal, int layers, double thickness)
 }
 
 Mesh
-extrude(const Mesh & mesh, const Vector & direction, const std::vector<double> & thicknesses)
+extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thicknesses)
 {
     auto n = direction.normalized();
     auto point_stride = mesh.points().size();

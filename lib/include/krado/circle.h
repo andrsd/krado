@@ -48,23 +48,21 @@ public:
     /// @param center Center point
     /// @param radius Radius
     /// @param norm Normal of the plane
-    static Circle
-    create(const Point & center, double radius, const Vector & normal = Vector(0., 0., 1.));
+    static Circle create(Point center, double radius, Vector normal = Vector(0., 0., 1.));
 
     /// Construct a circle from a center point and another point
     ///
     /// @param center Center point
     /// @param pt Point that is part of the circle
     /// @param normal Normal of the plane
-    static Circle
-    create(const Point & center, const Point & pt, const Vector & normal = Vector(0., 0., 1.));
+    static Circle create(Point center, Point pt, Vector normal = Vector(0., 0., 1.));
 
     /// Construct a circle from three points
     ///
     /// @param pt1 First point
     /// @param pt2 Second point
     /// @param pt3 Third point
-    static Circle create(const Point & pt1, const Point & pt2, const Point & pt3);
+    static Circle create(Point pt1, Point pt2, Point pt3);
 };
 
 } // namespace krado

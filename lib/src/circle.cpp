@@ -51,7 +51,7 @@ Circle::create(const Axis2 & origin, double radius)
 }
 
 Circle
-Circle::create(const Point & center, double radius, const Vector & normal)
+Circle::create(Point center, double radius, Vector normal)
 {
     GC_MakeCircle make_circ(center, normal, radius);
     if (!make_circ.IsDone())
@@ -64,7 +64,7 @@ Circle::create(const Point & center, double radius, const Vector & normal)
 }
 
 Circle
-Circle::create(const Point & center, const Point & pt, const Vector & normal)
+Circle::create(Point center, Point pt, Vector normal)
 {
     auto radius = center.distance(pt);
     GC_MakeCircle make_circ(center, normal, radius);
@@ -78,7 +78,7 @@ Circle::create(const Point & center, const Point & pt, const Vector & normal)
 }
 
 Circle
-Circle::create(const Point & pt1, const Point & pt2, const Point & pt3)
+Circle::create(Point pt1, Point pt2, Point pt3)
 {
     GC_MakeCircle make_circ(pt1, pt2, pt3);
     if (!make_circ.IsDone())

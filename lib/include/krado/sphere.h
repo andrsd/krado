@@ -18,7 +18,7 @@ public:
     ///
     /// @param center Location of the sphere center
     /// @param radius Radius of the sphere
-    static Sphere create(const Point & center, double radius);
+    static Sphere create(Point center, double radius);
 };
 
 } // namespace krado

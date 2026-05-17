@@ -82,13 +82,13 @@ GeomSurface::dim() const
 }
 
 Point
-GeomSurface::point(const UVParam & param) const
+GeomSurface::point(UVParam param) const
 {
     return Point::create(this->surface_->Value(param.u, param.v));
 }
 
 Vector
-GeomSurface::normal(const UVParam & param) const
+GeomSurface::normal(UVParam param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
@@ -98,7 +98,7 @@ GeomSurface::normal(const UVParam & param) const
 }
 
 std::tuple<Vector, Vector>
-GeomSurface::d1(const UVParam & param) const
+GeomSurface::d1(UVParam param) const
 {
     BRepAdaptor_Surface breps(this->face_);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
@@ -139,7 +139,7 @@ GeomSurface::curves() const
 }
 
 UVParam
-GeomSurface::parameter_from_point(const Point & pt) const
+GeomSurface::parameter_from_point(Point pt) const
 {
     auto [found, uv] = project(pt);
     if (found)
@@ -159,7 +159,7 @@ GeomSurface::operator const TopoDS_Face &() const
 }
 
 std::tuple<bool, UVParam>
-GeomSurface::project(const Point & pt) const
+GeomSurface::project(Point pt) const
 {
     this->proj_pt_on_surface_.Perform(pt);
 
@@ -173,7 +173,7 @@ GeomSurface::project(const Point & pt) const
 }
 
 Point
-GeomSurface::nearest_point(const Point & pt) const
+GeomSurface::nearest_point(Point pt) const
 {
     this->proj_pt_on_surface_.Perform(pt);
     if (this->proj_pt_on_surface_.NbPoints())
@@ -195,7 +195,7 @@ GeomSurface::closest_point(Point qp, UVParam uv) const
 }
 
 bool
-GeomSurface::contains_point(const Point & pt) const
+GeomSurface::contains_point(Point pt) const
 {
     auto xyz = nearest_point(pt);
     const auto tolerance = BRep_Tool::Tolerance(this->face_);

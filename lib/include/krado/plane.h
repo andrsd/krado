@@ -35,7 +35,7 @@ public:
     ///
     /// @param pt Location of the plane
     /// @param normal Normal direction
-    Plane(const Point & pt, const Vector & normal);
+    Plane(Point pt, Vector normal);
 
     /// Location of this plane
     Point location() const;
