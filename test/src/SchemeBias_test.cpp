@@ -22,12 +22,12 @@ TEST(SchemeBiasTest, line)
     model.mesh_curve(1);
 
     auto mline = model.curve(1);
-    auto & bv = mline->bounding_vertices();
+    auto bv = mline->bounding_vertices();
     ASSERT_EQ(bv.size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(1, 0, 0), 1e-10));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(2, 0, 0), 1e-10));
 
-    auto & cv = mline->curve_vertices();
+    auto cv = mline->curve_vertices();
     ASSERT_EQ(cv.size(), 4);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(1.1637975, 0, 0), 1e-6));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(1.3439747, 0, 0), 1e-6));
@@ -50,12 +50,12 @@ TEST(SchemeBiasTest, arc)
     model.mesh_curve(1);
 
     auto mline = model.curve(1);
-    auto & bv = mline->bounding_vertices();
+    auto bv = mline->bounding_vertices();
     ASSERT_EQ(mline->bounding_vertices().size(), 2);
     EXPECT_TRUE(bv[0]->point().is_equal(Point(-1., 0., 0), 1e-6));
     EXPECT_TRUE(bv[1]->point().is_equal(Point(1., 0., 0), 1e-6));
 
-    auto & cv = mline->curve_vertices();
+    auto cv = mline->curve_vertices();
     ASSERT_EQ(cv.size(), 4);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(-0.870497, 0.4921736, 0), 1e-6));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(-0.470774, 0.8822538, 0), 1e-6));
@@ -78,10 +78,10 @@ TEST(SchemeBiasTest, circle)
     model.mesh_curve(1);
 
     auto mline = model.curve(1);
-    auto & bv = mline->bounding_vertices();
+    auto bv = mline->bounding_vertices();
     EXPECT_TRUE(bv[0]->point().is_equal(Point(2, 0, 0)));
 
-    auto & cv = mline->curve_vertices();
+    auto cv = mline->curve_vertices();
     ASSERT_EQ(cv.size(), 4);
     EXPECT_TRUE(cv[0]->point().is_equal(Point(1.031061, 1.713743, 0), 1e-6));
     EXPECT_TRUE(cv[1]->point().is_equal(Point(-1.113487, 1.661369, 0), 1e-6));

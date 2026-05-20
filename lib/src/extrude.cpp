@@ -163,7 +163,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     extruded_mesh.set_up();
     // extrude cell sets
     for (auto & id : mesh.cell_set_ids()) {
-        auto & cells = mesh.cell_set(id);
+        auto cells = mesh.cell_set(id);
         std::vector<Index> cell_set;
         cell_set.reserve(cells.size() * thicknesses.size());
         for (std::size_t i = 0; i < thicknesses.size(); ++i) {

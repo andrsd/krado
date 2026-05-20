@@ -295,7 +295,7 @@ GeomModel::initialize()
             mesh_curves.push_back(mcurve);
         }
 
-        auto mesh_surf = Ptr<MeshSurface>::alloc(id, geom_surface, mesh_curves);
+        auto mesh_surf = Ptr<MeshSurface>::alloc(id, geom_surface, std::move(mesh_curves));
         this->msurfs_.emplace(id, mesh_surf);
     }
 
@@ -308,7 +308,7 @@ GeomModel::initialize()
             mesh_surfaces.push_back(msurface);
         }
 
-        auto mesh_vol = Ptr<MeshVolume>::alloc(id, geom_volume, mesh_surfaces);
+        auto mesh_vol = Ptr<MeshVolume>::alloc(id, geom_volume, std::move(mesh_surfaces));
         this->mvols_.emplace(id, mesh_vol);
     }
 }
@@ -417,7 +417,7 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
 
         auto & scheme = curve->scheme();
 
-        auto & bnd_vtxs = curve->bounding_vertices();
+        auto bnd_vtxs = curve->bounding_vertices();
         for (auto & v : bnd_vtxs)
             mesh_vertex(v);
 
@@ -443,7 +443,7 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
 
         auto & scheme = surface->scheme();
 
-        auto & curves = surface->curves();
+        auto curves = surface->curves();
         for (auto & crv : curves)
             scheme.select_curve_scheme(crv);
         for (auto & crv : curves)
@@ -471,7 +471,7 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
 
         auto & scheme = volume->scheme();
 
-        auto & surfaces = volume->surfaces();
+        auto surfaces = volume->surfaces();
         for (auto & srf : surfaces)
             scheme.select_surface_scheme(srf);
         for (auto & srf : surfaces)

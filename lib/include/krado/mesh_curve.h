@@ -33,8 +33,8 @@ public:
     [[nodiscard]] const GeomCurve & geom_curve() const;
 
     ///
-    [[nodiscard]] const std::vector<Ptr<MeshVertex>> & bounding_vertices() const;
-    [[nodiscard]] std::vector<Ptr<MeshVertex>> & bounding_vertices();
+    [[nodiscard]] Span<const Ptr<MeshVertex>> bounding_vertices() const;
+    [[nodiscard]] Span<Ptr<MeshVertex>> bounding_vertices();
 
     /// Add curve vertex
     ///
@@ -44,12 +44,12 @@ public:
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    [[nodiscard]] const std::vector<Ptr<MeshCurveVertex>> & curve_vertices() const;
+    [[nodiscard]] Span<const Ptr<MeshCurveVertex>> curve_vertices() const;
 
     /// Get (internal) vertices on the curve
     ///
     /// @return Vertices on the curve
-    [[nodiscard]] std::vector<Ptr<MeshCurveVertex>> & curve_vertices();
+    [[nodiscard]] Span<Ptr<MeshCurveVertex>> curve_vertices();
 
     /// Add new curve segment
     ///
@@ -59,7 +59,7 @@ public:
     /// Get curve segments
     ///
     /// @return Curse segments using vertex indexing local to this edge
-    [[nodiscard]] const std::vector<MeshElement> & segments() const;
+    [[nodiscard]] Span<const MeshElement> segments() const;
 
     bool is_mesh_degenerated() const;
 

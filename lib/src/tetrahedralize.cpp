@@ -409,7 +409,7 @@ tetrahedralize(const Mesh & mesh)
 
     Mesh tet_mesh(points, elems);
     for (auto id : mesh.cell_set_ids()) {
-        auto & cells = mesh.cell_set(id);
+        auto cells = mesh.cell_set(id);
         std::vector<Index> new_cell_set;
         for (auto & cell_id : cells) {
             auto & tet_elems = elem_map[cell_id];

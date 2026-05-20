@@ -34,16 +34,16 @@ TEST(MeshTest, scaled)
     auto cell_set_ids = mesh.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = mesh.cell_set(0);
+    auto cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = mesh.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = mesh.edge_set(10);
+    auto ss0 = mesh.edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto & ss1 = mesh.edge_set(11);
+    auto ss1 = mesh.edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -62,16 +62,16 @@ TEST(MeshTest, scale)
     auto cell_set_ids = mesh.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = mesh.cell_set(0);
+    auto cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = mesh.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = mesh.edge_set(10);
+    auto ss0 = mesh.edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto & ss1 = mesh.edge_set(11);
+    auto ss1 = mesh.edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -89,16 +89,16 @@ TEST(MeshTest, translated)
     auto cell_set_ids = mesh.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = mesh.cell_set(0);
+    auto cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = mesh.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = mesh.edge_set(10);
+    auto ss0 = mesh.edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto & ss1 = mesh.edge_set(11);
+    auto ss1 = mesh.edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -117,16 +117,16 @@ TEST(MeshTest, translate)
     auto cell_set_ids = mesh.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = mesh.cell_set(0);
+    auto cs0 = mesh.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = mesh.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = mesh.edge_set(10);
+    auto ss0 = mesh.edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto & ss1 = mesh.edge_set(11);
+    auto ss1 = mesh.edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -165,16 +165,16 @@ TEST(MeshTest, add_mesh)
     auto cell_set_ids = m.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = m.cell_set(0);
+    auto cs0 = m.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1, 2, 3));
 
     auto ss_ids = m.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = m.edge_set(10);
+    auto ss0 = m.edge_set(10);
     EXPECT_THAT(ss0, testing::ElementsAre(15, 20));
 
-    auto & ss1 = m.edge_set(11);
+    auto ss1 = m.edge_set(11);
     EXPECT_THAT(ss1, testing::ElementsAre(14, 19));
 }
 
@@ -227,16 +227,16 @@ TEST(MeshTest, duplicate)
     auto cell_set_ids = dup.cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto & cs0 = dup.cell_set(0);
+    auto cs0 = dup.cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
     auto ss_ids = dup.edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto & ss0 = dup.edge_set(10);
+    auto ss0 = dup.edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto & ss1 = dup.edge_set(11);
+    auto ss1 = dup.edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 

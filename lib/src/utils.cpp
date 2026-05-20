@@ -109,7 +109,7 @@ distance(UVParam p1, UVParam p2)
 }
 
 std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst)
+create_side_set(const Mesh & mesh, Span<const Index> facets, std::size_t ofst)
 {
     std::vector<SideEntry> sset;
     sset.reserve(facets.size());

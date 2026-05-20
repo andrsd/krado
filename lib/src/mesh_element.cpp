@@ -40,7 +40,7 @@ MeshElement::vertex(int idx) const
     return this->vtx_[idx];
 }
 
-const std::vector<Ptr<MeshVertexAbstract>> &
+Span<const Ptr<MeshVertexAbstract>>
 MeshElement::vertices() const
 {
     return this->vtx_;

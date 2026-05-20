@@ -244,7 +244,7 @@ unreachable()
 /// @param facets Facets/edges
 /// @return Side set
 std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<Index> & facets, std::size_t ofst = 0);
+create_side_set(const Mesh & mesh, Span<const Index> facets, std::size_t ofst = 0);
 
 /// Create an edge/face set from a side set
 ///

@@ -28,7 +28,7 @@ TEST(SchemeBamgTest, DISABLED_mesh_quad)
 
     auto quad = model.surface(1);
     ASSERT_EQ(quad->surface_vertices().size(), 10);
-    auto & vtx = quad->surface_vertices();
+    auto vtx = quad->surface_vertices();
     EXPECT_EQ(vtx[0]->point(), Point(0., 0., 0.));
     EXPECT_EQ(vtx[1]->point(), Point(2., 0., 0.));
     EXPECT_EQ(vtx[2]->point(), Point(2., 3., 0.));

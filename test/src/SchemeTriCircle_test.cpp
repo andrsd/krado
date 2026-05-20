@@ -31,7 +31,7 @@ TEST(SchemeCircleTest, circle)
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
 
-    auto & sv = surf->surface_vertices();
+    auto sv = surf->surface_vertices();
     ASSERT_EQ(sv.size(), 1);
     EXPECT_EQ(sv[0]->point(), Point(0, 0, 0));
 

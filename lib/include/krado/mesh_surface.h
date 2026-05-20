@@ -22,9 +22,7 @@ class MeshCurve;
 
 class MeshSurface : public Meshable {
 public:
-    MeshSurface(ShapeID id,
-                const GeomSurface & gcurve,
-                const std::vector<Ptr<MeshCurve>> & mesh_curves);
+    MeshSurface(ShapeID id, const GeomSurface & gcurve, std::vector<Ptr<MeshCurve>> mesh_curves);
     ~MeshSurface();
 
     /// Get the unique identifier of the surface.
@@ -38,8 +36,8 @@ public:
     [[nodiscard]] const GeomSurface & geom_surface() const;
 
     /// Get curves bounding this surface
-    [[nodiscard]] const std::vector<Ptr<MeshCurve>> & curves() const;
-    [[nodiscard]] std::vector<Ptr<MeshCurve>> & curves();
+    [[nodiscard]] Span<const Ptr<MeshCurve>> curves() const;
+    [[nodiscard]] Span<Ptr<MeshCurve>> curves();
 
     /// Get the mesh size for this surface
     ///
@@ -60,23 +58,23 @@ public:
     /// Get (internal) vertices on the surface
     ///
     /// @return Vertices on the surface
-    [[nodiscard]] const std::vector<Ptr<MeshSurfaceVertex>> & surface_vertices() const;
+    [[nodiscard]] Span<const Ptr<MeshSurfaceVertex>> surface_vertices() const;
 
-    [[nodiscard]] std::vector<Ptr<MeshSurfaceVertex>> & surface_vertices();
+    [[nodiscard]] Span<Ptr<MeshSurfaceVertex>> surface_vertices();
 
     /// Get triangles on this surface
     ///
     /// @return Triangles on this surface
-    [[nodiscard]] const std::vector<MeshElement> & triangles() const;
+    [[nodiscard]] Span<const MeshElement> triangles() const;
 
-    [[nodiscard]] std::vector<MeshElement> & triangles();
+    [[nodiscard]] Span<MeshElement> triangles();
 
     /// Get quadrangles on this surface
     ///
     /// @return Quadrangles on this surface
-    [[nodiscard]] const std::vector<MeshElement> & quadrangles() const;
+    [[nodiscard]] Span<const MeshElement> quadrangles() const;
 
-    [[nodiscard]] std::vector<MeshElement> & quadrangles();
+    [[nodiscard]] Span<MeshElement> quadrangles();
 
     /// Add vertex
     ///
@@ -105,7 +103,7 @@ public:
 
     void set_triangles(const std::vector<MeshElement> & new_tris);
 
-    const std::vector<MeshElement> & elements() const;
+    Span<const MeshElement> elements() const;
 
     void remove_all_triangles();
 

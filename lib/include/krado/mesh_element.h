@@ -40,7 +40,7 @@ public:
     /// @return Vertex
     [[nodiscard]] Ptr<MeshVertexAbstract> vertex(int idx) const;
 
-    const std::vector<Ptr<MeshVertexAbstract>> & vertices() const;
+    Span<const Ptr<MeshVertexAbstract>> vertices() const;
 
     MeshElement get_edge(int i) const;
 

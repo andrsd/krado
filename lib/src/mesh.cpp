@@ -340,7 +340,7 @@ Mesh::add(const Mesh & other)
 
     // merge cell sets
     for (auto & id : other.cell_set_ids()) {
-        auto & cs = other.cell_set(id);
+        auto cs = other.cell_set(id);
         for (auto & cell_id : cs)
             this->cell_sets_[id].emplace_back(cell_id + n_elem_ofst);
 
@@ -473,7 +473,7 @@ Mesh::cell_set_ids() const
     return utils::map_keys(this->cell_sets_);
 }
 
-const std::vector<Index> &
+Span<const Index>
 Mesh::cell_set(Marker id) const
 {
     try {
@@ -523,7 +523,7 @@ Mesh::face_set_ids() const
     return utils::map_keys(this->face_sets_);
 }
 
-const std::vector<Index> &
+Span<const Index>
 Mesh::face_set(Marker id) const
 {
     try {
@@ -573,7 +573,7 @@ Mesh::edge_set_ids() const
     return utils::map_keys(this->edge_sets_);
 }
 
-const std::vector<Index> &
+Span<const Index>
 Mesh::edge_set(Marker id) const
 {
     try {
@@ -622,7 +622,7 @@ Mesh::vertex_set_ids() const
     return utils::map_keys(this->vertex_sets_);
 }
 
-const std::vector<Index> &
+Span<const Index>
 Mesh::vertex_set(Marker id) const
 {
     try {

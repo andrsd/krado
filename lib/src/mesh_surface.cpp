@@ -18,10 +18,10 @@ namespace krado {
 
 MeshSurface::MeshSurface(ShapeID id,
                          const GeomSurface & gsurface,
-                         const std::vector<Ptr<MeshCurve>> & mesh_curves) :
+                         std::vector<Ptr<MeshCurve>> mesh_curves) :
     id_(id),
     gsurface_(gsurface),
-    mesh_curves_(mesh_curves)
+    mesh_curves_(std::move(mesh_curves))
 {
 }
 
@@ -39,13 +39,13 @@ MeshSurface::geom_surface() const
     return this->gsurface_;
 }
 
-const std::vector<Ptr<MeshCurve>> &
+Span<const Ptr<MeshCurve>>
 MeshSurface::curves() const
 {
     return this->mesh_curves_;
 }
 
-std::vector<Ptr<MeshCurve>> &
+Span<Ptr<MeshCurve>>
 MeshSurface::curves()
 {
     return this->mesh_curves_;
@@ -75,37 +75,37 @@ MeshSurface::mesh_size_at_param(UVParam /* par */) const
     return MAX_LC;
 }
 
-const std::vector<Ptr<MeshSurfaceVertex>> &
+Span<const Ptr<MeshSurfaceVertex>>
 MeshSurface::surface_vertices() const
 {
     return this->surf_vtxs_;
 }
 
-std::vector<Ptr<MeshSurfaceVertex>> &
+Span<Ptr<MeshSurfaceVertex>>
 MeshSurface::surface_vertices()
 {
     return this->surf_vtxs_;
 }
 
-const std::vector<MeshElement> &
+Span<const MeshElement>
 MeshSurface::triangles() const
 {
     return this->tris_;
 }
 
-std::vector<MeshElement> &
+Span<MeshElement>
 MeshSurface::triangles()
 {
     return this->tris_;
 }
 
-const std::vector<MeshElement> &
+Span<const MeshElement>
 MeshSurface::quadrangles() const
 {
     return this->quads_;
 }
 
-std::vector<MeshElement> &
+Span<MeshElement>
 MeshSurface::quadrangles()
 {
     return this->quads_;
@@ -182,7 +182,7 @@ MeshSurface::set_triangles(const std::vector<MeshElement> & new_tris)
     this->tris_ = new_tris;
 }
 
-const std::vector<MeshElement> &
+Span<const MeshElement>
 MeshSurface::elements() const
 {
     return this->tris_;
