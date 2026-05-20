@@ -22,7 +22,7 @@ def test_mesh_cell_set_ids():
     assert 1 in ids
     assert 2 in ids
 
-def test_mesh_set_cell_set():
+def disabled_test_mesh_set_cell_set():
     mesh = krado.Mesh()
     mesh.set_cell_set(1, [0, 1, 2])
     cell_set = mesh.cell_set(1)

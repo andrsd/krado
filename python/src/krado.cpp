@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include "krado/arc_of_circle.h"
 #include "krado/axis1.h"
 #include "krado/axis2.h"
@@ -114,6 +115,19 @@ py_log_debug(int level, const std::string & msg)
 {
     Log::debug(level, "{}", msg);
 }
+
+auto make_span_view = [](auto & self, auto span_getter) {
+    // Invoke the getter function pointer to get our span instance
+    auto s = (self.*span_getter)();
+
+    // Deduce the primitive element type (e.g., int, float, double)
+    using ElementType = typename decltype(s)::element_type;
+
+    // Standard anchoring capsule to tie NumPy's life to 'self'
+    py::capsule base(&self, [](void *) {});
+
+    return py::array_t<ElementType>({ s.size() }, { sizeof(ElementType) }, s.data(), base);
+};
 
 PYBIND11_MODULE(krado, m)
 {
@@ -243,7 +257,7 @@ PYBIND11_MODULE(krado, m)
         .def("type", py::overload_cast<>(&Element::type, py::const_))
         .def("num_vertices", &Element::num_vertices)
         .def("index", &Element::index)
-        .def("indices", &Element::indices)
+        .def("indices", [=](Element & self) { return make_span_view(self, &Element::indices); })
     ;
 
     py::class_<GeomShape>(m, "GeomShape")
@@ -445,9 +459,9 @@ PYBIND11_MODULE(krado, m)
     py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
         .def(py::init<std::vector<Point>, std::vector<Element>>())
-        .def("points", &Mesh::points, py::return_value_policy::reference)
+        // .def("points", /* TODO */)
         .def("point", &Mesh::point, py::return_value_policy::reference)
-        .def("elements", &Mesh::elements, py::return_value_policy::reference)
+        // .def("elements", /* TODO */)
         .def("element", &Mesh::element, py::return_value_policy::reference)
         .def("scale", static_cast<Mesh &(Mesh::*)(double)>(&Mesh::scale))
         .def("scaled", static_cast<Mesh (Mesh::*)(double) const>(&Mesh::scaled))
@@ -467,21 +481,21 @@ PYBIND11_MODULE(krado, m)
         .def("set_cell_set_name", &Mesh::set_cell_set_name)
         .def("cell_set_name", &Mesh::cell_set_name)
         .def("cell_set_ids", &Mesh::cell_set_ids)
-        .def("cell_set", &Mesh::cell_set)
+        // .def("cell_set", /* TODO */)
         .def("remove_cell_sets", &Mesh::remove_cell_sets)
 
         .def("set_face_set", &Mesh::set_face_set)
         .def("set_face_set_name", &Mesh::set_face_set_name)
         .def("face_set_name", &Mesh::face_set_name)
         .def("face_set_ids", &Mesh::face_set_ids)
-        .def("face_set", &Mesh::face_set)
+        // .def("face_set", /* TODO */)
         .def("remove_face_sets", &Mesh::remove_face_sets)
 
         .def("set_edge_set", &Mesh::set_edge_set)
         .def("set_edge_set_name", &Mesh::set_edge_set_name)
         .def("edge_set_name", &Mesh::edge_set_name)
         .def("edge_set_ids", &Mesh::edge_set_ids)
-        .def("edge_set", &Mesh::edge_set)
+        // .def("edge_set", /* TODO */)
         .def("remove_edge_sets", &Mesh::remove_edge_sets)
 
         .def("remap_block_ids", &Mesh::remap_block_ids)
@@ -517,7 +531,7 @@ PYBIND11_MODULE(krado, m)
         .def("type", &MeshElement::type)
         .def("num_vertices", &MeshElement::num_vertices)
         .def("vertex", &MeshElement::vertex)
-        .def("vertices", &MeshElement::vertices, py::return_value_policy::reference)
+        // .def("vertices", /* TODO */)
         .def("get_edge", &MeshElement::get_edge)
         .def("swap_vertices", &MeshElement::swap_vertices)
     ;
@@ -550,11 +564,11 @@ PYBIND11_MODULE(krado, m)
     py::class_<MeshCurve, Meshable, Ptr<MeshCurve>>(m, "MeshCurve")
         .def(py::init<ShapeID, const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
-        .def("bounding_vertices", py::overload_cast<>(&MeshCurve::bounding_vertices, py::const_), py::return_value_policy::reference)
-        .def("curve_vertices", py::overload_cast<>(&MeshCurve::curve_vertices, py::const_), py::return_value_policy::reference)
+        // .def("bounding_vertices", /* TODO */)
+        // .def("curve_vertices", /* TODO */)
         .def("add_vertex", py::overload_cast<Ptr<MeshCurveVertex>>(&MeshCurve::add_vertex))
         .def("add_segment", &MeshCurve::add_segment)
-        .def("segments", &MeshCurve::segments, py::return_value_policy::reference)
+        // .def("segments", /* TODO */)
         .def("is_mesh_degenerated", &MeshCurve::is_mesh_degenerated)
         .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
         .def("mesh_size", &MeshCurve::mesh_size)
@@ -604,16 +618,17 @@ PYBIND11_MODULE(krado, m)
     py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
         .def(py::init<ShapeID, const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
-        .def("curves", py::overload_cast<>(&MeshSurface::curves, py::const_), py::return_value_policy::reference)
-        .def("surface_vertices", py::overload_cast<>(&MeshSurface::surface_vertices, py::const_), py::return_value_policy::reference)
-        .def("triangles", py::overload_cast<>(&MeshSurface::triangles, py::const_), py::return_value_policy::reference)
+        // .def("curves", /* TODO */)
+        // .def("surface_vertices", /* TODO */)
+        // .def("triangles", /* TODO */)
+        // .def("quadrangles", /* TODO */)
         .def("add_vertex", py::overload_cast<Ptr<MeshSurfaceVertex>>(&MeshSurface::add_vertex))
         .def("add_triangle", &MeshSurface::add_triangle)
         .def("add_quadrangle", &MeshSurface::add_quadrangle)
         .def("add_element", &MeshSurface::add_element)
         .def("reserve_mem", &MeshSurface::reserve_mem)
         .def("set_triangles", &MeshSurface::set_triangles)
-        .def("elements", &MeshSurface::elements)
+        // .def("elements", /* TODO */)
         .def("remove_all_triangles", &MeshSurface::remove_all_triangles)
         .def("delete_mesh", &MeshSurface::delete_mesh)
         .def("quads_to_tris", [](MeshSurface & self, py::kwargs kwargs) {
@@ -654,7 +669,7 @@ PYBIND11_MODULE(krado, m)
     py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
         .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
-        .def("surfaces", py::overload_cast<>(&MeshVolume::surfaces, py::const_), py::return_value_policy::reference)
+        // .def("surfaces", /* TODO */)
         .def("set_scheme",
              [](MeshVolume & self, const std::string & name, py::kwargs kwargs) {
                  if (name == "trisurf") {
@@ -669,6 +684,7 @@ PYBIND11_MODULE(krado, m)
                  }
              },
              "Set the meshing scheme for the volume.")
+        // .def("tetrahedra", /* TODO */)
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
