@@ -37,7 +37,7 @@ public:
     }
 
     std::size_t
-    num_point() const
+    num_points() const
     {
         return this->points_.size();
     }

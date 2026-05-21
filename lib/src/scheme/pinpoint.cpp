@@ -33,7 +33,7 @@ SchemePinpoint::mesh_curve(Ptr<MeshCurve> curve)
 
     // place mesh curve vertices
     std::sort(apos.begin(), apos.end());
-    for (std::size_t count = 1, num_pts = 0; num_pts < apos.size() && count < igrl.num_point();) {
+    for (std::size_t count = 1, num_pts = 0; num_pts < apos.size() && count < igrl.num_points();) {
         auto & pt1 = igrl.point(count - 1);
         auto & pt2 = igrl.point(count);
         const auto d = apos[num_pts];
