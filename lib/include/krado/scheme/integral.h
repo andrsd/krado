@@ -42,7 +42,7 @@ public:
         return this->points_.size();
     }
 
-    const Pt &
+    Pt
     point(std::size_t idx) const
     {
         return this->points_[idx];
