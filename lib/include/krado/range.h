@@ -116,6 +116,25 @@ operator==(const Range & a, const Range & b)
     return (a.first() == b.first()) && (a.last() == b.last());
 }
 
+/// Create a range from `start` to `end`
+///
+/// @param start First element
+/// @param end Last elements (excluded)
+inline Range
+make_range(Index start, Index end)
+{
+    return Range(start, end);
+}
+
+/// Create a range from 0 to `end`
+///
+/// @param end Last elements (excluded)
+inline Range
+make_range(Index end)
+{
+    return Range(0, end);
+}
+
 } // namespace krado
 
 inline std::ostream &
