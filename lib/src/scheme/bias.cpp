@@ -27,7 +27,6 @@ SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
               n_segs,
               bias_factor);
 
-    // compute arc length
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {
         auto der = geom_curve.d1(t);
