@@ -16,7 +16,7 @@ TEST(SchemeIntegralTest, arc_length_of_a_line)
         return der.magnitude();
     });
 
-    EXPECT_EQ(igrl.num_point(), 257);
+    EXPECT_EQ(igrl.num_points(), 257);
 
     auto lo = igrl.point(0);
     EXPECT_NEAR(lo.t, 0, 1e-15);
@@ -38,7 +38,7 @@ TEST(SchemeIntegralTest, arc_length_of_an_arc)
         return der.magnitude();
     });
 
-    EXPECT_EQ(igrl.num_point(), 257);
+    EXPECT_EQ(igrl.num_points(), 257);
 
     auto lo = igrl.point(0);
     EXPECT_NEAR(lo.t, 0, 1e-15);

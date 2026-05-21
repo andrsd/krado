@@ -38,8 +38,8 @@ SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
     double l0 = geom_curve.length() * (bias_factor - 1.) / (std::pow(bias_factor, n_segs) - 1);
     double p_prev = 0.;
     for (int count = 1, num_pts = 0; num_pts < n_segs - 1;) {
-        auto & pt1 = igrl.point(count - 1);
-        auto & pt2 = igrl.point(count);
+        auto pt1 = igrl.point(count - 1);
+        auto pt2 = igrl.point(count);
         const auto d = p_prev + l0 * std::pow(bias_factor, num_pts);
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             p_prev = d;

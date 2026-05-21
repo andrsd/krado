@@ -32,17 +32,17 @@ public:
         Pt from { t_lo, fn(t_lo), 0. };
         this->points_.push_back(from);
 
-        Pt to { t_hi, fn(t_lo), 0. };
+        Pt to { t_hi, fn(t_hi), 0. };
         recursive_integrate(from, to, fn, 0);
     }
 
     std::size_t
-    num_point() const
+    num_points() const
     {
         return this->points_.size();
     }
 
-    const Pt &
+    Pt
     point(std::size_t idx) const
     {
         return this->points_[idx];
