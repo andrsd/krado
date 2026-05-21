@@ -11,8 +11,8 @@ namespace krado {
 class SchemeSize : public Scheme1D {
 public:
     struct Options {
-        /// Number of intervals
-        int intervals = 1;
+        /// Approximate element size
+        double size = 1.;
     };
 
 public:

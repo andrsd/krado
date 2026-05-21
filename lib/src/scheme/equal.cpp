@@ -24,7 +24,6 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 
     Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_segs);
 
-    // compute arc length
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {
         auto der = geom_curve.d1(t);

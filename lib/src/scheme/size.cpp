@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/size.h"
+#include "krado/scheme/integral.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
+#include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
-#include "GCPnts_AbscissaPoint.hxx"
 
 namespace krado {
 
@@ -17,47 +18,32 @@ SchemeSize::SchemeSize(Options options) : Scheme1D("size"), opts_(options) {}
 void
 SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
 {
-    Log::info("Meshing curve {}: scheme='size'", curve->id());
+    Log::info("Meshing curve {}: scheme='size', size={}", curve->id(), this->opts_.size);
 
     const auto & geom_curve = curve->geom_curve();
-    GeomAdaptor_Curve adaptor(geom_curve.curve_handle());
 
-    auto [t0, t1] = geom_curve.param_range();
-    const double tol = 1e-6;
+    Integral igrl;
+    igrl.integrate(geom_curve, [=](double t) {
+        auto der = geom_curve.d1(t);
+        return der.magnitude();
+    });
 
-    double total_length = GCPnts_AbscissaPoint::Length(adaptor, t0, t1, tol);
-    if (total_length < tol) {
-        Log::warn("Curve {} is too small (length={})", curve->id(), total_length);
-        curve->set_too_small(true);
-        return;
-    }
-
-    const auto & bnd_verts = curve->bounding_vertices();
-    if (bnd_verts.size() != 2)
-        throw Exception("Curve {} must have 2 bounding vertices", curve->id());
-
-    double s = 0.0;
-    double t = t0;
-    while (s < total_length - tol) {
-        auto u = t;
-        auto h = curve->mesh_size_at_param(u);
-
-        if (s + h > total_length)
-            h = total_length - s;
-
-        GCPnts_AbscissaPoint abscissa(adaptor, h, t, tol);
-        if (!abscissa.IsDone())
-            throw Exception("Failed to compute abscissa point");
-
-        t = abscissa.Parameter();
-        if (t < t1 - tol) {
-            auto cvtx = Ptr<MeshCurveVertex>::alloc(geom_curve, t);
-            curve->add_vertex(cvtx);
-            s += h;
+    int n_segs = std::round(geom_curve.length() / this->opts_.size);
+    const double b = geom_curve.length() / static_cast<double>(n_segs);
+    for (int count = 1, num_pts = 1; num_pts < n_segs;) {
+        auto pt1 = igrl.point(count - 1);
+        auto pt2 = igrl.point(count);
+        const double d = num_pts * b;
+        if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
+            const auto dt = pt2.t - pt1.t;
+            const auto dp = pt2.p - pt1.p;
+            const auto t = pt1.t + dt / dp * (d - pt1.p);
+            curve->add_vertex(Ptr<MeshCurveVertex>::alloc(geom_curve, t));
+            num_pts++;
         }
-        else
-            // Reached (or passed) end parameter
-            break;
+        else {
+            count++;
+        }
     }
 
     build_curve_segments(curve);
