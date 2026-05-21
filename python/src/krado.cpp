@@ -607,8 +607,8 @@ PYBIND11_MODULE(krado, m)
                  }
                  else if (name == "size") {
                      SchemeSize::Options opts;
-                     if (kwargs.contains("intervals"))
-                         opts.intervals = kwargs["intervals"].cast<int>();
+                     if (kwargs.contains("size"))
+                         opts.size = kwargs["size"].cast<double>();
                      self.set_scheme<SchemeSize>(opts);
                  }
              },
