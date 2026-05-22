@@ -20,6 +20,7 @@
 #include "krado/scheme/tricircle.h"
 #include "krado/scheme/fan.h"
 #include "krado/scheme/trisurf.h"
+#include "krado/line.h"
 #include "krado/circle.h"
 #include "krado/circumscribed_polygon.h"
 #include "krado/cone.h"
@@ -352,6 +353,13 @@ PYBIND11_MODULE(krado, m)
         .def("nearest_point", &GeomCurve::nearest_point)
         .def("contains_point", &GeomCurve::contains_point)
         .def("is_seam", &GeomCurve::is_seam)
+    ;
+
+    py::class_<Line, GeomCurve>(m, "Line")
+        .def(py::init([](Point pt1, Point pt2) {
+                 return Line::create(pt1, pt2);
+             }),
+             py::arg("pt1"), py::arg("pt2"))
     ;
 
     py::class_<Circle, GeomCurve>(m, "Circle")
