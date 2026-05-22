@@ -1,5 +1,6 @@
 #include "builder.h"
 #include "gp_Circ.hxx"
+#include "gp_Ax2.hxx"
 #include "BRepLib_MakeVertex.hxx"
 #include "BRepLib_MakeEdge.hxx"
 #include "BRepLib_MakeWire.hxx"
@@ -13,7 +14,12 @@
 #include "BRepBuilderAPI_MakeFace.hxx"
 #include "BRepPrimAPI_MakeCylinder.hxx"
 #include "GC_MakeArcOfCircle.hxx"
+#include "GC_MakeCircle.hxx"
 #include "krado/geom_surface.h"
+#include "krado/circle.h"
+#include "krado/arc_of_circle.h"
+#include "krado/wire.h"
+#include "krado/line.h"
 
 using namespace krado;
 
@@ -110,6 +116,19 @@ build_rect(Point pt1, Point pt2)
     auto wire = BRepBuilderAPI_MakeWire(edge1, edge2, edge3, edge4);
 
     return GeomSurface(BRepBuilderAPI_MakeFace(wire));
+}
+
+GeomSurface
+build_quarter_circle(Point center, double radius)
+{
+    Point p1(center.x + radius, center.y, 0);
+    Point p2(center.x, center.y + radius, 0);
+    auto circ = Circle::create(center, radius);
+    auto arc = ArcOfCircle::create(circ, p1, p2);
+    auto edge1 = Line::create(center, p1);
+    auto edge2 = Line::create(center, p2);
+    auto wire = Wire::create({ arc, edge1, edge2 });
+    return GeomSurface::create(wire);
 }
 
 GeomVolume

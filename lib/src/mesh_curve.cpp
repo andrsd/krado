@@ -149,6 +149,20 @@ MeshCurve::scheme()
     return *this->scheme_.get();
 }
 
+std::vector<Ptr<MeshVertexAbstract>>
+get_mesh_curve_vertices(Ptr<MeshCurve> curve)
+{
+    std::vector<Ptr<MeshVertexAbstract>> vtxs;
+    vtxs.reserve(curve->curve_vertices().size() + 2);
+    auto bnd_vtxs = curve->bounding_vertices();
+    vtxs.push_back(bnd_vtxs[0]);
+    for (auto cv : curve->curve_vertices()) {
+        vtxs.push_back(cv);
+    }
+    vtxs.push_back(bnd_vtxs[1]);
+    return vtxs;
+}
+
 } // namespace krado
 
 std::ostream &
