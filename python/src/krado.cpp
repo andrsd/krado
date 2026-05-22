@@ -18,6 +18,7 @@
 #include "krado/scheme/size.h"
 #include "krado/scheme/structured.h"
 #include "krado/scheme/tricircle.h"
+#include "krado/scheme/fan.h"
 #include "krado/scheme/trisurf.h"
 #include "krado/circle.h"
 #include "krado/circumscribed_polygon.h"
@@ -661,6 +662,10 @@ PYBIND11_MODULE(krado, m)
                      if (kwargs.contains("radial_intervals"))
                          opts.radial_intervals = kwargs["radial_intervals"].cast<int>();
                      self.set_scheme<SchemeTriCircle>(opts);
+                 }
+                 else if (name == "fan") {
+                     SchemeFan::Options opts;
+                     self.set_scheme<SchemeFan>(opts);
                  }
              },
              "Set the meshing scheme for the surface.")

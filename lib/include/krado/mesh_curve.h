@@ -118,6 +118,12 @@ private:
     Optional<double> mesh_size_;
 };
 
+/// Build array of mesh vertices that are on a given curve
+///
+/// @param curve Mesh curve to process
+/// @return Array of mesh vertices. Ordering: bnd_vtx1, curve_vertices, bnd_vtx2
+std::vector<Ptr<MeshVertexAbstract>> get_mesh_curve_vertices(Ptr<MeshCurve> curve);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::MeshCurve & vtx);
