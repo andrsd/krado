@@ -275,6 +275,10 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Wire, GeomShape>(m, "Wire")
+        .def(py::init([](const std::vector<GeomCurve> & curves) {
+                 return Wire::create(curves);
+             }),
+             py::arg("curves"))
         .def("length", &Wire::length)
     ;
 
