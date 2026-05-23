@@ -64,10 +64,11 @@ STEPFile::read() const
         Handle(TDataStd_Name) name_attr;
         if (shape_label.FindAttribute(TDataStd_Name::GetID(), name_attr)) {
             auto name = name_attr->Get();
-            char * nm = new char[name.LengthOfCString()];
-            name.ToUTF8CString(nm);
+            std::string nm;
+            nm.reserve(name.LengthOfCString() + 1);
+            auto pchar = nm.data();
+            name.ToUTF8CString(pchar);
             geom_shape.set_name(nm);
-            delete[] nm;
         }
 
         // get material associated with the label (if any)
