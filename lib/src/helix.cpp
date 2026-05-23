@@ -6,6 +6,7 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/exception.h"
+#include "krado/range.h"
 #include "TColgp_HArray1OfPnt.hxx"
 #include "GeomAPI_PointsToBSpline.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
@@ -22,11 +23,7 @@ Helix::Helix(const TopoDS_Edge & edge, Handle(Geom_BSplineCurve) spline) :
 }
 
 Helix
-Helix::create(const Axis2 & ax2,
-              double radius,
-              double height,
-              double turns,
-              double start_angle)
+Helix::create(const Axis2 & ax2, double radius, double height, double turns, double start_angle)
 {
     auto ax1 = ax2.axis();
     auto n_pts = turns * N_SEGS_PER_TURN;
@@ -49,7 +46,7 @@ Helix::create(const Axis2 & ax2,
         pt.Transform(start_rotate);
     }
     TColgp_HArray1OfPnt pnts(0, n_pts);
-    for (int idx = 0; idx < n_pts; idx++) {
+    for (auto idx : make_range(n_pts)) {
         pnts.SetValue(idx, pt);
         pt.Transform(translate);
         pt.Transform(rotate);

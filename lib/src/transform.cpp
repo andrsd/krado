@@ -3,6 +3,7 @@
 
 #include "krado/transform.h"
 #include "krado/point.h"
+#include "krado/range.h"
 #include <iostream>
 #include <cmath>
 
@@ -10,15 +11,15 @@ namespace krado {
 
 Trsf::Trsf()
 {
-    for (auto i = 0; i < N; i++)
-        for (auto j = 0; j < N; j++)
+    for (auto i : make_range(N))
+        for (auto j : make_range(N))
             this->mat_[i][j] = 0.;
 }
 
 Trsf &
 Trsf::scale(double factor)
 {
-    for (auto i = 0; i < N - 1; i++)
+    for (auto i : make_range(N - 1))
         this->mat_[i][i] *= factor;
     return *this;
 }
@@ -66,9 +67,9 @@ Trsf
 Trsf::operator*(const Trsf & other) const
 {
     Trsf result;
-    for (auto i = 0; i < N; i++)
-        for (auto j = 0; j < N; j++)
-            for (auto k = 0; k < N; k++)
+    for (auto i : make_range(N))
+        for (auto j : make_range(N))
+            for (auto k : make_range(N))
                 result.mat_[i][j] += other.mat_[i][k] * this->mat_[k][j];
     return result;
 }
@@ -77,9 +78,9 @@ Trsf &
 Trsf::operator*=(const Trsf & other)
 {
     Trsf result;
-    for (auto i = 0; i < N; i++)
-        for (auto j = 0; j < N; j++)
-            for (auto k = 0; k < N; k++)
+    for (auto i : make_range(N))
+        for (auto j : make_range(N))
+            for (auto k : make_range(N))
                 result.mat_[i][j] += other.mat_[i][k] * this->mat_[k][j];
     *this = result;
     return *this;
@@ -90,8 +91,8 @@ Trsf::operator*(const Point & other) const
 {
     double result[N] = { 0., 0., 0., 0. };
     double pt[N] = { other.x, other.y, other.z, 1. };
-    for (auto i = 0; i < N; i++)
-        for (auto j = 0; j < N; j++)
+    for (auto i : make_range(N))
+        for (auto j : make_range(N))
             result[i] += this->mat_[i][j] * pt[j];
     return Point(result[0] / result[3], result[1] / result[3], result[2] / result[3]);
 }
@@ -100,7 +101,7 @@ Trsf
 Trsf::scaled(double factor)
 {
     auto s = Trsf::identity();
-    for (auto i = 0; i < N - 1; i++)
+    for (auto i : make_range(N - 1))
         s.mat_[i][i] = factor;
     return s;
 }
@@ -162,7 +163,7 @@ Trsf
 Trsf::identity()
 {
     Trsf result;
-    for (auto i = 0; i < N; i++)
+    for (auto i : make_range(N))
         result.mat_[i][i] = 1.;
     return result;
 }

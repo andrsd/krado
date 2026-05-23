@@ -247,7 +247,7 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // "inner" triangle fan
     {
         auto & outer = rings[M - 1];
-        for (auto v : make_range(0, outer.size() - 1))
+        for (auto v : make_range(outer.size() - 1))
             mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], center_vtx));
     }
 

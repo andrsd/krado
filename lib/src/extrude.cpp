@@ -120,7 +120,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     points.reserve(point_stride * (thicknesses.size() + 1));
     for (auto & pt : mesh.points())
         points.emplace_back(pt);
-    for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+    for (auto i : make_range(thicknesses.size())) {
         auto delta = thicknesses[i];
         for (auto & pt : mesh.points()) {
             auto p = pt + (i + 1) * n * delta;
@@ -129,7 +129,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
     int dim = -1;
     std::vector<Element> elems;
-    for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+    for (auto i : make_range(thicknesses.size())) {
         for (auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {
                 elems.emplace_back(extrude_element<ElementType::LINE2>(el, i, point_stride));
@@ -166,7 +166,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         auto cells = mesh.cell_set(id);
         std::vector<Index> cell_set;
         cell_set.reserve(cells.size() * thicknesses.size());
-        for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+        for (auto i : make_range(thicknesses.size())) {
             for (auto & cell : cells)
                 cell_set.push_back(cell + elem_stride * i);
         }
@@ -179,7 +179,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         for (auto & [id, ss] : side_sets) {
             std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
-            for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+            for (auto i : make_range(thicknesses.size())) {
                 for (auto & entry : ss) {
                     auto cell_id = entry.elem + elem_stride * i;
                     auto & cell = mesh.element(entry.elem);
@@ -202,7 +202,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         for (auto & [id, ss] : side_sets) {
             std::vector<SideEntry> extruded_side_sets;
             extruded_side_sets.reserve(ss.size() * thicknesses.size());
-            for (std::size_t i = 0; i < thicknesses.size(); ++i) {
+            for (auto i : make_range(thicknesses.size())) {
                 for (auto & entry : ss) {
                     auto cell_id = entry.elem + elem_stride * i;
                     auto & cell = mesh.element(entry.elem);

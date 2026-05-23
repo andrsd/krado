@@ -5,6 +5,7 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/axis1.h"
+#include "krado/range.h"
 #include <array>
 
 namespace krado {
@@ -27,7 +28,7 @@ HexagonalPattern::HexagonalPattern(const Axis2 & center, double flat_to_flat, in
 
     // find corners
     std::array<Point, N_CORNERS> corners;
-    for (int i = 0; i < N_CORNERS; ++i) {
+    for (auto i : make_range(N_CORNERS)) {
         double angle = i * DEG60;
         auto v = x_vec.rotated(ctr_ax1, angle);
         auto pt = ctr_pt + v;
@@ -36,11 +37,11 @@ HexagonalPattern::HexagonalPattern(const Axis2 & center, double flat_to_flat, in
 
     // build sides
     std::vector<Point> points;
-    for (int s = 0; s < N_SIDES; ++s) {
+    for (auto s : make_range(N_SIDES)) {
         Vector side = corners[(s + 1) % N_SIDES] - corners[s];
         Vector side_dir = side.normalized();
         double ds = side.magnitude() / this->num_side_segs_;
-        for (int i = 0; i < this->num_side_segs_; ++i) {
+        for (auto i : make_range(this->num_side_segs_)) {
             auto pt = corners[s] + i * ds * side_dir;
             points.emplace_back(pt);
         }

@@ -3,6 +3,7 @@
 
 #include "krado/spline.h"
 #include "krado/exception.h"
+#include "krado/range.h"
 #include "TColgp_HArray1OfPnt.hxx"
 #include "GeomAPI_Interpolate.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
@@ -20,7 +21,7 @@ Spline::create(const std::vector<Point> & points)
 {
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);
-    for (std::size_t idx = 0; idx < n; idx++)
+    for (auto idx : make_range(n))
         pnts->SetValue(idx + 1, points[idx]);
     GeomAPI_Interpolate mk(pnts, false, 1e-8);
     mk.Perform();
@@ -38,7 +39,7 @@ Spline::create(const std::vector<Point> & points, Vector initial_tg, Vector fina
 {
     auto n = points.size();
     Handle(TColgp_HArray1OfPnt) pnts = new TColgp_HArray1OfPnt(1, n);
-    for (std::size_t idx = 0; idx < n; idx++)
+    for (auto idx : make_range(n))
         pnts->SetValue(idx + 1, points[idx]);
     GeomAPI_Interpolate mk(pnts, false, 1e-8);
     mk.Load(initial_tg, final_tg);

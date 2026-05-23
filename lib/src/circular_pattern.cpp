@@ -4,6 +4,7 @@
 #include "krado/circular_pattern.h"
 #include "krado/vector.h"
 #include "krado/axis1.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -22,7 +23,7 @@ CircularPattern::CircularPattern(const Axis2 & center,
     x_vec.rotate(center.axis(), start_angle);
     Axis1 ctr_ax1(ctr, center.direction());
     double dangle = 2. * M_PI / this->divs_;
-    for (int i = 0; i < this->divs_; ++i) {
+    for (auto i : make_range(this->divs_)) {
         double angle = i * dangle;
         auto v = x_vec.rotated(ctr_ax1, angle);
         auto pt = ctr + v;

@@ -8,6 +8,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -24,7 +25,7 @@ SurfaceIndexMapper::SurfaceIndexMapper(Ptr<MeshSurface> surface) : surface_(surf
         }
     }
 
-    for (std::size_t cidx = 0; cidx < surface->curves().size(); cidx++) {
+    for (auto cidx : make_range(surface->curves().size())) {
         auto curve = surface->curves()[cidx];
         for (auto & v : curve->bounding_vertices()) {
             auto pt = v->point();

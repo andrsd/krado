@@ -9,6 +9,7 @@
 #include "krado/exception.h"
 #include "krado/point.h"
 #include "krado/element.h"
+#include "krado/range.h"
 #include <cassert>
 
 namespace krado {
@@ -118,7 +119,7 @@ barycenter(const MeshElement & elem)
 {
     Point p(0., 0., 0.);
     auto n = elem.num_vertices();
-    for (int i = 0; i < n; i++) {
+    for (auto i : make_range(n)) {
         const auto v = elem.vertex(i);
         p += v->point();
     }

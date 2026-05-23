@@ -71,12 +71,12 @@ print_histogram(const std::array<std::size_t, N> & histogram)
     int max_bar_width = 50;
 
     std::size_t max_count_wd = 0;
-    for (int b = 0; b < N; ++b) {
+    for (auto b : make_range(N)) {
         std::size_t count = histogram[b];
         max_count_wd = std::max(max_count_wd, utils::human_number(count).size());
     }
 
-    for (int b = 0; b < N; ++b) {
+    for (auto b : make_range(N)) {
         double low = static_cast<double>(b) / N;
         double high = static_cast<double>(b + 1) / N;
         std::size_t count = histogram[b];
@@ -120,7 +120,7 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     const int BINS = 10;
     std::array<std::size_t, BINS> histogram {};
 
-    for (std::size_t i = 0; i < cloud.points.size(); ++i) {
+    for (auto i : make_range(cloud.points.size())) {
         if (!processed[i]) {
             processed[i] = true;
 
@@ -332,7 +332,7 @@ Mesh::add(const Mesh & other)
     this->pnts_.insert(this->pnts_.end(), other.pnts_.begin(), other.pnts_.end());
     // merge elements
     this->elems_.insert(this->elems_.end(), other.elems_.begin(), other.elems_.end());
-    for (std::size_t i = n_elem_ofst; i < this->elems_.size(); ++i) {
+    for (auto i : make_range(n_elem_ofst, this->elems_.size())) {
         auto & ids = this->elems_[i].vtx_id_;
         for (auto & id : ids)
             id += n_pt_ofst;
@@ -750,7 +750,7 @@ Mesh::build_hasse_diagram()
     this->key_map_.reserve(3 * n_cells + n_pnts);
 
     // Add Hasse nodes for cells
-    for (Index i = 0; i < n_cells; ++i) {
+    for (Index i : make_range(n_cells)) {
         auto id = utils::key(-(i + 1));
         if (this->key_map_.find(id) == this->key_map_.end()) {
             auto elem_node_id = i;
@@ -760,7 +760,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add Hasse nodes for points
-    for (Index i = 0; i < n_pnts; ++i) {
+    for (Index i : make_range(n_pnts)) {
         auto vtx_id = utils::key(i);
         if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
             Index vtx_node_id = this->hasse_.size();
@@ -770,7 +770,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add faces
-    for (Index i = 0; i < n_cells; ++i) {
+    for (Index i : make_range(n_cells)) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TETRA4)
             hasse_add_faces<Tetra4>(i, cell);
@@ -783,7 +783,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add edges
-    for (Index i = 0; i < n_cells; ++i) {
+    for (Index i : make_range(n_cells)) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TRI3) {
             hasse_add_edges<Tri3>(i, cell);
@@ -812,7 +812,7 @@ Mesh::build_hasse_diagram()
         else if (cell.type() == ElementType::LINE2) {
             auto elem_node_id = i;
             auto connect = cell.indices();
-            for (u8 j = 0; j < Line2::N_VERTICES; ++j) {
+            for (auto j : make_range(Line2::N_VERTICES)) {
                 auto vtx = connect[Line2::EDGE_VERTICES[j]];
                 auto vtx_id = utils::key(vtx);
                 if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
@@ -948,7 +948,7 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     for (auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
         for (auto & local_elem : curve->segments()) {
-            for (int i = 0; i < Line2::N_VERTICES; ++i) {
+            for (auto i : make_range(Line2::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);
                 line[i] = gid;
@@ -968,7 +968,7 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     for (auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
-            for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+            for (auto i : make_range(Tri3::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);
                 tri[i] = gid;
@@ -978,7 +978,7 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
 
         std::array<Index, Quad4::N_VERTICES> quad;
         for (auto & local_elem : surface->quadrangles()) {
-            for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+            for (auto i : make_range(Quad4::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);
                 quad[i] = gid;
@@ -998,7 +998,7 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     for (auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
         for (auto & local_elem : volume->tetrahedra()) {
-            for (int i = 0; i < Tetra4::N_VERTICES; ++i) {
+            for (auto i : make_range(Tetra4::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);
                 tet[i] = gid;

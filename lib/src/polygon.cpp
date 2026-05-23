@@ -6,6 +6,7 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/vector.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -18,7 +19,7 @@ Polygon::build_points(const Axis2 & ax2, Vector start_vec, int n_sides)
     auto ctr_pt = ax2.location();
     Axis1 ctr_ax1(ctr_pt, ax2.direction());
     auto dangle = 2 * M_PI / n_sides;
-    for (int i = 0; i < n_sides; i++) {
+    for (auto i : make_range(n_sides)) {
         auto vec = start_vec.rotated(ctr_ax1, i * dangle);
         auto pt1 = ctr_pt + vec;
         points.emplace_back(pt1);

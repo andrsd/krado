@@ -385,7 +385,7 @@ private:
         auto elem_node_id = this->key_map_[iid];
 
         auto elem_connect = elem.indices();
-        for (u8 j = 0; j < ELEMENT_TYPE::N_FACES; ++j) {
+        for (auto j : make_range(ELEMENT_TYPE::N_FACES)) {
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[j]);
             auto k = utils::key(face_connect);
             if (this->key_map_.find(k) == this->key_map_.end()) {
@@ -406,7 +406,7 @@ private:
     hasse_add_face_edges(Index /*id*/, const Element & elem)
     {
         auto elem_connect = elem.indices();
-        for (u8 i = 0; i < ELEMENT_TYPE::N_FACES; ++i) {
+        for (auto i : make_range(ELEMENT_TYPE::N_FACES)) {
             auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[i]);
             auto face_node_id = this->key_map_[utils::key(face_connect)];
 
@@ -427,7 +427,7 @@ private:
         auto elem_node_id = this->key_map_[iid];
 
         auto elem_connect = elem.indices();
-        for (u8 j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
+        for (auto j : make_range(ELEMENT_TYPE::N_EDGES)) {
             auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             hasse_add_edge(elem_node_id, edge_connect);
         }
@@ -438,7 +438,7 @@ private:
     hasse_add_edge_vertices(Index /*id*/, const Element & elem)
     {
         auto elem_connect = elem.indices();
-        for (u8 j = 0; j < ELEMENT_TYPE::N_EDGES; ++j) {
+        for (auto j : make_range(ELEMENT_TYPE::N_EDGES)) {
             auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
             auto edge_node_id = this->key_map_[utils::key(edge_connect)];
             for (auto & vtx : edge_connect) {

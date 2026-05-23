@@ -32,9 +32,9 @@ elem_splitter(const std::array<Index, ElementSelector<ET>::N_VERTICES> & el)
 {
     auto optimized_node_list = nodes_to_tet_nodes_determiner<ET>(el);
     std::vector<std::array<Index, Tetra4::N_VERTICES>> tet4_elems;
-    for (size_t i = 0; i < optimized_node_list.size(); i++) {
+    for (auto i : make_range(optimized_node_list.size())) {
         std::array<Index, Tetra4::N_VERTICES> new_elem;
-        for (u8 j = 0; j < Tetra4::N_VERTICES; j++)
+        for (auto j : make_range(Tetra4::N_VERTICES))
             new_elem[j] = el[optimized_node_list[i][j]];
         tet4_elems.push_back(new_elem);
     }
@@ -108,7 +108,7 @@ hex8_face_diagonal_directions(const std::array<Index, Hex8::N_VERTICES> & hex)
         { 2, 3, 7, 6 }, { 1, 2, 6, 5 }, { 3, 0, 4, 7 }
     };
     std::array<bool, Hex8::N_FACES> diagonal_directions;
-    for (u8 i = 0; i < Hex8::N_FACES; i++) {
+    for (auto i : make_range(Hex8::N_FACES)) {
         auto & face_index = face_indices[i];
         std::array<Index, Quad4::N_VERTICES> quad = { hex[face_index[0]],
                                                       hex[face_index[1]],
@@ -221,7 +221,7 @@ nodes_to_tet_nodes_determiner<ElementType::HEX8>(const std::array<Index, Hex8::N
     auto node_rotation = hex8_rotation(min_node_id_index, sec_min_pos);
 
     std::array<Index, Hex8::N_VERTICES> rotated_hex_nodes;
-    for (u8 i = 0; i < Hex8::N_VERTICES; i++)
+    for (auto i : make_range(Hex8::N_VERTICES))
         rotated_hex_nodes[i] = hex[node_rotation[i]];
 
     // Find the selection of each face's cutting direction
@@ -276,7 +276,7 @@ nodes_to_tet_nodes_determiner<ElementType::PYRAMID5>(
     auto node_rotation = pyramid5_rotation(min_node_id_index);
 
     std::array<Index, Pyramid5::N_VERTICES> rotated_pyramid_nodes;
-    for (u8 i = 0; i < Pyramid5::N_VERTICES; i++)
+    for (auto i : make_range(Pyramid5::N_VERTICES))
         rotated_pyramid_nodes[i] = pyramid[node_rotation[i]];
 
     // There is only one quad face in a pyramid element, so the splitting selection is binary
@@ -339,7 +339,7 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
     auto node_rotation = prism6_rotation(min_node_id_index);
 
     std::array<Index, Prism6::N_VERTICES> rotated_prism_nodes;
-    for (u8 i = 0; i < Prism6::N_VERTICES; i++)
+    for (auto i : make_range(Prism6::N_VERTICES))
         rotated_prism_nodes[i] = prism[node_rotation[i]];
 
     std::array<Index, Quad4::N_VERTICES> key_quad_nodes = { rotated_prism_nodes[1],
@@ -378,7 +378,7 @@ tetrahedralize(const Mesh & mesh)
     std::map<Index, std::vector<Index>> elem_map;
     std::vector<Element> elems;
     elems.reserve(n_tets);
-    for (Index cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
+    for (Index cell_id : make_range(mesh.elements().size())) {
         auto & el = mesh.element(cell_id);
         if (el.type() == ElementType::HEX8) {
             auto tet4s = split_elem<ElementType::HEX8>(el);

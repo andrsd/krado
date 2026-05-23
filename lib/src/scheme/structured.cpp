@@ -14,6 +14,7 @@
 #include "krado/exception.h"
 #include "krado/log.h"
 #include "krado/utils.h"
+#include "krado/range.h"
 #include <vector>
 #include <algorithm>
 
@@ -149,18 +150,18 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
     // v1: i=ni-1, j=0..nj-1
     // v3: i=0, j=nj-1..0
 
-    for (std::size_t i = 0; i < ni; ++i)
+    for (auto i : make_range(ni))
         grid[i][0] = v0[i];
-    for (std::size_t j = 0; j < nj; ++j)
+    for (auto j : make_range(nj))
         grid[ni - 1][j] = v1[j];
-    for (std::size_t i = 0; i < ni; ++i)
+    for (auto i : make_range(ni))
         grid[ni - 1 - i][nj - 1] = v2[i];
-    for (std::size_t j = 0; j < nj; ++j)
+    for (auto j : make_range(nj))
         grid[0][nj - 1 - j] = v3[j];
 
     auto & gsurf = surface->geom_surface();
-    for (std::size_t i = 1; i < ni - 1; ++i) {
-        for (std::size_t j = 1; j < nj - 1; ++j) {
+    for (auto i : make_range(1, ni - 1)) {
+        for (auto j : make_range(1, nj - 1)) {
             auto uv00 = gsurf.parameter_from_point(grid[0][0]->point());
             auto uv10 = gsurf.parameter_from_point(grid[ni - 1][0]->point());
             auto uv01 = gsurf.parameter_from_point(grid[0][nj - 1]->point());
@@ -187,8 +188,8 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
         }
     }
 
-    for (std::size_t i = 0; i < ni - 1; ++i) {
-        for (std::size_t j = 0; j < nj - 1; ++j) {
+    for (auto i : make_range(ni - 1)) {
+        for (auto j : make_range(nj - 1)) {
             auto q = ccw_quadrangle(gsurf,
                                     grid[i][j],
                                     grid[i + 1][j],

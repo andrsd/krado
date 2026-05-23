@@ -309,7 +309,7 @@ MOABFile::add_surface_triangulation(const MeshSurface & surface)
     moab::Range facets;
     for (auto & tri : surface.triangles()) {
         std::array<moab::EntityHandle, Tri3::N_VERTICES> corners;
-        for (u8 i = 0; i < Tri3::N_VERTICES; ++i)
+        for (auto i : make_range(Tri3::N_VERTICES))
             corners[i] = vertex_map[tri.vertex(i)];
         auto h = create_element<ElementType::TRI3>(corners);
         facets.insert(h);

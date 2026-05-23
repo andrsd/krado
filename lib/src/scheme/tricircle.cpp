@@ -15,6 +15,7 @@
 #include "krado/vector.h"
 #include "krado/log.h"
 #include "krado/utils.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -73,7 +74,7 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     rings[n_radial] = circum_verts;
 
     // Generate intermediate rings
-    for (int r = 1; r < n_radial; ++r) {
+    for (auto r : make_range(1, n_radial)) {
         auto alpha = static_cast<double>(r) / static_cast<double>(n_radial);
 
         for (auto & bv : circum_verts) {
@@ -91,17 +92,17 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // Create triangles
 
     // center fan (ring 0 -> ring 1)
-    for (size_t i = 1; i < rings[1].size(); ++i) {
+    for (auto i : make_range(1, rings[1].size())) {
         size_t j = i - 1;
         mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, rings[1][j], rings[1][i]));
     }
 
     // ring-to-ring tessellation
-    for (int r = 1; r < n_radial; ++r) {
+    for (auto r : make_range(1, n_radial)) {
         auto & inner = rings[r];
         auto & outer = rings[r + 1];
 
-        for (size_t i = 1; i < inner.size(); ++i) {
+        for (auto i : make_range(1, inner.size())) {
             size_t j = i - 1;
 
             auto a = inner[j];

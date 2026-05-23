@@ -8,6 +8,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/ptr.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -24,7 +25,7 @@ Scheme1D::build_curve_segments(Ptr<MeshCurve> curve)
         all.push_back(static_ptr_cast<MeshVertexAbstract>(cv));
     all.push_back(static_ptr_cast<MeshVertexAbstract>(bnd_verts[1]));
 
-    for (std::size_t i = 0; i + 1 < all.size(); ++i)
+    for (auto i : make_range(all.size() - 1))
         curve->add_segment({ all[i], all[i + 1] });
 }
 

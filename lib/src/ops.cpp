@@ -291,7 +291,7 @@ combine(const std::vector<Mesh> & parts)
     std::map<Marker, std::vector<Index>> cell_sets;
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
-    for (std::size_t i = 0; i < parts.size(); ++i) {
+    for (auto i : make_range(parts.size())) {
         auto & p = parts[i];
         for (auto & id : p.cell_set_ids()) {
             auto name = p.cell_set_name(id);
@@ -335,7 +335,7 @@ fuse(const std::vector<GeomShape> & shapes, bool simplify)
         throw Exception("Only one shape provided");
 
     TopoDS_Shape sh = shapes[0];
-    for (std::size_t i = 1; i < shapes.size(); ++i) {
+    for (auto i : make_range(1, shapes.size())) {
         BRepAlgoAPI_Fuse alg(sh, shapes[i]);
         alg.Build();
         if (simplify)

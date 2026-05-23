@@ -13,11 +13,12 @@
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
+#include "krado/scheme2d.h"
+#include "krado/range.h"
 #include "BRepMesh_IncrementalMesh.hxx"
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
 #include "Poly_Triangulation.hxx"
-#include "krado/scheme2d.h"
 #include <array>
 #include <map>
 #include <cassert>
@@ -80,7 +81,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
                     cache.emplace(cv->parameter(), cv);
             }
 
-            for (int j = 0; j < polygon->NbNodes(); j++) {
+            for (auto j : make_range(polygon->NbNodes())) {
                 auto idx = polygon->Node(j + 1);
                 Ptr<MeshVertexAbstract> vtx;
                 if (j == 0) {
@@ -108,7 +109,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
             }
         }
 
-        for (int i = 0; i < triangulation->NbNodes(); ++i) {
+        for (auto i : make_range(triangulation->NbNodes())) {
             auto idx = i + 1;
             if (vertices.find(idx) != vertices.end())
                 continue;
@@ -119,7 +120,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
             vertices.emplace(idx, vtx);
         }
 
-        for (int i = 0; i < triangulation->NbTriangles(); ++i) {
+        for (auto i : make_range(triangulation->NbTriangles())) {
             auto tri = triangulation->Triangle(i + 1);
             Standard_Integer n1, n2, n3;
             tri.Get(n1, n2, n3);

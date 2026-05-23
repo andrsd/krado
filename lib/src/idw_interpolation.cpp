@@ -4,6 +4,7 @@
 #include "krado/idw_interpolation.h"
 #include "krado/exception.h"
 #include "krado/vector.h"
+#include "krado/range.h"
 
 namespace krado {
 
@@ -33,7 +34,7 @@ IDWInterpolation::sample(Point pt, double power) const
 
     double weighted_sum = 0.0;
     double weight_total = 0.0;
-    for (std::size_t i = 0; i < this->pts_.size(); ++i) {
+    for (auto i : make_range(this->pts_.size())) {
         auto distance = (this->pts_[i] - pt).magnitude();
         if (distance == 0.0)
             return this->weights_[i];
