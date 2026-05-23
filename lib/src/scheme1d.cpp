@@ -9,8 +9,18 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/ptr.h"
 #include "krado/range.h"
+#include "krado/log.h"
+#include "krado/utils.h"
 
 namespace krado {
+
+void
+Scheme1D::mesh_curve(Ptr<MeshCurve> mcurve)
+{
+    Log::info("Meshing curve {}: scheme='{}'", mcurve->id(), name());
+    on_mesh_curve(mcurve);
+    Log::info("- created {} segment(s)", utils::human_number(mcurve->segments().size()));
+}
 
 void
 Scheme1D::build_curve_segments(Ptr<MeshCurve> curve)

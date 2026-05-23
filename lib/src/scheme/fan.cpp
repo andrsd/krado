@@ -11,7 +11,6 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 #include "krado/element.h"
 #include "krado/vector.h"
@@ -44,10 +43,8 @@ find_shared_vertex(Ptr<MeshCurve> crv1, Ptr<MeshCurve> crv2)
 SchemeFan::SchemeFan(Options /*options*/) : Scheme2D(scheme_name) {}
 
 void
-SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
+SchemeFan::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
-    Log::info("Meshing surface {}: scheme='fan'", mesh_surface->id());
-
     const auto & gsurf = mesh_surface->geom_surface();
     auto curves = mesh_surface->curves();
     if (curves.size() != 3)
@@ -250,8 +247,6 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
         for (auto v : make_range(outer.size() - 1))
             mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], center_vtx));
     }
-
-    Log::info("- generated {} triangles", utils::human_number(mesh_surface->triangles().size()));
 }
 
 } // namespace krado

@@ -12,7 +12,6 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/exception.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 #include "krado/range.h"
 #include <vector>
@@ -79,10 +78,8 @@ sort_curves(Span<Ptr<MeshCurve>> curves)
 SchemeStructured::SchemeStructured(Options /*options*/) : Scheme2D("structured") {}
 
 void
-SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
+SchemeStructured::on_mesh_surface(Ptr<MeshSurface> surface)
 {
-    Log::info("Meshing surface {}: scheme='structured'", surface->id());
-
     auto curves = surface->curves();
     if (curves.size() != 4)
         throw Exception("Scheme 'structured' only meshes geometries with 4 curves");

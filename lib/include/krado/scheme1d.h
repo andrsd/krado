@@ -14,7 +14,8 @@ class Scheme1D {
 public:
     Scheme1D(const std::string & name) : name_(name) {}
     virtual ~Scheme1D() = default;
-    virtual void mesh_curve(Ptr<MeshCurve> mcurve) = 0;
+
+    void mesh_curve(Ptr<MeshCurve> mcurve);
 
     const std::string
     name() const
@@ -23,6 +24,8 @@ public:
     }
 
 protected:
+    virtual void on_mesh_curve(Ptr<MeshCurve> mcurve) = 0;
+
     /// Build segments for a curve
     ///
     /// @param curve Mesh curve

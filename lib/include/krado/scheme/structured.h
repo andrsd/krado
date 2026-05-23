@@ -16,9 +16,9 @@ public:
 
 public:
     SchemeStructured(Options options);
-    void mesh_surface(Ptr<MeshSurface> surface) override;
 
 private:
+    void on_mesh_surface(Ptr<MeshSurface> surface) override;
 };
 
 } // namespace krado

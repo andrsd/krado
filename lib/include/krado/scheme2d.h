@@ -19,12 +19,12 @@ public:
     /// Mesh surface
     ///
     /// @param surface Surface to mesh
-    virtual void mesh_surface(Ptr<MeshSurface> surface) = 0;
+    void mesh_surface(Ptr<MeshSurface> surface);
 
     /// Select meshing scheme for a curve
     ///
     /// @param curve Curve to select the scheme for
-    virtual void select_curve_scheme(Ptr<MeshCurve> curve);
+    void select_curve_scheme(Ptr<MeshCurve> curve);
 
     const std::string
     name() const
@@ -33,6 +33,16 @@ public:
     }
 
 private:
+    /// Mesh surface
+    ///
+    /// @param surface Surface to mesh
+    virtual void on_mesh_surface(Ptr<MeshSurface> surface) = 0;
+
+    /// Select meshing scheme for a curve
+    ///
+    /// @param curve Curve to select the scheme for
+    virtual void on_select_curve_scheme(Ptr<MeshCurve> curve);
+
     std::string name_;
 };
 

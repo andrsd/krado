@@ -13,7 +13,6 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/scheme/equal.h"
 #include "krado/vector.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 #include "krado/range.h"
 
@@ -24,7 +23,7 @@ static const std::string scheme_name = "tricircle";
 SchemeTriCircle::SchemeTriCircle(Options options) : Scheme2D(scheme_name), opts_(options) {}
 
 void
-SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
+SchemeTriCircle::on_select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
         // minimum of 4 intervals
@@ -35,10 +34,8 @@ SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 }
 
 void
-SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
+SchemeTriCircle::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
-    Log::info("Meshing surface {}: scheme='tricircle'", mesh_surface->id());
-
     const auto & gsurf = mesh_surface->geom_surface();
     if (!is_circular_face(gsurf))
         throw Exception("Surface {} is not a circle", mesh_surface->id());

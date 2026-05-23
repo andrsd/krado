@@ -16,10 +16,8 @@ namespace krado {
 SchemeSize::SchemeSize(Options options) : Scheme1D("size"), opts_(options) {}
 
 void
-SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
+SchemeSize::on_mesh_curve(Ptr<MeshCurve> curve)
 {
-    Log::info("Meshing curve {}: scheme='size', size={}", curve->id(), this->opts_.size);
-
     const auto & geom_curve = curve->geom_curve();
 
     Integral igrl;
