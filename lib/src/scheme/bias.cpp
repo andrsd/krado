@@ -8,7 +8,6 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 
 namespace krado {
@@ -16,16 +15,11 @@ namespace krado {
 SchemeBias::SchemeBias(Options options) : Scheme1D("bias"), opts_(options) {}
 
 void
-SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
+SchemeBias::on_mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;
     auto bias_factor = this->opts_.factor;
-
-    Log::info("Meshing curve {}: scheme='bias', intervals={}, bias={}",
-              curve->id(),
-              n_segs,
-              bias_factor);
 
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {

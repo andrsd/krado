@@ -21,10 +21,10 @@ public:
 public:
     SchemeTriCircle(Options options);
 
-    void mesh_surface(Ptr<MeshSurface> surface) override;
-    void select_curve_scheme(Ptr<MeshCurve> curve) override;
-
 private:
+    void on_mesh_surface(Ptr<MeshSurface> surface) override;
+    void on_select_curve_scheme(Ptr<MeshCurve> curve) override;
+
     Options opts_;
 };
 

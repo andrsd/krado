@@ -8,7 +8,6 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface.h"
 #include "krado/surface_index_mapper.h"
-#include "krado/log.h"
 #include "bamg/bamglib/Mesh2.h"
 #include "Eigen/Eigen"
 #include <array>
@@ -249,10 +248,8 @@ private:
 SchemeBAMG::SchemeBAMG(Options options) : Scheme2D("bamg"), opts_(options) {}
 
 void
-SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
+SchemeBAMG::on_mesh_surface(Ptr<MeshSurface> surface)
 {
-    Log::info("Meshing surface {}: scheme='bamg'", surface->id());
-
     BAMGSession bamg_session(surface);
     bamg_session.set_uniform_mesh_size(this->opts_.max_area);
 

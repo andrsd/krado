@@ -22,9 +22,10 @@ public:
 
 public:
     SchemeCurvature(Options options);
-    void mesh_curve(Ptr<MeshCurve> mcurve) override;
 
 private:
+    void on_mesh_curve(Ptr<MeshCurve> mcurve) override;
+
     Options opts_;
 };
 

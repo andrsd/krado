@@ -8,7 +8,6 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
-#include "krado/log.h"
 #include "krado/ptr.h"
 #include "krado/utils.h"
 
@@ -17,12 +16,10 @@ namespace krado {
 SchemeEqual::SchemeEqual(Options options) : Scheme1D("equal"), opts_(options) {}
 
 void
-SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
+SchemeEqual::on_mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;
-
-    Log::info("Meshing curve {}: scheme='equal', intervals={}", curve->id(), n_segs);
 
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {

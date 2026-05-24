@@ -9,7 +9,6 @@
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
-#include "krado/log.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_volume.h"
@@ -36,10 +35,8 @@ SchemeTriSurf::SchemeTriSurf(Options options) :
 }
 
 void
-SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
+SchemeTriSurf::on_mesh_volume(Ptr<MeshVolume> volume)
 {
-    Log::info("Meshing volume {}: scheme='trisurf'", volume->id());
-
     auto lin_deflection = this->opts_.linear_deflection;
     auto angl_deflection = this->opts_.angular_deflection;
     auto is_relative = this->opts_.is_relative;
@@ -81,7 +78,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
                     cache.emplace(cv->parameter(), cv);
             }
 
-            for (auto j : make_range(polygon->NbNodes())) {
+            for (int j : make_range(polygon->NbNodes())) {
                 auto idx = polygon->Node(j + 1);
                 Ptr<MeshVertexAbstract> vtx;
                 if (j == 0) {
@@ -133,19 +130,19 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 }
 
 void
-SchemeTriSurf::mesh_surface(Ptr<MeshSurface> /*surface*/)
+SchemeTriSurf::on_mesh_surface(Ptr<MeshSurface> /*surface*/)
 {
     // do nothing
 }
 
 void
-SchemeTriSurf::mesh_curve(Ptr<MeshCurve> /*mcurve*/)
+SchemeTriSurf::on_mesh_curve(Ptr<MeshCurve> /*mcurve*/)
 {
     // do nothing
 }
 
 void
-SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
+SchemeTriSurf::on_select_surface_scheme(Ptr<MeshSurface> surface)
 {
     if (!surface->has_scheme())
         surface->set_scheme<SchemeTriSurf>(this->opts_);
@@ -159,7 +156,7 @@ SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
 }
 
 void
-SchemeTriSurf::select_curve_scheme(Ptr<MeshCurve> curve)
+SchemeTriSurf::on_select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
         curve->set_scheme<SchemeTriSurf>(this->opts_);

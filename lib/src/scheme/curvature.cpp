@@ -17,14 +17,8 @@ namespace krado {
 SchemeCurvature::SchemeCurvature(Options options) : Scheme1D("curvature"), opts_(options) {}
 
 void
-SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
+SchemeCurvature::on_mesh_curve(Ptr<MeshCurve> curve)
 {
-    Log::info("Meshing curve {}: scheme='curvature', min_size={}, max_size={}, deflection={}",
-              curve->id(),
-              this->opts_.min_size,
-              this->opts_.max_size,
-              this->opts_.deflection);
-
     const auto & geom_curve = curve->geom_curve();
     GeomAdaptor_Curve adaptor(geom_curve.curve_handle());
 

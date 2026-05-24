@@ -8,7 +8,6 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 #include <algorithm>
 
@@ -17,12 +16,10 @@ namespace krado {
 SchemePinpoint::SchemePinpoint(Options options) : Scheme1D("pinpoint"), opts_(options) {}
 
 void
-SchemePinpoint::mesh_curve(Ptr<MeshCurve> curve)
+SchemePinpoint::on_mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto apos = this->opts_.positions;
-
-    Log::info("Meshing curve {}: scheme='pinpoint'", curve->id());
 
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {

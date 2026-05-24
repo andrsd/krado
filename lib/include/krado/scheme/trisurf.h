@@ -24,14 +24,15 @@ public:
 
 public:
     SchemeTriSurf(Options options);
-    void mesh_volume(Ptr<MeshVolume> volume) override;
-    void mesh_surface(Ptr<MeshSurface> surface) override;
-    void mesh_curve(Ptr<MeshCurve> mcurve) override;
-
-    void select_surface_scheme(Ptr<MeshSurface> surface) override;
-    void select_curve_scheme(Ptr<MeshCurve> curve) override;
 
 private:
+    void on_mesh_volume(Ptr<MeshVolume> volume) override;
+    void on_mesh_surface(Ptr<MeshSurface> surface) override;
+    void on_mesh_curve(Ptr<MeshCurve> mcurve) override;
+
+    void on_select_surface_scheme(Ptr<MeshSurface> surface) override;
+    void on_select_curve_scheme(Ptr<MeshCurve> curve) override;
+
     Options opts_;
 };
 

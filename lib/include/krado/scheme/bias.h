@@ -17,9 +17,10 @@ public:
 
 public:
     SchemeBias(Options options);
-    void mesh_curve(Ptr<MeshCurve> surface) override;
 
 private:
+    void on_mesh_curve(Ptr<MeshCurve> surface) override;
+
     Options opts_;
 };
 
