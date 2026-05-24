@@ -78,7 +78,7 @@ SchemeTriSurf::on_mesh_volume(Ptr<MeshVolume> volume)
                     cache.emplace(cv->parameter(), cv);
             }
 
-            for (auto j : make_range(polygon->NbNodes())) {
+            for (int j : make_range(polygon->NbNodes())) {
                 auto idx = polygon->Node(j + 1);
                 Ptr<MeshVertexAbstract> vtx;
                 if (j == 0) {
