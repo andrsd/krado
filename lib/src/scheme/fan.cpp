@@ -82,7 +82,6 @@ SchemeFan::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
                         line_edges[0]->segments().size(),
                         line_edges[1]->segments().size());
     // TODO: check that element sizes on the straight curves match
-    // TODO: check orientation of the straight edges
 
     // number of segments on the circular edge
     const auto N = circular_edge->segments().size();
@@ -115,6 +114,18 @@ SchemeFan::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
     Ptr<MeshCurve> line1 = swap_lines ? line_edges[1] : line_edges[0];
     Ptr<MeshCurve> line2 = swap_lines ? line_edges[0] : line_edges[1];
 
+    auto l1cvs = get_mesh_curve_vertices(line1);
+    auto l2cvs = get_mesh_curve_vertices(line2);
+
+    // if curves have the same orientation we need to reverse ordering on one so that
+    // the indexing starts at the "center" vertex
+    if (line1->geom_curve().orientation() == line2->geom_curve().orientation()) {
+        if (l1cvs[0]->point().is_equal(center_vtx->point(), 1e-12))
+            std::reverse(l2cvs.begin(), l2cvs.end());
+        else
+            std::reverse(l1cvs.begin(), l1cvs.end());
+    }
+
     // Generate rings
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings;
     rings.resize(M + 1);
@@ -124,9 +135,9 @@ SchemeFan::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
     // Rings 1 to M-1
     for (auto k : make_range(1, M)) {
         auto s = N - k;
-        auto idx = M - k - 1;
-        auto start = line1->curve_vertices()[idx];
-        auto end = line2->curve_vertices()[idx];
+        auto idx = M - k;
+        auto start = l1cvs[idx];
+        auto end = l2cvs[idx];
         auto p_start = start->point();
         auto p_end = end->point();
 
