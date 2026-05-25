@@ -11,6 +11,7 @@
 #include "krado/range.h"
 #include "krado/log.h"
 #include "krado/utils.h"
+#include "krado/timer.h"
 
 namespace krado {
 
@@ -18,7 +19,10 @@ void
 Scheme1D::mesh_curve(Ptr<MeshCurve> mcurve)
 {
     Log::info("Meshing curve {}: scheme='{}'", mcurve->id(), name());
-    on_mesh_curve(mcurve);
+    {
+        LoggingTimer timer;
+        on_mesh_curve(mcurve);
+    }
     Log::info("- created {} segment(s)", utils::human_number(mcurve->segments().size()));
 }
 
