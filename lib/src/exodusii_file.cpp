@@ -14,6 +14,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
+#include "krado/timer.h"
 #include "fmt/format.h"
 #include "fmt/chrono.h"
 
@@ -958,6 +959,7 @@ Mesh
 ExodusIIFile::read()
 {
     Log::info("Reading ExodusII file '{}'", this->fn_);
+    LoggingTimer timer;
 
     this->exo_.open(this->fn_);
     this->exo_.init();
@@ -1011,6 +1013,7 @@ void
 ExodusIIFile::write(const Mesh & mesh)
 {
     Log::info("Writing ExodusII file '{}'", this->fn_);
+    LoggingTimer timer;
 
     this->exo_.create(this->fn_);
     auto bbox = compute_bounding_box(mesh);
@@ -1040,6 +1043,7 @@ void
 ExodusIIFile::write(const GeomModel & model)
 {
     Log::info("Writing ExodusII file '{}'", this->fn_);
+    LoggingTimer timer;
 
     this->exo_.create(this->fn_);
 
