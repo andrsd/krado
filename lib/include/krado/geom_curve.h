@@ -131,4 +131,6 @@ Point get_circle_center(const GeomCurve & crv);
 
 std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type);
 
+std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve::Orientation & ori);
+
 std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve & crv);

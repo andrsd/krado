@@ -233,6 +233,23 @@ operator<<(std::ostream & stream, const krado::GeomCurve::CurveType & type)
 }
 
 std::ostream &
+operator<<(std::ostream & stream, const krado::GeomCurve::Orientation & ori)
+{
+    switch (ori) {
+    case krado::GeomCurve::Orientation::Forward:
+        stream << "forward";
+        break;
+    case krado::GeomCurve::Orientation::Reversed:
+        stream << "reversed";
+        break;
+    default:
+        stream << "unknown";
+        break;
+    }
+    return stream;
+}
+
+std::ostream &
 operator<<(std::ostream & stream, const krado::GeomCurve & crv)
 {
     stream << "Curve: ";
