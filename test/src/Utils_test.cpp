@@ -35,3 +35,18 @@ TEST(UtilsTest, join)
     EXPECT_EQ(join(",", std::vector<int> { 1 }), "1");
     EXPECT_EQ(join(",", std::vector<int> { 3, 5 }), "3,5");
 }
+
+TEST(UtilsTest, human_time)
+{
+    EXPECT_EQ(utils::human_time(0), "0.00ms");
+    EXPECT_EQ(utils::human_time(0.0005), "0.50ms");
+    EXPECT_EQ(utils::human_time(0.5), "500.00ms");
+    EXPECT_EQ(utils::human_time(10), "10.00s");
+    EXPECT_EQ(utils::human_time(60), "1m");
+    EXPECT_EQ(utils::human_time(70), "1m 10.00s");
+    EXPECT_EQ(utils::human_time(70.5), "1m 10.50s");
+    EXPECT_EQ(utils::human_time(3600), "1h");
+    EXPECT_EQ(utils::human_time(3720), "1h 2m");
+    EXPECT_EQ(utils::human_time(3725), "1h 2m 5.00s");
+    EXPECT_EQ(utils::human_time(3725.2), "1h 2m 5.20s");
+}

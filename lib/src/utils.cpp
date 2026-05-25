@@ -139,6 +139,39 @@ set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
     return sset;
 }
 
+std::string
+human_time(double time)
+{
+    using namespace std::chrono;
+    duration<double, std::micro> us(time * 1e6);
+    auto h = duration_cast<hours>(us);
+    us -= h;
+    auto m = duration_cast<minutes>(us);
+    us -= m;
+    auto s = duration_cast<seconds>(us);
+    us -= s;
+    auto ms = duration_cast<milliseconds>(us);
+
+    std::vector<std::string> strs;
+    if (time > 1.) {
+        if (h.count() > 0)
+            strs.push_back(fmt::format("{}h", h.count()));
+        if (m.count() > 0)
+            strs.push_back(fmt::format("{}m", m.count()));
+        // Long running: Show seconds (include ms as decimals, e.g., 5.23s)
+        if ((s.count() > 0) || (h.count() == 0 && m.count() == 0)) {
+            double total_seconds = s.count() + (ms.count() / 1000.0);
+            strs.push_back(fmt::format("{:.2f}s", total_seconds));
+        }
+    }
+    else {
+        // Short running (< 1 second): Show pure milliseconds (e.g., 23.45ms)
+        double total_ms = us.count() / 1000.0;
+        strs.push_back(fmt::format("{:.2f}ms", total_ms));
+    }
+    return join(" ", strs);
+}
+
 } // namespace utils
 
 std::array<Ptr<MeshVertexAbstract>, 3>

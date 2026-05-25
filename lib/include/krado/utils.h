@@ -221,6 +221,12 @@ human_number(T value)
     return result;
 }
 
+/// Print time duration in human readable form
+///
+/// @param time Duration
+/// @return Formatted string `1h 2m 1.2s` or `100.2ms` (for short time durations)
+std::string human_time(double time);
+
 /// Mark for unreachable code
 ///
 /// This is defined as `std::unreachable` in C++23, so we need this ATM.
