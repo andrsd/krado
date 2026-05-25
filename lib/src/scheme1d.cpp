@@ -3,6 +3,7 @@
 
 #include "krado/scheme1d.h"
 #include "krado/exception.h"
+#include "krado/geom_curve.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
@@ -18,7 +19,10 @@ namespace krado {
 void
 Scheme1D::mesh_curve(Ptr<MeshCurve> mcurve)
 {
-    Log::info("Meshing curve {}: scheme='{}'", mcurve->id(), name());
+    Log::info("Meshing curve {} ({}): scheme='{}'",
+              mcurve->id(),
+              mcurve->geom_curve().type(),
+              name());
     {
         LoggingTimer timer;
         on_mesh_curve(mcurve);

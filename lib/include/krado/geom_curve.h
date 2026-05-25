@@ -134,3 +134,57 @@ std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve::CurveTy
 std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve::Orientation & ori);
 
 std::ostream & operator<<(std::ostream & stream, const krado::GeomCurve & crv);
+
+// fmt formatters
+
+template <>
+struct fmt::formatter<krado::GeomCurve::CurveType> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::GeomCurve::CurveType & obj, FormatContext & ctx) const
+        -> decltype(ctx.out())
+    {
+        switch (obj) {
+        case krado::GeomCurve::CurveType::Line:
+            return fmt::format_to(ctx.out(), "line");
+        case krado::GeomCurve::CurveType::Circle:
+            return fmt::format_to(ctx.out(), "circle");
+        case krado::GeomCurve::CurveType::BSpline:
+            return fmt::format_to(ctx.out(), "b-spline");
+        case krado::GeomCurve::CurveType::Bezier:
+            return fmt::format_to(ctx.out(), "bezier");
+        default:
+            return fmt::format_to(ctx.out(), "unknown");
+        }
+    }
+};
+
+template <>
+struct fmt::formatter<krado::GeomCurve::Orientation> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::GeomCurve::Orientation & obj, FormatContext & ctx) const
+        -> decltype(ctx.out())
+    {
+        switch (obj) {
+        case krado::GeomCurve::Orientation::Forward:
+            return fmt::format_to(ctx.out(), "forward");
+        case krado::GeomCurve::Orientation::Reversed:
+            return fmt::format_to(ctx.out(), "reversed");
+        default:
+            return fmt::format_to(ctx.out(), "unknown");
+        }
+    }
+};
