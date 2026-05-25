@@ -67,3 +67,34 @@ TEST(SchemeFanTest, quarter_circle)
 
     EXPECT_EQ(model.surface(1)->triangles().size(), 23);
 }
+
+TEST(SchemeFanTest, quarter_circle_ccw)
+{
+    auto qcirc = testing::build_quarter_circle_ccw(Point(0, 0, 0), 3);
+
+    GeomModel model(qcirc);
+    {
+        SchemeEqual::Options opts;
+        opts.intervals = 4;
+
+        for (ShapeID i : { 2, 3 }) {
+            model.curve(i)->set_scheme<SchemeEqual>(opts);
+            model.mesh_curve(i);
+        }
+    }
+    {
+        SchemeEqual::Options opts;
+        opts.intervals = 5;
+        model.curve(1)->set_scheme<SchemeEqual>(opts);
+        model.mesh_curve(1);
+    }
+
+    {
+        SchemeFan::Options opts;
+        model.surface(1)->set_marker(1000);
+        model.surface(1)->set_scheme<SchemeFan>(opts);
+        model.mesh_surface(1);
+    }
+
+    EXPECT_EQ(model.surface(1)->triangles().size(), 23);
+}
