@@ -131,6 +131,21 @@ build_quarter_circle(Point center, double radius)
     return GeomSurface::create(wire);
 }
 
+GeomSurface
+build_quarter_circle_ccw(Point center, double radius)
+{
+    Point p1(center.x + radius, center.y, 0);
+    Point p2(center.x, center.y + radius, 0);
+    auto circ = Circle::create(center, radius);
+    auto arc = ArcOfCircle::create(circ, p1, p2);
+    // auto edge1 = Line::create(p1, center);
+    // auto edge2 = Line::create(center, p2);
+    auto edge1 = Line::create(center, p1);
+    auto edge2 = Line::create(p2, center);
+    auto wire = Wire::create({ arc, edge1, edge2 });
+    return GeomSurface::create(wire);
+}
+
 GeomVolume
 build_box(const Point & v1, const Point & v2)
 {
