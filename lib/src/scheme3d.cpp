@@ -5,6 +5,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_volume.h"
 #include "krado/log.h"
+#include "krado/timer.h"
 
 namespace krado {
 
@@ -12,7 +13,10 @@ void
 Scheme3D::mesh_volume(Ptr<MeshVolume> volume)
 {
     Log::info("Meshing volume {}: scheme='{}'", volume->id(), name());
-    on_mesh_volume(volume);
+    {
+        LoggingTimer timer;
+        on_mesh_volume(volume);
+    }
 }
 
 void

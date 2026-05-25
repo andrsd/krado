@@ -5,6 +5,7 @@
 #include "krado/mesh_curve.h"
 #include "krado/log.h"
 #include "krado/utils.h"
+#include "krado/timer.h"
 #include "krado/mesh_surface.h"
 #include "krado/scheme/equal.h"
 
@@ -14,7 +15,10 @@ void
 Scheme2D::mesh_surface(Ptr<MeshSurface> surface)
 {
     Log::info("Meshing surface {}: scheme='{}'", surface->id(), name());
-    on_mesh_surface(surface);
+    {
+        LoggingTimer timer;
+        on_mesh_surface(surface);
+    }
 
     if (surface->triangles().size() > 0)
         Log::info("- created {} triangles(s)", utils::human_number(surface->triangles().size()));
