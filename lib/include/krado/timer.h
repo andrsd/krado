@@ -9,7 +9,13 @@ namespace krado {
 
 class LoggingTimer {
 public:
-    explicit LoggingTimer() : start_time_(std::chrono::steady_clock::now()) {}
+    explicit LoggingTimer() : msg_("- took {}"), start_time_(std::chrono::steady_clock::now()) {}
+
+    explicit LoggingTimer(std::string fmt) :
+        msg_(fmt),
+        start_time_(std::chrono::steady_clock::now())
+    {
+    }
 
     // Destructor calculates and prints the elapsed time automatically
     ~LoggingTimer()
@@ -17,7 +23,7 @@ public:
         auto end_time = std::chrono::steady_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end_time - this->start_time_;
-        Log::info("- took {}", utils::human_time(elapsed_seconds.count()));
+        Log::info(fmt::runtime(this->msg_), utils::human_time(elapsed_seconds.count()));
     }
 
     // Prevent copying to avoid duplicate timing logs
@@ -29,6 +35,7 @@ public:
     LoggingTimer & operator=(LoggingTimer &&) noexcept = default;
 
 private:
+    std::string msg_;
     std::chrono::time_point<std::chrono::steady_clock> start_time_;
 };
 
