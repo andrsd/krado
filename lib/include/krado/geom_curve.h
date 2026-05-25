@@ -164,3 +164,27 @@ struct fmt::formatter<krado::GeomCurve::CurveType> {
         }
     }
 };
+
+template <>
+struct fmt::formatter<krado::GeomCurve::Orientation> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::GeomCurve::Orientation & obj, FormatContext & ctx) const
+        -> decltype(ctx.out())
+    {
+        switch (obj) {
+        case krado::GeomCurve::Orientation::Forward:
+            return fmt::format_to(ctx.out(), "forward");
+        case krado::GeomCurve::Orientation::Reversed:
+            return fmt::format_to(ctx.out(), "reversed");
+        default:
+            return fmt::format_to(ctx.out(), "unknown");
+        }
+    }
+};
