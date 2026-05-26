@@ -14,6 +14,7 @@
 #include "krado/geom_volume.h"
 #include "krado/scheme2d.h"
 #include "krado/range.h"
+#include "krado/utils.h"
 #include "BRepMesh_IncrementalMesh.hxx"
 #include "BRep_Tool.hxx"
 #include "TopoDS.hxx"
@@ -33,6 +34,16 @@ SchemeTriSurf::SchemeTriSurf(Options options) :
     Scheme1D(),
     opts_(options)
 {
+}
+
+std::string
+SchemeTriSurf::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("linear_deflection={}", this->opts_.linear_deflection));
+    spars.push_back(fmt::format("angular_deflection={}", this->opts_.angular_deflection));
+    spars.push_back(fmt::format("is_relative={}", this->opts_.is_relative));
+    return join(", ", spars);
 }
 
 void

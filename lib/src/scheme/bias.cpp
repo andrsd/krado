@@ -9,10 +9,20 @@
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
 #include "krado/utils.h"
+#include "fmt/core.h"
 
 namespace krado {
 
 SchemeBias::SchemeBias(Options options) : Scheme("bias"), Scheme1D(), opts_(options) {}
+
+std::string
+SchemeBias::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("intervals={}", this->opts_.intervals));
+    spars.push_back(fmt::format("factor={}", this->opts_.factor));
+    return join(", ", spars);
+}
 
 void
 SchemeBias::mesh_curve(Ptr<MeshCurve> curve)

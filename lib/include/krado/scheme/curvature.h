@@ -27,6 +27,8 @@ public:
     void mesh_curve(Ptr<MeshCurve> mcurve) override;
 
 private:
+    std::string params_to_str() override;
+
     Options opts_;
 };
 

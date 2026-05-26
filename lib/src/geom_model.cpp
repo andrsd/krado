@@ -414,11 +414,6 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
         return;
 
     auto & scheme = curve->scheme();
-    auto & s = dynamic_cast<Scheme &>(scheme);
-    Log::info("Meshing curve {} ({}): scheme='{}'",
-              curve->id(),
-              curve->geom_curve().type(),
-              s.name());
 
     auto & geom_curve = curve->geom_curve();
     if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
@@ -429,6 +424,13 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
         mesh_vertex(v);
 
     {
+        auto & s = dynamic_cast<Scheme &>(scheme);
+        auto pars_str = s.params_to_str();
+        Log::info("Meshing curve {} ({}): scheme='{}'{}",
+                  curve->id(),
+                  curve->geom_curve().type(),
+                  s.name(),
+                  pars_str.empty() ? "" : fmt::format(", {}", pars_str));
         LoggingTimer timer;
         scheme.mesh_curve(curve);
     }
@@ -451,8 +453,6 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
         return;
 
     auto & scheme = surface->scheme();
-    auto & s = dynamic_cast<Scheme &>(scheme);
-    Log::info("Meshing surface {}: scheme='{}'", surface->id(), s.name());
 
     auto curves = surface->curves();
     for (auto & crv : curves)
@@ -461,6 +461,12 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
         mesh_curve(crv);
 
     {
+        auto & s = dynamic_cast<Scheme &>(scheme);
+        auto pars_str = s.params_to_str();
+        Log::info("Meshing surface {}: scheme='{}'{}",
+                  surface->id(),
+                  s.name(),
+                  pars_str.empty() ? "" : fmt::format(", {}", pars_str));
         LoggingTimer timer;
         scheme.mesh_surface(surface);
     }
@@ -487,8 +493,6 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
         Log::debug("Volume {} is already meshed", volume->id());
 
     auto & scheme = volume->scheme();
-    auto & s = dynamic_cast<Scheme &>(scheme);
-    Log::info("Meshing volume {}: scheme='{}'", volume->id(), s.name());
 
     auto surfaces = volume->surfaces();
     for (auto & srf : surfaces)
@@ -497,6 +501,12 @@ GeomModel::mesh_volume(Ptr<MeshVolume> volume)
         mesh_surface(srf);
 
     {
+        auto & s = dynamic_cast<Scheme &>(scheme);
+        auto pars_str = s.params_to_str();
+        Log::info("Meshing volume {}: scheme='{}'{}",
+                  volume->id(),
+                  s.name(),
+                  pars_str.empty() ? "" : fmt::format(", {}", pars_str));
         LoggingTimer timer;
         scheme.mesh_volume(volume);
     }

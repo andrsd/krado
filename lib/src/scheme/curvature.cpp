@@ -18,6 +18,16 @@ SchemeCurvature::SchemeCurvature(Options options) : Scheme("curvature"), Scheme1
 {
 }
 
+std::string
+SchemeCurvature::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("min_size={}", this->opts_.min_size));
+    spars.push_back(fmt::format("max_size={}", this->opts_.max_size));
+    spars.push_back(fmt::format("deflection={}", this->opts_.deflection));
+    return join(", ", spars);
+}
+
 void
 SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
 {

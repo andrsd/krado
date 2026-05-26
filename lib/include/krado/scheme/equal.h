@@ -21,6 +21,8 @@ public:
     void mesh_curve(Ptr<MeshCurve> surface) override;
 
 private:
+    std::string params_to_str() override;
+
     Options opts_;
 };
 

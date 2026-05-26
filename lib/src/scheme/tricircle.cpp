@@ -24,6 +24,14 @@ SchemeTriCircle::SchemeTriCircle(Options options) : Scheme(scheme_name), Scheme2
 {
 }
 
+std::string
+SchemeTriCircle::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("radial_intervals={}", this->opts_.radial_intervals));
+    return join(", ", spars);
+}
+
 void
 SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {

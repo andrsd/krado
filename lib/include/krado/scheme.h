@@ -18,6 +18,12 @@ public:
         return this->name_;
     }
 
+    virtual std::string
+    params_to_str()
+    {
+        return "";
+    }
+
 private:
     std::string name_;
 };

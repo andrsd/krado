@@ -27,6 +27,8 @@ public:
     void select_curve_scheme(Ptr<MeshCurve> curve) override;
 
 private:
+    std::string params_to_str() override;
+
     Options opts_;
 };
 

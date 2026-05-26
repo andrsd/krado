@@ -14,6 +14,14 @@ namespace krado {
 
 SchemeSize::SchemeSize(Options options) : Scheme("size"), Scheme1D(), opts_(options) {}
 
+std::string
+SchemeSize::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("size={}", this->opts_.size));
+    return join(", ", spars);
+}
+
 void
 SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
 {
