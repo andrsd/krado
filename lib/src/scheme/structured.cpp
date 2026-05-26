@@ -68,10 +68,10 @@ sort_curves(Span<Ptr<MeshCurve>> curves)
 
 } // namespace
 
-SchemeStructured::SchemeStructured(Options /*options*/) : Scheme2D("structured") {}
+SchemeStructured::SchemeStructured(Options /*options*/) : Scheme("structured"), Scheme2D() {}
 
 void
-SchemeStructured::on_mesh_surface(Ptr<MeshSurface> surface)
+SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
 {
     auto curves = surface->curves();
     if (curves.size() != 4)

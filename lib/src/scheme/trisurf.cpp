@@ -27,15 +27,16 @@ namespace krado {
 static const std::string scheme_name = "trisurf";
 
 SchemeTriSurf::SchemeTriSurf(Options options) :
-    Scheme3D(scheme_name),
-    Scheme2D(scheme_name),
-    Scheme1D(scheme_name),
+    Scheme("trisurf"),
+    Scheme3D(),
+    Scheme2D(),
+    Scheme1D(),
     opts_(options)
 {
 }
 
 void
-SchemeTriSurf::on_mesh_volume(Ptr<MeshVolume> volume)
+SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 {
     auto lin_deflection = this->opts_.linear_deflection;
     auto angl_deflection = this->opts_.angular_deflection;
@@ -130,43 +131,47 @@ SchemeTriSurf::on_mesh_volume(Ptr<MeshVolume> volume)
 }
 
 void
-SchemeTriSurf::on_mesh_surface(Ptr<MeshSurface> /*surface*/)
+SchemeTriSurf::mesh_surface(Ptr<MeshSurface> /*surface*/)
 {
     // do nothing
 }
 
 void
-SchemeTriSurf::on_mesh_curve(Ptr<MeshCurve> /*mcurve*/)
+SchemeTriSurf::mesh_curve(Ptr<MeshCurve> /*mcurve*/)
 {
     // do nothing
 }
 
 void
-SchemeTriSurf::on_select_surface_scheme(Ptr<MeshSurface> surface)
+SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
 {
     if (!surface->has_scheme())
         surface->set_scheme<SchemeTriSurf>(this->opts_);
     else {
         auto scheme = dynamic_cast<SchemeTriSurf *>(&surface->scheme());
-        if (scheme == nullptr)
+        if (scheme == nullptr) {
+            auto s = dynamic_cast<Scheme *>(scheme);
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
-                            surface->scheme().name());
+                            s->name());
+        }
     }
 }
 
 void
-SchemeTriSurf::on_select_curve_scheme(Ptr<MeshCurve> curve)
+SchemeTriSurf::select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
         curve->set_scheme<SchemeTriSurf>(this->opts_);
     }
     else {
         auto scheme = dynamic_cast<SchemeTriSurf *>(&curve->scheme());
-        if (scheme == nullptr)
+        if (scheme == nullptr) {
+            auto s = dynamic_cast<Scheme *>(scheme);
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
-                            curve->scheme().name());
+                            s->name());
+        }
     }
 }
 

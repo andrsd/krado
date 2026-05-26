@@ -245,10 +245,10 @@ private:
 
 } // namespace
 
-SchemeBAMG::SchemeBAMG(Options options) : Scheme2D("bamg"), opts_(options) {}
+SchemeBAMG::SchemeBAMG(Options options) : Scheme("bamg"), Scheme2D(), opts_(options) {}
 
 void
-SchemeBAMG::on_mesh_surface(Ptr<MeshSurface> surface)
+SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
 {
     BAMGSession bamg_session(surface);
     bamg_session.set_uniform_mesh_size(this->opts_.max_area);

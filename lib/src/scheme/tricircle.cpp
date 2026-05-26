@@ -20,10 +20,12 @@ namespace krado {
 
 static const std::string scheme_name = "tricircle";
 
-SchemeTriCircle::SchemeTriCircle(Options options) : Scheme2D(scheme_name), opts_(options) {}
+SchemeTriCircle::SchemeTriCircle(Options options) : Scheme(scheme_name), Scheme2D(), opts_(options)
+{
+}
 
 void
-SchemeTriCircle::on_select_curve_scheme(Ptr<MeshCurve> curve)
+SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
         // minimum of 4 intervals
@@ -34,7 +36,7 @@ SchemeTriCircle::on_select_curve_scheme(Ptr<MeshCurve> curve)
 }
 
 void
-SchemeTriCircle::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
+SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
     const auto & gsurf = mesh_surface->geom_surface();
     if (!is_circular_face(gsurf))

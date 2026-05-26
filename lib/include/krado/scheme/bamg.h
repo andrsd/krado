@@ -4,11 +4,12 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme2d.h"
 
 namespace krado {
 
-class SchemeBAMG : public Scheme2D {
+class SchemeBAMG : public Scheme, public Scheme2D {
 public:
     struct Options {
         /// Maximum area
@@ -18,9 +19,9 @@ public:
 public:
     SchemeBAMG(Options options);
 
-private:
-    void on_mesh_surface(Ptr<MeshSurface> surface) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
 
+private:
     Options opts_;
 };
 

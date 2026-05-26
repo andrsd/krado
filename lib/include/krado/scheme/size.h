@@ -4,11 +4,12 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 
 namespace krado {
 
-class SchemeSize : public Scheme1D {
+class SchemeSize : public Scheme, public Scheme1D {
 public:
     struct Options {
         /// Approximate element size
@@ -18,9 +19,9 @@ public:
 public:
     SchemeSize(Options options);
 
-private:
-    void on_mesh_curve(Ptr<MeshCurve> surface) override;
+    void mesh_curve(Ptr<MeshCurve> surface) override;
 
+private:
     Options opts_;
 };
 

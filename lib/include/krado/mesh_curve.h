@@ -5,6 +5,7 @@
 
 #include "krado/mesh_element.h"
 #include "krado/meshable.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 #include "krado/ptr.h"
 #include "krado/types.h"
@@ -86,6 +87,7 @@ public:
     /// @param name Name od the scheme to assign
     /// @return Pointer to the scheme
     template <typename SCHEME>
+        requires std::derived_from<SCHEME, Scheme>
     SCHEME &
     set_scheme(SCHEME::Options options)
     {

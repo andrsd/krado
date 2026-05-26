@@ -4,12 +4,13 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 #include "krado/consts.h"
 
 namespace krado {
 
-class SchemeCurvature : public Scheme1D {
+class SchemeCurvature : public Scheme, public Scheme1D {
 public:
     struct Options {
         /// Minimum mesh size
@@ -23,9 +24,9 @@ public:
 public:
     SchemeCurvature(Options options);
 
-private:
-    void on_mesh_curve(Ptr<MeshCurve> mcurve) override;
+    void mesh_curve(Ptr<MeshCurve> mcurve) override;
 
+private:
     Options opts_;
 };
 

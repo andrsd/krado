@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme3d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme1d.h"
@@ -14,7 +15,7 @@ class MeshVolume;
 class MeshSurface;
 class MeshCurve;
 
-class SchemeTriSurf : public Scheme3D, public Scheme2D, public Scheme1D {
+class SchemeTriSurf : public Scheme, public Scheme3D, public Scheme2D, public Scheme1D {
 public:
     struct Options {
         double linear_deflection;
@@ -25,14 +26,14 @@ public:
 public:
     SchemeTriSurf(Options options);
 
+    void mesh_curve(Ptr<MeshCurve> mcurve) override;
+    void mesh_volume(Ptr<MeshVolume> volume) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
+
+    void select_surface_scheme(Ptr<MeshSurface> surface) override;
+    void select_curve_scheme(Ptr<MeshCurve> curve) override;
+
 private:
-    void on_mesh_volume(Ptr<MeshVolume> volume) override;
-    void on_mesh_surface(Ptr<MeshSurface> surface) override;
-    void on_mesh_curve(Ptr<MeshCurve> mcurve) override;
-
-    void on_select_surface_scheme(Ptr<MeshSurface> surface) override;
-    void on_select_curve_scheme(Ptr<MeshCurve> curve) override;
-
     Options opts_;
 };
 

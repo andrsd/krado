@@ -4,6 +4,7 @@
 #include "krado/geom_model.h"
 #include "krado/bounding_box_3d.h"
 #include "krado/exception.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 #include "krado/scheme2d.h"
 #include "krado/scheme3d.h"
@@ -15,6 +16,7 @@
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
 #include "krado/log.h"
+#include "krado/timer.h"
 #include "krado/types.h"
 #include "TopExp_Explorer.hxx"
 #include "TopoDS.hxx"
@@ -408,24 +410,31 @@ GeomModel::mesh_curve(ShapeID id)
 void
 GeomModel::mesh_curve(Ptr<MeshCurve> curve)
 {
-    if (!curve->is_meshed()) {
-        Log::debug("Meshing curve: id={}", curve->id());
+    if (curve->is_meshed())
+        return;
 
-        auto & geom_curve = curve->geom_curve();
-        if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
-            return;
+    auto & scheme = curve->scheme();
+    auto & s = dynamic_cast<Scheme &>(scheme);
+    Log::info("Meshing curve {} ({}): scheme='{}'",
+              curve->id(),
+              curve->geom_curve().type(),
+              s.name());
 
-        auto & scheme = curve->scheme();
+    auto & geom_curve = curve->geom_curve();
+    if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
+        return;
 
-        auto bnd_vtxs = curve->bounding_vertices();
-        for (auto & v : bnd_vtxs)
-            mesh_vertex(v);
+    auto bnd_vtxs = curve->bounding_vertices();
+    for (auto & v : bnd_vtxs)
+        mesh_vertex(v);
 
+    {
+        LoggingTimer timer;
         scheme.mesh_curve(curve);
-        curve->set_meshed();
     }
-    else
-        Log::debug("Curve {} is already meshed", curve->id());
+    Log::info("- created {} segment(s)", utils::human_number(curve->segments().size()));
+
+    curve->set_meshed();
 }
 
 void
@@ -438,22 +447,30 @@ GeomModel::mesh_surface(ShapeID id)
 void
 GeomModel::mesh_surface(Ptr<MeshSurface> surface)
 {
-    if (!surface->is_meshed()) {
-        Log::debug("Meshing surface: id={}", surface->id());
+    if (surface->is_meshed())
+        return;
 
-        auto & scheme = surface->scheme();
+    auto & scheme = surface->scheme();
+    auto & s = dynamic_cast<Scheme &>(scheme);
+    Log::info("Meshing surface {}: scheme='{}'", surface->id(), s.name());
 
-        auto curves = surface->curves();
-        for (auto & crv : curves)
-            scheme.select_curve_scheme(crv);
-        for (auto & crv : curves)
-            mesh_curve(crv);
+    auto curves = surface->curves();
+    for (auto & crv : curves)
+        scheme.select_curve_scheme(crv);
+    for (auto & crv : curves)
+        mesh_curve(crv);
 
+    {
+        LoggingTimer timer;
         scheme.mesh_surface(surface);
-        surface->set_meshed();
     }
-    else
-        Log::debug("Surface {} is already meshed", surface->id());
+    if (surface->triangles().size() > 0)
+        Log::info("- created {} triangles(s)", utils::human_number(surface->triangles().size()));
+    if (surface->quadrangles().size() > 0)
+        Log::info("- created {} quadrangles(s)",
+                  utils::human_number(surface->quadrangles().size()));
+
+    surface->set_meshed();
 }
 
 void
@@ -466,22 +483,24 @@ GeomModel::mesh_volume(ShapeID id)
 void
 GeomModel::mesh_volume(Ptr<MeshVolume> volume)
 {
-    if (!volume->is_meshed()) {
-        Log::debug("Meshing volume: id={}", volume->id());
-
-        auto & scheme = volume->scheme();
-
-        auto surfaces = volume->surfaces();
-        for (auto & srf : surfaces)
-            scheme.select_surface_scheme(srf);
-        for (auto & srf : surfaces)
-            mesh_surface(srf);
-
-        scheme.mesh_volume(volume);
-        volume->set_meshed();
-    }
-    else
+    if (volume->is_meshed())
         Log::debug("Volume {} is already meshed", volume->id());
+
+    auto & scheme = volume->scheme();
+    auto & s = dynamic_cast<Scheme &>(scheme);
+    Log::info("Meshing volume {}: scheme='{}'", volume->id(), s.name());
+
+    auto surfaces = volume->surfaces();
+    for (auto & srf : surfaces)
+        scheme.select_surface_scheme(srf);
+    for (auto & srf : surfaces)
+        mesh_surface(srf);
+
+    {
+        LoggingTimer timer;
+        scheme.mesh_volume(volume);
+    }
+    volume->set_meshed();
 }
 
 void

@@ -14,10 +14,12 @@
 
 namespace krado {
 
-SchemeCurvature::SchemeCurvature(Options options) : Scheme1D("curvature"), opts_(options) {}
+SchemeCurvature::SchemeCurvature(Options options) : Scheme("curvature"), Scheme1D(), opts_(options)
+{
+}
 
 void
-SchemeCurvature::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
 {
     const auto & geom_curve = curve->geom_curve();
     GeomAdaptor_Curve adaptor(geom_curve.curve_handle());

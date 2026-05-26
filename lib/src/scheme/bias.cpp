@@ -12,10 +12,10 @@
 
 namespace krado {
 
-SchemeBias::SchemeBias(Options options) : Scheme1D("bias"), opts_(options) {}
+SchemeBias::SchemeBias(Options options) : Scheme("bias"), Scheme1D(), opts_(options) {}
 
 void
-SchemeBias::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;

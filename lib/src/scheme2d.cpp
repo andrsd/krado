@@ -12,29 +12,7 @@
 namespace krado {
 
 void
-Scheme2D::mesh_surface(Ptr<MeshSurface> surface)
-{
-    Log::info("Meshing surface {}: scheme='{}'", surface->id(), name());
-    {
-        LoggingTimer timer;
-        on_mesh_surface(surface);
-    }
-
-    if (surface->triangles().size() > 0)
-        Log::info("- created {} triangles(s)", utils::human_number(surface->triangles().size()));
-    if (surface->quadrangles().size() > 0)
-        Log::info("- created {} quadrangles(s)",
-                  utils::human_number(surface->quadrangles().size()));
-}
-
-void
 Scheme2D::select_curve_scheme(Ptr<MeshCurve> curve)
-{
-    on_select_curve_scheme(curve);
-}
-
-void
-Scheme2D::on_select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
         SchemeEqual::Options opt;
