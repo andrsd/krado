@@ -17,20 +17,6 @@
 namespace krado {
 
 void
-Scheme1D::mesh_curve(Ptr<MeshCurve> mcurve)
-{
-    Log::info("Meshing curve {} ({}): scheme='{}'",
-              mcurve->id(),
-              mcurve->geom_curve().type(),
-              name());
-    {
-        LoggingTimer timer;
-        on_mesh_curve(mcurve);
-    }
-    Log::info("- created {} segment(s)", utils::human_number(mcurve->segments().size()));
-}
-
-void
 Scheme1D::build_curve_segments(Ptr<MeshCurve> curve)
 {
     auto bnd_verts = curve->bounding_vertices();

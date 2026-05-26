@@ -10,23 +10,7 @@
 namespace krado {
 
 void
-Scheme3D::mesh_volume(Ptr<MeshVolume> volume)
-{
-    Log::info("Meshing volume {}: scheme='{}'", volume->id(), name());
-    {
-        LoggingTimer timer;
-        on_mesh_volume(volume);
-    }
-}
-
-void
-Scheme3D::select_surface_scheme(Ptr<MeshSurface> surface)
-{
-    on_select_surface_scheme(surface);
-}
-
-void
-Scheme3D::on_select_surface_scheme(Ptr<MeshSurface> /*surface*/)
+Scheme3D::select_surface_scheme(Ptr<MeshSurface> /*surface*/)
 {
 }
 

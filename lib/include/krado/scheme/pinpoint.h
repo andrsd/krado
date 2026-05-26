@@ -4,12 +4,13 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 #include <vector>
 
 namespace krado {
 
-class SchemePinpoint : public Scheme1D {
+class SchemePinpoint : public Scheme, public Scheme1D {
 public:
     struct Options {
         std::vector<double> positions;
@@ -18,9 +19,9 @@ public:
 public:
     SchemePinpoint(Options options);
 
-private:
-    void on_mesh_curve(Ptr<MeshCurve> surface) override;
+    void mesh_curve(Ptr<MeshCurve> surface) override;
 
+private:
     Options opts_;
 };
 

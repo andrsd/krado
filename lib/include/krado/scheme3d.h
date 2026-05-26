@@ -13,37 +13,17 @@ class MeshSurface;
 /// Base class for 3-dimensional mesh generation schemes
 class Scheme3D {
 public:
-    Scheme3D(const std::string & name) : name_(name) {}
     virtual ~Scheme3D() = default;
 
     /// Mesh a volume
     ///
     /// @param volume Volume to mesh
-    void mesh_volume(Ptr<MeshVolume> volume);
+    virtual void mesh_volume(Ptr<MeshVolume> volume) = 0;
 
     /// Select meshing scheme for a surface
     ///
     /// @param surface Surface to mesh
-    void select_surface_scheme(Ptr<MeshSurface> surface);
-
-    const std::string
-    name() const
-    {
-        return this->name_;
-    }
-
-private:
-    /// Mesh a volume
-    ///
-    /// @param volume Volume to mesh
-    virtual void on_mesh_volume(Ptr<MeshVolume> volume) = 0;
-
-    /// Select meshing scheme for a surface
-    ///
-    /// @param surface Surface to mesh
-    virtual void on_select_surface_scheme(Ptr<MeshSurface> surface);
-
-    std::string name_;
+    virtual void select_surface_scheme(Ptr<MeshSurface> surface);
 };
 
 } // namespace krado

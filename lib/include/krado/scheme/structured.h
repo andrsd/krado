@@ -4,21 +4,21 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme2d.h"
 
 namespace krado {
 
 class MeshSurface;
 
-class SchemeStructured : public Scheme2D {
+class SchemeStructured : public Scheme, public Scheme2D {
 public:
     struct Options {};
 
 public:
     SchemeStructured(Options options);
 
-private:
-    void on_mesh_surface(Ptr<MeshSurface> surface) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
 };
 
 } // namespace krado

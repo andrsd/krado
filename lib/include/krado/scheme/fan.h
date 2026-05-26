@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme2d.h"
 
 namespace krado {
@@ -18,7 +19,7 @@ class MeshCurve;
  * that meet at a center point. It propagates from the outer circular edge
  * towards the center, reducing the number of segments by one in each strip.
  */
-class SchemeFan : public Scheme2D {
+class SchemeFan : public Scheme, public Scheme2D {
 public:
     struct Options {
         //
@@ -27,8 +28,7 @@ public:
 public:
     SchemeFan(Options options);
 
-private:
-    void on_mesh_surface(Ptr<MeshSurface> surface) override;
+    void mesh_surface(Ptr<MeshSurface> surface) override;
 };
 
 } // namespace krado

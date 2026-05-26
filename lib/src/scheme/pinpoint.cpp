@@ -13,10 +13,10 @@
 
 namespace krado {
 
-SchemePinpoint::SchemePinpoint(Options options) : Scheme1D("pinpoint"), opts_(options) {}
+SchemePinpoint::SchemePinpoint(Options options) : Scheme("pinpoint"), Scheme1D(), opts_(options) {}
 
 void
-SchemePinpoint::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemePinpoint::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto apos = this->opts_.positions;

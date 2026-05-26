@@ -14,10 +14,22 @@
 
 namespace krado {
 
-SchemeCurvature::SchemeCurvature(Options options) : Scheme1D("curvature"), opts_(options) {}
+SchemeCurvature::SchemeCurvature(Options options) : Scheme("curvature"), Scheme1D(), opts_(options)
+{
+}
+
+std::string
+SchemeCurvature::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("min_size={}", this->opts_.min_size));
+    spars.push_back(fmt::format("max_size={}", this->opts_.max_size));
+    spars.push_back(fmt::format("deflection={}", this->opts_.deflection));
+    return join(", ", spars);
+}
 
 void
-SchemeCurvature::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
 {
     const auto & geom_curve = curve->geom_curve();
     GeomAdaptor_Curve adaptor(geom_curve.curve_handle());

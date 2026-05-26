@@ -40,10 +40,10 @@ find_shared_vertex(Ptr<MeshCurve> crv1, Ptr<MeshCurve> crv2)
 
 } // namespace
 
-SchemeFan::SchemeFan(Options /*options*/) : Scheme2D(scheme_name) {}
+SchemeFan::SchemeFan(Options /*options*/) : Scheme(scheme_name), Scheme2D() {}
 
 void
-SchemeFan::on_mesh_surface(Ptr<MeshSurface> mesh_surface)
+SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
     const auto & gsurf = mesh_surface->geom_surface();
     auto curves = mesh_surface->curves();

@@ -8,15 +8,22 @@
 #include "krado/mesh_curve_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
-#include "krado/log.h"
 #include "krado/utils.h"
 
 namespace krado {
 
-SchemeSize::SchemeSize(Options options) : Scheme1D("size"), opts_(options) {}
+SchemeSize::SchemeSize(Options options) : Scheme("size"), Scheme1D(), opts_(options) {}
+
+std::string
+SchemeSize::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("size={}", this->opts_.size));
+    return join(", ", spars);
+}
 
 void
-SchemeSize::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
 {
     const auto & geom_curve = curve->geom_curve();
 

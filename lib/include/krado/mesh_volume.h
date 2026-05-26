@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/meshable.h"
+#include "krado/scheme.h"
 #include "krado/scheme3d.h"
 #include "krado/ptr.h"
 #include "krado/mesh_element.h"
@@ -49,6 +50,7 @@ public:
     /// @param name Name od the scheme to assign
     /// @return Pointer to the scheme
     template <typename SCHEME>
+        requires std::derived_from<SCHEME, Scheme>
     SCHEME &
     set_scheme(SCHEME::Options options)
     {

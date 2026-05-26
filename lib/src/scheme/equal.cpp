@@ -13,10 +13,18 @@
 
 namespace krado {
 
-SchemeEqual::SchemeEqual(Options options) : Scheme1D("equal"), opts_(options) {}
+SchemeEqual::SchemeEqual(Options options) : Scheme("equal"), Scheme1D(), opts_(options) {}
+
+std::string
+SchemeEqual::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("intervals={}", this->opts_.intervals));
+    return join(", ", spars);
+}
 
 void
-SchemeEqual::on_mesh_curve(Ptr<MeshCurve> curve)
+SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;

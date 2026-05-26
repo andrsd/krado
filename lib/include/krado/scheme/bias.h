@@ -4,11 +4,12 @@
 #pragma once
 
 #include "krado/ptr.h"
+#include "krado/scheme.h"
 #include "krado/scheme1d.h"
 
 namespace krado {
 
-class SchemeBias : public Scheme1D {
+class SchemeBias : public Scheme, public Scheme1D {
 public:
     struct Options {
         int intervals;
@@ -18,8 +19,10 @@ public:
 public:
     SchemeBias(Options options);
 
+    void mesh_curve(Ptr<MeshCurve> surface) override;
+
 private:
-    void on_mesh_curve(Ptr<MeshCurve> surface) override;
+    std::string params_to_str() override;
 
     Options opts_;
 };
