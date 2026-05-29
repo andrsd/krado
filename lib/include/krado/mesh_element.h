@@ -76,4 +76,4 @@ Point barycenter(const MeshElement & elem);
 
 } // namespace krado
 
-inline std::ostream & operator<<(std::ostream & stream, const krado::MeshElement & el);
+std::ostream & operator<<(std::ostream & stream, const krado::MeshElement & el);

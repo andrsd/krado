@@ -132,6 +132,9 @@ barycenter(const MeshElement & elem)
 std::ostream &
 operator<<(std::ostream & stream, const krado::MeshElement & el)
 {
-    stream << "(" << krado::utils::to_str(el.type()) << ")";
+    stream << "(" << krado::utils::to_str(el.type()) << ":";
+    for (auto & vtx : el.vertices())
+        stream << " " << vtx->num();
+    stream << ")";
     return stream;
 }
