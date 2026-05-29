@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/curvature.h"
+#include "krado/scheme/integral.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
@@ -9,8 +10,9 @@
 #include "krado/log.h"
 #include "krado/exception.h"
 #include "krado/utils.h"
-#include "GCPnts_AbscissaPoint.hxx"
-#include "GeomAdaptor_Curve.hxx"
+#include "krado/vector.h"
+#include <cmath>
+#include <algorithm>
 
 namespace krado {
 
@@ -32,54 +34,50 @@ void
 SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
 {
     const auto & geom_curve = curve->geom_curve();
-    GeomAdaptor_Curve adaptor(geom_curve.curve_handle());
 
-    auto [t0, t1] = geom_curve.param_range();
-    const double tol = 1e-6;
-
-    auto total_length = GCPnts_AbscissaPoint::Length(adaptor, t0, t1, tol);
-    if (total_length < tol) {
-        Log::warn("Curve {} is too small (length={})", curve->id(), total_length);
-        curve->set_too_small(true);
-        return;
-    }
-
-    const auto & bnd_verts = curve->bounding_vertices();
-    if (bnd_verts.empty())
-        throw Exception("Curve {} must have at least 1 bounding vertex", curve->id());
-
-    double s = 0.0;
-    double t = t0;
-    while (s < total_length - tol) {
-        auto u = t;
-        auto kappa = geom_curve.curvature(u);
+    Integral igrl;
+    igrl.integrate(geom_curve, [&](double t) {
+        auto der = geom_curve.d1(t);
+        auto ds = der.magnitude();
+        auto kappa = geom_curve.curvature(t);
         double h;
-        if (kappa > 1e-12) {
+        if (kappa > 1e-12)
             h = this->opts_.deflection / kappa;
-        }
-        else {
+        else
             h = this->opts_.max_size;
-        }
 
         h = std::max(h, this->opts_.min_size);
         h = std::min(h, this->opts_.max_size);
 
-        if (s + h > total_length)
-            h = total_length - s;
+        return ds / h;
+    });
 
-        GCPnts_AbscissaPoint abscissa(adaptor, h, t, tol);
-        if (!abscissa.IsDone())
-            throw Exception("Failed to compute abscissa point");
+    auto total_weight = igrl.point(igrl.num_points() - 1).p;
+    if (total_weight < 1e-6) {
+        Log::warn("Curve {} is too small for curvature scheme", curve->id());
+        curve->set_too_small(true);
+        return;
+    }
 
-        t = abscissa.Parameter();
-        if (t < t1 - tol) {
-            auto cvtx = Ptr<MeshCurveVertex>::alloc(geom_curve, t);
-            curve->add_vertex(cvtx);
-            s += h;
+    std::size_t n_segs = std::max(1, static_cast<int>(std::round(total_weight)));
+    auto delta_weight = total_weight / static_cast<double>(n_segs);
+
+    for (std::size_t count = 1, num_pts = 1; num_pts < n_segs;) {
+        auto pt1 = igrl.point(count - 1);
+        auto pt2 = igrl.point(count);
+        const auto d = static_cast<double>(num_pts) * delta_weight;
+        if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
+            const auto dt = pt2.t - pt1.t;
+            const auto dp = pt2.p - pt1.p;
+            const auto t = pt1.t + dt / dp * (d - pt1.p);
+            curve->add_vertex(Ptr<MeshCurveVertex>::alloc(geom_curve, t));
+            num_pts++;
         }
-        else
-            // Reached (or passed) end parameter
-            break;
+        else {
+            count++;
+            if (count >= igrl.num_points())
+                break;
+        }
     }
 
     build_curve_segments(curve);

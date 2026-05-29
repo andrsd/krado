@@ -8,6 +8,8 @@
 #include "krado/step_file.h"
 #include "krado/spline.h"
 #include "krado/utils.h"
+#include "krado/log.h"
+#include "krado/exodusii_file.h"
 #include "builder.h"
 #include <filesystem>
 
@@ -135,12 +137,12 @@ TEST(SchemeCurvatureTest, spline)
     EXPECT_TRUE(bv[1]->point().is_equal(Point(2, 0, 0), 1e-10));
 
     auto cv = curv->curve_vertices();
-    ASSERT_EQ(cv.size(), 22);
-    EXPECT_TRUE(cv[3]->point().is_equal(Point(0.643486, 0.872898, 0), 1e-5));
-    EXPECT_TRUE(cv[7]->point().is_equal(Point(0.904346, 0.99085, 0), 1e-5));
-    EXPECT_TRUE(cv[8]->point().is_equal(Point(0.95659, 0.998116, 0), 1e-5));
-    EXPECT_TRUE(cv[9]->point().is_equal(Point(1.0071, 0.99995, 0), 1e-5));
-    EXPECT_TRUE(cv[10]->point().is_equal(Point(1.05699, 0.996752, 0), 1e-5));
-    EXPECT_TRUE(cv[16]->point().is_equal(Point(1.4037, 0.837029, 0), 1e-5));
-    EXPECT_TRUE(cv[19]->point().is_equal(Point(1.68545, 0.530162, 0), 1e-5));
+    ASSERT_EQ(cv.size(), 21);
+    EXPECT_TRUE(cv[3]->point().is_equal(Point(0.574353, 0.818824, 0), 1e-5));
+    EXPECT_TRUE(cv[7]->point().is_equal(Point(0.844099, 0.975695, 0), 1e-5));
+    EXPECT_TRUE(cv[8]->point().is_equal(Point(0.897865, 0.989568, 0), 1e-5));
+    EXPECT_TRUE(cv[9]->point().is_equal(Point(0.949454, 0.997445, 0), 1e-5));
+    EXPECT_TRUE(cv[10]->point().is_equal(Point(1., 1., 0), 1e-5));
+    EXPECT_TRUE(cv[16]->point().is_equal(Point(1.34538, 0.880713, 0), 1e-5));
+    EXPECT_TRUE(cv[19]->point().is_equal(Point(1.63888, 0.591831, 0), 1e-5));
 }
