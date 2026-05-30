@@ -692,6 +692,13 @@ PYBIND11_MODULE(krado, m)
                      SchemeTriCircle::Options opts;
                      if (kwargs.contains("radial_intervals"))
                          opts.radial_intervals = kwargs["radial_intervals"].cast<int>();
+                     if (kwargs.contains("symmetry_type")) {
+                         auto st = kwargs["symmetry_type"].cast<std::string>();
+                         if (st == "quadrant")
+                             opts.symmetry_type = SchemeTriCircle::SymmetryType::QUADRANT;
+                         else if (st == "hexagonal")
+                             opts.symmetry_type = SchemeTriCircle::SymmetryType::HEXAGONAL;
+                     }
                      self.set_scheme<SchemeTriCircle>(opts);
                  }
                  else if (name == "fan") {

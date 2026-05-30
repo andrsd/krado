@@ -29,6 +29,9 @@ SchemeTriCircle::params_to_str()
 {
     std::vector<std::string> spars;
     spars.push_back(fmt::format("radial_intervals={}", this->opts_.radial_intervals));
+    spars.push_back(fmt::format("symmetry={}",
+                                this->opts_.symmetry_type == SymmetryType::QUADRANT ? "quadrant"
+                                                                                    : "hexagonal"));
     return join(", ", spars);
 }
 
@@ -36,9 +39,13 @@ void
 SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
-        // minimum of 4 intervals
+        // We use a step of 6 for both symmetry types to grow the ring sizes faster,
+        // which helps maintain better triangle quality (closer to equilateral).
+        int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+        int step = 6;
+        int n_intervals = S1 + step * (this->opts_.radial_intervals - 1);
         SchemeEqual::Options opts;
-        opts.intervals = 4;
+        opts.intervals = n_intervals;
         curve->set_scheme<SchemeEqual>(opts);
     }
 }
@@ -61,65 +68,111 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     auto ctr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv_ctr);
     mesh_surface->add_vertex(ctr);
 
-    // Outer ring vertices (existing)
-    auto & mesh_crv = mesh_surface->curves()[0];
-
-    std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings;
-    rings.resize(n_radial + 1);
-
-    // ring `0` contains only center
-    rings.push_back({ ctr });
-
-    // ring `n_radial` contains full boundary
+    // Collect all boundary vertices in order
     std::vector<Ptr<MeshVertexAbstract>> circum_verts;
-    auto bnd_vtxs = mesh_crv->bounding_vertices();
-    circum_verts.push_back(bnd_vtxs[0]);
-    for (auto & v : mesh_crv->curve_vertices())
-        circum_verts.push_back(v);
-    if (bnd_vtxs.size() > 1)
-        circum_verts.push_back(bnd_vtxs[1]);
-    rings[n_radial] = circum_verts;
-
-    // Generate intermediate rings
-    for (auto r : make_range(1, n_radial)) {
-        auto alpha = static_cast<double>(r) / static_cast<double>(n_radial);
-
-        for (auto & bv : circum_verts) {
-            // Linear interpolation of points on the surface along chord direction
-            auto p = ctr_pnt + (bv->point() - ctr_pnt) * alpha;
-
-            auto uv = gsurf.parameter_from_point(p);
-            auto vr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
-            mesh_surface->add_vertex(vr);
-
-            rings[r].push_back(vr);
+    for (auto & mesh_crv : mesh_surface->curves()) {
+        auto cvs = get_mesh_curve_vertices(mesh_crv);
+        if (circum_verts.empty()) {
+            circum_verts = cvs;
+        }
+        else {
+            if (circum_verts.back() == cvs.front())
+                circum_verts.insert(circum_verts.end(), cvs.begin() + 1, cvs.end());
+            else
+                circum_verts.insert(circum_verts.end(), cvs.begin(), cvs.end());
         }
     }
+    // Ensure it's closed
+    if (circum_verts.front() != circum_verts.back())
+        circum_verts.push_back(circum_verts.front());
+
+    // N is number of segments on the boundary
+    int N = static_cast<int>(circum_verts.size()) - 1;
+
+    // Target S1 (segments in the innermost ring)
+    int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+
+    if (N < S1)
+        throw Exception("Boundary must have at least {} segments for the selected symmetry.", S1);
+
+    std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings(n_radial + 1);
+    rings[n_radial] = circum_verts;
+
+    // Cumulative distance along the boundary for interpolation
+    std::vector<double> L(N + 1, 0.0);
+    for (int i = 1; i <= N; ++i) {
+        L[i] = L[i - 1] + utils::distance(circum_verts[i - 1]->point(), circum_verts[i]->point());
+    }
+    double total_L = L[N];
+
+    // Generate intermediate rings
+    for (int k = n_radial - 1; k >= 1; --k) {
+        // Linearly interpolate the number of segments between S1 and N
+        // Sk = S1 + (N - S1) * (k-1) / (n_radial - 1)
+        int Sk;
+        if (n_radial > 1) {
+            double alpha_s = static_cast<double>(k - 1) / (n_radial - 1);
+            Sk = S1 + static_cast<int>(std::round((N - S1) * alpha_s));
+        }
+        else {
+            Sk = S1;
+        }
+
+        double alpha_r = static_cast<double>(k) / static_cast<double>(n_radial);
+
+        for (int i = 0; i < Sk; ++i) {
+            double l = total_L * (static_cast<double>(i) / Sk);
+
+            // Find j such that L[j] <= l < L[j+1]
+            auto it = std::lower_bound(L.begin(), L.end(), l);
+            int j = std::distance(L.begin(), it);
+            if (j > 0)
+                j--;
+            if (j >= N)
+                j = N - 1;
+
+            double beta = (total_L > 0) ? (l - L[j]) / (L[j + 1] - L[j]) : 0.0;
+            auto p_bnd = circum_verts[j]->point() +
+                         (circum_verts[j + 1]->point() - circum_verts[j]->point()) * beta;
+
+            auto p = ctr_pnt + (p_bnd - ctr_pnt) * alpha_r;
+            auto uv = gsurf.parameter_from_point(p);
+            auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
+            mesh_surface->add_vertex(v);
+            rings[k].push_back(v);
+        }
+        // Close the ring
+        rings[k].push_back(rings[k].front());
+    }
+    // ring 0 is center
+    rings[0] = { ctr };
 
     // Create triangles
 
     // center fan (ring 0 -> ring 1)
-    for (auto i : make_range(1, rings[1].size())) {
-        size_t j = i - 1;
-        mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, rings[1][j], rings[1][i]));
+    auto & r1 = rings[1];
+    for (size_t i = 0; i < r1.size() - 1; ++i) {
+        mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, r1[i], r1[i + 1]));
     }
 
-    // ring-to-ring tessellation
-    for (auto r : make_range(1, n_radial)) {
-        auto & inner = rings[r];
-        auto & outer = rings[r + 1];
+    // ring-to-ring strips
+    for (int k = 1; k < n_radial; ++k) {
+        auto & inner = rings[k];
+        auto & outer = rings[k + 1];
+        int Sin = static_cast<int>(inner.size()) - 1;
+        int Sout = static_cast<int>(outer.size()) - 1;
 
-        for (auto i : make_range(1, inner.size())) {
-            size_t j = i - 1;
-
-            auto a = inner[j];
-            auto b = inner[i];
-            auto c = outer[j];
-            auto d = outer[i];
-
-            // split the quad into 2 triangles
-            mesh_surface->add_triangle(ccw_triangle(gsurf, a, c, d));
-            mesh_surface->add_triangle(ccw_triangle(gsurf, a, d, b));
+        int v = 0; // outer index
+        int w = 0; // inner index
+        while (v < Sout || w < Sin) {
+            if (v < Sout && (w == Sin || (double) v / Sout <= (double) w / Sin)) {
+                mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], inner[w]));
+                v++;
+            }
+            else {
+                mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], inner[w + 1], inner[w]));
+                w++;
+            }
         }
     }
 }
