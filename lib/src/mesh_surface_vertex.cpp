@@ -40,4 +40,11 @@ MeshSurfaceVertex::point() const
     return this->phys_pt_;
 }
 
+void
+MeshSurfaceVertex::relocate(const Point & p)
+{
+    this->uv_ = this->gsurface_.parameter_from_point(p);
+    this->phys_pt_ = this->gsurface_.point(this->uv_);
+}
+
 } // namespace krado

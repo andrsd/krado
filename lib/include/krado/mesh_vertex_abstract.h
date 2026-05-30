@@ -18,6 +18,12 @@ public:
     /// @return Physical position in the 3D space
     [[nodiscard]] virtual Point point() const = 0;
 
+    /// Relocate the vertex to a new position. The actual position will be projected
+    /// onto the geometrical shape associated with this vertex.
+    ///
+    /// @param p New physical position
+    virtual void relocate(const Point & p) = 0;
+
     /// Geometrical shape associated with this vertex
     ///
     /// @return Geometrical shape associated with this vertex
