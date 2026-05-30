@@ -29,6 +29,9 @@ SchemeTriCircle::params_to_str()
 {
     std::vector<std::string> spars;
     spars.push_back(fmt::format("radial_intervals={}", this->opts_.radial_intervals));
+    spars.push_back(fmt::format("symmetry={}",
+                                this->opts_.symmetry_type == SymmetryType::QUADRANT ? "quadrant"
+                                                                                    : "hexagonal"));
     return join(", ", spars);
 }
 
@@ -36,9 +39,11 @@ void
 SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
 {
     if (!curve->has_scheme()) {
-        // To maintain symmetry and the 4-triangle center constraint,
-        // we need N to be a multiple of 4 and N >= 4 * radial_intervals.
-        int n_intervals = 4 * this->opts_.radial_intervals;
+        // We use a step of 6 for both symmetry types to grow the ring sizes faster,
+        // which helps maintain better triangle quality (closer to equilateral).
+        int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+        int step = 6;
+        int n_intervals = S1 + step * (this->opts_.radial_intervals - 1);
         SchemeEqual::Options opts;
         opts.intervals = n_intervals;
         curve->set_scheme<SchemeEqual>(opts);
@@ -84,16 +89,11 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // N is number of segments on the boundary
     int N = static_cast<int>(circum_verts.size()) - 1;
 
-    if (N % 4 != 0)
-        throw Exception("Number of boundary segments ({}) must be divisible by 4 for symmetry.", N);
+    // Target S1 (segments in the innermost ring)
+    int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
 
-    // Check constraint: S_innermost >= 4
-    // S_k = S_{k+1} - 4, so S_innermost = N - 4 * (n_radial - 1)
-    if (N < 4 * n_radial)
-        throw Exception(
-            "Boundary must have at least {} segments (4 * radial_intervals) to maintain "
-            "symmetry and the 4-triangle center constraint.",
-            4 * n_radial);
+    if (N < S1)
+        throw Exception("Boundary must have at least {} segments for the selected symmetry.", S1);
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings(n_radial + 1);
     rings[n_radial] = circum_verts;
@@ -107,9 +107,18 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
 
     // Generate intermediate rings
     for (int k = n_radial - 1; k >= 1; --k) {
-        // Each ring has 4 fewer segments than the outer one
-        int Sk = N - 4 * (n_radial - k);
-        double alpha = static_cast<double>(k) / static_cast<double>(n_radial);
+        // Linearly interpolate the number of segments between S1 and N
+        // Sk = S1 + (N - S1) * (k-1) / (n_radial - 1)
+        int Sk;
+        if (n_radial > 1) {
+            double alpha_s = static_cast<double>(k - 1) / (n_radial - 1);
+            Sk = S1 + static_cast<int>(std::round((N - S1) * alpha_s));
+        }
+        else {
+            Sk = S1;
+        }
+
+        double alpha_r = static_cast<double>(k) / static_cast<double>(n_radial);
 
         for (int i = 0; i < Sk; ++i) {
             double l = total_L * (static_cast<double>(i) / Sk);
@@ -126,7 +135,7 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
             auto p_bnd = circum_verts[j]->point() +
                          (circum_verts[j + 1]->point() - circum_verts[j]->point()) * beta;
 
-            auto p = ctr_pnt + (p_bnd - ctr_pnt) * alpha;
+            auto p = ctr_pnt + (p_bnd - ctr_pnt) * alpha_r;
             auto uv = gsurf.parameter_from_point(p);
             auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
             mesh_surface->add_vertex(v);

@@ -14,9 +14,17 @@ class MeshCurve;
 
 class SchemeTriCircle : public Scheme, public Scheme2D {
 public:
+    enum class SymmetryType {
+        ///
+        QUADRANT,
+        HEXAGONAL
+    };
+
     struct Options {
         /// Number of radial intervals
         int radial_intervals = 0;
+        /// Symmetry type
+        SymmetryType symmetry_type = SymmetryType::QUADRANT;
     };
 
 public:
