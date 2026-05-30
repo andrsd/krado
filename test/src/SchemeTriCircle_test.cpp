@@ -13,7 +13,7 @@
 
 using namespace krado;
 
-TEST(SchemeCircleTest, circle)
+TEST(SchemeCircleTest, circle_quadr_1_radial)
 {
     auto circle = testing::build_circle(Point(0, 0, 0), 1);
     GeomModel model(circle);
@@ -25,8 +25,10 @@ TEST(SchemeCircleTest, circle)
 
     auto surf = model.surface(1);
     SchemeTriCircle::Options opts;
+    opts.symmetry_type = SchemeTriCircle::SymmetryType::QUADRANT;
     opts.radial_intervals = 1;
     surf->set_scheme<SchemeTriCircle>(opts);
+    surf->set_marker(1000);
     model.mesh_surface(1);
 
     auto SQRT2_2 = std::sqrt(2.) / 2.;
@@ -46,6 +48,56 @@ TEST(SchemeCircleTest, circle)
     EXPECT_TRUE(cv[6]->point().is_equal(Point(SQRT2_2, -SQRT2_2, 0), 1e-5));
 
     EXPECT_EQ(surf->triangles().size(), 8);
+}
+
+TEST(SchemeCircleTest, circle_quadr_3_radial)
+{
+    auto circle = testing::build_circle(Point(0, 0, 0), 1);
+    GeomModel model(circle);
+
+    SchemeEqual::Options opts1;
+    opts1.intervals = 12;
+    model.curve(1)->set_scheme<SchemeEqual>(opts1);
+    model.mesh_curve(1);
+
+    auto surf = model.surface(1);
+    SchemeTriCircle::Options opts;
+    opts.radial_intervals = 3;
+    opts.symmetry_type = SchemeTriCircle::SymmetryType::QUADRANT;
+    surf->set_scheme<SchemeTriCircle>(opts);
+    surf->set_marker(1000);
+    model.mesh_surface(1);
+
+    auto sv = surf->surface_vertices();
+    ASSERT_EQ(sv.size(), 13);
+    EXPECT_EQ(sv[0]->point(), Point(0, 0, 0));
+
+    EXPECT_EQ(surf->triangles().size(), 36);
+}
+
+TEST(SchemeCircleTest, circle_hex_2_radial)
+{
+    auto circle = testing::build_circle(Point(0, 0, 0), 1);
+    GeomModel model(circle);
+
+    SchemeEqual::Options opts1;
+    opts1.intervals = 12;
+    model.curve(1)->set_scheme<SchemeEqual>(opts1);
+    model.mesh_curve(1);
+
+    auto surf = model.surface(1);
+    SchemeTriCircle::Options opts;
+    opts.symmetry_type = SchemeTriCircle::SymmetryType::HEXAGONAL;
+    opts.radial_intervals = 2;
+    surf->set_scheme<SchemeTriCircle>(opts);
+    surf->set_marker(1000);
+    model.mesh_surface(1);
+
+    auto sv = surf->surface_vertices();
+    ASSERT_EQ(sv.size(), 7);
+    EXPECT_EQ(sv[0]->point(), Point(0, 0, 0));
+
+    EXPECT_EQ(surf->triangles().size(), 24);
 }
 
 TEST(SchemeCircleTest, not_circle)
