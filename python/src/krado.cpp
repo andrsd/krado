@@ -786,6 +786,8 @@ PYBIND11_MODULE(krado, m)
 
     m.def("tetrahedralize", &tetrahedralize);
 
+    m.def("smooth", &smooth, py::arg("surface"), py::arg("iterations") = 1);
+
     m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
 
