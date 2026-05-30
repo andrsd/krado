@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/types.h"
+#include "krado/ptr.h"
 #include "Standard_TypeDef.hxx"
 #include <vector>
 #include <tuple>
@@ -22,6 +23,7 @@ class Vector;
 class Axis1;
 class Wire;
 class Plane;
+class MeshSurface;
 
 /// Translate a shape
 ///
@@ -213,5 +215,11 @@ GeomShape sweep(const GeomShape & profile, const Wire & spine);
 /// @param tol Tolerance
 /// @return Resulting shell
 GeomShape sew(const std::vector<GeomShape> & faces, double tol = 1e-6);
+
+/// Apply Laplace smoothing to a surface mesh
+///
+/// @param surface Surface to smooth
+/// @param iterations Number of iterations
+void smooth(Ptr<MeshSurface> surface, int iterations = 1);
 
 } // namespace krado

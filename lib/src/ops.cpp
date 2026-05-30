@@ -10,11 +10,17 @@
 #include "krado/exception.h"
 #include "krado/log.h"
 #include "krado/mesh.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_vertex_abstract.h"
+#include "krado/mesh_element.h"
 #include "krado/types.h"
 #include "krado/vector.h"
 #include "krado/wire.h"
 #include "krado/plane.h"
 #include "krado/axis1.h"
+#include "krado/range.h"
+#include "krado/timer.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
@@ -41,6 +47,7 @@
 #include "BRepAlgoAPI_Splitter.hxx"
 #include "TopoDS_Edge.hxx"
 #include "TopTools_DataMapOfShapeInteger.hxx"
+#include <set>
 
 namespace krado {
 
@@ -505,6 +512,61 @@ sew(const std::vector<GeomShape> & faces, double tol)
         sewing_tool.Add(face);
     sewing_tool.Perform();
     return GeomShape(sewing_tool.SewedShape());
+}
+
+void
+smooth(Ptr<MeshSurface> surface, int iterations)
+{
+    LoggingTimer timer;
+    Log::info("Applying Laplace smoothing on surface {} ({} iterations)",
+              surface->id(),
+              iterations);
+
+    // 1. Build adjacency map for internal vertices
+    std::map<Ptr<MeshVertexAbstract>, std::set<Ptr<MeshVertexAbstract>>> neighbors;
+
+    for (auto vtx : surface->surface_vertices())
+        neighbors[vtx] = {};
+
+    auto add_neighbors = [&](const MeshElement & elem) {
+        auto vtxs = elem.vertices();
+        for (auto i : make_range(vtxs.size())) {
+            auto vtx = vtxs[i];
+            auto it = neighbors.find(vtx);
+            if (it != neighbors.end()) {
+                for (auto j : make_range(vtxs.size())) {
+                    if (i != j) {
+                        it->second.insert(vtxs[j]);
+                    }
+                }
+            }
+        }
+    };
+
+    for (auto tri : surface->triangles())
+        add_neighbors(tri);
+    for (auto quad : surface->quadrangles())
+        add_neighbors(quad);
+
+    // 2. Perform Laplace iterations
+    for (auto iter : make_range(iterations)) {
+        (void) iter;
+        std::map<Ptr<MeshVertexAbstract>, Point> new_positions;
+        for (const auto & [vtx, adj] : neighbors) {
+            Point avg(0, 0, 0);
+            for (const auto & neighbor : adj)
+                avg += neighbor->point();
+
+            if (adj.size() > 0) {
+                avg *= 1.0 / adj.size();
+                new_positions[vtx] = avg;
+            }
+        }
+
+        // Relocate vertices
+        for (const auto & [vtx, pos] : new_positions)
+            vtx->relocate(pos);
+    }
 }
 
 } // namespace krado
