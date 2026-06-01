@@ -74,7 +74,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake --build build --preset ${{ matrix.preset }} --parallel 4
+          cmake --build build --preset ${{ matrix.preset }} --parallel 2
 
       - name: Run tests
         run: |
