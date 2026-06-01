@@ -33,9 +33,9 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
         return der.magnitude();
     });
 
-    int n_segs = std::round(geom_curve.length() / this->opts_.size);
+    std::size_t n_segs = std::round(geom_curve.length() / this->opts_.size);
     const double b = geom_curve.length() / static_cast<double>(n_segs);
-    for (int count = 1, num_pts = 1; num_pts < n_segs;) {
+    for (std::size_t count = 1, num_pts = 1; num_pts < n_segs;) {
         auto pt1 = igrl.point(count - 1);
         auto pt2 = igrl.point(count);
         const double d = num_pts * b;
