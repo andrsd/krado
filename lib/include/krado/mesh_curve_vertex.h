@@ -33,6 +33,9 @@ public:
     /// @return Physical position in the 3D space
     [[nodiscard]] Point point() const override;
 
+    /// @copydoc MeshVertexAbstract::relocate
+    void relocate(const Point & p) override;
+
 private:
     const GeomCurve & gcurve_;
     /// Parametrical position on the curve

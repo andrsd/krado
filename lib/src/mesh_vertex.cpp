@@ -34,6 +34,12 @@ MeshVertex::point() const
     return this->gvtx_.point();
 }
 
+void
+MeshVertex::relocate(const Point & /*p*/)
+{
+    // A corner vertex cannot be relocated
+}
+
 double
 MeshVertex::mesh_size() const
 {

@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include <string>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
-#include <string>
 
 namespace krado {
 

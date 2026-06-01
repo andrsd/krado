@@ -32,4 +32,11 @@ MeshCurveVertex::point() const
     return this->phys_pt_;
 }
 
+void
+MeshCurveVertex::relocate(const Point & p)
+{
+    this->u_ = this->gcurve_.parameter_from_point(p);
+    this->phys_pt_ = this->gcurve_.point(this->u_);
+}
+
 } // namespace krado
