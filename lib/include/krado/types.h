@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "fmt/core.h"
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <span>
+#include "fmt/core.h"
 
 namespace krado {
 

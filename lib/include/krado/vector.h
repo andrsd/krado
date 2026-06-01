@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include <memory>
+#include <ostream>
 #include "fmt/format.h"
 #include "gp_Vec.hxx"
-#include <ostream>
 
 namespace krado {
 
