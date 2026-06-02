@@ -28,7 +28,7 @@ void
 SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
 {
     auto & geom_curve = curve->geom_curve();
-    std::size_t n_segs = this->opts_.intervals;
+    auto n_segs = this->opts_.intervals;
     auto bias_factor = this->opts_.factor;
 
     Integral igrl;
@@ -40,7 +40,7 @@ SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
     // place mesh curve vertices
     double l0 = geom_curve.length() * (bias_factor - 1.) / (std::pow(bias_factor, n_segs) - 1);
     double p_prev = 0.;
-    for (std::size_t count = 1, num_pts = 0; num_pts < n_segs - 1;) {
+    for (int count = 1, num_pts = 0; num_pts < n_segs - 1;) {
         auto pt1 = igrl.point(count - 1);
         auto pt2 = igrl.point(count);
         const auto d = p_prev + l0 * std::pow(bias_factor, num_pts);
