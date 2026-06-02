@@ -161,6 +161,7 @@ MeshSurface::quads_to_tris(QuadSplitMode mode)
             auto uv = gsurf.parameter_from_point(center_pt);
 
             auto center_vtx = Ptr<MeshSurfaceVertex>::alloc(this->gsurface_, uv);
+            this->surf_vtxs_.push_back(center_vtx);
             add_triangle({ v[0], v[1], center_vtx });
             add_triangle({ v[1], v[2], center_vtx });
             add_triangle({ v[2], v[3], center_vtx });
