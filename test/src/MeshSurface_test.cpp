@@ -7,6 +7,7 @@
 #include "krado/mesh_volume.h"
 #include "krado/geom_model.h"
 #include "krado/vector.h"
+#include "krado/utils.h"
 #include "builder.h"
 #include <array>
 
@@ -73,18 +74,21 @@ TEST(MeshSurfaceTest, quads_to_tris_2)
 {
     auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 1, 0));
     GeomModel model(rect);
+
     auto msurface = model.surface(1);
 
-    auto v0 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 0.);
-    auto v1 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 0.);
-    auto v2 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 1.);
-    auto v3 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 1.);
-    msurface->add_quadrangle({ v0, v1, v2, v3 });
+    auto v0 = model.vertex(1);
+    auto v1 = model.vertex(2);
+    auto v2 = model.vertex(3);
+    auto v3 = model.vertex(4);
+    msurface->add_quadrangle(ccw_quadrangle(rect, v0, v1, v2, v3));
 
+    EXPECT_EQ(msurface->surface_vertices().size(), 0);
     EXPECT_EQ(msurface->quadrangles().size(), 1);
     EXPECT_EQ(msurface->triangles().size(), 0);
 
     msurface->quads_to_tris();
+    EXPECT_EQ(msurface->surface_vertices().size(), 0);
     EXPECT_EQ(msurface->quadrangles().size(), 0);
     EXPECT_EQ(msurface->triangles().size(), 2);
 }
@@ -93,18 +97,21 @@ TEST(MeshSurfaceTest, quads_to_tris_4)
 {
     auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 1, 0));
     GeomModel model(rect);
+
     auto msurface = model.surface(1);
 
-    auto v0 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 0.);
-    auto v1 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 0.);
-    auto v2 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 1., 1.);
-    auto v3 = Ptr<MeshSurfaceVertex>::alloc(msurface->geom_surface(), 0., 1.);
-    msurface->add_quadrangle({ v0, v1, v2, v3 });
+    auto v0 = model.vertex(1);
+    auto v1 = model.vertex(2);
+    auto v2 = model.vertex(3);
+    auto v3 = model.vertex(4);
+    msurface->add_quadrangle(ccw_quadrangle(rect, v0, v1, v2, v3));
 
+    EXPECT_EQ(msurface->surface_vertices().size(), 0);
     EXPECT_EQ(msurface->quadrangles().size(), 1);
     EXPECT_EQ(msurface->triangles().size(), 0);
 
     msurface->quads_to_tris(QuadSplitMode::SPLIT4);
+    EXPECT_EQ(msurface->surface_vertices().size(), 1);
     EXPECT_EQ(msurface->quadrangles().size(), 0);
     EXPECT_EQ(msurface->triangles().size(), 4);
 }
