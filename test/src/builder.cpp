@@ -6,6 +6,7 @@
 #include "BRepLib_MakeWire.hxx"
 #include "BRepLib_MakeFace.hxx"
 #include "BRepPrimAPI_MakeBox.hxx"
+#include "TopoDS.hxx"
 #include "TopoDS_Wire.hxx"
 #include "TopoDS_Face.hxx"
 #include "Geom_Line.hxx"
@@ -116,6 +117,30 @@ build_rect(Point pt1, Point pt2)
     auto wire = BRepBuilderAPI_MakeWire(edge1, edge2, edge3, edge4);
 
     return GeomSurface(BRepBuilderAPI_MakeFace(wire));
+}
+
+krado::GeomSurface
+build_annulus(krado::Point center, double outer_radius, double inner_radius)
+{
+    gp_Ax2 center_ax(center, gp_Dir(0, 0, 1));
+
+    gp_Circ outer_circ(center_ax, outer_radius);
+    gp_Circ inner_circ(center_ax, inner_radius);
+
+    TopoDS_Edge outer_edge = BRepBuilderAPI_MakeEdge(outer_circ);
+    TopoDS_Edge inner_edge = BRepBuilderAPI_MakeEdge(inner_circ);
+
+    TopoDS_Wire outer_wire = BRepBuilderAPI_MakeWire(outer_edge);
+    TopoDS_Wire inner_wire = BRepBuilderAPI_MakeWire(inner_edge);
+
+    gp_Pln plane(center_ax);
+    BRepBuilderAPI_MakeFace face_builder(plane);
+
+    face_builder.Add(outer_wire);
+    // Reverse the inner wire to make it a hole
+    face_builder.Add(TopoDS::Wire(inner_wire.Reversed()));
+
+    return GeomSurface(face_builder.Face());
 }
 
 GeomSurface
