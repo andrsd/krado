@@ -175,3 +175,29 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
         EXPECT_EQ(ss10.size(), 1);
     }
 }
+
+TEST(ExodusIIFileTest, write_mesh_with_node_sets)
+{
+    std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
+    std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    mesh.set_vertex_set(10, { 1, 4 });
+    mesh.set_edge_set_name(10, "sides");
+
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    {
+        ExodusIIFile exo(temp_fname);
+        exo.write(mesh);
+    }
+    {
+        ExodusIIFile exo(temp_fname);
+        auto mesh_read = exo.read();
+        auto node_set_ids = mesh_read.vertex_set_ids();
+        EXPECT_THAT(node_set_ids, ElementsAre(10));
+        auto ns10 = mesh_read.vertex_set(10);
+        EXPECT_EQ(ns10.size(), 2);
+        EXPECT_THAT(ns10, ElementsAre(1, 4));
+    }
+}
