@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "builder.h"
-#include "krado/scheme/integral.h"
+#include "krado/integral.h"
 #include "krado/geom_curve.h"
 #include "krado/vector.h"
 

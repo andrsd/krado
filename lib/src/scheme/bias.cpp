@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/bias.h"
-#include "krado/scheme/integral.h"
+#include "krado/integral.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_curve_vertex.h"
