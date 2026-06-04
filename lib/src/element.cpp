@@ -80,7 +80,7 @@ const std::vector<std::vector<u8>> Hex8::FACE_VERTICES = { { 0, 1, 5, 4 }, { 2, 
 
 Element::Element(ElementType type, const std::vector<Index> & vtx_ids) : elem_type_(type)
 {
-    if (vtx_ids.size() < MAX_INDICES) {
+    if (vtx_ids.size() <= MAX_INDICES) {
         this->n_ids_ = vtx_ids.size();
         for (int i = 0; i < this->n_ids_; i++)
             this->vtx_id_[i] = vtx_ids[i];
