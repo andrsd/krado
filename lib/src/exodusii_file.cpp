@@ -146,6 +146,15 @@ using SideSetMap = std::map<Marker, SideSet>;
 using NodeSetMap = std::map<Marker, NodeSet>;
 using NamesMap = std::map<Marker, std::string>;
 
+std::string
+create_name(Marker id, const NamesMap & names)
+{
+    if (names.contains(id))
+        return names.at(id);
+    else
+        return fmt::format("{}", id);
+}
+
 // Helpers for building things from `GeomModel`
 
 std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
@@ -790,10 +799,8 @@ write_element_blocks(exodusIIcpp::File & exo, const BlocksMap & blocks, const Na
         }
         exo.write_block(blk_id, el_type, elems.size(), connect);
 
-        if (names.contains(blk_id))
-            blk_names.push_back(names.at(blk_id));
-        else
-            blk_names.push_back(fmt::format("{}", blk_id));
+        auto name = create_name(blk_id, names);
+        blk_names.push_back(name);
     }
 
     if (!blk_names.empty())
@@ -806,12 +813,14 @@ write_side_sets(exodusIIcpp::File & exo, const SideSetMap & side_sets, const Nam
     std::vector<std::string> side_sets_names;
 
     for (auto & [id, side_set] : side_sets) {
-        exo.write_side_set(id, side_set.elems, side_set.sides);
+        auto name = create_name(id, names);
 
-        if (names.contains(id))
-            side_sets_names.push_back(names.at(id));
+        if (side_set.elems.size() > 0) {
+            exo.write_side_set(id, side_set.elems, side_set.sides);
+            side_sets_names.push_back(name);
+        }
         else
-            side_sets_names.push_back(fmt::format("{}", id));
+            Log::warn("Side set '{}' is empty", name);
     }
 
     if (!side_sets_names.empty())
@@ -824,12 +833,14 @@ write_node_sets(exodusIIcpp::File & exo, const NodeSetMap & node_sets, const Nam
     std::vector<std::string> node_set_names;
 
     for (auto & [id, nodes] : node_sets) {
-        exo.write_node_set(id, nodes);
+        auto name = create_name(id, names);
 
-        if (names.contains(id))
-            node_set_names.push_back(names.at(id));
+        if (nodes.size() > 0) {
+            exo.write_node_set(id, nodes);
+            node_set_names.push_back(name);
+        }
         else
-            node_set_names.push_back(fmt::format("{}", id));
+            Log::warn("Node set '{}' is empty", name);
     }
 
     if (!node_set_names.empty())

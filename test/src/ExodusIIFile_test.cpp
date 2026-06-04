@@ -176,6 +176,20 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
     }
 }
 
+TEST(ExodusIIFileTest, warn_on_empty_side_set)
+{
+    std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
+    std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+    mesh.set_edge_set(10, {});
+    mesh.set_edge_set_name(10, "bottom");
+
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    ExodusIIFile f(temp_fname);
+    f.write(mesh);
+}
+
 TEST(ExodusIIFileTest, write_mesh_with_node_sets)
 {
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
@@ -184,7 +198,7 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
     mesh.set_up();
 
     mesh.set_vertex_set(10, { 1, 4 });
-    mesh.set_edge_set_name(10, "sides");
+    mesh.set_vertex_set_name(10, "sides");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     {
@@ -200,4 +214,19 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
         EXPECT_EQ(ns10.size(), 2);
         EXPECT_THAT(ns10, ElementsAre(1, 4));
     }
+}
+
+TEST(ExodusIIFileTest, warn_on_empty_node_set)
+{
+    std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
+    std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
+    Mesh mesh(pts, elems);
+    mesh.set_up();
+
+    mesh.set_vertex_set(10, {});
+    mesh.set_vertex_set_name(10, "sides");
+
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    ExodusIIFile exo(temp_fname);
+    exo.write(mesh);
 }
