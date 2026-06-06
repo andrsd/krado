@@ -172,6 +172,8 @@ std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
                                                       Ptr<MeshVertexAbstract> c,
                                                       Ptr<MeshVertexAbstract> d);
 
+UVParam reparam_mesh_vertex_on_surface(Ptr<MeshVertexAbstract> v, const GeomSurface & geom_surface);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::MeshSurface & srf);

@@ -7,6 +7,7 @@
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
+#include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/predicates.h"
 #include "krado/utils.h"
@@ -249,6 +250,27 @@ ccw_quadrangle(const GeomSurface & gsurf,
         return std::array<Ptr<MeshVertexAbstract>, 4> { a, d, c, b };
     else
         throw Exception("Degenerate quadrangle detected.");
+}
+
+UVParam
+reparam_mesh_vertex_on_surface(Ptr<MeshVertexAbstract> v, const GeomSurface & geom_surface)
+{
+    if (auto vtx = dynamic_ptr_cast<MeshVertex>(v); vtx != nullptr) {
+        auto param = geom_surface.parameter_from_point(v->point());
+        return param;
+    }
+    else if (auto curve_vtx = dynamic_ptr_cast<MeshCurveVertex>(v); curve_vtx != nullptr) {
+        const auto & geom_curve = curve_vtx->geom_curve();
+        auto t = curve_vtx->parameter();
+        auto param = reparam_on_surface(geom_surface, geom_curve, t);
+        return param;
+    }
+    else if (auto surface_vtx = dynamic_ptr_cast<MeshSurfaceVertex>(v); surface_vtx != nullptr) {
+        auto param = surface_vtx->parameter();
+        return param;
+    }
+    else
+        throw Exception("Unsupported vertex type");
 }
 
 } // namespace krado
