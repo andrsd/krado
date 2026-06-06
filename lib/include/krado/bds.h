@@ -44,6 +44,7 @@ public:
     u8 degenerated() const;
     void del(BDS_Edge * e);
     std::vector<BDS_Face *> triangles() const;
+    bool config_modified() const;
 
     bool operator<(const BDS_Point & other) const;
 
@@ -52,11 +53,7 @@ private:
     double lc_pts_;
     Point pt_;
     UVParam uv_;
-
-public:
     bool config_modified_;
-
-private:
     u8 degenerated_;
     i32 id_;
     BDS_Point * periodic_counterpart_;
