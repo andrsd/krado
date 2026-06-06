@@ -1761,6 +1761,23 @@ splitEquivalentTriangles(Ptr<MeshSurface> surface, BidimMeshData & data)
     computeEquivalentTriangles(surface, data.equivalence);
 }
 
+/// Compute normal of a triangle
+///
+/// @param t Triangle
+/// @param data BidimMeshData
+Vector
+compute_normal(const MeshElement & t, const BidimMeshData & data)
+{
+    auto v0 = t.vertex(0);
+    auto v1 = t.vertex(1);
+    auto v2 = t.vertex(2);
+
+    auto index0 = data.index(v0);
+    auto index1 = data.index(v1);
+    auto index2 = data.index(v2);
+    return normal(data.uv[index0], data.uv[index1], data.uv[index2]);
+}
+
 void
 transferDataStructure(Ptr<MeshSurface> surface,
                       std::set<Triangle *, CompareTrianglePtr> & all_tris,
@@ -1780,28 +1797,16 @@ transferDataStructure(Ptr<MeshSurface> surface,
     // first place)
 
     if (surface->triangles().size() > 1) {
-        auto & t = surface->triangles()[0];
-        auto v0 = t.vertex(0);
-        auto v1 = t.vertex(1);
-        auto v2 = t.vertex(2);
-
-        auto index0 = data.index(v0);
-        auto index1 = data.index(v1);
-        auto index2 = data.index(v2);
-        auto n1 = normal(data.uv[index0], data.uv[index1], data.uv[index2]);
+        auto & t1 = surface->triangles()[0];
+        auto n1 = compute_normal(t1, data);
 
         for (std::size_t j = 1; j < surface->triangles().size(); j++) {
-            auto & t = surface->triangles()[j];
-            v0 = t.vertex(0);
-            v1 = t.vertex(1);
-            v2 = t.vertex(2);
-            auto index0 = data.index(v0);
-            auto index1 = data.index(v1);
-            auto index2 = data.index(v2);
-            auto n2 = normal(data.uv[index0], data.uv[index1], data.uv[index2]);
+            auto & tj = surface->triangles()[j];
+            auto nj = compute_normal(tj, data);
+
             // orient the bignou
-            if (dot_product(n1, n2) < 0.0)
-                reverse_triangle(t);
+            if (dot_product(n1, nj) < 0.0)
+                reverse_triangle(tj);
         }
     }
     splitEquivalentTriangles(surface, data);
