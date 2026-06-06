@@ -11,7 +11,7 @@ namespace krado {
 class MeshSurface;
 class MeshCurve;
 
-class SchemeTriDelaunay : public SchemeDelaunay {
+class SchemeTriFrontal : public SchemeDelaunay {
 public:
     struct Options {
         double min_size = 0.0;
@@ -19,7 +19,7 @@ public:
     };
 
 public:
-    SchemeTriDelaunay(Options options);
+    SchemeTriFrontal(Options options);
     void select_curve_scheme(Ptr<MeshCurve> curve) override;
 
 private:

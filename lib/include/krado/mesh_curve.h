@@ -126,6 +126,8 @@ private:
 /// @return Array of mesh vertices. Ordering: bnd_vtx1, curve_vertices, bnd_vtx2
 std::vector<Ptr<MeshVertexAbstract>> get_mesh_curve_vertices(Ptr<MeshCurve> curve);
 
+double reparam_mesh_vertex_on_edge(Ptr<MeshVertexAbstract> v, Ptr<MeshCurve> curve);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::MeshCurve & vtx);

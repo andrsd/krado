@@ -163,6 +163,23 @@ get_mesh_curve_vertices(Ptr<MeshCurve> curve)
     return vtxs;
 }
 
+double
+reparam_mesh_vertex_on_edge(Ptr<MeshVertexAbstract> v, Ptr<MeshCurve> curve)
+{
+    auto & geom_curve = curve->geom_curve();
+    auto bnd_verts = curve->bounding_vertices();
+    auto [lo, hi] = geom_curve.param_range();
+    if (bnd_verts[0] == v)
+        return lo;
+    else if (bnd_verts.size() > 1 && bnd_verts[1] == v)
+        return hi;
+
+    auto cv = dynamic_ptr_cast<MeshCurveVertex>(v);
+    if (cv.is_null())
+        throw Exception("Trying to reparametrize incorrect vertex type");
+    return cv->parameter();
+}
+
 } // namespace krado
 
 std::ostream &

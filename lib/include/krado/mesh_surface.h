@@ -156,6 +156,8 @@ private:
     std::unique_ptr<Scheme2D> scheme_;
 };
 
+UVParam reparam_mesh_vertex_on_surface(Ptr<MeshVertexAbstract> v, const GeomSurface & geom_surface);
+
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::MeshSurface & srf);
