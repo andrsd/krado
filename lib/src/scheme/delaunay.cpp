@@ -1035,10 +1035,8 @@ build_bds_mesh(Ptr<MeshSurface> surface,
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
         BDS_Point * pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface);
-        m.add_geom(surface->id(), 2);
-        auto g = m.get_geom(surface->id(), 2);
-        assert(g.has_value());
-        pp->g_ = g.value();
+        auto g = m.add_geom(surface->id(), 2);
+        pp->g_ = g;
         aaa[v->data] = pp;
     }
 
@@ -1103,13 +1101,9 @@ recoverEdge(BDS_Mesh & m,
             std::set<EdgeToRecover> * notRecovered,
             int pass)
 {
-    BDS_GeomEntity * g = nullptr;
-    if (pass == 2) {
-        m.add_geom(edge->id(), 1);
-        auto res = m.get_geom(edge->id(), 1);
-        assert(res.has_value());
-        g = res.value();
-    }
+    Optional<BDS_GeomEntity> g;
+    if (pass == 2)
+        g = m.add_geom(edge->id(), 1);
 
     auto & geom_curve = edge->geom_curve();
     bool fatally_failed = false;
@@ -1151,16 +1145,12 @@ recoverEdge(BDS_Mesh & m,
             BDS_Point * pstart = itpstart->second;
             BDS_Point * pend = itpend->second;
             if (!pstart->g_) {
-                m.add_geom(pstart->id(), 0);
-                auto g0 = m.get_geom(pstart->id(), 0);
-                assert(g0.has_value());
-                pstart->g_ = g0.value();
+                auto g0 = m.add_geom(pstart->id(), 0);
+                pstart->g_ = g0;
             }
             if (!pend->g_) {
-                m.add_geom(pend->id(), 0);
-                auto g0 = m.get_geom(pend->id(), 0);
-                assert(g0.has_value());
-                pend->g_ = g0.value();
+                auto g0 = m.add_geom(pend->id(), 0);
+                pend->g_ = g0;
             }
         }
     }
@@ -2305,8 +2295,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     ///
 
-    BDS_GeomEntity class_f(1, 2);
-    BDS_GeomEntity class_exterior(1, 3);
+    const BDS_GeomEntity CLASS_F(1, 2);
+    const BDS_GeomEntity CLASS_EXTERIOR(1, 3);
 
     BDS_Mesh m;
 
@@ -2321,10 +2311,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         auto & ge = vtx->geom_shape();
         auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         auto pp = m.add_point(count, param, &geom_surface);
-        m.add_geom(ge.id(), ge.dim());
-        auto g = m.get_geom(ge.id(), ge.dim());
-        assert(g.has_value());
-        pp->g_ = g.value();
+        auto g = m.add_geom(ge.id(), ge.dim());
+        pp->g_ = g;
         recoverMap[pp] = vtx;
         recoverMapInv[vtx] = pp;
         points[count] = pp;
@@ -2379,13 +2367,13 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // look for a triangle that has a negative node and recursively tag all
     // exterior triangles
     for (auto & tri : m.triangles())
-        tri->g_ = nullptr;
+        tri->g_ = std::nullopt;
     for (auto & tri : m.triangles()) {
         auto res = tri->get_nodes();
         if (res.has_value()) {
             auto n = res.value();
             if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
-                recur_tag(tri.get(), &class_exterior);
+                recur_tag(tri.get(), CLASS_EXTERIOR);
                 break;
             }
         }
@@ -2393,33 +2381,33 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // now find an edge that has belongs to one of the exterior triangles
     for (auto & e : m.edges()) {
-        if (e->g_ && e->num_faces() == 2) {
+        if (e->g_.has_value() && e->num_faces() == 2) {
             auto faces = e->faces();
-            if (faces[0]->g_ == &class_exterior) {
-                recur_tag(faces[1], &class_f);
+            if (faces[0]->g_.value() == CLASS_EXTERIOR) {
+                recur_tag(faces[1], CLASS_F);
                 break;
             }
-            else if (faces[1]->g_ == &class_exterior) {
-                recur_tag(faces[0], &class_f);
+            else if (faces[1]->g_.value() == CLASS_EXTERIOR) {
+                recur_tag(faces[0], CLASS_F);
                 break;
             }
         }
     }
     for (auto & tri : m.triangles()) {
-        if (tri->g_ == &class_exterior)
-            tri->g_ = nullptr;
+        if (tri->g_.value() == CLASS_EXTERIOR)
+            tri->g_ = std::nullopt;
     }
 
     for (auto & e : m.edges()) {
-        if (e->g_ && e->num_faces() == 2) {
+        if (e->g_.has_value() && e->num_faces() == 2) {
             auto faces = e->faces();
             auto oface = e->opposite_of();
             if (oface[0]->id() < 0) {
-                recur_tag(faces[1], &class_f);
+                recur_tag(faces[1], CLASS_F);
                 break;
             }
             else if (oface[1]->id() < 0) {
-                recur_tag(faces[0], &class_f);
+                recur_tag(faces[0], CLASS_F);
                 break;
             }
         }
@@ -2470,11 +2458,11 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (e->num_faces() == 0)
             m.del_edge(e.get());
         else {
-            if (!e->g_)
-                e->g_ = &class_f;
-            if (!e->p1_->g_ || e->p1_->g_->degree() > e->g_->degree())
+            if (not e->g_.has_value())
+                e->g_ = CLASS_F;
+            if (not e->p1_->g_.has_value() || e->p1_->g_->degree > e->g_->degree)
                 e->p1_->g_ = e->g_;
-            if (!e->p2_->g_ || e->p2_->g_->degree() > e->g_->degree())
+            if (not e->p2_->g_.has_value() || e->p2_->g_->degree > e->g_->degree)
                 e->p2_->g_ = e->g_;
         }
     }

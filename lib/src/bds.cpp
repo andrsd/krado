@@ -423,30 +423,16 @@ compute_some_kind_of_kernel(const BDS_Point * p, const std::vector<BDS_Point *> 
 
 } // namespace
 
-BDS_GeomEntity::BDS_GeomEntity(int tag, int degree) : tag_(tag), degree_(degree) {}
-
-BDS_GeomEntity::~BDS_GeomEntity() {}
-
-int
-BDS_GeomEntity::degree() const
-{
-    return this->degree_;
-}
-
-int
-BDS_GeomEntity::tag() const
-{
-    return this->tag_;
-}
+BDS_GeomEntity::BDS_GeomEntity(i32 tag, i32 degree) : tag(tag), degree(degree) {}
 
 bool
 BDS_GeomEntity::operator<(const BDS_GeomEntity & other) const
 {
-    if (this->degree_ < other.degree_)
+    if (this->degree < other.degree)
         return true;
-    if (this->degree_ > other.degree_)
+    if (this->degree > other.degree)
         return false;
-    if (this->tag_ < other.tag_)
+    if (this->tag < other.tag)
         return true;
     return false;
 }
@@ -454,20 +440,19 @@ BDS_GeomEntity::operator<(const BDS_GeomEntity & other) const
 bool
 BDS_GeomEntity::operator==(const BDS_GeomEntity & other) const
 {
-    return this->degree_ == other.degree_ && this->tag_ == other.tag_;
+    return this->degree == other.degree && this->tag == other.tag;
 }
 
 // BDS_Point
 
-BDS_Point::BDS_Point(int id, Point pt, UVParam uv) :
+BDS_Point::BDS_Point(i32 id, Point pt, UVParam uv) :
     lc_pts_(MAX_LC),
     pt_(pt),
     uv_(uv),
     config_modified_(true),
     degenerated_(0),
     id_(id),
-    periodic_counterpart_(nullptr),
-    g_(nullptr)
+    periodic_counterpart_(nullptr)
 {
 }
 
@@ -552,7 +537,7 @@ BDS_Point::operator<(const BDS_Point & other) const
 
 // BDS_Edge
 
-BDS_Edge::BDS_Edge(BDS_Point * a, BDS_Point * b) : deleted_(false), g_(nullptr)
+BDS_Edge::BDS_Edge(BDS_Point * a, BDS_Point * b) : deleted_(false)
 {
     if (*a < *b) {
         this->p1_ = a;
@@ -750,8 +735,7 @@ BDS_Face::BDS_Face(BDS_Edge * A, BDS_Edge * B, BDS_Edge * C) :
     deleted_(false),
     e1_(A),
     e2_(B),
-    e3_(C),
-    g_(nullptr)
+    e3_(C)
 {
     this->e1_->add_face(this);
     this->e2_->add_face(this);
@@ -1025,28 +1009,11 @@ BDS_Mesh::find_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3) const
     return std::nullopt;
 }
 
-void
+BDS_GeomEntity
 BDS_Mesh::add_geom(int tag, int degree)
 {
-    auto e = Qtr<BDS_GeomEntity>::alloc(tag, degree);
-    this->geom_.emplace(std::move(e));
-}
-
-Optional<BDS_GeomEntity *>
-BDS_Mesh::get_geom(int degree, int tag) const
-{
-    BDS_GeomEntity ge(degree, tag);
-    // clang-format off
-    auto it = std::find_if(
-        this->geom_.begin(), this->geom_.end(),
-        [&](const auto & ptr) {
-            return *ptr == ge;
-        }
-    );
-    // clang-format on
-    if (it == this->geom_.end())
-        return std::nullopt;
-    return it->get();
+    auto [it, inserted] = this->geom_.emplace(tag, degree);
+    return *it;
 }
 
 Optional<BDS_Edge *>
@@ -1196,7 +1163,7 @@ BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
     if (e->num_faces() != 2)
         return false;
 
-    if (e->g_ && e->g_->degree() == 1)
+    if (e->g_ && e->g_->degree == 1)
         return false;
 
     auto [pts1, pts2, op] = e->compute_neighborhood();
@@ -1207,8 +1174,8 @@ BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
         !op[1]->config_modified_)
         return false;
 
-    std::array<BDS_GeomEntity *, 2> g = { nullptr, nullptr };
-    auto * ge = e->g_;
+    std::array<Optional<BDS_GeomEntity>, 2> g;
+    auto ge = e->g_;
 
     // compute the orientation of the face
     // with respect to the edge
@@ -1285,14 +1252,14 @@ BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, BDS_Point * p, bool force)
 {
     if (!force && e->num_faces() != 2)
         return false;
-    if (!force && p->g_ && p->g_->degree() == 0)
+    if (!force && p->g_ && p->g_->degree == 0)
         return false;
     // not really ok but 'til now this is the best choice not to do collapses on
     // model edges
-    if (!force && p->g_ && p->g_->degree() == 1)
+    if (!force && p->g_ && p->g_->degree == 1)
         return false;
     if (!force && e->g_ && p->g_) {
-        if (e->g_->degree() == 2 && p->g_ != e->g_)
+        if (e->g_->degree == 2 && p->g_ != e->g_)
             return false;
     }
 
@@ -1321,22 +1288,22 @@ BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, BDS_Point * p, bool force)
             if (oface[0]->edges_[i]->p1_ == oface[1] && oface[0]->edges_[i]->p2_ == oface[0])
                 return false;
         }
-        if (!force && oface[0]->g_ && oface[0]->g_->degree() == 2 && oface[0]->edges_.size() <= 4)
+        if (!force && oface[0]->g_ && oface[0]->g_->degree == 2 && oface[0]->edges_.size() <= 4)
             return false;
-        if (!force && oface[1]->g_ && oface[1]->g_->degree() == 2 && oface[1]->edges_.size() <= 4)
+        if (!force && oface[1]->g_ && oface[1]->g_->degree == 2 && oface[1]->edges_.size() <= 4)
             return false;
-        if (!force && oface[0]->g_ && oface[0]->g_->degree() < 2 && oface[0]->edges_.size() <= 3)
+        if (!force && oface[0]->g_ && oface[0]->g_->degree < 2 && oface[0]->edges_.size() <= 3)
             return false;
-        if (!force && oface[1]->g_ && oface[1]->g_->degree() < 2 && oface[1]->edges_.size() <= 3)
+        if (!force && oface[1]->g_ && oface[1]->g_->degree < 2 && oface[1]->edges_.size() <= 3)
             return false;
     }
     auto tris = p->triangles();
     BDS_Point * o = e->other_vertex(p);
 
     BDS_Point * pt[3][1024];
-    BDS_GeomEntity * gs[1024];
+    Optional<BDS_GeomEntity> gs[1024];
     int ept[2][1024];
-    BDS_GeomEntity * egs[1024];
+    Optional<BDS_GeomEntity> egs[1024];
     int nt = 0;
     double area_old = 0.0;
     double area_new = 0.0;
@@ -1414,9 +1381,9 @@ BDS_Mesh::smooth_point_centroid(BDS_Point * p, const GeomSurface & gf, double th
 {
     if (p->degenerated_)
         return false;
-    if (p->g_ && p->g_->degree() <= 1)
+    if (p->g_ && p->g_->degree <= 1)
         return false;
-    if (p->g_ && p->g_->tag() < 0) {
+    if (p->g_ && p->g_->tag < 0) {
         p->config_modified_ = true;
         return true;
     }
@@ -1500,7 +1467,7 @@ BDS_Mesh::split_edge(BDS_Edge * e, BDS_Point * mid, bool check_area_param)
         }
     }
 
-    std::array<BDS_GeomEntity *, 2> g = { nullptr, nullptr };
+    std::array<Optional<BDS_GeomEntity>, 2> g;
     auto ge = e->g_;
 
     auto p1_op1 = find_edge(p1, op[0], faces[0]);
@@ -1642,13 +1609,13 @@ BDS_SwapEdgeTestQuality::operator()(const BDS_Point * p1,
     // AVOID CREATING POINTS WITH 2 NEIGHBORING TRIANGLES
     //  std::vector<BDS_Face*> f1 = p1->getTriangles();
     //  std::vector<BDS_Face*> f2 = p2->getTriangles();
-    if (p1->g_ && p1->g_->degree() == 2 && p1->edges_.size() <= 4)
+    if (p1->g_ && p1->g_->degree == 2 && p1->edges_.size() <= 4)
         return false;
-    if (p2->g_ && p2->g_->degree() == 2 && p2->edges_.size() <= 4)
+    if (p2->g_ && p2->g_->degree == 2 && p2->edges_.size() <= 4)
         return false;
-    if (p1->g_ && p1->g_->degree() < 2 && p1->edges_.size() <= 3)
+    if (p1->g_ && p1->g_->degree < 2 && p1->edges_.size() <= 3)
         return false;
-    if (p2->g_ && p2->g_->degree() < 2 && p2->edges_.size() <= 3)
+    if (p2->g_ && p2->g_->degree < 2 && p2->edges_.size() <= 3)
         return false;
 
     auto s1 = std::abs(surface_triangle_param(p1, p2, q1));
@@ -1763,7 +1730,7 @@ BDS_SwapEdgeTestNormals::operator()(const BDS_Point * p1,
 }
 
 void
-recur_tag(BDS_Face * t, BDS_GeomEntity * g)
+recur_tag(BDS_Face * t, BDS_GeomEntity g)
 {
     std::stack<BDS_Face *> stack;
     stack.push(t);
@@ -1771,15 +1738,15 @@ recur_tag(BDS_Face * t, BDS_GeomEntity * g)
     while (!stack.empty()) {
         t = stack.top();
         stack.pop();
-        if (!t->g_) {
+        if (not t->g_.has_value()) {
             t->g_ = g;
-            if (!t->e1_->g_ && t->e1_->num_faces() == 2) {
+            if (not t->e1_->g_.has_value() && t->e1_->num_faces() == 2) {
                 stack.push(t->e1_->other_face(t).value());
             }
-            if (!t->e2_->g_ && t->e2_->num_faces() == 2) {
+            if (not t->e2_->g_.has_value() && t->e2_->num_faces() == 2) {
                 stack.push(t->e2_->other_face(t).value());
             }
-            if (!t->e3_->g_ && t->e3_->num_faces() == 2) {
+            if (not t->e3_->g_.has_value() && t->e3_->num_faces() == 2) {
                 stack.push(t->e3_->other_face(t).value());
             }
         }

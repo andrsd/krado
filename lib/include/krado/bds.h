@@ -21,23 +21,18 @@ class GeomCurve;
 
 class BDS_GeomEntity {
 public:
-    BDS_GeomEntity(int tag, int degree);
-    ~BDS_GeomEntity();
-
-    int degree() const;
-    int tag() const;
+    BDS_GeomEntity(i32 tag, i32 degree);
 
     bool operator<(const BDS_GeomEntity & other) const;
     bool operator==(const BDS_GeomEntity & other) const;
 
-private:
-    int tag_;
-    int degree_;
+    i32 tag;
+    i32 degree;
 };
 
 class BDS_Point {
 public:
-    BDS_Point(int id, Point pt, UVParam uv);
+    BDS_Point(i32 id, Point pt, UVParam uv);
 
     i32 id() const;
     double lc() const;
@@ -67,7 +62,7 @@ private:
     BDS_Point * periodic_counterpart_;
 
 public:
-    BDS_GeomEntity * g_;
+    Optional<BDS_GeomEntity> g_;
 
 private:
     std::vector<BDS_Edge *> edges_;
@@ -105,7 +100,7 @@ private:
 
 public:
     BDS_Point *p1_, *p2_;
-    BDS_GeomEntity * g_;
+    Optional<BDS_GeomEntity> g_;
 
     friend class BDS_Face;
     friend class BDS_Mesh;
@@ -124,14 +119,14 @@ public:
 public:
     bool deleted_;
     BDS_Edge *e1_, *e2_, *e3_;
-    BDS_GeomEntity * g_;
+    Optional<BDS_GeomEntity> g_;
 };
 
 struct GeomLessThan {
     bool
-    operator()(const Qtr<BDS_GeomEntity> & ent1, const Qtr<BDS_GeomEntity> & ent2) const
+    operator()(const BDS_GeomEntity & ent1, const BDS_GeomEntity & ent2) const
     {
-        return *ent1 < *ent2;
+        return ent1 < ent2;
     }
 };
 
@@ -282,8 +277,7 @@ public:
     void del_face(BDS_Face * t);
     Optional<BDS_Face *> find_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3) const;
     // Geom entities
-    void add_geom(int tag, int degree);
-    Optional<BDS_GeomEntity *> get_geom(int degree, int tag) const;
+    BDS_GeomEntity add_geom(int tag, int degree);
     // 2D operators
     Optional<BDS_Edge *> recover_edge(int p1,
                                       int p2,
@@ -301,12 +295,12 @@ public:
 
 private:
     int max_point_num_;
-    std::set<Qtr<BDS_GeomEntity>, GeomLessThan> geom_;
+    std::set<BDS_GeomEntity, GeomLessThan> geom_;
     std::map<int, Qtr<BDS_Point>> points_;
     std::vector<Qtr<BDS_Edge>> edges_;
     std::vector<Qtr<BDS_Face>> triangles_;
 };
 
-void recur_tag(BDS_Face * t, BDS_GeomEntity * g);
+void recur_tag(BDS_Face * t, BDS_GeomEntity g);
 
 } // namespace krado
