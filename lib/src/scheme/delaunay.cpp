@@ -1161,7 +1161,7 @@ recoverEdge(BDS_Mesh & m,
 bool
 edgeSwapTestDelaunayAniso(BDS_Edge * e, Ptr<MeshSurface> surface, std::set<SwapQuad> & configs)
 {
-    if (!e->p1_->config_modified_ && !e->p2_->config_modified_)
+    if (!e->p1_->config_modified() && !e->p2_->config_modified())
         return false;
 
     if (e->num_faces() != 2)

@@ -530,6 +530,12 @@ BDS_Point::triangles() const
 }
 
 bool
+BDS_Point::config_modified() const
+{
+    return this->config_modified_;
+}
+
+bool
 BDS_Point::operator<(const BDS_Point & other) const
 {
     return this->id_ < other.id_;
