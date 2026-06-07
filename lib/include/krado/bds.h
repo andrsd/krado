@@ -44,7 +44,7 @@ public:
     double v() const;
     u8 degenerated() const;
     void del(Ptr<BDS_Edge> e);
-    std::vector<BDS_Face *> triangles() const;
+    std::vector<Ptr<BDS_Face>> triangles() const;
     bool config_modified() const;
 
     bool operator<(const BDS_Point & other) const;
@@ -73,7 +73,7 @@ private:
 class BDS_Edge {
 public:
     BDS_Edge(Ptr<BDS_Point> A, Ptr<BDS_Point> B);
-    std::vector<BDS_Face *> faces();
+    std::vector<Ptr<BDS_Face>> faces();
     double length() const;
     bool deleted() const;
     bool active() const;
@@ -82,10 +82,10 @@ public:
     int num_triangles() const;
     Ptr<BDS_Point> common_vertex(Ptr<const BDS_Edge> other) const;
     Ptr<BDS_Point> other_vertex(Ptr<const BDS_Point> p) const;
-    void add_face(BDS_Face * f);
+    void add_face(Ptr<BDS_Face> f);
     bool operator<(const BDS_Edge & other) const;
-    Optional<BDS_Face *> other_face(const BDS_Face * f) const;
-    void del(BDS_Face * t);
+    Optional<Ptr<BDS_Face>> other_face(Ptr<const BDS_Face> f) const;
+    void del(Ptr<BDS_Face> t);
     std::array<Ptr<BDS_Point>, 2> opposite_of() const;
     std::tuple<std::array<Ptr<BDS_Point>, 3>,
                std::array<Ptr<BDS_Point>, 3>,
@@ -95,7 +95,7 @@ public:
 private:
     Ptr<BDS_Point> opposite_vertex(const std::array<Ptr<BDS_Point>, 3> & pts) const;
 
-    std::vector<BDS_Face *> faces_;
+    std::vector<Ptr<BDS_Face>> faces_;
     bool deleted_;
 
 public:
@@ -258,7 +258,7 @@ public:
 
     const std::map<int, Ptr<BDS_Point>> & points() const;
     Span<const Ptr<BDS_Edge>> edges() const;
-    Span<const Qtr<BDS_Face>> triangles() const;
+    Span<const Ptr<BDS_Face>> triangles() const;
     // Points
     Ptr<BDS_Point> add_point(int num, Point pt);
     Ptr<BDS_Point> add_point(int num, UVParam uv, const GeomSurface * gf);
@@ -271,12 +271,13 @@ public:
     Optional<Ptr<BDS_Edge>> find_edge(int p1, int p2) const;
     Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const;
     Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, int p2) const;
-    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, BDS_Face * t) const;
+    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const;
     // Triangles
-    Optional<BDS_Face *> add_triangle(int p1, int p2, int p3);
-    Optional<BDS_Face *> add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3);
-    void del_face(BDS_Face * t);
-    Optional<BDS_Face *> find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const;
+    Optional<Ptr<BDS_Face>> add_triangle(int p1, int p2, int p3);
+    Optional<Ptr<BDS_Face>> add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3);
+    void del_face(Ptr<BDS_Face> t);
+    Optional<Ptr<BDS_Face>>
+    find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const;
     // Geom entities
     BDS_GeomEntity add_geom(int tag, int degree);
     // 2D operators
@@ -299,9 +300,9 @@ private:
     std::set<BDS_GeomEntity, GeomLessThan> geom_;
     std::map<int, Ptr<BDS_Point>> points_;
     std::vector<Ptr<BDS_Edge>> edges_;
-    std::vector<Qtr<BDS_Face>> triangles_;
+    std::vector<Ptr<BDS_Face>> triangles_;
 };
 
-void recur_tag(BDS_Face * t, BDS_GeomEntity g);
+void recur_tag(Ptr<BDS_Face> t, BDS_GeomEntity g);
 
 } // namespace krado
