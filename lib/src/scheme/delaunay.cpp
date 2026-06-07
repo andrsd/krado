@@ -2373,7 +2373,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (res.has_value()) {
             auto n = res.value();
             if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
-                recur_tag(tri.get(), CLASS_EXTERIOR);
+                recur_tag(tri, CLASS_EXTERIOR);
                 break;
             }
         }
@@ -2450,7 +2450,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // delete useless stuff
     for (auto & tri : m.triangles()) {
         if (!tri->g_)
-            m.del_face(tri.get());
+            m.del_face(tri);
     }
     m.cleanup();
 
