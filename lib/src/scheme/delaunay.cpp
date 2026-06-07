@@ -1034,9 +1034,8 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
-        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface);
         auto g = m.add_geom(surface->id(), 2);
-        pp->g_ = g;
+        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
         aaa[v->data] = pp;
     }
 
@@ -2310,9 +2309,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     for (auto & vtx : all_vertices) {
         auto & ge = vtx->geom_shape();
         auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
-        auto pp = m.add_point(count, param, &geom_surface);
         auto g = m.add_geom(ge.id(), ge.dim());
-        pp->g_ = g;
+        auto pp = m.add_point(count, param, &geom_surface, g);
         recoverMap[pp] = vtx;
         recoverMapInv[vtx] = pp;
         points[count] = pp;

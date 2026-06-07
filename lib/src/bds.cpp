@@ -451,14 +451,25 @@ BDS_GeomEntity::operator==(const BDS_GeomEntity & other) const
 
 // BDS_Point
 
-BDS_Point::BDS_Point(i32 id, Point pt, UVParam uv) :
+BDS_Point::BDS_Point(i32 id, Point pt) :
+    lc_pts_(MAX_LC),
+    pt_(pt),
+    config_modified_(true),
+    degenerated_(0),
+    id_(id),
+    periodic_counterpart_(nullptr)
+{
+}
+
+BDS_Point::BDS_Point(i32 id, Point pt, UVParam uv, BDS_GeomEntity ge) :
     lc_pts_(MAX_LC),
     pt_(pt),
     uv_(uv),
     config_modified_(true),
     degenerated_(0),
     id_(id),
-    periodic_counterpart_(nullptr)
+    periodic_counterpart_(nullptr),
+    g_(ge)
 {
 }
 
@@ -549,7 +560,9 @@ BDS_Point::operator<(const BDS_Point & other) const
 
 // BDS_Edge
 
-BDS_Edge::BDS_Edge(Ptr<BDS_Point> a, Ptr<BDS_Point> b) : deleted_(false)
+BDS_Edge::BDS_Edge(Ptr<BDS_Point> a, Ptr<BDS_Point> b, Optional<BDS_GeomEntity> ge) :
+    deleted_(false),
+    g_(ge)
 {
     if (*a < *b) {
         this->p1_ = a;
@@ -856,17 +869,17 @@ BDS_Mesh::triangles() const
 Ptr<BDS_Point>
 BDS_Mesh::add_point(int num, Point pt)
 {
-    auto pp = Ptr<BDS_Point>::alloc(num, pt, UVParam(0, 0));
+    auto pp = Ptr<BDS_Point>::alloc(num, pt);
     this->points_.emplace(num, pp);
     this->max_point_num_ = std::max(this->max_point_num_, num);
     return pp;
 }
 
 Ptr<BDS_Point>
-BDS_Mesh::add_point(int num, UVParam uv, const GeomSurface * gf)
+BDS_Mesh::add_point(int num, UVParam uv, const GeomSurface * gf, BDS_GeomEntity ge)
 {
     auto gp = gf->point(uv);
-    auto pp = Ptr<BDS_Point>::alloc(num, gp, uv);
+    auto pp = Ptr<BDS_Point>::alloc(num, gp, uv, ge);
     this->points_.emplace(num, pp);
     this->max_point_num_ = std::max(this->max_point_num_, num);
     return pp;
@@ -973,24 +986,28 @@ BDS_Mesh::find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const
 }
 
 Optional<Ptr<BDS_Face>>
-BDS_Mesh::add_triangle(int idx1, int idx2, int idx3)
+BDS_Mesh::add_triangle(int idx1, int idx2, int idx3, Optional<BDS_GeomEntity> ge)
 {
     auto e1 = add_edge(idx1, idx2);
     auto e2 = add_edge(idx2, idx3);
     auto e3 = add_edge(idx3, idx1);
     if (e1.has_value() && e2.has_value() && e3.has_value())
-        return add_triangle(e1.value(), e2.value(), e3.value());
+        return add_triangle(e1.value(), e2.value(), e3.value(), ge);
     return std::nullopt;
 }
 
 Optional<Ptr<BDS_Face>>
-BDS_Mesh::add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3)
+BDS_Mesh::add_triangle(Ptr<BDS_Edge> e1,
+                       Ptr<BDS_Edge> e2,
+                       Ptr<BDS_Edge> e3,
+                       Optional<BDS_GeomEntity> ge)
 {
     if (e1 && e2 && e3) {
         auto tri = Ptr<BDS_Face>::alloc(e1, e2, e3);
         e1->add_face(tri);
         e2->add_face(tri);
         e3->add_face(tri);
+        tri->g_ = ge;
         this->triangles_.push_back(tri);
         return tri;
     }
@@ -1237,21 +1254,17 @@ BDS_Mesh::swap_edge(Ptr<BDS_Edge> e, const BDS_SwapEdgeTest & theTest, bool forc
     }
     del_edge(e);
 
-    auto edge = Ptr<BDS_Edge>::alloc(op[0], op[1]);
-    edge->g_ = ge;
+    auto edge = Ptr<BDS_Edge>::alloc(op[0], op[1], ge);
     this->edges_.push_back(edge);
 
-    Ptr<BDS_Face> t1, t2;
     if (orientation == 1) {
-        t1 = add_triangle(p1_op1.value(), p1_op2.value(), edge).value();
-        t2 = add_triangle(edge, op2_p2.value(), op1_p2.value()).value();
+        add_triangle(p1_op1.value(), p1_op2.value(), edge, g[0]);
+        add_triangle(edge, op2_p2.value(), op1_p2.value(), g[1]);
     }
     else {
-        t1 = add_triangle(p1_op2.value(), p1_op1.value(), edge).value();
-        t2 = add_triangle(op2_p2.value(), edge, op1_p2.value()).value();
+        add_triangle(p1_op2.value(), p1_op1.value(), edge, g[0]);
+        add_triangle(op2_p2.value(), edge, op1_p2.value(), g[1]);
     }
-    t1->g_ = g[0];
-    t2->g_ = g[1];
 
     p1->config_modified_ = true;
     p2->config_modified_ = true;
@@ -1374,12 +1387,8 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
     // FIXME
     // del_point(p);
 
-    for (int k = 0; k < nt; k++) {
-        auto t_res = add_triangle(pt[0][k]->id(), pt[1][k]->id(), pt[2][k]->id());
-        assert(t_res.has_value());
-        auto t = t_res.value();
-        t->g_ = gs[k];
-    }
+    for (int k = 0; k < nt; k++)
+        add_triangle(pt[0][k]->id(), pt[1][k]->id(), pt[2][k]->id(), gs[k]);
 
     for (int i = 0; i < kk; ++i) {
         auto e = find_edge(ept[0][i], ept[1][i]);
@@ -1497,40 +1506,30 @@ BDS_Mesh::split_edge(Ptr<BDS_Edge> e, Ptr<BDS_Point> mid, bool check_area_param)
     }
     del_edge(e);
 
-    auto p1_mid = Ptr<BDS_Edge>::alloc(p1, mid);
+    auto p1_mid = Ptr<BDS_Edge>::alloc(p1, mid, ge);
     this->edges_.push_back(p1_mid);
 
-    auto mid_p2 = Ptr<BDS_Edge>::alloc(mid, p2);
+    auto mid_p2 = Ptr<BDS_Edge>::alloc(mid, p2, ge);
     this->edges_.push_back(mid_p2);
 
-    auto op1_mid = Ptr<BDS_Edge>::alloc(op[0], mid);
+    auto op1_mid = Ptr<BDS_Edge>::alloc(op[0], mid, g[0]);
     this->edges_.push_back(op1_mid);
 
-    auto mid_op2 = Ptr<BDS_Edge>::alloc(mid, op[1]);
+    auto mid_op2 = Ptr<BDS_Edge>::alloc(mid, op[1], g[1]);
     this->edges_.push_back(mid_op2);
 
-    Ptr<BDS_Face> t1, t2, t3, t4;
     if (orientation == 1) {
-        t1 = add_triangle(op1_mid, p1_op1.value(), p1_mid).value();
-        t2 = add_triangle(mid_op2, op2_p2.value(), mid_p2).value();
-        t3 = add_triangle(op1_p2.value(), op1_mid, mid_p2).value();
-        t4 = add_triangle(p1_op2.value(), mid_op2, p1_mid).value();
+        add_triangle(op1_mid, p1_op1.value(), p1_mid, g[0]);
+        add_triangle(mid_op2, op2_p2.value(), mid_p2, g[1]);
+        add_triangle(op1_p2.value(), op1_mid, mid_p2, g[0]);
+        add_triangle(p1_op2.value(), mid_op2, p1_mid, g[1]);
     }
     else {
-        t1 = add_triangle(p1_op1.value(), op1_mid, p1_mid).value();
-        t2 = add_triangle(op2_p2.value(), mid_op2, mid_p2).value();
-        t3 = add_triangle(op1_mid, op1_p2.value(), mid_p2).value();
-        t4 = add_triangle(mid_op2, p1_op2.value(), p1_mid).value();
+        add_triangle(p1_op1.value(), op1_mid, p1_mid, g[0]);
+        add_triangle(op2_p2.value(), mid_op2, mid_p2, g[1]);
+        add_triangle(op1_mid, op1_p2.value(), mid_p2, g[0]);
+        add_triangle(mid_op2, p1_op2.value(), p1_mid, g[1]);
     }
-    t1->g_ = g[0];
-    t2->g_ = g[1];
-    t3->g_ = g[0];
-    t4->g_ = g[1];
-
-    p1_mid->g_ = ge;
-    mid_p2->g_ = ge;
-    op1_mid->g_ = g[0];
-    mid_op2->g_ = g[1];
 
     mid->g_ = ge;
 
