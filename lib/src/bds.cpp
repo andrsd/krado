@@ -63,7 +63,7 @@ _cos_N(Ptr<const BDS_Point> p1,
 }
 
 bool
-is_equivalent(std::array<const BDS_Edge *, 3> e, std::array<const BDS_Edge *, 3> o)
+is_equivalent(std::array<Ptr<const BDS_Edge>, 3> e, std::array<Ptr<const BDS_Edge>, 3> o)
 {
     return (o[0] == e[0] && o[1] == e[1] && o[2] == e[2]) ||
            (o[0] == e[0] && o[1] == e[2] && o[2] == e[1]) ||
@@ -511,7 +511,7 @@ BDS_Point::degenerated() const
 }
 
 void
-BDS_Point::del(BDS_Edge * e)
+BDS_Point::del(Ptr<BDS_Edge> e)
 {
     if (this->edges_.empty())
         return;
@@ -559,8 +559,6 @@ BDS_Edge::BDS_Edge(Ptr<BDS_Point> a, Ptr<BDS_Point> b) : deleted_(false)
         this->p1_ = b;
         this->p2_ = a;
     }
-    this->p1_->edges_.push_back(this);
-    this->p2_->edges_.push_back(this);
 }
 
 std::vector<BDS_Face *>
@@ -591,8 +589,6 @@ BDS_Edge::active() const
 void
 BDS_Edge::del()
 {
-    this->p1_->del(this);
-    this->p2_->del(this);
     this->deleted_ = true;
 }
 
@@ -609,7 +605,7 @@ BDS_Edge::num_triangles() const
 }
 
 Ptr<BDS_Point>
-BDS_Edge::common_vertex(const BDS_Edge * other) const
+BDS_Edge::common_vertex(Ptr<const BDS_Edge> other) const
 {
     if (this->p1_ == other->p1_ || this->p1_ == other->p2_)
         return this->p1_;
@@ -745,7 +741,7 @@ BDS_Edge::compute_neighborhood() const
 
 //
 
-BDS_Face::BDS_Face(BDS_Edge * A, BDS_Edge * B, BDS_Edge * C) :
+BDS_Face::BDS_Face(Ptr<BDS_Edge> A, Ptr<BDS_Edge> B, Ptr<BDS_Edge> C) :
     deleted_(false),
     e1_(A),
     e2_(B),
@@ -774,7 +770,7 @@ BDS_Face::num_edges() const
     return 3;
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Face::opposite_edge(Ptr<BDS_Point> p)
 {
     if (this->e1_->p1_ != p && this->e1_->p2_ != p)
@@ -788,7 +784,7 @@ BDS_Face::opposite_edge(Ptr<BDS_Point> p)
 }
 
 Optional<Ptr<BDS_Point>>
-BDS_Face::opposite_vertex(BDS_Edge * e)
+BDS_Face::opposite_vertex(Ptr<BDS_Edge> e)
 {
     if (e == this->e1_)
         return this->e2_->common_vertex(this->e3_);
@@ -848,7 +844,7 @@ BDS_Mesh::points() const
     return this->points_;
 }
 
-Span<const Qtr<BDS_Edge>>
+Span<const Ptr<BDS_Edge>>
 BDS_Mesh::edges() const
 {
     return this->edges_;
@@ -897,7 +893,7 @@ BDS_Mesh::find_point(int idx) const
         return std::nullopt;
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::add_edge(int idx1, int idx2)
 {
     auto efound = find_edge(idx1, idx2);
@@ -912,21 +908,30 @@ BDS_Mesh::add_edge(int idx1, int idx2)
         return std::nullopt;
     }
 
-    auto edge = Qtr<BDS_Edge>::alloc(pp1.value(), pp2.value());
-    auto ptr = edge.get();
-    this->edges_.emplace_back(std::move(edge));
-    return ptr;
+    return add_edge(pp1.value(), pp2.value());
+}
+
+Ptr<BDS_Edge>
+BDS_Mesh::add_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
+{
+    auto edge = Ptr<BDS_Edge>::alloc(p1, p2);
+    this->edges_.push_back(edge);
+    p1->edges_.push_back(edge);
+    p2->edges_.push_back(edge);
+    return edge;
 }
 
 void
-BDS_Mesh::del_edge(BDS_Edge * e)
+BDS_Mesh::del_edge(Ptr<BDS_Edge> e)
 {
-    if (!e)
+    if (e.is_null())
         return;
+    e->p1_->del(e);
+    e->p2_->del(e);
     e->del();
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::find_edge(int idx1, int idx2) const
 {
     auto p_res = find_point(idx1);
@@ -935,13 +940,13 @@ BDS_Mesh::find_edge(int idx1, int idx2) const
     return find_edge(p, idx2);
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const
 {
     return find_edge(p1, p2->id());
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::find_edge(Ptr<BDS_Point> p1, int p2) const
 {
     for (auto & edge : p1->edges_) {
@@ -953,7 +958,7 @@ BDS_Mesh::find_edge(Ptr<BDS_Point> p1, int p2) const
     return std::nullopt;
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, BDS_Face * t) const
 {
     auto id1 = p1->id();
@@ -982,7 +987,7 @@ BDS_Mesh::add_triangle(int idx1, int idx2, int idx3)
 }
 
 Optional<BDS_Face *>
-BDS_Mesh::add_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3)
+BDS_Mesh::add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3)
 {
     if (e1 && e2 && e3) {
         this->triangles_.emplace_back(Qtr<BDS_Face>::alloc(e1, e2, e3));
@@ -1003,7 +1008,7 @@ BDS_Mesh::del_face(BDS_Face * t)
 }
 
 Optional<BDS_Face *>
-BDS_Mesh::find_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3) const
+BDS_Mesh::find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const
 {
     for (const auto & t : e1->faces()) {
         if (is_equivalent({ e1, e2, e3 }, { t->e1_, t->e2_, t->e3_ })) {
@@ -1030,7 +1035,7 @@ BDS_Mesh::add_geom(int tag, int degree)
     return *it;
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::recover_edge(int num1,
                        int num2,
                        bool & fatal,
@@ -1058,7 +1063,7 @@ BDS_Mesh::recover_edge(int num1,
 
     int ix = 0;
     while (true) {
-        std::vector<BDS_Edge *> intersected;
+        std::vector<Ptr<BDS_Edge>> intersected;
 
         bool self_intersection = false;
 
@@ -1086,7 +1091,7 @@ BDS_Mesh::recover_edge(int num1,
                     }
                     if (e->num_faces() != e->num_triangles())
                         return std::nullopt;
-                    intersected.push_back(e.get());
+                    intersected.push_back(e);
                 }
         }
 
@@ -1130,7 +1135,7 @@ BDS_Mesh::recover_edge(int num1,
     return std::nullopt;
 }
 
-Optional<BDS_Edge *>
+Optional<Ptr<BDS_Edge>>
 BDS_Mesh::recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
 {
     for (auto & tri : p1->triangles()) {
@@ -1150,7 +1155,7 @@ BDS_Mesh::recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
 }
 
 bool
-BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
+BDS_Mesh::swap_edge(Ptr<BDS_Edge> e, const BDS_SwapEdgeTest & theTest, bool force)
 {
     /*
           p1
@@ -1231,18 +1236,17 @@ BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
     }
     del_edge(e);
 
-    auto edge = Qtr<BDS_Edge>::alloc(op[0], op[1]);
-    auto edge_ptr = edge.get();
-    this->edges_.emplace_back(std::move(edge));
+    auto edge = Ptr<BDS_Edge>::alloc(op[0], op[1]);
+    this->edges_.push_back(edge);
 
     Qtr<BDS_Face> t1, t2;
     if (orientation == 1) {
-        t1 = Qtr<BDS_Face>::alloc(p1_op1.value(), p1_op2.value(), edge_ptr);
-        t2 = Qtr<BDS_Face>::alloc(edge_ptr, op2_p2.value(), op1_p2.value());
+        t1 = Qtr<BDS_Face>::alloc(p1_op1.value(), p1_op2.value(), edge);
+        t2 = Qtr<BDS_Face>::alloc(edge, op2_p2.value(), op1_p2.value());
     }
     else {
-        t1 = Qtr<BDS_Face>::alloc(p1_op2.value(), p1_op1.value(), edge_ptr);
-        t2 = Qtr<BDS_Face>::alloc(op2_p2.value(), edge_ptr, op1_p2.value());
+        t1 = Qtr<BDS_Face>::alloc(p1_op2.value(), p1_op1.value(), edge);
+        t2 = Qtr<BDS_Face>::alloc(op2_p2.value(), edge, op1_p2.value());
     }
 
     t1->g_ = g[0];
@@ -1262,7 +1266,7 @@ BDS_Mesh::swap_edge(BDS_Edge * e, const BDS_SwapEdgeTest & theTest, bool force)
 }
 
 bool
-BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, Ptr<BDS_Point> p, bool force)
+BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force)
 {
     if (!force && e->num_faces() != 2)
         return false;
@@ -1358,7 +1362,7 @@ BDS_Mesh::collapse_edge_parametric(BDS_Edge * e, Ptr<BDS_Point> p, bool force)
 
     int kk = 0;
     {
-        std::vector<BDS_Edge *> edges(p->edges_);
+        std::vector<Ptr<BDS_Edge>> edges(p->edges_);
         for (auto & edge : edges) {
             edge->p1_->config_modified_ = edge->p2_->config_modified_ = true;
             ept[0][kk] = (edge->p1_ == p) ? (o ? o->id() : -1) : edge->p1_->id();
@@ -1430,7 +1434,7 @@ BDS_Mesh::smooth_point_centroid(Ptr<BDS_Point> p, const GeomSurface & gf, double
 }
 
 bool
-BDS_Mesh::split_edge(BDS_Edge * e, Ptr<BDS_Point> mid, bool check_area_param)
+BDS_Mesh::split_edge(Ptr<BDS_Edge> e, Ptr<BDS_Point> mid, bool check_area_param)
 {
     /*
           p1
@@ -1497,17 +1501,17 @@ BDS_Mesh::split_edge(BDS_Edge * e, Ptr<BDS_Point> mid, bool check_area_param)
     }
     del_edge(e);
 
-    this->edges_.emplace_back(Qtr<BDS_Edge>::alloc(p1, mid));
-    auto p1_mid = this->edges_.back().get();
+    auto p1_mid = Ptr<BDS_Edge>::alloc(p1, mid);
+    this->edges_.push_back(p1_mid);
 
-    this->edges_.emplace_back(Qtr<BDS_Edge>::alloc(mid, p2));
-    auto mid_p2 = this->edges_.back().get();
+    auto mid_p2 = Ptr<BDS_Edge>::alloc(mid, p2);
+    this->edges_.push_back(mid_p2);
 
-    this->edges_.emplace_back(Qtr<BDS_Edge>::alloc(op[0], mid));
-    auto op1_mid = this->edges_.back().get();
+    auto op1_mid = Ptr<BDS_Edge>::alloc(op[0], mid);
+    this->edges_.push_back(op1_mid);
 
-    this->edges_.emplace_back(Qtr<BDS_Edge>::alloc(mid, op[1]));
-    auto mid_op2 = this->edges_.back().get();
+    auto mid_op2 = Ptr<BDS_Edge>::alloc(mid, op[1]);
+    this->edges_.push_back(mid_op2);
 
     Qtr<BDS_Face> t1, t2, t3, t4;
     if (orientation == 1) {
