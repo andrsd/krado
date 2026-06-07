@@ -1212,14 +1212,11 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
                             return volume + std::abs(surf_uv(triangle->tri(), data));
                         });
 
-    auto ** new_tris = new Triangle *[shell.size()];
+    std::vector<Triangle *> new_tris;
+    new_tris.reserve(shell.size());
 
     std::vector<Triangle *> new_cavity;
-
-    int k = 0;
-
     bool one_point_is_too_close = false;
-
     for (auto it = shell.begin(); it != shell.end(); ++it) {
         Ptr<MeshVertexAbstract> v0, v1;
         if (it->ori > 0) {
@@ -1264,7 +1261,7 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
             one_point_is_too_close = true;
         }
 
-        new_tris[k++] = t4;
+        new_tris.push_back(t4);
         // all new triangles are pushed front in order to be able to destroy them if
         // the cavity is not star shaped around the new vertex.
         new_cavity.push_back(t4);
@@ -1291,7 +1288,7 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
     if (std::abs(old_volume - new_volume) < EPS * old_volume && !one_point_is_too_close) {
         connect_tris(new_cavity.begin(), new_cavity.end(), conn);
         // 30 % of the time is spent here!
-        all_tris.insert(new_tris, new_tris + shell.size());
+        all_tris.insert(new_tris.begin(), new_tris.end());
         if (active_tris) {
             for (auto i = new_cavity.begin(); i != new_cavity.end(); ++i) {
                 int active_edge;
@@ -1301,18 +1298,14 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
                 }
             }
         }
-        delete[] new_tris;
         return 1;
     }
     else {
         // the cavity is NOT star shaped
-        std::for_each(begin(cavity), end(cavity), [](Triangle * triangle) {
-            triangle->set_deleted(false);
-        });
-        for (std::size_t i = 0; i < shell.size(); i++) {
-            delete new_tris[i];
-        }
-        delete[] new_tris;
+        for (auto & tri : cavity)
+            tri->set_deleted(false);
+        for (auto & tri : new_tris)
+            delete tri;
 
         if (std::abs(old_volume - new_volume) > EPS * old_volume)
             return -3;
