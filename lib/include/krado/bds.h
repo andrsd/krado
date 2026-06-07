@@ -43,7 +43,7 @@ public:
     double u() const;
     double v() const;
     u8 degenerated() const;
-    void del(BDS_Edge * e);
+    void del(Ptr<BDS_Edge> e);
     std::vector<BDS_Face *> triangles() const;
     bool config_modified() const;
 
@@ -63,7 +63,7 @@ public:
     Optional<BDS_GeomEntity> g_;
 
 private:
-    std::vector<BDS_Edge *> edges_;
+    std::vector<Ptr<BDS_Edge>> edges_;
 
     friend class BDS_Edge;
     friend class BDS_Mesh;
@@ -80,7 +80,7 @@ public:
     void del();
     int num_faces() const;
     int num_triangles() const;
-    Ptr<BDS_Point> common_vertex(const BDS_Edge * other) const;
+    Ptr<BDS_Point> common_vertex(Ptr<const BDS_Edge> other) const;
     Ptr<BDS_Point> other_vertex(Ptr<const BDS_Point> p) const;
     void add_face(BDS_Face * f);
     bool operator<(const BDS_Edge & other) const;
@@ -108,17 +108,17 @@ public:
 
 class BDS_Face {
 public:
-    BDS_Face(BDS_Edge * A, BDS_Edge * B, BDS_Edge * C);
+    BDS_Face(Ptr<BDS_Edge> A, Ptr<BDS_Edge> B, Ptr<BDS_Edge> C);
     bool deleted() const;
     bool active() const;
     int num_edges() const;
-    Optional<BDS_Edge *> opposite_edge(Ptr<BDS_Point> p);
-    Optional<Ptr<BDS_Point>> opposite_vertex(BDS_Edge * e);
+    Optional<Ptr<BDS_Edge>> opposite_edge(Ptr<BDS_Point> p);
+    Optional<Ptr<BDS_Point>> opposite_vertex(Ptr<BDS_Edge> e);
     Optional<std::array<Ptr<BDS_Point>, 3>> get_nodes() const;
 
 public:
     bool deleted_;
-    BDS_Edge *e1_, *e2_, *e3_;
+    Ptr<BDS_Edge> e1_, e2_, e3_;
     Optional<BDS_GeomEntity> g_;
 };
 
@@ -140,7 +140,7 @@ struct PointLessThan {
 
 struct EdgeLessThan {
     bool
-    operator()(const BDS_Edge * ent1, const BDS_Edge * ent2) const
+    operator()(Ptr<const BDS_Edge> ent1, Ptr<const BDS_Edge> ent2) const
     {
         return *ent1 < *ent2;
     }
@@ -257,7 +257,7 @@ public:
     BDS_Mesh(int max_pts = 0);
 
     const std::map<int, Ptr<BDS_Point>> & points() const;
-    Span<const Qtr<BDS_Edge>> edges() const;
+    Span<const Ptr<BDS_Edge>> edges() const;
     Span<const Qtr<BDS_Face>> triangles() const;
     // Points
     Ptr<BDS_Point> add_point(int num, Point pt);
@@ -265,39 +265,40 @@ public:
     void del_point(Ptr<BDS_Point> p);
     Optional<Ptr<BDS_Point>> find_point(int num) const;
     // Edges
-    Optional<BDS_Edge *> add_edge(int p1, int p2);
-    void del_edge(BDS_Edge * e);
-    Optional<BDS_Edge *> find_edge(int p1, int p2) const;
-    Optional<BDS_Edge *> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const;
-    Optional<BDS_Edge *> find_edge(Ptr<BDS_Point> p1, int p2) const;
-    Optional<BDS_Edge *> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, BDS_Face * t) const;
+    Optional<Ptr<BDS_Edge>> add_edge(int p1, int p2);
+    Ptr<BDS_Edge> add_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2);
+    void del_edge(Ptr<BDS_Edge> e);
+    Optional<Ptr<BDS_Edge>> find_edge(int p1, int p2) const;
+    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const;
+    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, int p2) const;
+    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, BDS_Face * t) const;
     // Triangles
     Optional<BDS_Face *> add_triangle(int p1, int p2, int p3);
-    Optional<BDS_Face *> add_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3);
+    Optional<BDS_Face *> add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3);
     void del_face(BDS_Face * t);
-    Optional<BDS_Face *> find_triangle(BDS_Edge * e1, BDS_Edge * e2, BDS_Edge * e3) const;
+    Optional<BDS_Face *> find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const;
     // Geom entities
     BDS_GeomEntity add_geom(int tag, int degree);
     // 2D operators
-    Optional<BDS_Edge *> recover_edge(int p1,
-                                      int p2,
-                                      bool & fatal,
-                                      std::set<EdgeToRecover> * e2r = nullptr,
-                                      std::set<EdgeToRecover> * not_recovered = nullptr);
-    Optional<BDS_Edge *> recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2);
+    Optional<Ptr<BDS_Edge>> recover_edge(int p1,
+                                         int p2,
+                                         bool & fatal,
+                                         std::set<EdgeToRecover> * e2r = nullptr,
+                                         std::set<EdgeToRecover> * not_recovered = nullptr);
+    Optional<Ptr<BDS_Edge>> recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2);
 
     /// Can invalidate the iterators for \p edge
-    bool swap_edge(BDS_Edge *, const BDS_SwapEdgeTest & theTest, bool force = false);
-    bool collapse_edge_parametric(BDS_Edge *, Ptr<BDS_Point>, bool = false);
+    bool swap_edge(Ptr<BDS_Edge>, const BDS_SwapEdgeTest & theTest, bool force = false);
+    bool collapse_edge_parametric(Ptr<BDS_Edge>, Ptr<BDS_Point>, bool = false);
     bool smooth_point_centroid(Ptr<BDS_Point> p, const GeomSurface & gf, double thresh);
-    bool split_edge(BDS_Edge *, Ptr<BDS_Point>, bool check_area_param = false);
+    bool split_edge(Ptr<BDS_Edge>, Ptr<BDS_Point>, bool check_area_param = false);
     void cleanup();
 
 private:
     int max_point_num_;
     std::set<BDS_GeomEntity, GeomLessThan> geom_;
     std::map<int, Ptr<BDS_Point>> points_;
-    std::vector<Qtr<BDS_Edge>> edges_;
+    std::vector<Ptr<BDS_Edge>> edges_;
     std::vector<Qtr<BDS_Face>> triangles_;
 };
 

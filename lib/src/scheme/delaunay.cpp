@@ -1159,7 +1159,7 @@ recoverEdge(BDS_Mesh & m,
 }
 
 bool
-edgeSwapTestDelaunayAniso(BDS_Edge * e, Ptr<MeshSurface> surface, std::set<SwapQuad> & configs)
+edgeSwapTestDelaunayAniso(Ptr<BDS_Edge> e, Ptr<MeshSurface> surface, std::set<SwapQuad> & configs)
 {
     if (!e->p1_->config_modified() && !e->p2_->config_modified())
         return false;
@@ -1193,8 +1193,8 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
         std::size_t nsw = 0;
         for (auto & edge : mesh.edges()) {
             if (edge->active()) {
-                if (edgeSwapTestDelaunayAniso(edge.get(), surface, configs)) {
-                    if (mesh.swap_edge(edge.get(), BDS_SwapEdgeTestQuality(false))) {
+                if (edgeSwapTestDelaunayAniso(edge, surface, configs)) {
+                    if (mesh.swap_edge(edge, BDS_SwapEdgeTestQuality(false))) {
                         ++nsw;
                     }
                 }
@@ -2456,7 +2456,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     for (auto & e : m.edges()) {
         if (e->num_faces() == 0)
-            m.del_edge(e.get());
+            m.del_edge(e);
         else {
             if (not e->g_.has_value())
                 e->g_ = CLASS_F;
