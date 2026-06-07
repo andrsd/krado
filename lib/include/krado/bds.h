@@ -33,7 +33,8 @@ public:
 
 class BDS_Point {
 public:
-    BDS_Point(i32 id, Point pt, UVParam uv);
+    BDS_Point(i32 id, Point pt);
+    BDS_Point(i32 id, Point pt, UVParam uv, BDS_GeomEntity ge);
 
     i32 id() const;
     double lc() const;
@@ -72,7 +73,7 @@ private:
 
 class BDS_Edge {
 public:
-    BDS_Edge(Ptr<BDS_Point> A, Ptr<BDS_Point> B);
+    BDS_Edge(Ptr<BDS_Point> A, Ptr<BDS_Point> B, Optional<BDS_GeomEntity> ge = std::nullopt);
     std::vector<Ptr<BDS_Face>> faces();
     double length() const;
     bool deleted() const;
@@ -261,7 +262,7 @@ public:
     Span<const Ptr<BDS_Face>> triangles() const;
     // Points
     Ptr<BDS_Point> add_point(int num, Point pt);
-    Ptr<BDS_Point> add_point(int num, UVParam uv, const GeomSurface * gf);
+    Ptr<BDS_Point> add_point(int num, UVParam uv, const GeomSurface * gf, BDS_GeomEntity ge);
     void del_point(Ptr<BDS_Point> p);
     Optional<Ptr<BDS_Point>> find_point(int num) const;
     // Edges
@@ -273,8 +274,12 @@ public:
     Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, int p2) const;
     Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const;
     // Triangles
-    Optional<Ptr<BDS_Face>> add_triangle(int p1, int p2, int p3);
-    Optional<Ptr<BDS_Face>> add_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3);
+    Optional<Ptr<BDS_Face>>
+    add_triangle(int p1, int p2, int p3, Optional<BDS_GeomEntity> ge = std::nullopt);
+    Optional<Ptr<BDS_Face>> add_triangle(Ptr<BDS_Edge> e1,
+                                         Ptr<BDS_Edge> e2,
+                                         Ptr<BDS_Edge> e3,
+                                         Optional<BDS_GeomEntity> ge = std::nullopt);
     void del_face(Ptr<BDS_Face> t);
     Optional<Ptr<BDS_Face>>
     find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const;
