@@ -2159,8 +2159,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     ///
 
-    const BDS_GeomEntity CLASS_F(1, 2);
-    const BDS_GeomEntity CLASS_EXTERIOR(1, 3);
+    const Optional<BDS_GeomEntity> CLASS_F = BDS_GeomEntity(1, 2);
+    const Optional<BDS_GeomEntity> CLASS_EXTERIOR = BDS_GeomEntity(1, 3);
 
     BDS_Mesh m;
 
@@ -2236,7 +2236,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (res.has_value()) {
             auto n = res.value();
             if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
-                recur_tag(tri, CLASS_EXTERIOR);
+                recur_tag(tri, CLASS_EXTERIOR.value());
                 break;
             }
         }
@@ -2246,18 +2246,18 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     for (auto & e : m.edges()) {
         if (e->g_.has_value() && e->num_faces() == 2) {
             auto faces = e->faces();
-            if (faces[0]->g_.value() == CLASS_EXTERIOR) {
-                recur_tag(faces[1], CLASS_F);
+            if (faces[0]->g_ == CLASS_EXTERIOR) {
+                recur_tag(faces[1], CLASS_F.value());
                 break;
             }
-            else if (faces[1]->g_.value() == CLASS_EXTERIOR) {
-                recur_tag(faces[0], CLASS_F);
+            else if (faces[1]->g_ == CLASS_EXTERIOR) {
+                recur_tag(faces[0], CLASS_F.value());
                 break;
             }
         }
     }
     for (auto & tri : m.triangles()) {
-        if (tri->g_.value() == CLASS_EXTERIOR)
+        if (tri->g_ == CLASS_EXTERIOR)
             tri->g_ = std::nullopt;
     }
 
@@ -2266,11 +2266,11 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
             auto faces = e->faces();
             auto oface = e->opposite_of();
             if (oface[0]->id() < 0) {
-                recur_tag(faces[1], CLASS_F);
+                recur_tag(faces[1], CLASS_F.value());
                 break;
             }
             else if (oface[1]->id() < 0) {
-                recur_tag(faces[0], CLASS_F);
+                recur_tag(faces[0], CLASS_F.value());
                 break;
             }
         }
@@ -2312,7 +2312,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // delete useless stuff
     for (auto & tri : m.triangles()) {
-        if (!tri->g_)
+        if (not tri->g_.has_value())
             m.del_face(tri);
     }
     m.cleanup();
