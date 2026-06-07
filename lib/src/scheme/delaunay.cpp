@@ -1010,7 +1010,7 @@ void
 build_bds_mesh(Ptr<MeshSurface> surface,
                BDS_Mesh & m,
                std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
-               std::map<Ptr<MeshVertexAbstract>, BDS_Point *> & recoverMapInv)
+               std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv)
 {
     auto & geom_surface = surface->geom_surface();
 
@@ -1027,14 +1027,14 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     //     gf->set(temp);
     // }
 
-    std::map<int, BDS_Point *> aaa;
+    std::map<int, Ptr<BDS_Point>> aaa;
     for (auto & vtx : all_vertices)
         aaa[vtx->num()] = recoverMapInv[vtx];
 
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
-        BDS_Point * pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface);
+        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface);
         auto g = m.add_geom(surface->id(), 2);
         pp->g_ = g;
         aaa[v->data] = pp;
@@ -1045,9 +1045,9 @@ build_bds_mesh(Ptr<MeshSurface> surface,
         auto a = he->v->data;
         auto b = he->next->v->data;
         auto c = he->next->next->v->data;
-        auto * p1 = aaa[a];
-        auto * p2 = aaa[b];
-        auto * p3 = aaa[c];
+        auto p1 = aaa[a];
+        auto p2 = aaa[b];
+        auto p3 = aaa[c];
         if (p1 && p2 && p3)
             m.add_triangle(p1->id(), p2->id(), p3->id());
     }
@@ -1096,7 +1096,7 @@ bool
 recoverEdge(BDS_Mesh & m,
             Ptr<MeshSurface> surface,
             Ptr<MeshCurve> edge,
-            std::map<Ptr<MeshVertexAbstract>, BDS_Point *> & recoverMapInv,
+            std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv,
             std::set<EdgeToRecover> * e2r,
             std::set<EdgeToRecover> * notRecovered,
             int pass)
@@ -1114,8 +1114,8 @@ recoverEdge(BDS_Mesh & m,
         auto itpstart = recoverMapInv.find(vstart);
         auto itpend = recoverMapInv.find(vend);
         if (itpstart != recoverMapInv.end() && itpend != recoverMapInv.end()) {
-            BDS_Point * pstart = itpstart->second;
-            BDS_Point * pend = itpend->second;
+            auto pstart = itpstart->second;
+            auto pend = itpend->second;
             if (pass == 1)
                 e2r->insert(EdgeToRecover(pstart->id(), pend->id(), &geom_curve));
             else {
@@ -1142,8 +1142,8 @@ recoverEdge(BDS_Mesh & m,
         auto itpstart = recoverMapInv.find(vstart);
         auto itpend = recoverMapInv.find(vend);
         if (itpstart != recoverMapInv.end() && itpend != recoverMapInv.end()) {
-            BDS_Point * pstart = itpstart->second;
-            BDS_Point * pend = itpend->second;
+            auto pstart = itpstart->second;
+            auto pend = itpend->second;
             if (!pstart->g_) {
                 auto g0 = m.add_geom(pstart->id(), 0);
                 pstart->g_ = g0;
@@ -1210,7 +1210,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 void
 BDS2GMSH(BDS_Mesh & m,
          Ptr<MeshSurface> surface,
-         std::map<BDS_Point *, Ptr<MeshVertexAbstract>, PointLessThan> & recoverMap)
+         std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recoverMap)
 {
     auto geom_surface = surface->geom_surface();
     for (auto & tri : m.triangles()) {
@@ -2300,12 +2300,12 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     BDS_Mesh m;
 
-    std::map<BDS_Point *, Ptr<MeshVertexAbstract>, PointLessThan> recoverMap;
-    std::map<Ptr<MeshVertexAbstract>, BDS_Point *> recoverMapInv;
+    std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recoverMap;
+    std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recoverMapInv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
     auto & geom_surface = surface->geom_surface();
-    std::vector<BDS_Point *> points(all_vertices.size());
+    std::vector<Ptr<BDS_Point>> points(all_vertices.size());
     int count = 0;
     for (auto & vtx : all_vertices) {
         auto & ge = vtx->geom_shape();
@@ -2427,7 +2427,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     if (!only_initial_mesh) {
         Log::debug("Computing mesh size field at mesh nodes {}", edgesToRecover.size());
         for (auto & [id, pp] : m.points()) {
-            if (auto itv = recoverMap.find(pp.get()); itv != recoverMap.end()) {
+            if (auto itv = recoverMap.find(pp); itv != recoverMap.end()) {
                 auto vtx = itv->second;
                 auto & ge = vtx->geom_shape();
                 double lc;
