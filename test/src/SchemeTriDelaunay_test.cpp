@@ -2,93 +2,92 @@
 // SPDX-License-Identifier: MIT
 
 #include "gmock/gmock.h"
+#include "builder.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_vertex_abstract.h"
 #include "krado/mesh_surface.h"
+#include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_curve.h"
-#include "builder.h"
 #include "krado/scheme/tridelaunay.h"
-#include "krado/step_file.h"
-#include "krado/log.h"
-#include "krado/exodusii_file.h"
-#include <filesystem>
+#include "krado/scheme/equal.h"
 
 using namespace krado;
-namespace fs = std::filesystem;
 
 TEST(SchemeTriDelaunayTest, rectangle)
 {
-    Log::set_verbosity(9);
-
-    auto rect = testing::build_rect(Point(0, 0, 0), Point(1, 1, 0));
+    auto rect = testing::build_rect(Point(0, 0, 0), Point(2, 1, 0));
     GeomModel model(rect);
 
+    for (ShapeID i : { 1, 3 }) {
+        auto curve = model.curve(i);
+        SchemeEqual::Options opts;
+        opts.intervals = 3;
+        curve->set_scheme<SchemeEqual>(opts);
+    }
+    for (ShapeID i : { 2, 4 }) {
+        auto curve = model.curve(i);
+        SchemeEqual::Options opts;
+        opts.intervals = 2;
+        curve->set_scheme<SchemeEqual>(opts);
+    }
+
     SchemeTriDelaunay::Options opts;
-    opts.max_size = 0.1;
-    model.surface(1)->set_mesh_size(0.05);
     model.surface(1)->set_scheme<SchemeTriDelaunay>(opts);
+    model.surface(1)->set_marker(1000);
+    model.surface(1)->set_mesh_size(1.);
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    // std::cerr << "tris = " << surf->triangles().size() << std::endl;
-    // EXPECT_GT(surf->all_vertices().size(), 4);
-    // EXPECT_GT(surf->triangles().size(), 2);
-    // for (auto & t : surf->triangles()) {
-    //     std::cerr << "- " << t.vertex(0)->point() << ", " << t.vertex(1)->point() << ", "
-    //               << t.vertex(2)->point() << std::endl;
-    // }
+    EXPECT_EQ(surf->surface_vertices().size(), 1);
+    auto & sv = surf->surface_vertices()[0];
+    EXPECT_TRUE(sv->point().is_equal(Point(1, 0.5, 0.)));
 
-    // debug
-    auto mesh = build_mesh(model);
-    ExodusIIFile exo("rect.exo");
-    exo.write(mesh);
+    EXPECT_EQ(surf->triangles().size(), 10);
 }
 
 TEST(SchemeTriDelaunayTest, circle)
 {
-    Log::set_verbosity(9);
     auto circle = testing::build_circle(Point(0, 0, 0), 0.5);
     GeomModel model(circle);
 
+    {
+        auto curve = model.curve(1);
+        SchemeEqual::Options opts;
+        opts.intervals = 8;
+        curve->set_scheme<SchemeEqual>(opts);
+    }
+
     SchemeTriDelaunay::Options opts;
-    opts.max_size = 0.5;
-    model.surface(1)->set_mesh_size(0.2);
+    opts.max_size = 0.75;
     model.surface(1)->set_scheme<SchemeTriDelaunay>(opts);
+    model.surface(1)->set_marker(1000);
+    model.surface(1)->set_mesh_size(0.5);
     model.mesh_surface(1);
 
-    // auto surf = model.surface(1);
-    // EXPECT_GT(surf->all_vertices().size(), 8);
-    // EXPECT_GT(surf->triangles().size(), 8);
+    auto surf = model.surface(1);
+    EXPECT_EQ(surf->surface_vertices().size(), 1);
+    auto & sv1 = surf->surface_vertices()[0];
+    EXPECT_TRUE(sv1->point().is_equal(Point(0., 0., 0.), 1e-5));
 
-    // debug
-    auto mesh = build_mesh(model);
-    ExodusIIFile exo("circle.exo");
-    exo.write(mesh);
+    EXPECT_EQ(surf->triangles().size(), 8);
 }
 
 TEST(SchemeTriDelaunayTest, quarter_circle)
 {
-    Log::set_verbosity(9);
-
-    fs::path input_file =
-        fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "quarter-circle.step";
-    STEPFile file(input_file.string());
-    auto shapes = file.read();
-    auto shape = shapes[0];
-    GeomModel model(shape);
+    auto qcirc = testing::build_quarter_circle(Point(0, 0, 0), 1);
+    GeomModel model(qcirc);
 
     SchemeTriDelaunay::Options opts;
-    opts.max_size = 0.1;
-    model.surface(1)->set_mesh_size(0.05);
+    opts.max_size = 0.5;
     model.surface(1)->set_scheme<SchemeTriDelaunay>(opts);
+    model.surface(1)->set_marker(1000);
+    model.surface(1)->set_mesh_size(0.5);
     model.mesh_surface(1);
 
-    // auto surf = model.surface(1);
-    // EXPECT_GT(surf->all_vertices().size(), 3);
-    // EXPECT_GT(surf->triangles().size(), 1);
+    auto surf = model.surface(1);
+    EXPECT_EQ(surf->surface_vertices().size(), 1);
+    auto & sv = surf->surface_vertices()[0];
+    EXPECT_TRUE(sv->point().is_equal(Point(0.433013, 0.433013, 0.), 1e-5));
 
-    // debug
-    auto mesh = build_mesh(model);
-    ExodusIIFile exo("qcirc.exo");
-    exo.write(mesh);
+    EXPECT_EQ(surf->triangles().size(), 7);
 }
