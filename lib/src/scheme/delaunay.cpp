@@ -90,16 +90,16 @@ struct NodeCopies {
     std::size_t
     closest(UVParam _uv)
     {
-        double minD = MAX_LC;
-        std::size_t I = 0;
+        double min_d = MAX_LC;
+        std::size_t index = 0;
         for (std::size_t i = 0; i < this->n_copies; i++) {
             auto dist = utils::distance(_uv, this->uv[i]);
-            if (dist < minD) {
-                minD = dist;
-                I = i;
+            if (dist < min_d) {
+                min_d = dist;
+                index = i;
             }
         }
-        return this->id[I];
+        return this->id[index];
     }
 };
 
@@ -167,7 +167,7 @@ circ_uv(const MeshElement & t, BidimMeshData & data)
 }
 
 std::tuple<UVParam, bool>
-invMapUV(const MeshElement & t, UVParam p, const BidimMeshData & data, double tol)
+inv_map_uv(const MeshElement & t, UVParam p, const BidimMeshData & data, double tol)
 {
     std::array<std::array<double, 2>, 2> mat;
     std::array<double, 2> b;
@@ -203,7 +203,7 @@ invMapUV(const MeshElement & t, UVParam p, const BidimMeshData & data, double to
 }
 
 double
-getSurfUV(const MeshElement & t, BidimMeshData & data)
+surf_uv(const MeshElement & t, BidimMeshData & data)
 {
     auto index0 = data.index(t.vertex(0));
     auto index1 = data.index(t.vertex(1));
@@ -286,7 +286,7 @@ in_circum_circle_aniso(UVParam p1, UVParam p2, UVParam p3, UVParam uv, Metric me
 }
 
 bool
-inCircumCircleAniso(const MeshElement & base, UVParam uv, Metric metric, BidimMeshData & data)
+in_circum_circle_aniso(const MeshElement & base, UVParam uv, Metric metric, BidimMeshData & data)
 {
     auto [x, radius2] = circum_center_metric(base, metric, data);
     const double a = metric[0];
@@ -428,13 +428,13 @@ public:
     }
 };
 
-struct edgeXface {
+struct EdgeXFace {
     std::array<Ptr<MeshVertexAbstract>, 2> v;
     Triangle * t1;
     int i1;
     int ori;
 
-    edgeXface(Triangle * t, int i_fac) : t1(t), i1(i_fac), ori(1)
+    EdgeXFace(Triangle * t, int i_fac) : t1(t), i1(i_fac), ori(1)
     {
         v[0] = t1->tri().vertex(i_fac == 0 ? 2 : i_fac - 1);
         v[1] = t1->tri().vertex(i_fac);
@@ -451,7 +451,7 @@ struct edgeXface {
     }
 
     bool
-    operator<(const edgeXface & other) const
+    operator<(const EdgeXFace & other) const
     {
         if (vertex(0)->num() < other.vertex(0)->num())
             return true;
@@ -463,7 +463,7 @@ struct edgeXface {
     }
 
     bool
-    operator==(const edgeXface & other) const
+    operator==(const EdgeXFace & other) const
     {
         if (vertex(0)->num() == other.vertex(0)->num() &&
             vertex(1)->num() == other.vertex(1)->num())
@@ -473,7 +473,7 @@ struct edgeXface {
 };
 
 void
-setLcsInit(const MeshElement & t, std::map<Ptr<MeshVertexAbstract>, double> & v_sizes)
+set_lcs_init(const MeshElement & t, std::map<Ptr<MeshVertexAbstract>, double> & v_sizes)
 {
     for (int i = 0; i < 3; i++) {
         for (int j = i + 1; j < 3; j++) {
@@ -486,9 +486,9 @@ setLcsInit(const MeshElement & t, std::map<Ptr<MeshVertexAbstract>, double> & v_
 }
 
 void
-setLcs(const MeshElement & t,
-       std::map<Ptr<MeshVertexAbstract>, double> & v_sizes,
-       BidimMeshData & data)
+set_lcs(const MeshElement & t,
+        std::map<Ptr<MeshVertexAbstract>, double> & v_sizes,
+        BidimMeshData & data)
 {
     for (int i = 0; i < 3; i++) {
         for (int j = i + 1; j < 3; j++) {
@@ -508,7 +508,7 @@ setLcs(const MeshElement & t,
 }
 
 bool
-isActive(Triangle * t, double limit, int & active)
+is_active(Triangle * t, double limit, int & active)
 {
     if (t->is_deleted())
         return false;
@@ -523,14 +523,14 @@ isActive(Triangle * t, double limit, int & active)
 
 template <class Iterator>
 void
-connectTris(Iterator beg, Iterator end, std::vector<edgeXface> & conn)
+connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
 {
     conn.clear();
 
     while (beg != end) {
         if (!(*beg)->is_deleted()) {
             for (int j = 0; j < 3; j++) {
-                conn.push_back(edgeXface(*beg, j));
+                conn.push_back(EdgeXFace(*beg, j));
             }
         }
         ++beg;
@@ -553,79 +553,21 @@ connectTris(Iterator beg, Iterator end, std::vector<edgeXface> & conn)
     }
 }
 
-#if 0
-
 void
-connectTriangles(std::list<Triangle *> & l)
+connect_triangles(std::set<Triangle *, CompareTrianglePtr> & l)
 {
-    std::vector<edgeXface> conn;
-    connectTris(l.begin(), l.end(), conn);
-}
-
-#endif
-
-void
-connectTriangles(std::set<Triangle *, CompareTrianglePtr> & l)
-{
-    std::vector<edgeXface> conn;
-    connectTris(l.begin(), l.end(), conn);
-}
-
-#if 0
-
-int
-inCircumCircleXY(const MeshElement & t, Ptr<MeshVertexAbstract> v)
-{
-    auto v1 = t.vertex(0);
-    auto v2 = t.vertex(1);
-    auto v3 = t.vertex(2);
-    auto loc1 = v1->point();
-    auto loc2 = v2->point();
-    auto loc3 = v3->point();
-    UVParam p1 = { loc1.x, loc1.y };
-    UVParam p2 = { loc2.x, loc2.y };
-    UVParam p3 = { loc3.x, loc3.y };
-    auto locpp = v->point();
-    UVParam pp = { locpp.x, locpp.y };
-    double result = incircle(p1, p2, p3, pp) * orient2d(p1, p2, p3);
-    return (result > 0) ? 1 : 0;
+    std::vector<EdgeXFace> conn;
+    connect_tris(l.begin(), l.end(), conn);
 }
 
 void
-recurFindCavity(std::vector<edgeXface> & shell,
-                std::vector<Triangle *> & cavity,
-                Ptr<MeshVertexAbstract> v,
-                Triangle * t)
-{
-    t->set_deleted(true);
-    // the cavity that has to be removed because it violates delaunay
-    // criterion
-    cavity.push_back(t);
-
-    for (int i = 0; i < 3; i++) {
-        auto * neigh = t->neighbor(i);
-        if (!neigh)
-            shell.push_back(edgeXface(t, i));
-        else if (!neigh->is_deleted()) {
-            int circ = inCircumCircleXY(neigh->tri(), v);
-            if (circ)
-                recurFindCavity(shell, cavity, v, neigh);
-            else
-                shell.push_back(edgeXface(t, i));
-        }
-    }
-}
-
-#endif
-
-void
-recurFindCavityAniso(Ptr<MeshSurface> surface,
-                     std::list<edgeXface> & shell,
-                     std::list<Triangle *> & cavity,
-                     Metric metric,
-                     UVParam param,
-                     Triangle * t,
-                     BidimMeshData & data)
+recur_find_cavity_aniso(Ptr<MeshSurface> surface,
+                        std::list<EdgeXFace> & shell,
+                        std::list<Triangle *> & cavity,
+                        Metric metric,
+                        UVParam param,
+                        Triangle * t,
+                        BidimMeshData & data)
 {
     t->set_deleted(true);
     // the cavity that has to be removed because it violates delaunay
@@ -634,7 +576,7 @@ recurFindCavityAniso(Ptr<MeshSurface> surface,
 
     for (int i = 0; i < Tri3::N_EDGES; i++) {
         auto * neigh = t->neighbor(i);
-        edgeXface exf(t, i);
+        EdgeXFace exf(t, i);
 #if 0
         // take care of untouchable internal edges
         auto it = data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
@@ -645,9 +587,9 @@ recurFindCavityAniso(Ptr<MeshSurface> surface,
         if (neigh == nullptr)
             shell.push_back(exf);
         else if (not neigh->is_deleted()) {
-            auto circ = inCircumCircleAniso(neigh->tri(), param, metric, data);
+            auto circ = in_circum_circle_aniso(neigh->tri(), param, metric, data);
             if (circ)
-                recurFindCavityAniso(surface, shell, cavity, metric, param, neigh, data);
+                recur_find_cavity_aniso(surface, shell, cavity, metric, param, neigh, data);
             else
                 shell.push_back(exf);
         }
@@ -655,14 +597,14 @@ recurFindCavityAniso(Ptr<MeshSurface> surface,
 }
 
 bool
-buildMeshGenerationDataStructures(Ptr<MeshSurface> surface,
-                                  std::set<Triangle *, CompareTrianglePtr> & all_tris,
-                                  BidimMeshData & data)
+build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
+                                      std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                                      BidimMeshData & data)
 {
     std::map<Ptr<MeshVertexAbstract>, double> v_sizes_map;
 
     for (auto & tri : surface->triangles())
-        setLcsInit(tri, v_sizes_map);
+        set_lcs_init(tri, v_sizes_map);
 
     auto itfind = v_sizes_map.find(nullptr);
     if (itfind != v_sizes_map.end()) {
@@ -671,7 +613,7 @@ buildMeshGenerationDataStructures(Ptr<MeshSurface> surface,
     }
 
     for (auto & tri : surface->triangles())
-        setLcs(tri, v_sizes_map, data);
+        set_lcs(tri, v_sizes_map, data);
 
     // NOTE: just a rough sketch what should happen here - will need fixing
     // take care of embedded vertices
@@ -725,7 +667,7 @@ buildMeshGenerationDataStructures(Ptr<MeshSurface> surface,
         all_tris.insert(new Triangle(tri, circum_radius));
     }
     surface->remove_all_triangles();
-    connectTriangles(all_tris);
+    connect_triangles(all_tris);
 
     return true;
 }
@@ -800,7 +742,7 @@ build_embedded_vertices(Ptr<MeshSurface> surface)
 }
 
 void
-getNodeCopies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & copies)
+get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & copies)
 {
     auto & geom_surface = surface->geom_surface();
 
@@ -875,7 +817,7 @@ getNodeCopies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & co
 }
 
 int
-delaunayEdgeCriterionPlaneIsotropic(PolyMesh::HalfEdge * he, void *)
+delaunay_edge_criterion_plane_isotropic(PolyMesh::HalfEdge * he, void *)
 {
     if (he->opposite == nullptr)
         return -1;
@@ -891,14 +833,14 @@ delaunayEdgeCriterionPlaneIsotropic(PolyMesh::HalfEdge * he, void *)
 }
 
 PolyMesh
-GFaceInitialMesh(Ptr<MeshSurface> surface,
-                 bool recover /*, std::vector<double> * additional = nullptr*/)
+surface_initial_mesh(Ptr<MeshSurface> surface,
+                     bool recover /*, std::vector<double> * additional = nullptr*/)
 {
     auto face_tag = surface->id();
     PolyMesh pm;
 
     std::unordered_map<int, NodeCopies> copies;
-    getNodeCopies(surface, copies);
+    get_node_copies(surface, copies);
 
     BoundingBox3D bb;
     for (auto & [_, c] : copies) {
@@ -914,7 +856,7 @@ GFaceInitialMesh(Ptr<MeshSurface> surface,
             // find face in which lies x,y
             f = walk(f, uv);
             // split f and then swap edges to recover delaunayness
-            pm.split_triangle(uv.u, uv.v, 0, f, delaunayEdgeCriterionPlaneIsotropic, nullptr);
+            pm.split_triangle(uv.u, uv.v, 0, f, delaunay_edge_criterion_plane_isotropic, nullptr);
             // remember node tags
             cps.id[i] = pm.vertices.size() - 1;
             pm.vertices[pm.vertices.size() - 1]->data = vnum;
@@ -984,7 +926,7 @@ GFaceInitialMesh(Ptr<MeshSurface> surface,
             int count = 0;
             for (auto & he : pm.hedges) {
                 if (he->opposite && he->f->data == face_tag && he->opposite->f->data == face_tag) {
-                    if (delaunayEdgeCriterionPlaneIsotropic(he, nullptr)) {
+                    if (delaunay_edge_criterion_plane_isotropic(he, nullptr)) {
                         if (intersect(he->v,
                                       he->next->v,
                                       he->next->next->v,
@@ -1010,7 +952,7 @@ void
 build_bds_mesh(Ptr<MeshSurface> surface,
                BDS_Mesh & m,
                std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
-               std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv)
+               std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv)
 {
     auto & geom_surface = surface->geom_surface();
 
@@ -1021,7 +963,7 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     // }
     // recover and color so most of the code below can go away. Works also for
     // periodic faces
-    auto pm = GFaceInitialMesh(surface, true);
+    auto pm = surface_initial_mesh(surface, true);
 
     // if (replacementEdges) {
     //     gf->set(temp);
@@ -1029,7 +971,7 @@ build_bds_mesh(Ptr<MeshSurface> surface,
 
     std::map<int, Ptr<BDS_Point>> aaa;
     for (auto & vtx : all_vertices)
-        aaa[vtx->num()] = recoverMapInv[vtx];
+        aaa[vtx->num()] = recover_map_inv[vtx];
 
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
@@ -1092,13 +1034,13 @@ struct SwapQuad {
 };
 
 bool
-recoverEdge(BDS_Mesh & m,
-            Ptr<MeshSurface> surface,
-            Ptr<MeshCurve> edge,
-            std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv,
-            std::set<EdgeToRecover> * e2r,
-            std::set<EdgeToRecover> * notRecovered,
-            int pass)
+recover_edge(BDS_Mesh & m,
+             Ptr<MeshSurface> surface,
+             Ptr<MeshCurve> edge,
+             std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv,
+             std::set<EdgeToRecover> * e2r,
+             std::set<EdgeToRecover> * notRecovered,
+             int pass)
 {
     Optional<BDS_GeomEntity> g;
     if (pass == 2)
@@ -1158,7 +1100,9 @@ recoverEdge(BDS_Mesh & m,
 }
 
 bool
-edgeSwapTestDelaunayAniso(Ptr<BDS_Edge> e, Ptr<MeshSurface> surface, std::set<SwapQuad> & configs)
+edge_swap_test_delaunay_aniso(Ptr<BDS_Edge> e,
+                              Ptr<MeshSurface> surface,
+                              std::set<SwapQuad> & configs)
 {
     if (!e->p1_->config_modified() && !e->p2_->config_modified())
         return false;
@@ -1192,7 +1136,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
         std::size_t nsw = 0;
         for (auto & edge : mesh.edges()) {
             if (edge->active()) {
-                if (edgeSwapTestDelaunayAniso(edge, surface, configs)) {
+                if (edge_swap_test_delaunay_aniso(edge, surface, configs)) {
                     if (mesh.swap_edge(edge, BDS_SwapEdgeTestQuality(false))) {
                         ++nsw;
                     }
@@ -1207,9 +1151,9 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 
 // TODO: rename this
 void
-BDS2GMSH(BDS_Mesh & m,
+bds2gmsh(BDS_Mesh & m,
          Ptr<MeshSurface> surface,
-         std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recoverMap)
+         std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
     auto geom_surface = surface->geom_surface();
     for (auto & tri : m.triangles()) {
@@ -1220,14 +1164,14 @@ BDS2GMSH(BDS_Mesh & m,
             for (int i = 0; i < 3; i++) {
                 if (n[i] == nullptr)
                     continue;
-                if (recoverMap.find(n[i]) == recoverMap.end()) {
+                if (recover_map.find(n[i]) == recover_map.end()) {
                     auto sv = Ptr<MeshSurfaceVertex>::alloc(geom_surface, n[i]->uv());
                     surface->add_vertex(sv);
                     v[i] = sv;
-                    recoverMap[n[i]] = v[i];
+                    recover_map[n[i]] = v[i];
                 }
                 else
-                    v[i] = recoverMap[n[i]];
+                    v[i] = recover_map[n[i]];
             }
             // when a singular point is present, degenerated triangles may be
             // created, for example on a sphere that contains one pole
@@ -1238,15 +1182,15 @@ BDS2GMSH(BDS_Mesh & m,
 }
 
 int
-insertVertexB(std::list<edgeXface> & shell,
-              std::list<Triangle *> & cavity,
-              bool force,
-              Ptr<MeshVertexAbstract> v,
-              std::set<Triangle *, CompareTrianglePtr> & all_tris,
-              std::set<Triangle *, CompareTrianglePtr> * active_tris,
-              BidimMeshData & data,
-              Triangle ** oneNewTriangle,
-              bool verifyStarShapeness = true)
+insert_vertex_b(std::list<EdgeXFace> & shell,
+                std::list<Triangle *> & cavity,
+                bool force,
+                Ptr<MeshVertexAbstract> v,
+                std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                std::set<Triangle *, CompareTrianglePtr> * active_tris,
+                BidimMeshData & data,
+                Triangle ** one_new_triangle,
+                bool verify_star_shapeness = true)
 {
     if (cavity.size() == 1)
         return -1;
@@ -1254,27 +1198,27 @@ insertVertexB(std::list<edgeXface> & shell,
     if (shell.size() != cavity.size() + 2)
         return -2;
 
-    double EPS = verifyStarShapeness ? 1.e-12 : 1.e12;
+    const double EPS = verify_star_shapeness ? 1.e-12 : 1.e12;
 
     // check that volume is conserved
-    double newVolume = 0.0;
-    double newMinQuality = 2.0;
+    double new_volume = 0.0;
+    double new_min_quality = 2.0;
 
-    double oldVolume =
+    double old_volume =
         std::accumulate(begin(cavity),
                         end(cavity),
                         0.0,
                         [&](double volume, Triangle * const triangle) {
-                            return volume + std::abs(getSurfUV(triangle->tri(), data));
+                            return volume + std::abs(surf_uv(triangle->tri(), data));
                         });
 
-    auto ** newTris = new Triangle *[shell.size()];
+    auto ** new_tris = new Triangle *[shell.size()];
 
     std::vector<Triangle *> new_cavity;
 
     int k = 0;
 
-    bool onePointIsTooClose = false;
+    bool one_point_is_too_close = false;
 
     for (auto it = shell.begin(); it != shell.end(); ++it) {
         Ptr<MeshVertexAbstract> v0, v1;
@@ -1297,9 +1241,9 @@ insertVertexB(std::list<edgeXface> & shell,
         auto circ_radius = circum_radius_euclidian(t, lc);
         auto * t4 = new Triangle(t, circ_radius);
 
-        if (oneNewTriangle) {
+        if (one_new_triangle) {
             force = true;
-            *oneNewTriangle = t4;
+            *one_new_triangle = t4;
         }
 
         double d1 = utils::distance(v0->point(), v->point());
@@ -1317,10 +1261,10 @@ insertVertexB(std::list<edgeXface> & shell,
         }
 
         if ((d1 < lc * .5 || d2 < lc * .5 || d4 < lc * .4 || cosv < -.9999) && !force) {
-            onePointIsTooClose = true;
+            one_point_is_too_close = true;
         }
 
-        newTris[k++] = t4;
+        new_tris[k++] = t4;
         // all new triangles are pushed front in order to be able to destroy them if
         // the cavity is not star shaped around the new vertex.
         new_cavity.push_back(t4);
@@ -1329,35 +1273,35 @@ insertVertexB(std::list<edgeXface> & shell,
         if (other_side)
             new_cavity.push_back(other_side);
 
-        auto ss = std::abs(getSurfUV(t4->tri(), data));
+        auto ss = std::abs(surf_uv(t4->tri(), data));
         if (ss < 1.e-25)
             ss = MAX_LC;
 
-        newVolume += ss;
+        new_volume += ss;
 
         auto tri_gamma =
             Tri3::gamma(t.vertex(0)->point(), t.vertex(1)->point(), t.vertex(1)->point());
-        newMinQuality = std::min(newMinQuality, tri_gamma);
+        new_min_quality = std::min(new_min_quality, tri_gamma);
     }
 
-    std::vector<edgeXface> conn;
+    std::vector<EdgeXFace> conn;
 
     // for adding a point we require that the area remains the same after addition
     // of the point, and that the point is not too close to an edge
-    if (std::abs(oldVolume - newVolume) < EPS * oldVolume && !onePointIsTooClose) {
-        connectTris(new_cavity.begin(), new_cavity.end(), conn);
+    if (std::abs(old_volume - new_volume) < EPS * old_volume && !one_point_is_too_close) {
+        connect_tris(new_cavity.begin(), new_cavity.end(), conn);
         // 30 % of the time is spent here!
-        all_tris.insert(newTris, newTris + shell.size());
+        all_tris.insert(new_tris, new_tris + shell.size());
         if (active_tris) {
             for (auto i = new_cavity.begin(); i != new_cavity.end(); ++i) {
                 int active_edge;
-                if (isActive(*i, LIMIT, active_edge) && (*i)->radius() > LIMIT) {
+                if (is_active(*i, LIMIT, active_edge) && (*i)->radius() > LIMIT) {
                     if ((*active_tris).find(*i) == (*active_tris).end())
                         (*active_tris).insert(*i);
                 }
             }
         }
-        delete[] newTris;
+        delete[] new_tris;
         return 1;
     }
     else {
@@ -1366,100 +1310,31 @@ insertVertexB(std::list<edgeXface> & shell,
             triangle->set_deleted(false);
         });
         for (std::size_t i = 0; i < shell.size(); i++) {
-            delete newTris[i];
+            delete new_tris[i];
         }
-        delete[] newTris;
+        delete[] new_tris;
 
-        if (std::abs(oldVolume - newVolume) > EPS * oldVolume)
+        if (std::abs(old_volume - new_volume) > EPS * old_volume)
             return -3;
-        if (onePointIsTooClose)
+        if (one_point_is_too_close)
             return -4;
         return -5;
     }
 }
 
-#if 0
-
-bool
-invMapXY(const MeshElement & t, Ptr<MeshVertexAbstract> v)
-{
-    auto v0 = t.vertex(0);
-    auto v1 = t.vertex(1);
-    auto v2 = t.vertex(2);
-    auto pt0 = v0->point();
-    auto pt1 = v1->point();
-    auto pt2 = v2->point();
-
-    std::array<std::array<double, 2>, 2> mat;
-    std::array<double, 2> b;
-    mat[0][0] = pt1.x - pt0.x;
-    mat[0][1] = pt2.x - pt0.x;
-    mat[1][0] = pt1.y - pt0.y;
-    mat[1][1] = pt2.y - pt0.y;
-
-    auto pt = v->point();
-    b[0] = pt.x - pt0.x;
-    b[1] = pt.y - pt0.y;
-    auto uv = sys2x2(mat, b).value();
-
-    double tol = 1.e-6;
-    if (uv[0] >= -tol && uv[1] >= -tol && uv[0] <= 1. + tol && uv[1] <= 1. + tol &&
-        1. - uv[0] - uv[1] > -tol) {
-        return true;
-    }
-    return false;
-}
-
-Triangle *
-search4Triangle(Triangle * t, Ptr<MeshVertexAbstract> v, int maxx, int & ITER)
-{
-    bool inside = invMapXY(t->tri(), v);
-    UVParam q1(v->point().x, v->point().y);
-    if (inside)
-        return t;
-    while (1) {
-        auto bctr = barycenter(t->tri());
-        UVParam q2(bctr.x, bctr.y);
-        int i;
-        for (i = 0; i < 3; i++) {
-            int i1 = i == 0 ? 2 : i - 1;
-            int i2 = i;
-            auto v1 = t->tri().vertex(i1);
-            auto v2 = t->tri().vertex(i2);
-            UVParam p1(v1->point().x, v1->point().y);
-            UVParam p2(v2->point().x, v2->point().y);
-            if (intersection_segments_2(p1, p2, q1, q2))
-                break;
-        }
-        if (i >= 3)
-            break;
-        t = t->neighbor(i);
-        if (!t)
-            break;
-        bool inside = invMapXY(t->tri(), v);
-        if (inside)
-            return t;
-        if (ITER++ > .5 * maxx)
-            break;
-    }
-    return nullptr;
-}
-
-#endif
-
 Optional<Triangle *>
-search4Triangle(Triangle * t,
-                UVParam pt,
-                BidimMeshData & data,
-                std::set<Triangle *, CompareTrianglePtr> & all_tris,
-                bool force = false)
+search_for_triangle(Triangle * t,
+                    UVParam pt,
+                    BidimMeshData & data,
+                    std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                    bool force = false)
 {
-    auto [uv, inside] = invMapUV(t->tri(), pt, data, 1.e-8);
+    auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
     if (inside)
         return t;
 
     UVParam q1 = pt;
-    std::size_t ITER = 0;
+    std::size_t n_iter = 0;
     while (1) {
         auto index0 = data.index(t->tri().vertex(0));
         auto index1 = data.index(t->tri().vertex(1));
@@ -1481,11 +1356,11 @@ search4Triangle(Triangle * t,
         if (!t)
             break;
 
-        auto [uv, inside] = invMapUV(t->tri(), pt, data, 1.e-8);
+        auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
         if (inside)
             return t;
 
-        if (ITER++ > all_tris.size())
+        if (n_iter++ > all_tris.size())
             break;
     }
 
@@ -1494,7 +1369,7 @@ search4Triangle(Triangle * t,
 
     for (auto & tri : all_tris) {
         if (not tri->is_deleted()) {
-            auto [uv, inside] = invMapUV(tri->tri(), pt, data, 1.e-8);
+            auto [uv, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
                 return tri;
         }
@@ -1503,16 +1378,16 @@ search4Triangle(Triangle * t,
 }
 
 bool
-insertAPoint(Ptr<MeshSurface> surface,
-             std::set<Triangle *, CompareTrianglePtr>::iterator it,
-             UVParam center,
-             Metric metric,
-             BidimMeshData & data,
-             std::set<Triangle *, CompareTrianglePtr> & all_tris,
-             std::set<Triangle *, CompareTrianglePtr> * active_tris = nullptr,
-             Triangle * worst = nullptr,
-             Triangle ** one_new_triangle = nullptr,
-             bool test_star_shapeness = false)
+insert_a_point(Ptr<MeshSurface> surface,
+               std::set<Triangle *, CompareTrianglePtr>::iterator it,
+               UVParam center,
+               Metric metric,
+               BidimMeshData & data,
+               std::set<Triangle *, CompareTrianglePtr> & all_tris,
+               std::set<Triangle *, CompareTrianglePtr> * active_tris = nullptr,
+               Triangle * worst = nullptr,
+               Triangle ** one_new_triangle = nullptr,
+               bool test_star_shapeness = false)
 {
     if (worst) {
         it = all_tris.find(worst);
@@ -1525,14 +1400,14 @@ insertAPoint(Ptr<MeshSurface> surface,
         worst = *it;
 
     Optional<Triangle *> ptin;
-    std::list<edgeXface> shell;
+    std::list<EdgeXFace> shell;
     std::list<Triangle *> cavity;
 
     // if the point is able to break the bad triangle "worst"
-    if (inCircumCircleAniso(worst->tri(), center, metric, data)) {
-        recurFindCavityAniso(surface, shell, cavity, metric, center, worst, data);
+    if (in_circum_circle_aniso(worst->tri(), center, metric, data)) {
+        recur_find_cavity_aniso(surface, shell, cavity, metric, center, worst, data);
         for (auto & t : cavity) {
-            auto [uv, inside] = invMapUV(t->tri(), center, data, 1.e-8);
+            auto [uv, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
             if (inside) {
                 ptin = t;
                 break;
@@ -1540,9 +1415,9 @@ insertAPoint(Ptr<MeshSurface> surface,
         }
     }
     else {
-        ptin = search4Triangle(worst, center, data, all_tris, one_new_triangle ? true : false);
+        ptin = search_for_triangle(worst, center, data, all_tris, one_new_triangle ? true : false);
         if (ptin.has_value()) {
-            recurFindCavityAniso(surface, shell, cavity, metric, center, ptin.value(), data);
+            recur_find_cavity_aniso(surface, shell, cavity, metric, center, ptin.value(), data);
         }
     }
 
@@ -1553,15 +1428,15 @@ insertAPoint(Ptr<MeshSurface> surface,
         auto lc = surface->mesh_size_at_param(center);
         data.add_vertex(v, center, lc);
 
-        int result = insertVertexB(shell,
-                                   cavity,
-                                   false,
-                                   v,
-                                   all_tris,
-                                   active_tris,
-                                   data,
-                                   one_new_triangle,
-                                   test_star_shapeness);
+        int result = insert_vertex_b(shell,
+                                     cavity,
+                                     false,
+                                     v,
+                                     all_tris,
+                                     active_tris,
+                                     data,
+                                     one_new_triangle,
+                                     test_star_shapeness);
 
         if (result != 1) {
             if (result == -1)
@@ -1609,7 +1484,7 @@ reverse_triangle(MeshElement & tri)
 }
 
 void
-computeEquivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
+compute_equivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
 {
     if (data.equivalence == nullptr)
         return;
@@ -1632,32 +1507,32 @@ computeEquivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
 
 struct EquivalentTriangle {
 private:
-    MeshElement _t;
-    std::array<Ptr<MeshVertexAbstract>, 3> _v;
+    MeshElement t_;
+    std::array<Ptr<MeshVertexAbstract>, 3> v_;
 
 public:
     EquivalentTriangle(const MeshElement & t,
                        std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence) :
-        _t(t)
+        t_(t)
     {
         for (int i = 0; i < Tri3::N_VERTICES; i++) {
             auto v = t.vertex(i);
             auto it = equivalence->find(v);
             if (it == equivalence->end())
-                this->_v[i] = v;
+                this->v_[i] = v;
             else
-                this->_v[i] = it->second;
+                this->v_[i] = it->second;
         }
-        std::sort(this->_v.begin(), this->_v.end());
+        std::sort(this->v_.begin(), this->v_.end());
     }
 
     bool
     operator<(const EquivalentTriangle & other) const
     {
         for (int i = 0; i < Tri3::N_VERTICES; i++) {
-            if (other._v[i].get() > this->_v[i].get())
+            if (other.v_[i].get() > this->v_[i].get())
                 return true;
-            if (other._v[i].get() < this->_v[i].get())
+            if (other.v_[i].get() < this->v_[i].get())
                 return false;
         }
         return false;
@@ -1666,32 +1541,33 @@ public:
     const MeshElement &
     elem() const
     {
-        return this->_t;
+        return this->t_;
     }
 };
 
 bool
-computeEquivalentTriangles(Ptr<MeshSurface> surface,
-                           std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence)
+compute_equivalent_triangles(
+    Ptr<MeshSurface> surface,
+    std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence)
 {
     if (equivalence == nullptr)
         return false;
 
-    std::vector<MeshElement> WTF;
-    std::set<EquivalentTriangle> eqTs;
+    std::vector<MeshElement> wtf;
+    std::set<EquivalentTriangle> eq_tris;
     for (auto & tri : surface->triangles()) {
         EquivalentTriangle et(tri, equivalence);
-        auto iteq = eqTs.find(et);
-        if (iteq == eqTs.end())
-            eqTs.insert(et);
+        auto iteq = eq_tris.find(et);
+        if (iteq == eq_tris.end())
+            eq_tris.insert(et);
         else {
-            WTF.push_back(iteq->elem());
-            WTF.push_back(tri);
+            wtf.push_back(iteq->elem());
+            wtf.push_back(tri);
         }
     }
 
-    if (not WTF.empty()) {
-        Log::info("{} triangles are equivalent", WTF.size());
+    if (not wtf.empty()) {
+        Log::info("{} triangles are equivalent", wtf.size());
         return true;
     }
     else
@@ -1699,9 +1575,9 @@ computeEquivalentTriangles(Ptr<MeshSurface> surface,
 }
 
 void
-splitEquivalentTriangles(Ptr<MeshSurface> surface, BidimMeshData & data)
+split_equivalent_triangles(Ptr<MeshSurface> surface, BidimMeshData & data)
 {
-    computeEquivalentTriangles(surface, data.equivalence);
+    compute_equivalent_triangles(surface, data.equivalence);
 }
 
 /// Compute normal of a triangle
@@ -1722,9 +1598,9 @@ compute_normal(const MeshElement & t, const BidimMeshData & data)
 }
 
 void
-transferDataStructure(Ptr<MeshSurface> surface,
-                      std::set<Triangle *, CompareTrianglePtr> & all_tris,
-                      BidimMeshData & data)
+transfer_data_structure(Ptr<MeshSurface> surface,
+                        std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                        BidimMeshData & data)
 {
     while (not all_tris.empty()) {
         auto worst = *all_tris.begin();
@@ -1752,8 +1628,8 @@ transferDataStructure(Ptr<MeshSurface> surface,
                 reverse_triangle(tj);
         }
     }
-    splitEquivalentTriangles(surface, data);
-    computeEquivalences(surface, data);
+    split_equivalent_triangles(surface, data);
+    compute_equivalences(surface, data);
 }
 
 void
@@ -1786,7 +1662,7 @@ delete_unused_vertices(Ptr<MeshSurface> /*surface*/)
 // ---
 
 double
-lengthMetric(UVParam p, UVParam q, Metric metric)
+length_metric(UVParam p, UVParam q, Metric metric)
 {
     return std::sqrt((p.u - q.u) * metric[0] * (p.u - q.u) +
                      2 * (p.u - q.u) * metric[1] * (p.v - q.v) +
@@ -1818,10 +1694,10 @@ lengthMetric(UVParam p, UVParam q, Metric metric)
 */
 
 std::tuple<double, UVParam, Metric>
-optimalPointFrontal(Ptr<MeshSurface> surface,
-                    Triangle * worst,
-                    int active_edge,
-                    BidimMeshData & data)
+optimal_point_frontal(Ptr<MeshSurface> surface,
+                      Triangle * worst,
+                      int active_edge,
+                      BidimMeshData & data)
 {
     auto & base = worst->tri();
     auto center = circ_uv(base, data);
@@ -1856,22 +1732,20 @@ optimalPointFrontal(Ptr<MeshSurface> surface,
     // const double rhoM_hat = rhoM;
     const double rhoM_hat = rhoM1;
 
-    const double q = lengthMetric(center, midpoint, metric);
+    const double q = length_metric(center, midpoint, metric);
     const double d = rhoM_hat * std::sqrt(3.0) * 0.5;
 
     // d is corrected in a way that the mesh size is computed at point newPoint
 
     const double L = std::min(d, q);
 
-    auto newPoint = midpoint + L / RATIO * dir;
-    // newPoint[0] = midpoint[0] + L * dir[0] / RATIO;
-    // newPoint[1] = midpoint[1] + L * dir[1] / RATIO;
+    auto new_point = midpoint + L / RATIO * dir;
 
-    return { L, newPoint, metric };
+    return { L, new_point, metric };
 }
 
 std::tuple<bool, int>
-pointInsideParametricDomain(std::vector<UVParam> & bnd, UVParam p, UVParam out)
+point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam p, UVParam out)
 {
     int count = 0;
     for (size_t i = 0; i < bnd.size(); i += 2) {
@@ -1891,25 +1765,25 @@ pointInsideParametricDomain(std::vector<UVParam> & bnd, UVParam p, UVParam out)
     return { true, count };
 }
 
-class surfaceFunctor {
+class SurfaceFunctor {
 public:
-    virtual ~surfaceFunctor() {}
+    virtual ~SurfaceFunctor() {}
     virtual Point operator()(double u, double v) const = 0;
 };
 
-class curveFunctor {
+class CurveFunctor {
 public:
-    virtual ~curveFunctor() {}
+    virtual ~CurveFunctor() {}
     virtual Point operator()(double t) const = 0;
 };
 
-class curveFunctorCircle : public curveFunctor {
+class CurveFunctorCircle : public CurveFunctor {
     Vector n1_, n2_;
     Point middle_;
     double d_;
 
 public:
-    curveFunctorCircle(Vector n1, Vector n2, Point middle, double d) :
+    CurveFunctorCircle(Vector n1, Vector n2, Point middle, double d) :
         n1_(n1),
         n2_(n2),
         middle_(middle),
@@ -1925,11 +1799,11 @@ public:
     }
 };
 
-class surfaceFunctorGFace : public surfaceFunctor {
+class SurfaceFunctorGFace : public SurfaceFunctor {
     const GeomSurface & gf_;
 
 public:
-    surfaceFunctorGFace(const GeomSurface & gf) : gf_(gf) {}
+    SurfaceFunctorGFace(const GeomSurface & gf) : gf_(gf) {}
 
     virtual Point
     operator()(double u, double v) const
@@ -2004,12 +1878,12 @@ newton_fd(bool (*func)(const Eigen::VectorXd &, Eigen::VectorXd &, void *),
 
 bool _kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * _data);
 
-struct intersectCurveSurfaceData {
-    const curveFunctor & c;
-    const surfaceFunctor & s;
+struct IntersectCurveSurfaceData {
+    const CurveFunctor & c;
+    const SurfaceFunctor & s;
     const double epsilon;
-    intersectCurveSurfaceData(const curveFunctor & _c,
-                              const surfaceFunctor & _s,
+    IntersectCurveSurfaceData(const CurveFunctor & _c,
+                              const SurfaceFunctor & _s,
                               const double & eps) :
         c(_c),
         s(_s),
@@ -2018,26 +1892,26 @@ struct intersectCurveSurfaceData {
     }
 
     Optional<Point>
-    apply(Point newPoint)
+    apply(Point new_point)
     {
         try {
             Eigen::VectorXd uvt(3);
-            uvt[0] = newPoint.x;
-            uvt[1] = newPoint.y;
-            uvt[2] = newPoint.z;
+            uvt[0] = new_point.x;
+            uvt[1] = new_point.y;
+            uvt[2] = new_point.z;
             Eigen::VectorXd res(3);
             _kaboom(uvt, res, this);
             // printf("start with %12.5E\n",res.norm());
             if (res.norm() < epsilon)
-                return newPoint;
+                return new_point;
 
             if (newton_fd(_kaboom, uvt, this)) {
                 // printf("--- CONVERGED -----------\n");
                 // printf("newton done\n");
-                newPoint.x = uvt(0);
-                newPoint.y = uvt(1);
-                newPoint.z = uvt(2);
-                return newPoint;
+                new_point.x = uvt(0);
+                new_point.y = uvt(1);
+                new_point.z = uvt(2);
+                return new_point;
             }
         }
         catch (...) {
@@ -2049,9 +1923,9 @@ struct intersectCurveSurfaceData {
 };
 
 bool
-_kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * _data)
+_kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * context)
 {
-    intersectCurveSurfaceData * data = (intersectCurveSurfaceData *) _data;
+    auto * data = static_cast<IntersectCurveSurfaceData *>(context);
     auto s = data->s(uvt(0), uvt(1));
     auto c = data->c(uvt(2));
     res(0) = s.x - c.x;
@@ -2061,9 +1935,9 @@ _kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * _data)
 }
 
 Optional<Point>
-intersectCurveSurface(curveFunctor & c, surfaceFunctor & s, Point uvt, double epsilon)
+intersect_curve_surface(CurveFunctor & c, SurfaceFunctor & s, Point uvt, double epsilon)
 {
-    intersectCurveSurfaceData data(c, s, epsilon);
+    IntersectCurveSurfaceData data(c, s, epsilon);
     return data.apply(uvt);
 }
 
@@ -2084,13 +1958,13 @@ intersectCurveSurface(curveFunctor & c, surfaceFunctor & s, Point uvt, double ep
 */
 
 std::tuple<bool, UVParam, Metric>
-optimalPointFrontalB(Ptr<MeshSurface> surface,
-                     Triangle * worst,
-                     int active_edge,
-                     BidimMeshData & data)
+optimal_point_frontal_b(Ptr<MeshSurface> surface,
+                        Triangle * worst,
+                        int active_edge,
+                        BidimMeshData & data)
 {
     // as a starting point, let us use the "fast algo"
-    auto [d, newPoint, metric] = optimalPointFrontal(surface, worst, active_edge, data);
+    auto [d, new_point, metric] = optimal_point_frontal(surface, worst, active_edge, data);
     int ip1 = (active_edge + 2) % 3;
     int ip2 = active_edge;
     int ip3 = (active_edge + 1) % 3;
@@ -2102,7 +1976,7 @@ optimalPointFrontalB(Ptr<MeshSurface> surface,
     auto tmp = v3 - middle;
     auto n1 = cross_product(v1v2, tmp);
     if (n1.magnitude() < 1.e-12)
-        return { true, newPoint, metric };
+        return { true, new_point, metric };
     auto n2 = cross_product(n1, v1v2);
     n1.normalize();
     n2.normalize();
@@ -2111,17 +1985,17 @@ optimalPointFrontalB(Ptr<MeshSurface> surface,
     // so we have to find t, starting with t = 0
     //  return true;
 
-    Point uvt(newPoint.u, newPoint.v, 0.0);
-    curveFunctorCircle cc(n2, n1, middle, d);
-    surfaceFunctorGFace ss(surface->geom_surface());
+    Point uvt(new_point.u, new_point.v, 0.0);
+    CurveFunctorCircle cc(n2, n1, middle, d);
+    SurfaceFunctorGFace ss(surface->geom_surface());
 
-    auto ppp = intersectCurveSurface(cc, ss, uvt, d * 1.e-8);
+    auto ppp = intersect_curve_surface(cc, ss, uvt, d * 1.e-8);
     if (ppp.has_value()) {
         auto pt = ppp.value();
         return { true, { pt.x, pt.y }, metric };
     }
 
-    return { true, newPoint, metric };
+    return { true, new_point, metric };
 }
 
 } // namespace
@@ -2131,7 +2005,7 @@ bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
 {
     std::set<Triangle *, CompareTrianglePtr> all_tris;
     BidimMeshData data;
-    if (!buildMeshGenerationDataStructures(surface, all_tris, data)) {
+    if (!build_mesh_generation_data_structures(surface, all_tris, data)) {
         Log::error("Invalid meshing data structure");
         return;
     }
@@ -2167,38 +2041,38 @@ bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
 
             auto metric = Metric::build(surface->geom_surface(), pa);
             auto [ctr2, r2] = circum_center_metric(worst->tri(), metric, data);
-            insertAPoint(surface, all_tris.begin(), ctr2, metric, data, all_tris);
+            insert_a_point(surface, all_tris.begin(), ctr2, metric, data, all_tris);
         }
     }
 
-    transferDataStructure(surface, all_tris, data);
+    transfer_data_structure(surface, all_tris, data);
 }
 
 void
 bowyer_watson_frontal(Ptr<MeshSurface> surface,
                       std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence,
-                      std::map<Ptr<MeshVertexAbstract>, UVParam> * parametricCoordinates,
+                      std::map<Ptr<MeshVertexAbstract>, UVParam> * parametric_coordinates,
                       std::vector<UVParam> * true_boundary)
 {
-    std::set<Triangle *, CompareTrianglePtr> AllTris;
-    std::set<Triangle *, CompareTrianglePtr> ActiveTris;
-    BidimMeshData DATA(equivalence, parametricCoordinates);
-    bool testStarShapeness = true;
+    std::set<Triangle *, CompareTrianglePtr> all_tris;
+    std::set<Triangle *, CompareTrianglePtr> active_tris;
+    BidimMeshData data(equivalence, parametric_coordinates);
+    const bool test_star_shapeness = true;
 
     // std::set<GEntity *> degenerated;
     // getDegeneratedVertices(surface, degenerated);
 
-    if (!buildMeshGenerationDataStructures(surface, AllTris, DATA)) {
+    if (!build_mesh_generation_data_structures(surface, all_tris, data)) {
         Log::error("Invalid meshing data structure");
         return;
     }
 
-    int ITER = 0, active_edge;
+    int n_iters = 0, active_edge;
     // compute active triangle
-    auto it = AllTris.begin();
-    for (; it != AllTris.end(); ++it) {
-        if (isActive(*it, LIMIT, active_edge))
-            ActiveTris.insert(*it);
+    auto it = all_tris.begin();
+    for (; it != all_tris.end(); ++it) {
+        if (is_active(*it, LIMIT, active_edge))
+            active_tris.insert(*it);
         else if ((*it)->radius() < LIMIT)
             break;
     }
@@ -2206,58 +2080,56 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     auto & geom_surface = surface->geom_surface();
     auto [ru_lo, ru_hi] = geom_surface.param_range(0);
     auto [rv_lo, rv_hi] = geom_surface.param_range(1);
-    UVParam FAR(2 * ru_hi, 2 * rv_hi);
+    const UVParam FAR(2 * ru_hi, 2 * rv_hi);
 
     // insert points
     while (true) {
-        if (!ActiveTris.size())
+        if (!active_tris.size())
             break;
-        auto * worst = (*ActiveTris.begin());
-        ActiveTris.erase(ActiveTris.begin());
+        auto * worst = (*active_tris.begin());
+        active_tris.erase(active_tris.begin());
 
-        if (!worst->is_deleted() && isActive(worst, LIMIT, active_edge) &&
+        if (!worst->is_deleted() && is_active(worst, LIMIT, active_edge) &&
             worst->radius() > LIMIT) {
-            if (ITER++ % 5000 == 0)
+            if (n_iters++ % 5000 == 0)
                 Log::debug("{} points created -- Worst tri radius is {}",
                            surface->surface_vertices().size(),
                            worst->radius());
-            // UVParam newPoint;
-            // Metric metric;
-            auto [success, newPoint, metric] =
-                optimalPointFrontalB(surface, worst, active_edge, DATA);
+            auto [success, new_point, metric] =
+                optimal_point_frontal_b(surface, worst, active_edge, data);
             if (success) {
                 if (true_boundary == nullptr) {
-                    insertAPoint(surface,
-                                 AllTris.end(),
-                                 newPoint,
-                                 metric,
-                                 DATA,
-                                 AllTris,
-                                 &ActiveTris,
-                                 worst,
-                                 nullptr,
-                                 testStarShapeness);
+                    insert_a_point(surface,
+                                   all_tris.end(),
+                                   new_point,
+                                   metric,
+                                   data,
+                                   all_tris,
+                                   &active_tris,
+                                   worst,
+                                   nullptr,
+                                   test_star_shapeness);
                 }
                 else {
-                    UVParam NP = newPoint;
-                    auto [inside, nnnn] = pointInsideParametricDomain(*true_boundary, NP, FAR);
+                    UVParam NP = new_point;
+                    auto [inside, nnnn] = point_inside_parametric_domain(*true_boundary, NP, FAR);
                     if (inside)
-                        insertAPoint(surface,
-                                     AllTris.end(),
-                                     newPoint,
-                                     metric,
-                                     DATA,
-                                     AllTris,
-                                     &ActiveTris,
-                                     worst,
-                                     nullptr,
-                                     testStarShapeness);
+                        insert_a_point(surface,
+                                       all_tris.end(),
+                                       new_point,
+                                       metric,
+                                       data,
+                                       all_tris,
+                                       &active_tris,
+                                       worst,
+                                       nullptr,
+                                       test_star_shapeness);
                 }
             }
         }
     }
 
-    transferDataStructure(surface, AllTris, DATA);
+    transfer_data_structure(surface, all_tris, data);
 }
 
 SchemeDelaunay::SchemeDelaunay(const std::string & name) : Scheme(name) {}
@@ -2299,8 +2171,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     BDS_Mesh m;
 
-    std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recoverMap;
-    std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recoverMapInv;
+    std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
+    std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recover_map_inv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
     auto & geom_surface = surface->geom_surface();
@@ -2311,29 +2183,29 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         auto g = m.add_geom(ge.id(), ge.dim());
         auto pp = m.add_point(count, param, &geom_surface, g);
-        recoverMap[pp] = vtx;
-        recoverMapInv[vtx] = pp;
+        recover_map[pp] = vtx;
+        recover_map_inv[vtx] = pp;
         points[count] = pp;
         count++;
     }
 
-    build_bds_mesh(surface, m, all_vertices, recoverMapInv);
+    build_bds_mesh(surface, m, all_vertices, recover_map_inv);
 
     // Recover the boundary edges and compute characteristic lenghts using mesh
     // edge spacing. If two of these edges intersect, then the 1D mesh have to be
     // densified
     Log::debug("Recovering {} model curves", curves.size());
-    std::set<EdgeToRecover> edgesToRecover;
-    std::set<EdgeToRecover> edgesNotRecovered;
+    std::set<EdgeToRecover> edges_to_recover;
+    std::set<EdgeToRecover> edges_not_recovered;
     for (auto & crv : curves) {
         if (crv->is_mesh_degenerated())
             continue;
-        recoverEdge(m, surface, crv, recoverMapInv, &edgesToRecover, &edgesNotRecovered, 1);
+        recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
     }
     for (auto & crv : surface->embedded_curves()) {
         if (crv->is_mesh_degenerated())
             continue;
-        recoverEdge(m, surface, crv, recoverMapInv, &edgesToRecover, &edgesNotRecovered, 1);
+        recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
     }
 
     // effectively recover the medge
@@ -2341,20 +2213,20 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (crv->is_mesh_degenerated())
             continue;
 
-        if (not recoverEdge(m,
-                            surface,
-                            crv,
-                            recoverMapInv,
-                            &edgesToRecover,
-                            &edgesNotRecovered,
-                            2)) {
+        if (not recover_edge(m,
+                             surface,
+                             crv,
+                             recover_map_inv,
+                             &edges_to_recover,
+                             &edges_not_recovered,
+                             2)) {
             return false;
         }
     }
     Log::debug("Recovering {} mesh edges ({} not recovered)",
-               edgesToRecover.size(),
-               edgesNotRecovered.size());
-    if (edgesNotRecovered.size()) {
+               edges_to_recover.size(),
+               edges_not_recovered.size());
+    if (edges_not_recovered.size()) {
         // TODO
         throw Exception("Not implemented yet");
     }
@@ -2416,16 +2288,16 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     for (auto & edge : surface->embedded_curves()) {
         if (edge->is_mesh_degenerated())
             continue;
-        recoverEdge(m, surface, edge, recoverMapInv, &edgesToRecover, &edgesNotRecovered, 2);
+        recover_edge(m, surface, edge, recover_map_inv, &edges_to_recover, &edges_not_recovered, 2);
     }
 
     // ---
 
     // compute characteristic lengths at vertices
     if (!only_initial_mesh) {
-        Log::debug("Computing mesh size field at mesh nodes {}", edgesToRecover.size());
+        Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
         for (auto & [id, pp] : m.points()) {
-            if (auto itv = recoverMap.find(pp); itv != recoverMap.end()) {
+            if (auto itv = recover_map.find(pp); itv != recover_map.end()) {
                 auto vtx = itv->second;
                 auto & ge = vtx->geom_shape();
                 double lc;
@@ -2477,9 +2349,9 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
             auto res = t->get_nodes();
             if (res.has_value()) {
                 auto n = res.value();
-                auto v1 = recoverMap[n[0]];
-                auto v2 = recoverMap[n[1]];
-                auto v3 = recoverMap[n[2]];
+                auto v1 = recover_map[n[0]];
+                auto v2 = recover_map[n[1]];
+                auto v3 = recover_map[n[2]];
                 if (v1 != v2 && v1 != v3 && v2 != v3)
                     surface->add_triangle({ v1, v2, v3 });
             }
@@ -2497,7 +2369,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // ---
 
-    BDS2GMSH(m, surface, recoverMap);
+    bds2gmsh(m, surface, recover_map);
 
     insertion_algo(surface);
 
