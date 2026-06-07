@@ -1,145 +1,50 @@
 #include "gmock/gmock.h"
-#include "krado/qtr.h"
-#include <chrono>
+#include "krado/bds.h"
 
 using namespace krado;
 
-struct ABC;
-
-struct IntPointLessThan {
-    bool
-    operator()(const Qtr<int> & ent1, const Qtr<int> & ent2) const
-    {
-        // std::cerr << "<" << std::endl;
-        return *ent1 < *ent2;
-        // return ent1.get() < ent2.get();
-    }
-};
-
-struct IntCmp {
-    bool
-    operator()(const int * ent1, const int * ent2) const
-    {
-        return *ent1 < *ent2;
-    }
-};
-
-struct IntCmpUnique {
-    bool
-    operator()(const std::unique_ptr<int> & ent1, const std::unique_ptr<int> & ent2) const
-    {
-        return *ent1 < *ent2;
-    }
-};
-
-TEST(BDSMeshTest, test)
+TEST(BDSMeshTest, empty_mesh)
 {
-    std::set<Qtr<int>, IntPointLessThan> s;
-    // s.reserve();
-    for (int i = 1; i <= 1000000; i++) {
-        // auto q = ;
-        s.insert(Qtr<int>::alloc(i));
-    }
-    std::cerr << "sz = " << sizeof(Qtr<int>) << std::endl;
-
-    // auto it = s.find()
-
-    std::cerr << "find" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    // auto it = s.find(777);
-    auto it = std::find_if(s.begin(), s.end(), [](const auto & ptr) {
-        //
-        return *ptr == 777;
-    });
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Elapsed time: " << elapsed.count() * 1e6 << "us\n";
-
-    std::cerr << "it = " << **it << std::endl;
-
-    std::cerr << "quit" << std::endl;
+    BDS_Mesh m;
+    EXPECT_EQ(m.points().size(), 0);
+    EXPECT_EQ(m.edges().size(), 0);
+    EXPECT_EQ(m.triangles().size(), 0);
 }
 
-TEST(BDSMeshTest, test2)
+TEST(BDSMeshTest, points)
 {
-    std::set<int *, IntCmp> s;
-    for (int i = 1; i <= 1000000; i++) {
-        auto obj = new int;
-        *obj = i;
-        s.insert(obj);
-    }
-    std::cerr << "sz = " << sizeof(int *) << std::endl;
+    BDS_Mesh m;
+    m.add_point(0, Point(0, 0));
+    m.add_point(1, Point(2, 0));
+    auto p3 = m.add_point(2, Point(2, 1));
+    m.add_point(3, Point(0, 1));
 
-    std::cerr << "find" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    int elem = 777;
-    auto it = s.find(&elem);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Elapsed time: " << elapsed.count() * 1e6 << "us\n";
+    EXPECT_EQ(m.points().size(), 4);
 
-    // auto it = std::find_if(s.begin(), s.end(), [](const auto & ptr) {
-    //     //
-    //     return *ptr == 5;
-    // });
-    std::cerr << "it = " << **it << std::endl;
+    m.del_point(p3);
 
-    std::cerr << "quit" << std::endl;
+    EXPECT_EQ(m.points().size(), 3);
 }
 
-TEST(BDSMeshTest, test3)
+TEST(BDSMeshTest, edges)
 {
-    std::set<std::unique_ptr<int>, IntCmpUnique> s;
-    for (int i = 1; i <= 1000000; i++) {
-        auto obj = std::make_unique<int>(i);
-        s.emplace(std::move(obj));
-    }
-    std::cerr << "sz = " << sizeof(std::unique_ptr<int>) << std::endl;
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
 
-    std::cerr << "find" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    auto it = std::find_if(s.begin(), s.end(), [](const auto & ptr) {
-        //
-        return *ptr == 777;
-    });
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Elapsed time: " << elapsed.count() * 1e6 << "us\n";
-    std::cerr << "it = " << **it << std::endl;
+    m.add_edge(1, 2);
+    m.add_edge(2, 3);
+    m.add_edge(3, 1);
+    auto e4_v = m.add_edge(3, 4);
+    m.add_edge(4, 1);
 
-    std::cerr << "quit" << std::endl;
-}
+    EXPECT_EQ(m.points().size(), 4);
+    EXPECT_EQ(m.edges().size(), 5);
 
-TEST(BDSMeshTest, test4)
-{
-    std::map<int, Qtr<int>> s;
-    // s.reserve(1000000);
-    for (int i = 1; i <= 1000000; i++) {
-        // auto q = ;
-        s.emplace(i, Qtr<int>::alloc(i));
-    }
-    std::cerr << "sz = " << sizeof(Qtr<int>) << std::endl;
-
-    // auto it = s.find()
-
-    std::cerr << "find" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    auto it = s.find(777);
-
-    // auto it = std::find_if(s.begin(), s.end(), [](const auto & ptr) {
-    //     //
-    //     return *ptr == 777;
-    // });
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Elapsed time: " << elapsed.count() * 1e6 << "us\n";
-
-    std::cerr << "it = " << *it->second << std::endl;
-
-    std::cerr << "quit" << std::endl;
-}
-
-TEST(BDSMeshTest, test5)
-{
-    // std::map<int, Qtr<ABC>> s;
+    ASSERT_TRUE(e4_v.has_value());
+    auto e4 = e4_v.value();
+    m.del_edge(e4);
+    EXPECT_TRUE(e4->deleted());
 }
