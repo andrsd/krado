@@ -577,14 +577,9 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
     for (int i = 0; i < Tri3::N_EDGES; i++) {
         auto * neigh = t->neighbor(i);
         EdgeXFace exf(t, i);
-#if 0
         // take care of untouchable internal edges
         auto it = data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
         if (neigh == nullptr || it != data.internal_edges.end())
-            shell.push_back(exf);
-        else
-#endif
-        if (neigh == nullptr)
             shell.push_back(exf);
         else if (not neigh->is_deleted()) {
             auto circ = in_circum_circle_aniso(neigh->tri(), param, metric, data);
@@ -2061,11 +2056,10 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
 
     int n_iters = 0, active_edge;
     // compute active triangle
-    auto it = all_tris.begin();
-    for (; it != all_tris.end(); ++it) {
-        if (is_active(*it, LIMIT, active_edge))
-            active_tris.insert(*it);
-        else if ((*it)->radius() < LIMIT)
+    for (auto & tri : all_tris) {
+        if (is_active(tri, LIMIT, active_edge))
+            active_tris.insert(tri);
+        else if (tri->radius() < LIMIT)
             break;
     }
 
