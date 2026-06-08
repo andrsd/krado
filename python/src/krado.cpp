@@ -19,6 +19,8 @@
 #include "krado/scheme/structured.h"
 #include "krado/scheme/tricircle.h"
 #include "krado/scheme/fan.h"
+#include "krado/scheme/tridelaunay.h"
+#include "krado/scheme/trifrontal.h"
 #include "krado/scheme/trisurf.h"
 #include "krado/line.h"
 #include "krado/circle.h"
@@ -705,6 +707,18 @@ PYBIND11_MODULE(krado, m)
                  else if (name == "fan") {
                      SchemeFan::Options opts;
                      self.set_scheme<SchemeFan>(opts);
+                 }
+                 else if (name == "tridelaunay") {
+                     SchemeTriDelaunay::Options opts;
+                     if (kwargs.contains("max_size"))
+                         opts.max_size = kwargs["max_size"].cast<double>();
+                     self.set_scheme<SchemeTriDelaunay>(opts);
+                 }
+                 else if (name == "trifrontal") {
+                     SchemeTriFrontal::Options opts;
+                     if (kwargs.contains("max_size"))
+                         opts.max_size = kwargs["max_size"].cast<double>();
+                     self.set_scheme<SchemeTriFrontal>(opts);
                  }
              },
              "Set the meshing scheme for the surface.")
