@@ -1479,9 +1479,6 @@ reverse_triangle(MeshElement & tri)
 void
 compute_equivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
 {
-    if (data.equivalence == nullptr)
-        return;
-
     std::vector<MeshElement> new_tris;
     for (auto & tri : surface->triangles()) {
         std::array<Ptr<MeshVertexAbstract>, 3> v;
@@ -1504,14 +1501,15 @@ private:
     std::array<Ptr<MeshVertexAbstract>, 3> v_;
 
 public:
-    EquivalentTriangle(const MeshElement & t,
-                       std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence) :
+    EquivalentTriangle(
+        const MeshElement & t,
+        const std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> & equivalence) :
         t_(t)
     {
         for (int i = 0; i < Tri3::N_VERTICES; i++) {
             auto v = t.vertex(i);
-            auto it = equivalence->find(v);
-            if (it == equivalence->end())
+            auto it = equivalence.find(v);
+            if (it == equivalence.end())
                 this->v_[i] = v;
             else
                 this->v_[i] = it->second;
@@ -1541,11 +1539,9 @@ public:
 bool
 compute_equivalent_triangles(
     Ptr<MeshSurface> surface,
-    std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence)
+    const std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> & equivalence)
 {
-    if (equivalence == nullptr)
-        return false;
-
+    // NOTE: (DA) what is the purpose of this? compute `eq_tris` and then forget it? WTF?
     std::vector<MeshElement> wtf;
     std::set<EquivalentTriangle> eq_tris;
     for (auto & tri : surface->triangles()) {
@@ -1570,7 +1566,7 @@ compute_equivalent_triangles(
 void
 split_equivalent_triangles(Ptr<MeshSurface> surface, BidimMeshData & data)
 {
-    compute_equivalent_triangles(surface, data.equivalence);
+    compute_equivalent_triangles(surface, *data.equivalence);
 }
 
 /// Compute normal of a triangle
@@ -1621,8 +1617,11 @@ transfer_data_structure(Ptr<MeshSurface> surface,
                 reverse_triangle(tj);
         }
     }
-    split_equivalent_triangles(surface, data);
-    compute_equivalences(surface, data);
+
+    if (data.equivalence != nullptr) {
+        split_equivalent_triangles(surface, data);
+        compute_equivalences(surface, data);
+    }
 }
 
 void
