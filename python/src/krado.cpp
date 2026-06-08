@@ -676,6 +676,7 @@ PYBIND11_MODULE(krado, m)
                 }
                 self.quads_to_tris(split);
             })
+        .def("set_mesh_size", &MeshSurface::set_mesh_size)
         .def("set_scheme",
              [](MeshSurface & self, const std::string & name, py::kwargs kwargs) {
                  if (name == "bamg") {
