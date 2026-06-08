@@ -19,11 +19,9 @@
 #include "krado/utils.h"
 #include "krado/element.h"
 #include "krado/predicates.h"
-#include "krado/metric.h"
 #include "krado/exception.h"
 #include "krado/element.h"
 #include "krado/vector.h"
-#include "krado/bidim_mesh_data.h"
 #include "krado/predicates.h"
 #include <Eigen/Dense>
 #include <map>
