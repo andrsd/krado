@@ -66,27 +66,11 @@
 #include "krado/log.h"
 #include "krado/timer.h"
 #include <fmt/core.h>
-#include <thread>
-#include <mutex>
 
 namespace py = pybind11;
 using namespace krado;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, krado::Ptr<T>);
-
-namespace {
-
-std::once_flag flag;
-std::unique_ptr<LoggingTimer> runtime_timer;
-
-void
-initialize_krado()
-{
-    Log::info("Starting");
-    runtime_timer = std::make_unique<LoggingTimer>("Total time: {}");
-}
-
-} // namespace
 
 class PyMeshVertexAbstract : public MeshVertexAbstract {
 public:
@@ -150,8 +134,6 @@ auto make_span_view = [](auto & self, auto span_getter) {
 
 PYBIND11_MODULE(krado, m)
 {
-    std::call_once(flag, initialize_krado);
-
     m.doc() = "pybind11 plugin for krado";
     m.attr("__version__") = KRADO_VERSION;
 
