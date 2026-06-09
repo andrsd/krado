@@ -405,7 +405,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, Vector vec)
 {
-    BRepPrimAPI_MakePrism result(shape, (gp_Dir) vec);
+    BRepPrimAPI_MakePrism result(shape, (gp_Vec) vec);
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");
