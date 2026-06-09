@@ -1,6 +1,8 @@
 #include "gmock/gmock.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/axis1.h"
+#include "krado/axis2.h"
 #include "krado/exception.h"
 
 using namespace krado;
@@ -144,4 +146,138 @@ TEST(PointTest, oper_vec_sub)
     EXPECT_DOUBLE_EQ(a.x, -1.);
     EXPECT_DOUBLE_EQ(a.y, 3.);
     EXPECT_DOUBLE_EQ(a.z, -1.);
+}
+
+TEST(PointTest, rotate)
+{
+    Point pt(1, 0, 2);
+    Axis1 ax1(Point(0, 0, 0), Vector(0, 0, 1));
+    pt.rotate(ax1, M_PI / 2.);
+    EXPECT_NEAR(pt.x, 0, 1e-15);
+    EXPECT_NEAR(pt.y, 1, 1e-15);
+    EXPECT_NEAR(pt.z, 2, 1e-15);
+}
+
+TEST(PointTest, rotated)
+{
+    Point pt(1, 0, 2);
+    Axis1 ax1(Point(0, 0, 0), Vector(0, 0, 1));
+    auto npt = pt.rotated(ax1, M_PI / 2.);
+    EXPECT_NEAR(npt.x, 0, 1e-15);
+    EXPECT_NEAR(npt.y, 1, 1e-15);
+    EXPECT_NEAR(npt.z, 2, 1e-15);
+}
+
+TEST(PointTest, scale)
+{
+    Point pt(1, 0, 2);
+    pt.scale(Point(0, 0, 0), 2);
+    EXPECT_NEAR(pt.x, 2, 1e-15);
+    EXPECT_NEAR(pt.y, 0, 1e-15);
+    EXPECT_NEAR(pt.z, 4, 1e-15);
+}
+
+TEST(PointTest, scaled)
+{
+    Point pt(1, 0, 2);
+    auto npt = pt.scaled(Point(0, 0, 0), 2);
+    EXPECT_NEAR(npt.x, 2, 1e-15);
+    EXPECT_NEAR(npt.y, 0, 1e-15);
+    EXPECT_NEAR(npt.z, 4, 1e-15);
+}
+
+TEST(PointTest, translate)
+{
+    Point pt(1, 0, 2);
+    pt.translate(Vector(1, -1, 2));
+    EXPECT_NEAR(pt.x, 2, 1e-15);
+    EXPECT_NEAR(pt.y, -1, 1e-15);
+    EXPECT_NEAR(pt.z, 4, 1e-15);
+}
+
+TEST(PointTest, translate_2pts)
+{
+    Point pt(1, 0, 2);
+    pt.translate(Point(0, 0, 0), Point(1, -1, 2));
+    EXPECT_NEAR(pt.x, 2, 1e-15);
+    EXPECT_NEAR(pt.y, -1, 1e-15);
+    EXPECT_NEAR(pt.z, 4, 1e-15);
+}
+
+TEST(PointTest, translated)
+{
+    Point pt(1, 0, 2);
+    auto npt = pt.translated(Vector(1, -1, 2));
+    EXPECT_NEAR(npt.x, 2, 1e-15);
+    EXPECT_NEAR(npt.y, -1, 1e-15);
+    EXPECT_NEAR(npt.z, 4, 1e-15);
+}
+
+TEST(PointTest, translated_2pts)
+{
+    Point pt(1, 0, 2);
+    auto npt = pt.translated(Point(0, 0, 0), Point(1, -1, 2));
+    EXPECT_NEAR(npt.x, 2, 1e-15);
+    EXPECT_NEAR(npt.y, -1, 1e-15);
+    EXPECT_NEAR(npt.z, 4, 1e-15);
+}
+
+TEST(PointTest, mirror_pt)
+{
+    Point pt(1, 0, -2);
+    Point symm(0, 0, 0);
+    pt.mirror(symm);
+    EXPECT_NEAR(pt.x, -1, 1e-15);
+    EXPECT_NEAR(pt.y, 0, 1e-15);
+    EXPECT_NEAR(pt.z, 2, 1e-15);
+}
+
+TEST(PointTest, mirror_ax1)
+{
+    Point pt(1, 0, -2);
+    Axis1 ax1(Point(0, 0, 0), Vector(0, 1, 0));
+    pt.mirror(ax1);
+    EXPECT_NEAR(pt.x, -1, 1e-15);
+    EXPECT_NEAR(pt.y, 0, 1e-15);
+    EXPECT_NEAR(pt.z, 2, 1e-15);
+}
+
+TEST(PointTest, mirror_ax2)
+{
+    Point pt(1, 0, -2);
+    Axis2 ax2(Point(0, 0, 0), Vector(1, 0, 0));
+    pt.mirror(ax2);
+    EXPECT_NEAR(pt.x, -1, 1e-15);
+    EXPECT_NEAR(pt.y, 0, 1e-15);
+    EXPECT_NEAR(pt.z, -2, 1e-15);
+}
+
+TEST(PointTest, mirrored_pt)
+{
+    Point pt(1, 0, -2);
+    Point symm(0, 0, 0);
+    auto npt = pt.mirrored(symm);
+    EXPECT_NEAR(npt.x, -1, 1e-15);
+    EXPECT_NEAR(npt.y, 0, 1e-15);
+    EXPECT_NEAR(npt.z, 2, 1e-15);
+}
+
+TEST(PointTest, mirrored_ax1)
+{
+    Point pt(1, 0, -2);
+    Axis1 ax1(Point(0, 0, 0), Vector(0, 1, 0));
+    auto npt = pt.mirrored(ax1);
+    EXPECT_NEAR(npt.x, -1, 1e-15);
+    EXPECT_NEAR(npt.y, 0, 1e-15);
+    EXPECT_NEAR(npt.z, 2, 1e-15);
+}
+
+TEST(PointTest, mirrored_ax2)
+{
+    Point pt(1, 0, -2);
+    Axis2 ax2(Point(0, 0, 0), Vector(1, 0, 0));
+    auto npt = pt.mirrored(ax2);
+    EXPECT_NEAR(npt.x, -1, 1e-15);
+    EXPECT_NEAR(npt.y, 0, 1e-15);
+    EXPECT_NEAR(npt.z, -2, 1e-15);
 }

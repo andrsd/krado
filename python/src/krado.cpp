@@ -286,8 +286,43 @@ PYBIND11_MODULE(krado, m)
         .def_readwrite("x", &Point::x)
         .def_readwrite("y", &Point::y)
         .def_readwrite("z", &Point::z)
+        .def("is_equal", &Point::is_equal,
+            py::arg("other"), py::arg("tol"))
+        .def("distance", &Point::distance,
+            py::arg("pt"))
+        .def("mirror", static_cast<void (Point::*)(const Point &)>(&Point::mirror),
+            py::arg("pt"))
+        .def("mirror", static_cast<void (Point::*)(const Axis1 &)>(&Point::mirror),
+            py::arg("ax1"))
+        .def("mirror", static_cast<void (Point::*)(const Axis2 &)>(&Point::mirror),
+            py::arg("ax2"))
+        .def("mirrored", static_cast<Point (Point::*)(const Point &) const>(&Point::mirrored),
+            py::arg("pt"))
+        .def("mirrored", static_cast<Point (Point::*)(const Axis1 &) const>(&Point::mirrored),
+            py::arg("ax1"))
+        .def("mirrored", static_cast<Point (Point::*)(const Axis2 &) const>(&Point::mirrored),
+            py::arg("ax2"))
+        .def("rotate", &Point::rotate,
+            py::arg("ax1"), py::arg("angle"))
+        .def("rotated", &Point::rotated,
+            py::arg("ax1"), py::arg("angle"))
+        .def("scale", &Point::scale,
+            py::arg("pt"), py::arg("s"))
+        .def("scaled", &Point::scaled,
+            py::arg("pt"), py::arg("s"))
+        .def("translate", static_cast<void (Point::*)(const Vector &)>(&Point::translate),
+            py::arg("vec"))
+        .def("translate", static_cast<void (Point::*)(const Point &, const Point &)>(&Point::translate),
+            py::arg("p1"), py::arg("p2"))
+        .def("translated", static_cast<Point (Point::*)(const Vector &) const>(&Point::translated),
+            py::arg("vec"))
+        .def("translated", static_cast<Point (Point::*)(const Point &, const Point &) const>(&Point::translated),
+            py::arg("p1"), py::arg("p2"))
         .def("__add__", [](const Point& a, const Point& b) {
             return a + b;
+        }, py::is_operator())
+        .def("__add__", [](const Point& p, const Vector& v) {
+            return p + v;
         }, py::is_operator())
         .def("__add__", [](const Point& p, const Vector& v) {
             return p + v;

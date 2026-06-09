@@ -5,6 +5,8 @@
 #include "krado/exception.h"
 #include "krado/uv_param.h"
 #include "krado/vector.h"
+#include "krado/axis1.h"
+#include "krado/axis2.h"
 #include "gp_Pnt.hxx"
 #include <iostream>
 #include <iomanip>
@@ -141,6 +143,125 @@ Point::distance(Point p) const
     double dy = y - p.y;
     double dz = z - p.z;
     return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+void
+Point::mirror(const Point & pt)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Mirror(pt);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+void
+Point::mirror(const Axis1 & ax1)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Mirror(ax1);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+void
+Point::mirror(const Axis2 & ax2)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Mirror(ax2);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+Point
+Point::mirrored(const Point & pt) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Mirrored(pt));
+}
+
+Point
+Point::mirrored(const Axis1 & ax1) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Mirrored(ax1));
+}
+
+Point
+Point::mirrored(const Axis2 & ax2) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Mirrored(ax2));
+}
+
+void
+Point::rotate(const Axis1 & ax1, double angle)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Rotate(ax1, angle);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+Point
+Point::rotated(const Axis1 & ax1, double angle) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Rotated(ax1, angle));
+}
+
+void
+Point::scale(const Point & pt, double s)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Scale(pt, s);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+Point
+Point::scaled(const Point & pt, double s) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Scaled(pt, s));
+}
+
+void
+Point::translate(const Vector & vec)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Translate(vec);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+void
+Point::translate(const Point & p1, const Point & p2)
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    pnt.Translate(p1, p2);
+    this->x = pnt.X();
+    this->y = pnt.Y();
+    this->z = pnt.Z();
+}
+
+Point
+Point::translated(const Vector & vec) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Translated(vec));
+}
+
+Point
+Point::translated(const Point & p1, const Point & p2) const
+{
+    gp_Pnt pnt(this->x, this->y, this->z);
+    return Point(pnt.Translated(p1, p2));
 }
 
 bool

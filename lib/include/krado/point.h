@@ -12,6 +12,8 @@ namespace krado {
 
 class Vector;
 class UVParam;
+class Axis1;
+class Axis2;
 
 /// Point in 3D space
 class Point {
@@ -63,6 +65,26 @@ public:
     // lexicographic
     [[nodiscard]] bool operator<(const Point & p) const;
     void transform(const std::vector<double> & tfo);
+
+    void mirror(const Point & pt);
+    void mirror(const Axis1 & ax1);
+    void mirror(const Axis2 & ax2);
+
+    Point mirrored(const Point & pt) const;
+    Point mirrored(const Axis1 & ax1) const;
+    Point mirrored(const Axis2 & ax2) const;
+
+    void rotate(const Axis1 & ax1, double angle);
+    Point rotated(const Axis1 & ax1, double angle) const;
+
+    void scale(const Point & pt, double s);
+    Point scaled(const Point & pt, double s) const;
+
+    void translate(const Vector & vec);
+    void translate(const Point & p1, const Point & p2);
+
+    Point translated(const Vector & vec) const;
+    Point translated(const Point & p1, const Point & p2) const;
 
     operator gp_Pnt() const;
 
