@@ -267,6 +267,7 @@ PYBIND11_MODULE(krado, m)
         .def("x_direction", &Axis2::x_direction)
         .def("y_direction", &Axis2::y_direction)
         .def("direction", &Axis2::direction)
+        .def("axis", &Axis2::axis)
     ;
 
     py::class_<STEPFile>(m, "STEPFile")
