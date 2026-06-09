@@ -39,6 +39,7 @@
 #include "krado/step_file.h"
 #include "krado/geom_model.h"
 #include "krado/geom_shape.h"
+#include "krado/geom_shell.h"
 #include "krado/geom_vertex.h"
 #include "krado/geom_curve.h"
 #include "krado/geom_surface.h"
@@ -56,6 +57,7 @@
 #include "krado/circular_pattern.h"
 #include "krado/hexagonal_pattern.h"
 #include "krado/element.h"
+#include "krado/plane.h"
 #include "krado/point.h"
 #include "krado/polygon.h"
 #include "krado/wire.h"
@@ -753,8 +755,32 @@ PYBIND11_MODULE(krado, m)
         .def("outside", &SolidClassifier::outside)
     ;
 
+    // extrude.h
+
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, int, double)>(&extrude));
     m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, const std::vector<double> &)>(&extrude));
+
+    // ops.h
+
+    m.def("translate", py::overload_cast<const GeomShape &, Vector>(&translate),
+        py::arg("shape"), py::arg("vector"));
+    m.def("translate", py::overload_cast<const GeomShape &, Point, Point>(&translate),
+        py::arg("shape"), py::arg("pt1"), py::arg("pt2"));
+
+    m.def("scale", py::overload_cast<const GeomShape &, double>(&scale),
+        py::arg("shape"), py::arg("scale_factor"));
+
+    m.def("mirror", py::overload_cast<const GeomShape &, const Axis1 &>(&mirror),
+        py::arg("shape"), py::arg("axis1"));
+
+    // TODO:split curve
+
+    m.def("imprint", py::overload_cast<const GeomSurface &, const GeomCurve &>(&imprint),
+        py::arg("surface"), py::arg("curve"));
+    m.def("imprint", py::overload_cast<const GeomVolume &, const GeomCurve &>(&imprint),
+        py::arg("volume"), py::arg("curve"));
+    m.def("imprint", py::overload_cast<const GeomVolume &, const GeomVolume &>(&imprint),
+        py::arg("volume"), py::arg("imp_volume"));
 
     m.def("compute_volume", [](const Mesh & mesh) {
         auto vols = compute_volume(mesh);
@@ -766,9 +792,56 @@ PYBIND11_MODULE(krado, m)
     });
     m.def("combine", &combine);
 
-    m.def("tetrahedralize", &tetrahedralize);
+    m.def("fuse", py::overload_cast<const GeomShape &, const GeomShape &, bool>(&fuse),
+        py::arg("shape"), py::arg("tool"), py::arg("simplify") = true);
+    m.def("fuse", py::overload_cast<const std::vector<GeomShape> &, bool>(&fuse),
+        py::arg("tools"), py::arg("simplify") = true);
+
+    m.def("cut", py::overload_cast<const GeomShape &, const GeomShape &>(&cut),
+        py::arg("shape"), py::arg("tool"));
+
+    m.def("intersect", py::overload_cast<const GeomShape &, const GeomShape &>(&intersect),
+         py::arg("shape"), py::arg("tool"));
+
+    m.def("fillet", py::overload_cast<const GeomShape &, const std::vector<GeomCurve> &, double>(&fillet),
+        py::arg("shape"), py::arg("curves"), py::arg("radius"));
+
+    m.def("hollow", py::overload_cast<const GeomShape &, const std::vector<GeomSurface> &, double, double>(&hollow),
+        py::arg("shape"), py::arg("faces_to_remove"), py::arg("thickness"), py::arg("tolerance"));
+
+    m.def("extrude", py::overload_cast<const GeomShape &, Vector>(&extrude),
+        py::arg("shape"), py::arg("vector"));
+
+    m.def("revolve", py::overload_cast<const GeomShape &, const Axis1 &, double>(&revolve),
+        py::arg("shape"), py::arg("axis1"), py::arg("angle") = 2. * M_PI);
+
+    m.def("rotate", py::overload_cast<const GeomShape &, const Axis1 &, double>(&rotate),
+        py::arg("shape"), py::arg("axis1"), py::arg("angle"));
+
+    m.def("section", py::overload_cast<const GeomShape &, const Plane &>(&section),
+        py::arg("shape"), py::arg("plane"));
+
+    m.def("draft", py::overload_cast<const GeomShape &, const Plane &, const std::vector<GeomSurface> &, double>(&draft),
+        py::arg("shape"), py::arg("pln"), py::arg("faces"), py::arg("angle"));
+
+    m.def("hole", py::overload_cast<const GeomShape &, const Axis1 &, double>(&hole),
+        py::arg("shape"), py::arg("axis"), py::arg("diameter"));
+    m.def("hole", py::overload_cast<const GeomShape &, const Axis1 &, double, double>(&hole),
+        py::arg("shape"), py::arg("axis"), py::arg("diameter"), py::arg("length"));
+
+    m.def("sweep", py::overload_cast<const GeomShape &, const Wire &>(&sweep),
+        py::arg("profile"), py::arg("spine"));
+
+    m.def("sew", &sew,
+         py::arg("faces"), py::arg("tolerance") = 1e-6);
 
     m.def("smooth", &smooth, py::arg("surface"), py::arg("iterations") = 1);
+
+    // tetrahedralize.h
+
+    m.def("tetrahedralize", &tetrahedralize);
+
+    // io.h
 
     m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
