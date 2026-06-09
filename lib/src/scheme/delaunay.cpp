@@ -1169,7 +1169,7 @@ bds2gmsh(BDS_Mesh & m,
             // when a singular point is present, degenerated triangles may be
             // created, for example on a sphere that contains one pole
             if (v[0] != v[1] && v[0] != v[2] && v[1] != v[2])
-                surface->add_triangle({ v[0], v[1], v[2] });
+                surface->add_triangle(ccw_triangle(geom_surface, v[0], v[1], v[2]));
         }
     }
 }
@@ -2123,6 +2123,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
                                 Span<Ptr<MeshCurve>> curves,
                                 bool only_initial_mesh)
 {
+    auto & geom_surface = surface->geom_surface();
     ///
     auto [all_vertices, boundary] = build_vertices(surface, curves);
     if (not boundary.empty()) {
@@ -2144,7 +2145,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     else if (all_vertices.size() == 3) {
         std::array<Ptr<MeshVertexAbstract>, 3> tri;
         std::copy(all_vertices.begin(), all_vertices.end(), tri.begin());
-        surface->add_triangle(tri);
+        surface->add_triangle(ccw_triangle(geom_surface, tri[0], tri[1], tri[2]));
         return true;
     }
 
@@ -2159,7 +2160,6 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recover_map_inv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
-    auto & geom_surface = surface->geom_surface();
     std::vector<Ptr<BDS_Point>> points(all_vertices.size());
     int count = 0;
     for (auto & vtx : all_vertices) {
@@ -2337,7 +2337,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
                 auto v2 = recover_map[n[1]];
                 auto v3 = recover_map[n[2]];
                 if (v1 != v2 && v1 != v3 && v2 != v3)
-                    surface->add_triangle({ v1, v2, v3 });
+                    surface->add_triangle(ccw_triangle(geom_surface, v1, v2, v3));
             }
         }
     }
