@@ -841,7 +841,8 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<CircularPattern, Pattern>(m, "CircularPattern")
-        .def(py::init<const Axis2 &, double, int, double>())
+        .def(py::init<const Axis2 &, double, int, double>(),
+            py::arg("center"), py::arg("radius"), py::arg("divisions"), py::arg("start_angle") = 0.)
         .def("radius", &CircularPattern::radius)
     ;
 
