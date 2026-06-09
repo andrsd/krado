@@ -24,6 +24,8 @@
 #include "krado/circle.h"
 #include "krado/circumscribed_polygon.h"
 #include "krado/cone.h"
+#include "krado/color.h"
+#include "krado/color_map.h"
 #include "krado/cylinder.h"
 #include "krado/helix.h"
 #include "krado/iges_file.h"
@@ -140,6 +142,105 @@ PYBIND11_MODULE(krado, m)
     m.attr("__version__") = KRADO_VERSION;
 
     // clang-format off
+
+    py::class_<Color>(m, "Color")
+        .def(py::init<>())
+        .def(py::init<int, int, int>(),
+            py::arg("red"), py::arg("green"), py::arg("blue"))
+        .def("red", &Color::red)
+        .def("redF", &Color::redF)
+        .def("green", &Color::green)
+        .def("greenF", &Color::greenF)
+        .def("blue", &Color::blue)
+        .def("blueF", &Color::blueF)
+    ;
+
+    py::class_<ColorMap>(m, "ColorMap")
+        .def_readonly_static("black", &ColorMap::black)
+        .def_readonly_static("blue", &ColorMap::blue)
+        .def_readonly_static("red", &ColorMap::red)
+
+        .def_readonly_static("medium_blue", &ColorMap::medium_blue)
+        .def_readonly_static("medium_grey", &ColorMap::medium_grey)
+        .def_readonly_static("dark_blue", &ColorMap::dark_blue)
+        .def_readonly_static("light_grey", &ColorMap::light_grey)
+        .def_readonly_static("light_blue", &ColorMap::light_blue)
+        .def_readonly_static("orange", &ColorMap::orange)
+        .def_readonly_static("dark_grey", &ColorMap::dark_grey)
+        .def_readonly_static("yellow", &ColorMap::yellow)
+
+        .def_readonly_static("grey1", &ColorMap::grey1)
+        .def_readonly_static("grey2", &ColorMap::grey2)
+        .def_readonly_static("grey3", &ColorMap::grey3)
+        .def_readonly_static("grey4", &ColorMap::grey4)
+        .def_readonly_static("grey5", &ColorMap::grey5)
+        .def_readonly_static("grey6", &ColorMap::grey6)
+        .def_readonly_static("grey7", &ColorMap::grey7)
+
+        .def_readonly_static("gold1", &ColorMap::gold1)
+        .def_readonly_static("gold2", &ColorMap::gold2)
+        .def_readonly_static("gold3", &ColorMap::gold3)
+        .def_readonly_static("gold4", &ColorMap::gold4)
+        .def_readonly_static("gold5", &ColorMap::gold5)
+        .def_readonly_static("gold6", &ColorMap::gold6)
+        .def_readonly_static("gold7", &ColorMap::gold7)
+
+        .def_readonly_static("silver1", &ColorMap::silver1)
+        .def_readonly_static("silver2", &ColorMap::silver2)
+        .def_readonly_static("silver3", &ColorMap::silver3)
+        .def_readonly_static("silver4", &ColorMap::silver4)
+        .def_readonly_static("silver5", &ColorMap::silver5)
+        .def_readonly_static("silver6", &ColorMap::silver6)
+        .def_readonly_static("silver7", &ColorMap::silver7)
+
+        .def_readonly_static("red1", &ColorMap::red1)
+        .def_readonly_static("red2", &ColorMap::red2)
+        .def_readonly_static("red3", &ColorMap::red3)
+        .def_readonly_static("red4", &ColorMap::red4)
+        .def_readonly_static("red5", &ColorMap::red5)
+        .def_readonly_static("red6", &ColorMap::red6)
+        .def_readonly_static("red7", &ColorMap::red7)
+
+        .def_readonly_static("orange1", &ColorMap::orange1)
+        .def_readonly_static("orange2", &ColorMap::orange2)
+        .def_readonly_static("orange3", &ColorMap::orange3)
+        .def_readonly_static("orange4", &ColorMap::orange4)
+        .def_readonly_static("orange5", &ColorMap::orange5)
+        .def_readonly_static("orange6", &ColorMap::orange6)
+        .def_readonly_static("orange7", &ColorMap::orange7)
+
+        .def_readonly_static("yellow1", &ColorMap::yellow1)
+        .def_readonly_static("yellow2", &ColorMap::yellow2)
+        .def_readonly_static("yellow3", &ColorMap::yellow3)
+        .def_readonly_static("yellow4", &ColorMap::yellow4)
+        .def_readonly_static("yellow5", &ColorMap::yellow5)
+        .def_readonly_static("yellow6", &ColorMap::yellow6)
+        .def_readonly_static("yellow7", &ColorMap::yellow7)
+
+        .def_readonly_static("green1", &ColorMap::green1)
+        .def_readonly_static("green2", &ColorMap::green2)
+        .def_readonly_static("green3", &ColorMap::green3)
+        .def_readonly_static("green4", &ColorMap::green4)
+        .def_readonly_static("green5", &ColorMap::green5)
+        .def_readonly_static("green6", &ColorMap::green6)
+        .def_readonly_static("green7", &ColorMap::green7)
+
+        .def_readonly_static("teal1", &ColorMap::teal1)
+        .def_readonly_static("teal2", &ColorMap::teal2)
+        .def_readonly_static("teal3", &ColorMap::teal3)
+        .def_readonly_static("teal4", &ColorMap::teal4)
+        .def_readonly_static("teal5", &ColorMap::teal5)
+        .def_readonly_static("teal6", &ColorMap::teal6)
+        .def_readonly_static("teal7", &ColorMap::teal7)
+
+        .def_readonly_static("blue1", &ColorMap::blue1)
+        .def_readonly_static("blue2", &ColorMap::blue2)
+        .def_readonly_static("blue3", &ColorMap::blue3)
+        .def_readonly_static("blue4", &ColorMap::blue4)
+        .def_readonly_static("blue5", &ColorMap::blue5)
+        .def_readonly_static("blue6", &ColorMap::blue6)
+        .def_readonly_static("blue7", &ColorMap::blue7)
+    ;
 
     py::enum_<ElementType>(m, "ElementType")
         .value("POINT", ElementType::POINT)
