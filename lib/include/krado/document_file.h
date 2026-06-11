@@ -28,6 +28,7 @@ public:
 protected:
     TDocStd_Document * create_doc(const std::vector<GeomShape> & shapes);
 
+private:
     std::string fname_;
 };
 
