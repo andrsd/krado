@@ -5,9 +5,12 @@
 #include "krado/exception.h"
 #include "krado/geom_shape.h"
 #include "krado/log.h"
+#include "krado/utils.h"
 #include "TDocStd_Document.hxx"
+#include "StepData_StepModel.hxx"
 #include "STEPCAFControl_Reader.hxx"
 #include "STEPCAFControl_Writer.hxx"
+#include "STEPControl_Writer.hxx"
 #include "XCAFDoc.hxx"
 #include "XCAFDoc_Material.hxx"
 #include "XCAFDoc_DocumentTool.hxx"
@@ -22,13 +25,25 @@ STEPFile::STEPFile(const std::string & file_name) : DocumentFile(file_name) {}
 void
 STEPFile::write(const std::vector<GeomShape> & shapes)
 {
+    Log::info("Writing STEP file '{}'", file_name());
+
     Handle(TDocStd_Document) doc = create_doc(shapes);
 
-    STEPCAFControl_Writer writer;
-    writer.SetNameMode(true);
-    writer.SetColorMode(true);
-    if (writer.Transfer(doc, STEPControl_AsIs)) {
-        writer.Write(file_name().c_str());
+    STEPCAFControl_Writer caf_writer;
+    caf_writer.SetNameMode(true);
+    caf_writer.SetColorMode(true);
+    if (caf_writer.Transfer(doc, STEPControl_AsIs)) {
+        caf_writer.Write(file_name().c_str());
+        auto & wrtr = caf_writer.ChangeWriter();
+        auto model = wrtr.Model();
+        auto n_ents = model->NbEntities();
+        Log::info("- wrote {} shape(s), {} entities",
+                  utils::human_number(shapes.size()),
+                  utils::human_number(n_ents));
+    }
+    else {
+        // TODO: grab the error code and report details
+        Log::info("- writing failed");
     }
 }
 
