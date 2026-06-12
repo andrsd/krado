@@ -966,7 +966,7 @@ read_node_sets(exodusIIcpp::File & exo)
 
 ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn_(file_name) {}
 
-Mesh
+Ptr<Mesh>
 ExodusIIFile::read()
 {
     Log::info("Reading ExodusII file '{}'", this->fn_);
@@ -980,13 +980,13 @@ ExodusIIFile::read()
     auto [side_sets, side_set_names] = read_side_sets(this->exo_, elems);
     auto [node_sets, node_set_names] = read_node_sets(this->exo_);
 
-    Mesh mesh(pnts, elems);
+    auto mesh = Ptr<Mesh>::alloc(pnts, elems);
     for (auto & [id, cs] : cell_sets)
-        mesh.set_cell_set(id, cs);
+        mesh->set_cell_set(id, cs);
     for (auto [id, name] : cell_set_names)
-        mesh.set_cell_set_name(id, cell_set_names[id]);
+        mesh->set_cell_set_name(id, cell_set_names[id]);
 
-    mesh.set_up();
+    mesh->set_up();
 
     // side sets
     int dim = this->exo_.get_dim();
@@ -994,50 +994,50 @@ ExodusIIFile::read()
     }
     else if (dim == 2) {
         for (auto & [id, sides] : side_sets) {
-            auto edges = build_edge_set(mesh, sides);
-            mesh.set_edge_set(id, edges);
+            auto edges = build_edge_set(*mesh, sides);
+            mesh->set_edge_set(id, edges);
         }
         for (auto [id, name] : side_set_names)
-            mesh.set_edge_set_name(id, side_set_names[id]);
+            mesh->set_edge_set_name(id, side_set_names[id]);
     }
     else if (dim == 3) {
         for (auto & [id, sides] : side_sets) {
-            auto faces = build_face_set(mesh, sides);
-            mesh.set_face_set(id, faces);
+            auto faces = build_face_set(*mesh, sides);
+            mesh->set_face_set(id, faces);
         }
         for (auto [id, name] : side_set_names)
-            mesh.set_face_set_name(id, side_set_names[id]);
+            mesh->set_face_set_name(id, side_set_names[id]);
     }
 
     // node sets
     for (auto & [id, ns] : node_sets) {
         auto vertex_ids = build_vertex_set(ns, elems.size());
-        mesh.set_vertex_set(id, vertex_ids);
+        mesh->set_vertex_set(id, vertex_ids);
     }
     for (auto [id, name] : node_set_names)
-        mesh.set_vertex_set_name(id, node_set_names[id]);
+        mesh->set_vertex_set_name(id, node_set_names[id]);
 
     return mesh;
 }
 
 void
-ExodusIIFile::write(const Mesh & mesh)
+ExodusIIFile::write(Ptr<const Mesh> mesh)
 {
     Log::info("Writing ExodusII file '{}'", this->fn_);
     LoggingTimer timer;
 
     this->exo_.create(this->fn_);
-    auto bbox = compute_bounding_box(mesh);
+    auto bbox = compute_bounding_box(*mesh);
     auto dim = determine_spatial_dim(bbox);
 
-    auto [x, y, z] = build_coords(mesh, dim);
+    auto [x, y, z] = build_coords(*mesh, dim);
     std::map<Index, int> exii_elem_ids;
-    auto [blocks, block_names] = build_blocks(mesh, exii_elem_ids);
-    auto [side_sets, side_set_names] = build_side_sets(mesh, dim, exii_elem_ids);
-    auto [node_sets, node_set_names] = build_node_sets(mesh);
+    auto [blocks, block_names] = build_blocks(*mesh, exii_elem_ids);
+    auto [side_sets, side_set_names] = build_side_sets(*mesh, dim, exii_elem_ids);
+    auto [node_sets, node_set_names] = build_node_sets(*mesh);
 
-    int n_nodes = (int) mesh.points().size();
-    int n_elems = (int) mesh.elements().size();
+    int n_nodes = (int) mesh->points().size();
+    int n_elems = (int) mesh->elements().size();
     int n_elem_blks = blocks.size();
     int n_node_sets = node_sets.size();
     int n_side_sets = side_sets.size();

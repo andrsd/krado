@@ -21,12 +21,12 @@ public:
     /// Read mesh from ExodusII file
     ///
     /// @return Mesh object read from file
-    [[nodiscard]] Mesh read();
+    [[nodiscard]] Ptr<Mesh> read();
 
     /// Write mesh to ExodusII file
     ///
     /// @param mesh Mesh object to write
-    void write(const Mesh & mesh);
+    void write(Ptr<const Mesh> mesh);
 
     /// Write mesh to ExodusII file
     ///

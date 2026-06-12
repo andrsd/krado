@@ -615,7 +615,7 @@ PYBIND11_MODULE(krado, m)
         .def(py::init([](const Point & pt1, const Point & pt2) { return Box::create(pt1, pt2); }))
     ;
 
-    py::class_<Mesh>(m, "Mesh")
+    py::class_<Mesh, Ptr<Mesh>>(m, "Mesh")
         .def(py::init<>())
         .def(py::init<std::vector<Point>, std::vector<Element>>())
         // .def("points", /* TODO */)
@@ -623,10 +623,10 @@ PYBIND11_MODULE(krado, m)
         // .def("elements", /* TODO */)
         .def("element", &Mesh::element, py::return_value_policy::reference)
         .def("scale", static_cast<Mesh &(Mesh::*)(double)>(&Mesh::scale))
-        .def("scaled", static_cast<Mesh (Mesh::*)(double) const>(&Mesh::scaled))
+        .def("scaled", static_cast<Ptr<Mesh> (Mesh::*)(double) const>(&Mesh::scaled))
         .def("scale", static_cast<Mesh &(Mesh::*)(double, double, double)>(&Mesh::scale),
             py::arg("factor_x"), py::arg("factor_y"), py::arg("factor_z") = 1.)
-        .def("scaled", static_cast<Mesh (Mesh::*)(double, double, double) const>(&Mesh::scaled),
+        .def("scaled", static_cast<Ptr<Mesh> (Mesh::*)(double, double, double) const>(&Mesh::scaled),
             py::arg("factor_x"), py::arg("factor_y"), py::arg("factor_z") = 1.)
         .def("translated", &Mesh::translated, py::arg("tx"), py::arg("ty") = 0., py::arg("tz") = 0.)
         .def("translate", &Mesh::translate, py::arg("tx"), py::arg("ty") = 0., py::arg("tz") = 0.)
@@ -860,7 +860,7 @@ PYBIND11_MODULE(krado, m)
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
         .def(py::init<const std::string &>())
         .def("read", &ExodusIIFile::read)
-        .def("write", py::overload_cast<const Mesh &>(&ExodusIIFile::write))
+        .def("write", py::overload_cast<Ptr<const Mesh>>(&ExodusIIFile::write))
         .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))
     ;
 
@@ -901,8 +901,8 @@ PYBIND11_MODULE(krado, m)
 
     // extrude.h
 
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, int, double)>(&extrude));
-    m.def("extrude", static_cast<Mesh(*)(const Mesh &, Vector, const std::vector<double> &)>(&extrude));
+    m.def("extrude", static_cast<Ptr<Mesh>(*)(const Mesh &, Vector, int, double)>(&extrude));
+    m.def("extrude", static_cast<Ptr<Mesh>(*)(const Mesh &, Vector, const std::vector<double> &)>(&extrude));
 
     // ops.h
 
@@ -934,7 +934,9 @@ PYBIND11_MODULE(krado, m)
         }
         return py_vols;
     });
-    m.def("combine", &combine);
+    m.def("combine", [](const std::vector<Ptr<Mesh>>& parts) -> Ptr<Mesh> {
+            return combine(parts);
+    });
 
     m.def("fuse", py::overload_cast<const GeomShape &, const GeomShape &, bool>(&fuse),
         py::arg("shape"), py::arg("tool"), py::arg("simplify") = true);

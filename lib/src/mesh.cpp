@@ -246,7 +246,7 @@ Mesh::element(Index idx) const
     return this->elems_.at(idx);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::scaled(double factor) const
 {
     auto tr = Trsf::scaled(factor);
@@ -260,7 +260,7 @@ Mesh::scale(double factor)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::scaled(double factor_x, double factor_y, double factor_z) const
 {
     auto tr = Trsf::scaled(factor_x, factor_y, factor_z);
@@ -274,7 +274,7 @@ Mesh::scale(double factor_x, double factor_y, double factor_z)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::translated(double tx, double ty, double tz) const
 {
     auto tr = Trsf::translated(tx, ty, tz);
@@ -288,7 +288,7 @@ Mesh::translate(double tx, double ty, double tz)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::transformed(const Trsf & tr) const
 {
     std::vector<Point> pts;
@@ -302,16 +302,16 @@ Mesh::transformed(const Trsf & tr) const
     );
     // clang-format on
 
-    Mesh mesh(pts, this->elems_);
-    mesh.cell_sets_ = this->cell_sets_;
-    mesh.cell_set_names_ = this->cell_set_names_;
-    mesh.face_sets_ = this->face_sets_;
-    mesh.face_set_names_ = this->face_set_names_;
-    mesh.edge_sets_ = this->edge_sets_;
-    mesh.edge_set_names_ = this->edge_set_names_;
-    mesh.vertex_sets_ = this->vertex_sets_;
-    mesh.vertex_set_names_ = this->vertex_set_names_;
-    mesh.hasse_ = this->hasse_;
+    auto mesh = Ptr<Mesh>::alloc(pts, this->elems_);
+    mesh->cell_sets_ = this->cell_sets_;
+    mesh->cell_set_names_ = this->cell_set_names_;
+    mesh->face_sets_ = this->face_sets_;
+    mesh->face_set_names_ = this->face_set_names_;
+    mesh->edge_sets_ = this->edge_sets_;
+    mesh->edge_set_names_ = this->edge_set_names_;
+    mesh->vertex_sets_ = this->vertex_sets_;
+    mesh->vertex_set_names_ = this->vertex_set_names_;
+    mesh->hasse_ = this->hasse_;
     return mesh;
 }
 
@@ -437,15 +437,15 @@ Mesh::remove_duplicate_points(double tolerance)
     return *this;
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::duplicate() const
 {
-    Mesh dup(this->pnts_, this->elems_);
-    dup.cell_sets_ = this->cell_sets_;
-    dup.face_sets_ = this->face_sets_;
-    dup.edge_sets_ = this->edge_sets_;
-    dup.vertex_sets_ = this->vertex_sets_;
-    dup.hasse_ = this->hasse_;
+    auto dup = Ptr<Mesh>::alloc(this->pnts_, this->elems_);
+    dup->cell_sets_ = this->cell_sets_;
+    dup->face_sets_ = this->face_sets_;
+    dup->edge_sets_ = this->edge_sets_;
+    dup->vertex_sets_ = this->vertex_sets_;
+    dup->hasse_ = this->hasse_;
     return dup;
 }
 
@@ -1031,15 +1031,15 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
         throw Exception("Element construction for your setup is not implemented yet");
 }
 
-Mesh
+Ptr<Mesh>
 build_mesh(const GeomModel & model)
 {
     Log::debug("Building mesh");
 
     auto [points, vtx_map] = build_points(model);
     auto elements = build_elements(model, vtx_map);
-    Mesh mesh(points, elements);
-    mesh.set_up();
+    auto mesh = Ptr<Mesh>::alloc(points, elements);
+    mesh->set_up();
     // TODO: create cell sets
     // TODO: create face sets
     // TODO: create vertex sets

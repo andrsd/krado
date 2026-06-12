@@ -42,6 +42,9 @@ public:
     /// @param elements Elements
     Mesh(std::vector<Point> points, std::vector<Element> elements);
 
+    Mesh(const Mesh & mesh) = delete;
+    Mesh & operator=(const Mesh & mesh) = delete;
+
     /// Get number of points
     ///
     /// @return Number of points
@@ -78,7 +81,7 @@ public:
     ///
     /// @param factor Scaling factor
     /// @return Scaled mesh
-    [[nodiscard]] Mesh scaled(double factor) const;
+    [[nodiscard]] Ptr<Mesh> scaled(double factor) const;
 
     /// Scale mesh by a factor (isotropic)
     ///
@@ -92,7 +95,7 @@ public:
     /// @param factor_y Scaling factor in y-direction
     /// @param factor_z Scaling factor in z-direction
     /// @return Scaled mesh
-    [[nodiscard]] Mesh scaled(double factor_x, double factor_y, double factor_z = 1.) const;
+    [[nodiscard]] Ptr<Mesh> scaled(double factor_x, double factor_y, double factor_z = 1.) const;
 
     /// Scale mesh by a factor (unisotropic)
     ///
@@ -108,7 +111,7 @@ public:
     /// @param ty Translation in y-direction
     /// @param tz Translation in z-direction
     /// @return Translated mesh
-    [[nodiscard]] Mesh translated(double tx, double ty = 0., double tz = 0.) const;
+    [[nodiscard]] Ptr<Mesh> translated(double tx, double ty = 0., double tz = 0.) const;
 
     /// Translate mesh
     ///
@@ -122,7 +125,7 @@ public:
     ///
     /// @param tr Transformation
     /// @return Transformed mesh
-    [[nodiscard]] Mesh transformed(const Trsf & tr) const;
+    [[nodiscard]] Ptr<Mesh> transformed(const Trsf & tr) const;
 
     /// Transform mesh
     ///
@@ -145,7 +148,7 @@ public:
     /// Duplicate mesh
     ///
     /// @return Duplicated mesh
-    [[nodiscard]] Mesh duplicate() const;
+    [[nodiscard]] Ptr<Mesh> duplicate() const;
 
     /// Set cell set name
     ///
@@ -489,6 +492,6 @@ BoundingBox3D compute_bounding_box(const Mesh & mesh);
 ///
 /// @param model
 /// @return Mesh
-Mesh build_mesh(const GeomModel & model);
+Ptr<Mesh> build_mesh(const GeomModel & model);
 
 } // namespace krado

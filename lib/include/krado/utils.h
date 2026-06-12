@@ -131,6 +131,7 @@ template <typename K, typename V>
 map_keys(const std::map<K, V> & in_map)
 {
     std::vector<K> keys;
+    keys.reserve(in_map.size());
     for (const auto & pair : in_map) {
         keys.push_back(pair.first);
     }
