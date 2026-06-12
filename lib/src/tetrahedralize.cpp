@@ -362,7 +362,7 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
 
 } // namespace
 
-Mesh
+Ptr<Mesh>
 tetrahedralize(const Mesh & mesh)
 {
     Log::info("Tetrahedralizing mesh");
@@ -407,7 +407,7 @@ tetrahedralize(const Mesh & mesh)
         }
     }
 
-    Mesh tet_mesh(points, elems);
+    auto tet_mesh = Ptr<Mesh>::alloc(points, elems);
     for (auto id : mesh.cell_set_ids()) {
         auto cells = mesh.cell_set(id);
         std::vector<Index> new_cell_set;
@@ -415,8 +415,8 @@ tetrahedralize(const Mesh & mesh)
             auto & tet_elems = elem_map[cell_id];
             new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());
         }
-        tet_mesh.set_cell_set(id, new_cell_set);
-        tet_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
+        tet_mesh->set_cell_set(id, new_cell_set);
+        tet_mesh->set_cell_set_name(id, mesh.cell_set_name(id));
     }
     return tet_mesh;
 }

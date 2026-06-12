@@ -17,15 +17,15 @@ TEST(TetrahedralizeTest, pyramid5)
     Mesh mesh(pnts, elems);
     mesh.set_cell_set(12, { 0 });
 
-    Mesh tet_mesh = tetrahedralize(mesh);
-    ASSERT_EQ(tet_mesh.elements().size(), 2);
-    EXPECT_THAT(tet_mesh.cell_set(12), ElementsAre(0, 1));
+    auto tet_mesh = tetrahedralize(mesh);
+    ASSERT_EQ(tet_mesh->elements().size(), 2);
+    EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1));
 
-    const auto & tet0 = tet_mesh.element(0);
+    const auto & tet0 = tet_mesh->element(0);
     EXPECT_EQ(tet0.type(), ElementType::TETRA4);
     EXPECT_THAT(tet0.indices(), ElementsAre(0, 1, 2, 4));
 
-    const auto & tet1 = tet_mesh.element(1);
+    const auto & tet1 = tet_mesh->element(1);
     EXPECT_EQ(tet1.type(), ElementType::TETRA4);
     EXPECT_THAT(tet1.indices(), ElementsAre(0, 2, 3, 4));
 }
@@ -38,19 +38,19 @@ TEST(TetrahedralizeTest, prism6)
     Mesh mesh(pnts, elems);
     mesh.set_cell_set(12, { 0 });
 
-    Mesh tet_mesh = tetrahedralize(mesh);
-    ASSERT_EQ(tet_mesh.elements().size(), 3);
-    EXPECT_THAT(tet_mesh.cell_set(12), ElementsAre(0, 1, 2));
+    auto tet_mesh = tetrahedralize(mesh);
+    ASSERT_EQ(tet_mesh->elements().size(), 3);
+    EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1, 2));
 
-    const auto & tet0 = tet_mesh.element(0);
+    const auto & tet0 = tet_mesh->element(0);
     EXPECT_EQ(tet0.type(), ElementType::TETRA4);
     EXPECT_THAT(tet0.indices(), ElementsAre(3, 5, 4, 0));
 
-    const auto & tet1 = tet_mesh.element(1);
+    const auto & tet1 = tet_mesh->element(1);
     EXPECT_EQ(tet1.type(), ElementType::TETRA4);
     EXPECT_THAT(tet1.indices(), ElementsAre(1, 4, 5, 0));
 
-    const auto & tet2 = tet_mesh.element(2);
+    const auto & tet2 = tet_mesh->element(2);
     EXPECT_EQ(tet2.type(), ElementType::TETRA4);
     EXPECT_THAT(tet2.indices(), ElementsAre(1, 5, 2, 0));
 }
@@ -65,31 +65,31 @@ TEST(TetrahedralizeTest, hex8)
     Mesh mesh(pnts, elems);
     mesh.set_cell_set(12, { 0 });
 
-    Mesh tet_mesh = tetrahedralize(mesh);
-    ASSERT_EQ(tet_mesh.elements().size(), 6);
-    EXPECT_THAT(tet_mesh.cell_set(12), ElementsAre(0, 1, 2, 3, 4, 5));
+    auto tet_mesh = tetrahedralize(mesh);
+    ASSERT_EQ(tet_mesh->elements().size(), 6);
+    EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1, 2, 3, 4, 5));
 
-    const auto & tet0 = tet_mesh.element(0);
+    const auto & tet0 = tet_mesh->element(0);
     EXPECT_EQ(tet0.type(), ElementType::TETRA4);
     EXPECT_THAT(tet0.indices(), ElementsAre(0, 1, 2, 6));
 
-    const auto & tet1 = tet_mesh.element(1);
+    const auto & tet1 = tet_mesh->element(1);
     EXPECT_EQ(tet1.type(), ElementType::TETRA4);
     EXPECT_THAT(tet1.indices(), ElementsAre(0, 5, 1, 6));
 
-    const auto & tet2 = tet_mesh.element(2);
+    const auto & tet2 = tet_mesh->element(2);
     EXPECT_EQ(tet2.type(), ElementType::TETRA4);
     EXPECT_THAT(tet2.indices(), ElementsAre(0, 4, 5, 6));
 
-    const auto & tet3 = tet_mesh.element(3);
+    const auto & tet3 = tet_mesh->element(3);
     EXPECT_EQ(tet3.type(), ElementType::TETRA4);
     EXPECT_THAT(tet3.indices(), ElementsAre(0, 2, 3, 7));
 
-    const auto & tet4 = tet_mesh.element(4);
+    const auto & tet4 = tet_mesh->element(4);
     EXPECT_EQ(tet4.type(), ElementType::TETRA4);
     EXPECT_THAT(tet4.indices(), ElementsAre(0, 6, 2, 7));
 
-    const auto & tet5 = tet_mesh.element(5);
+    const auto & tet5 = tet_mesh->element(5);
     EXPECT_EQ(tet5.type(), ElementType::TETRA4);
     EXPECT_THAT(tet5.indices(), ElementsAre(0, 4, 6, 7));
 }

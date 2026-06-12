@@ -105,7 +105,7 @@ TEST(OperationsTest, combine_meshes)
     sq.set_cell_set_name(0, "blue");
     sq.set_cell_set_name(1, "grey");
 
-    std::vector<Mesh> parts;
+    std::vector<Ptr<Mesh>> parts;
     parts.push_back(sq.translated(0, 0, 0));
     parts.push_back(sq.translated(1, 0, 0));
     parts.push_back(sq.translated(0, 1, 0));
@@ -113,16 +113,16 @@ TEST(OperationsTest, combine_meshes)
 
     auto m = combine(parts);
 
-    EXPECT_EQ(m.num_elements(), 16);
-    EXPECT_EQ(m.num_points(), 36);
+    EXPECT_EQ(m->num_elements(), 16);
+    EXPECT_EQ(m->num_points(), 36);
 
-    auto cs_ids = m.cell_set_ids();
+    auto cs_ids = m->cell_set_ids();
     EXPECT_THAT(cs_ids, ElementsAre(100, 101));
 
-    auto cs100 = m.cell_set(100);
+    auto cs100 = m->cell_set(100);
     EXPECT_THAT(cs100, ElementsAre(0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15));
 
-    auto cs101 = m.cell_set(101);
+    auto cs101 = m->cell_set(101);
     EXPECT_THAT(cs101, ElementsAre(1, 5, 9, 13));
 }
 

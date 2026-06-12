@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/ptr.h"
 #include <vector>
 
 namespace krado {
@@ -17,7 +18,7 @@ class Vector;
 /// @param layers Number of layers
 /// @param thickness Thickness of the extrusion
 /// @return Extruded mesh
-[[nodiscard]] Mesh extrude(const Mesh & mesh, Vector direction, int layers, double thickness);
+[[nodiscard]] Ptr<Mesh> extrude(const Mesh & mesh, Vector direction, int layers, double thickness);
 
 /// Extrude a mesh
 ///
@@ -25,7 +26,7 @@ class Vector;
 /// @param direction Extrusion direction
 /// @param thicknesses Thickness of each layer
 /// @return Extruded mesh
-[[nodiscard]] Mesh
+[[nodiscard]] Ptr<Mesh>
 extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thicknesses);
 
 } // namespace krado

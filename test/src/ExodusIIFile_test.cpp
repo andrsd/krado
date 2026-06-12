@@ -91,24 +91,24 @@ TEST(ExodusIIFileTest, read_2d)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
 
-    auto pnts = mesh.points();
+    auto pnts = mesh->points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(2, 0));
     EXPECT_EQ(pnts[2], Point(0, 2));
     EXPECT_EQ(pnts[3], Point(2, 2));
 
-    auto elems = mesh.elements();
+    auto elems = mesh->elements();
     EXPECT_EQ(elems.size(), 2);
     EXPECT_THAT(elems[0].type(), Eq(ElementType::TRI3));
     EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
     EXPECT_THAT(elems[1].type(), Eq(ElementType::TRI3));
     EXPECT_THAT(elems[1].indices(), ElementsAre(2, 1, 3));
 
-    auto cell_set_ids = mesh.cell_set_ids();
+    auto cell_set_ids = mesh->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = mesh.cell_set(0);
+    auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
 #if 0
@@ -138,15 +138,15 @@ TEST(ExodusIIFileTest, write_2d)
     };
     // clang-format on
 
-    Mesh mesh(pts, elems);
-    mesh.set_up();
-    mesh.set_cell_set(1, { 0 });
-    mesh.set_cell_set(2, { 1 });
+    auto mesh = Ptr<Mesh>::alloc(pts, elems);
+    mesh->set_up();
+    mesh->set_cell_set(1, { 0 });
+    mesh->set_cell_set(2, { 1 });
     std::vector<Index> edges_left = { 8 };
-    mesh.set_face_set(100, edges_left);
-    mesh.set_face_set_name(100, "left");
+    mesh->set_face_set(100, edges_left);
+    mesh->set_face_set_name(100, "left");
     std::vector<Index> edges_right = { 9 };
-    mesh.set_face_set(101, edges_right);
+    mesh->set_face_set(101, edges_right);
 
     ExodusIIFile f("sq-2d.exo");
     f.write(mesh);
@@ -156,11 +156,11 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
 {
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
-    Mesh mesh(pts, elems);
-    mesh.set_up();
-    auto bnd_edges = mesh.boundary_edges();
-    mesh.set_edge_set(10, { bnd_edges[0] });
-    mesh.set_edge_set_name(10, "bottom");
+    auto mesh = Ptr<Mesh>::alloc(pts, elems);
+    mesh->set_up();
+    auto bnd_edges = mesh->boundary_edges();
+    mesh->set_edge_set(10, { bnd_edges[0] });
+    mesh->set_edge_set_name(10, "bottom");
 
     {
         ExodusIIFile f("quad-2d.exo");
@@ -169,9 +169,9 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
     {
         ExodusIIFile f_read("quad-2d.exo");
         auto mesh_read = f_read.read();
-        auto side_set_ids = mesh_read.edge_set_ids();
+        auto side_set_ids = mesh_read->edge_set_ids();
         EXPECT_THAT(side_set_ids, ElementsAre(10));
-        auto ss10 = mesh_read.edge_set(10);
+        auto ss10 = mesh_read->edge_set(10);
         EXPECT_EQ(ss10.size(), 1);
     }
 }
@@ -180,10 +180,10 @@ TEST(ExodusIIFileTest, warn_on_empty_side_set)
 {
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
-    Mesh mesh(pts, elems);
-    mesh.set_up();
-    mesh.set_edge_set(10, {});
-    mesh.set_edge_set_name(10, "bottom");
+    auto mesh = Ptr<Mesh>::alloc(pts, elems);
+    mesh->set_up();
+    mesh->set_edge_set(10, {});
+    mesh->set_edge_set_name(10, "bottom");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     ExodusIIFile f(temp_fname);
@@ -194,11 +194,11 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
 {
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
-    Mesh mesh(pts, elems);
-    mesh.set_up();
+    auto mesh = Ptr<Mesh>::alloc(pts, elems);
+    mesh->set_up();
 
-    mesh.set_vertex_set(10, { 1, 4 });
-    mesh.set_vertex_set_name(10, "sides");
+    mesh->set_vertex_set(10, { 1, 4 });
+    mesh->set_vertex_set_name(10, "sides");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     {
@@ -208,9 +208,9 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
     {
         ExodusIIFile exo(temp_fname);
         auto mesh_read = exo.read();
-        auto node_set_ids = mesh_read.vertex_set_ids();
+        auto node_set_ids = mesh_read->vertex_set_ids();
         EXPECT_THAT(node_set_ids, ElementsAre(10));
-        auto ns10 = mesh_read.vertex_set(10);
+        auto ns10 = mesh_read->vertex_set(10);
         EXPECT_EQ(ns10.size(), 2);
         EXPECT_THAT(ns10, ElementsAre(1, 4));
     }
@@ -220,11 +220,11 @@ TEST(ExodusIIFileTest, warn_on_empty_node_set)
 {
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
-    Mesh mesh(pts, elems);
-    mesh.set_up();
+    auto mesh = Ptr<Mesh>::alloc(pts, elems);
+    mesh->set_up();
 
-    mesh.set_vertex_set(10, {});
-    mesh.set_vertex_set_name(10, "sides");
+    mesh->set_vertex_set(10, {});
+    mesh->set_vertex_set_name(10, "sides");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     ExodusIIFile exo(temp_fname);
