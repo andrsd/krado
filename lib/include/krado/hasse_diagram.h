@@ -103,6 +103,7 @@ public:
     {
         auto range = boost::adjacent_vertices(v1, this->grph_);
         std::vector<Index> vtxs;
+        // FIXME: add reserve
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(*it);
         return vtxs;
@@ -113,6 +114,7 @@ public:
     {
         auto range = boost::in_edges(v1, this->grph_);
         std::vector<Index> vtxs;
+        // FIXME: add reserve
         for (auto it = range.first; it != range.second; ++it)
             vtxs.push_back(boost::source(*it, this->grph_));
         return vtxs;

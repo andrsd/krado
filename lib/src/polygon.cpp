@@ -16,6 +16,7 @@ std::vector<Point>
 Polygon::build_points(const Axis2 & ax2, Vector start_vec, int n_sides)
 {
     std::vector<Point> points;
+    // FIXME: add `reserve`
     auto ctr_pt = ax2.location();
     Axis1 ctr_ax1(ctr_pt, ax2.direction());
     auto dangle = 2 * M_PI / n_sides;

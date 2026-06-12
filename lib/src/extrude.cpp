@@ -129,6 +129,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
     int dim = -1;
     std::vector<Element> elems;
+    // FIXME: add `reserve`
     for (auto i : make_range(thicknesses.size())) {
         for (auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {

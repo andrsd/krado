@@ -32,6 +32,7 @@ IGESFile::read() const
     reader.NbRootsForTransfer();
     reader.TransferRoots();
     std::vector<GeomShape> shapes;
+    // FIXME: add `reserve`
     for (int idx = 1; idx <= reader.NbShapes(); ++idx)
         shapes.push_back(GeomShape(reader.Shape(idx)));
     return shapes;

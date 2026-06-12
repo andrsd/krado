@@ -37,6 +37,7 @@ HexagonalPattern::HexagonalPattern(const Axis2 & center, double flat_to_flat, in
 
     // build sides
     std::vector<Point> points;
+    // FIXME: add `reserve`
     for (auto s : make_range(N_SIDES)) {
         Vector side = corners[(s + 1) % N_SIDES] - corners[s];
         Vector side_dir = side.normalized();

@@ -312,6 +312,7 @@ build_side_sets_1d(const GeomModel & model, const BlocksMap & blocks, const Vert
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
             global_elem_map[elem_idx_counter] = &element;
+            // FIXME: add `reserve`
             for (const auto & vertex_id : element.indices()) {
                 vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
             }
@@ -364,6 +365,7 @@ build_side_sets_2d(const GeomModel & model, const BlocksMap & blocks, const Vert
     Index elem_idx_counter = 0;
     for (const auto & [blk_id, blk_elements] : blocks) {
         for (const auto & element : blk_elements) {
+            // FIXME: add `reserve`
             for (const auto & vertex_id : element.indices()) {
                 vertex_to_elements_map[vertex_id].push_back(elem_idx_counter);
             }
@@ -518,6 +520,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
 
     if (mesh.cell_set_ids().empty()) {
         std::map<ElementType, std::vector<Index>> elem_blks;
+        // FIXME: add `reserve`
         int exii_idx = 1;
         for (Index cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
             exii_elem_ids[cell_id] = exii_idx++;
@@ -530,6 +533,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
         for (auto & [blk_type, elems] : elem_blks) {
             if (!elems.empty()) {
                 auto & block = blocks[blk_id];
+                // FIXME: add `reserve`
                 for (auto & cell_id : elems) {
                     auto & el = mesh.element(cell_id);
                     block.push_back(el);
@@ -551,6 +555,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
             auto elem_ids = mesh.cell_set(blk_id);
             if (!elem_ids.empty()) {
                 auto & block = blocks[blk_id];
+                // FIXME: add `reserve`
                 for (auto & id : elem_ids) {
                     exii_elem_ids[id] = exii_idx++;
                     auto & el = mesh.element(id);
@@ -861,17 +866,20 @@ read_points(exodusIIcpp::File & exo)
     int dim = exo.get_dim();
     int n_nodes = exo.get_num_nodes();
     if (dim == 1) {
+        // FIXME: add `reserve`
         auto x = exo.get_x_coords();
         for (auto i = 0; i < n_nodes; i++)
             points.emplace_back(x[i]);
     }
     else if (dim == 2) {
+        // FIXME: add `reserve`
         auto x = exo.get_x_coords();
         auto y = exo.get_y_coords();
         for (auto i = 0; i < n_nodes; i++)
             points.emplace_back(x[i], y[i]);
     }
     else if (dim == 3) {
+        // FIXME: add `reserve`
         auto x = exo.get_x_coords();
         auto y = exo.get_y_coords();
         auto z = exo.get_z_coords();

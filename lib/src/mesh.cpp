@@ -112,6 +112,7 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     tree.buildIndex();
 
     std::vector<Point> unique_points;
+    // FIXME: add `reserve`
     std::map<std::size_t, std::size_t> point_remap;
     std::vector<bool> processed(cloud.points.size(), false);
     nanoflann::SearchParameters params;
@@ -916,6 +917,7 @@ build_points(const GeomModel & model)
     Log::debug("Building points");
 
     std::vector<Point> pnts;
+    // FIXME: add `reserve`
     std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
     Index gid = 0;
 
@@ -945,6 +947,7 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 1D elements");
 
     std::vector<Element> elems;
+    // FIXME: add `reserve`
     for (auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
         for (auto & local_elem : curve->segments()) {
@@ -965,6 +968,7 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 2D elements");
 
     std::vector<Element> elems;
+    // FIXME: add `reserve`
     for (auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
@@ -995,6 +999,7 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 3D elements");
 
     std::vector<Element> elems;
+    // FIXME: add `reserve`
     for (auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
         for (auto & local_elem : volume->tetrahedra()) {

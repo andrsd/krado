@@ -263,6 +263,7 @@ combine(const std::vector<Mesh> & parts)
     // how much we shift element and point indices per mesh part
     std::vector<std::size_t> elem_shift;
     std::vector<std::size_t> pts_shift;
+    // FIXME: add `reserve`
     for (auto & p : parts) {
         elem_shift.push_back(n_total_elems);
         pts_shift.push_back(n_total_points);
@@ -334,6 +335,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     // how much we shift element and point indices per mesh part
     std::vector<std::size_t> elem_shift;
     std::vector<std::size_t> pts_shift;
+    // FIXME: add `reserve`
     for (auto & p : parts) {
         elem_shift.push_back(n_total_elems);
         pts_shift.push_back(n_total_points);
