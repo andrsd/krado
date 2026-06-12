@@ -32,6 +32,7 @@ elem_splitter(const std::array<Index, ElementSelector<ET>::N_VERTICES> & el)
 {
     auto optimized_node_list = nodes_to_tet_nodes_determiner<ET>(el);
     std::vector<std::array<Index, Tetra4::N_VERTICES>> tet4_elems;
+    tet4_elems.reserve(optimized_node_list.size());
     for (auto i : make_range(optimized_node_list.size())) {
         std::array<Index, Tetra4::N_VERTICES> new_elem;
         for (auto j : make_range(Tetra4::N_VERTICES))
@@ -355,6 +356,7 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
     auto tet_nodes_set = tet4_nodes_for_prism6(diagonal_direction);
 
     std::vector<std::array<u8, Tetra4::N_VERTICES>> tet_nodes_list;
+    tet_nodes_list.reserve(tet_nodes_set.size());
     for (const auto & tet_nodes : tet_nodes_set)
         tet_nodes_list.push_back(tet_nodes);
     return tet_nodes_list;
@@ -411,6 +413,10 @@ tetrahedralize(const Mesh & mesh)
     for (auto id : mesh.cell_set_ids()) {
         auto cells = mesh.cell_set(id);
         std::vector<Index> new_cell_set;
+        std::size_t sz = 0;
+        for (auto & cell_id : cells)
+            sz += elem_map[cell_id].size();
+        new_cell_set.reserve(sz);
         for (auto & cell_id : cells) {
             auto & tet_elems = elem_map[cell_id];
             new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());

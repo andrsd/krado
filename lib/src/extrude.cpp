@@ -129,6 +129,15 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
     int dim = -1;
     std::vector<Element> elems;
+    auto sz = std::count_if(
+        //
+        mesh.elements().begin(),
+        mesh.elements().end(),
+        [](const auto & el) {
+            return el.type() == ElementType::LINE2 || el.type() == ElementType::TRI3 ||
+                   el.type() == ElementType::QUAD4;
+        });
+    elems.reserve(thicknesses.size() * sz);
     for (auto i : make_range(thicknesses.size())) {
         for (auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {

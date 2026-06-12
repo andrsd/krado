@@ -923,6 +923,12 @@ build_points(const GeomModel & model)
     Log::debug("Building points");
 
     std::vector<Point> pnts;
+    std::size_t sz = model.vertices().size();
+    pnts.reserve(sz);
+    for (auto & [_, curve] : model.curves())
+        sz += curve->curve_vertices().size();
+    for (auto & [id, surface] : model.surfaces())
+        sz += surface->surface_vertices().size();
     std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
     Index gid = 0;
 
@@ -952,6 +958,10 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 1D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, curve] : model.curves())
+        sz += curve->segments().size();
+    elems.reserve(sz);
     for (auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
         for (auto & local_elem : curve->segments()) {
@@ -972,6 +982,12 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 2D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, surface] : model.surfaces()) {
+        sz += surface->triangles().size();
+        sz += surface->quadrangles().size();
+    }
+    elems.reserve(sz);
     for (auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
@@ -1002,6 +1018,11 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 3D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, volume] : model.volumes()) {
+        sz += volume->tetrahedra().size();
+    }
+    elems.reserve(sz);
     for (auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
         for (auto & local_elem : volume->tetrahedra()) {

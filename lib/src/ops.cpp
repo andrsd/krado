@@ -262,7 +262,9 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     auto n_total_points = 0;
     // how much we shift element and point indices per mesh part
     std::vector<std::size_t> elem_shift;
+    elem_shift.reserve(parts.size());
     std::vector<std::size_t> pts_shift;
+    pts_shift.reserve(parts.size());
     for (auto & p : parts) {
         elem_shift.push_back(n_total_elems);
         pts_shift.push_back(n_total_points);
