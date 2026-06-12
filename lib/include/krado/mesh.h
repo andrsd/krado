@@ -12,6 +12,7 @@
 #include "krado/hasse_diagram.h"
 #include "krado/types.h"
 #include "krado/utils.h"
+#include "krado/tracking_allocator.h"
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -40,6 +41,9 @@ public:
     ///
     /// @param points Points
     /// @param elements Elements
+    Mesh(std::vector<Point, TrackingAllocator<Point>> points,
+         std::vector<Element, TrackingAllocator<Element>> elements);
+
     Mesh(std::vector<Point> points, std::vector<Element> elements);
 
     /// Get number of points
@@ -454,11 +458,15 @@ private:
     }
 
     /// Mesh points
-    std::vector<Point> pnts_;
+    std::vector<Point, TrackingAllocator<Point>> pnts_;
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
-    std::vector<Element> elems_;
+    std::vector<Element, TrackingAllocator<Element>> elems_;
     /// Cell set names
-    std::map<Marker, std::string> cell_set_names_;
+    std::map<Marker,
+             std::string,
+             std::less<Marker>,
+             TrackingAllocator<std::pair<const Marker, std::string>>>
+        cell_set_names_;
     /// Cell sets
     std::map<Marker, std::vector<Index>> cell_sets_;
     /// Face set names

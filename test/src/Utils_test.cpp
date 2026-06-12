@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/point.h"
 #include "krado/utils.h"
+#include "krado/io.h"
 
 using namespace krado;
 
@@ -49,4 +50,11 @@ TEST(UtilsTest, human_time)
     EXPECT_EQ(utils::human_time(3720), "1h 2m");
     EXPECT_EQ(utils::human_time(3725), "1h 2m 5.00s");
     EXPECT_EQ(utils::human_time(3725.2), "1h 2m 5.20s");
+}
+
+TEST(UtilsTest, debug)
+{
+    Log::set_verbosity(9);
+
+    auto mesh = IO::import_mesh("/Users/andrsd/projects/sawtooth-2/run/thermal/unit_cell.exo");
 }

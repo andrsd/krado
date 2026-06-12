@@ -95,7 +95,7 @@ print_histogram(const std::array<std::size_t, N> & histogram)
 ///
 /// @return Tuple where the first element is a vector of unique points and the second element is a
 ///         map that maps the index of the original point to the index of the unique point.
-std::tuple<std::vector<Point>, std::map<std::size_t, std::size_t>>
+std::tuple<std::vector<Point, TrackingAllocator<Point>>, std::map<std::size_t, std::size_t>>
 remove_duplicates(const PointCloud & cloud, double threshold)
 {
     constexpr int32_t DIM3 = 3;
@@ -111,7 +111,7 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     KDTree tree(DIM3, cloud, KDTreeSingleIndexAdaptorParams(30));
     tree.buildIndex();
 
-    std::vector<Point> unique_points;
+    std::vector<Point, TrackingAllocator<Point>> unique_points;
     std::map<std::size_t, std::size_t> point_remap;
     std::vector<bool> processed(cloud.points.size(), false);
     nanoflann::SearchParameters params;
@@ -204,10 +204,20 @@ append(std::vector<SideEntry> & dest, const std::vector<SideEntry> & src)
 
 Mesh::Mesh() {}
 
-Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) :
-    pnts_(std::move(points)),
-    elems_(std::move(elems))
+Mesh::Mesh(std::vector<Point, TrackingAllocator<Point>> points,
+           std::vector<Element, TrackingAllocator<Element>> elems) :
+    pnts_(points),
+    elems_(elems)
 {
+}
+
+Mesh::Mesh(std::vector<Point> points, std::vector<Element> elements)
+{
+    this->pnts_.reserve(points.size());
+    std::copy(points.begin(), points.end(), this->pnts_.end());
+
+    this->elems_.reserve(elements.size());
+    std::copy(elements.begin(), elements.end(), this->elems_.end());
 }
 
 std::size_t
@@ -291,7 +301,7 @@ Mesh::translate(double tx, double ty, double tz)
 Mesh
 Mesh::transformed(const Trsf & tr) const
 {
-    std::vector<Point> pts;
+    std::vector<Point, TrackingAllocator<Point>> pts;
     pts.reserve(this->pnts_.size());
     // clang-format off
     std::ranges::transform(
@@ -655,7 +665,11 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     for (auto & [block_id, new_block_id] : block_map)
         Log::info("- {} -> {}", block_id, new_block_id);
 
-    std::map<Marker, std::string> new_cell_set_names;
+    std::map<Marker,
+             std::string,
+             std::less<Marker>,
+             TrackingAllocator<std::pair<const Marker, std::string>>>
+        new_cell_set_names;
     std::map<Marker, std::vector<Index>> new_cell_sets;
     for (auto & [block_id, cells] : this->cell_sets_) {
         auto new_block_id = block_map.at(block_id);
@@ -910,12 +924,12 @@ compute_bounding_box(const Mesh & mesh)
 
 //
 
-std::tuple<std::vector<Point>, std::map<Ptr<MeshVertexAbstract>, Index>>
+std::tuple<std::vector<Point, TrackingAllocator<Point>>, std::map<Ptr<MeshVertexAbstract>, Index>>
 build_points(const GeomModel & model)
 {
     Log::debug("Building points");
 
-    std::vector<Point> pnts;
+    std::vector<Point, TrackingAllocator<Point>> pnts;
     std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
     Index gid = 0;
 
@@ -939,12 +953,12 @@ build_points(const GeomModel & model)
     return { pnts, vtx_map };
 }
 
-std::vector<Element>
+std::vector<Element, TrackingAllocator<Element>>
 build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
 {
     Log::debug("Building 1D elements");
 
-    std::vector<Element> elems;
+    std::vector<Element, TrackingAllocator<Element>> elems;
     for (auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
         for (auto & local_elem : curve->segments()) {
@@ -959,12 +973,12 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     return elems;
 }
 
-std::vector<Element>
+std::vector<Element, TrackingAllocator<Element>>
 build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
 {
     Log::debug("Building 2D elements");
 
-    std::vector<Element> elems;
+    std::vector<Element, TrackingAllocator<Element>> elems;
     for (auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
@@ -989,12 +1003,12 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     return elems;
 }
 
-std::vector<Element>
+std::vector<Element, TrackingAllocator<Element>>
 build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
 {
     Log::debug("Building 3D elements");
 
-    std::vector<Element> elems;
+    std::vector<Element, TrackingAllocator<Element>> elems;
     for (auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
         for (auto & local_elem : volume->tetrahedra()) {
@@ -1009,7 +1023,7 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     return elems;
 }
 
-std::vector<Element>
+std::vector<Element, TrackingAllocator<Element>>
 build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
 {
     Log::debug("Building elements");
