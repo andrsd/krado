@@ -745,14 +745,41 @@ Mesh::build_hasse_diagram()
 {
     Log::debug("Building Hasse diagram");
 
-    auto n_cells = this->elems_.size();
-    auto n_pnts = this->pnts_.size();
-    this->hasse_.reserve(n_cells, n_pnts);
+    std::size_t sz = this->pnts_.size();
+    for (auto & el : this->elems_) {
+        auto et = el.type();
+        if (et == ElementType::LINE2) {
+            // no edges/faces
+        }
+        else if (et == ElementType::TRI3) {
+            sz += Tri3::N_EDGES;
+        }
+        else if (et == ElementType::QUAD4) {
+            sz += Quad4::N_EDGES;
+        }
+        else if (et == ElementType::TETRA4) {
+            sz += Tetra4::N_EDGES;
+            sz += Tetra4::N_FACES;
+        }
+        else if (et == ElementType::PYRAMID5) {
+            sz += Pyramid5::N_EDGES;
+            sz += Pyramid5::N_FACES;
+        }
+        else if (et == ElementType::PRISM6) {
+            sz += Prism6::N_EDGES;
+            sz += Prism6::N_FACES;
+        }
+        else if (et == ElementType::HEX8) {
+            sz += Hex8::N_EDGES;
+            sz += Hex8::N_FACES;
+        }
+    }
+    this->hasse_.reserve(sz);
     this->key_map_.clear();
-    this->key_map_.reserve(3 * n_cells + n_pnts);
+    this->key_map_.reserve(sz);
 
     // Add Hasse nodes for cells
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         auto id = utils::key(-(i + 1));
         if (this->key_map_.find(id) == this->key_map_.end()) {
             auto elem_node_id = i;
@@ -762,7 +789,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add Hasse nodes for points
-    for (Index i : make_range(n_pnts)) {
+    for (Index i : make_range(this->pnts_.size())) {
         auto vtx_id = utils::key(i);
         if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
             Index vtx_node_id = this->hasse_.size();
@@ -772,7 +799,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add faces
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TETRA4)
             hasse_add_faces<Tetra4>(i, cell);
@@ -785,7 +812,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add edges
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TRI3) {
             hasse_add_edges<Tri3>(i, cell);
