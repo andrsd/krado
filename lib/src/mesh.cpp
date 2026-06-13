@@ -425,6 +425,7 @@ Mesh &
 Mesh::remove_duplicate_points(double tolerance)
 {
     Log::info("Removing duplicates: tolerance={}", tolerance);
+    LoggingTimer timer;
 
     PointCloud cloud(*this);
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
