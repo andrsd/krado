@@ -16,6 +16,7 @@
 #include "krado/mesh_surface.h"
 #include "krado/mesh_surface_vertex.h"
 #include "krado/mesh_volume.h"
+#include "krado/timer.h"
 #include "nanoflann/nanoflann.hpp"
 #include <array>
 #include <unordered_map>
@@ -246,7 +247,7 @@ Mesh::element(Index idx) const
     return this->elems_.at(idx);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::scaled(double factor) const
 {
     auto tr = Trsf::scaled(factor);
@@ -260,7 +261,7 @@ Mesh::scale(double factor)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::scaled(double factor_x, double factor_y, double factor_z) const
 {
     auto tr = Trsf::scaled(factor_x, factor_y, factor_z);
@@ -274,7 +275,7 @@ Mesh::scale(double factor_x, double factor_y, double factor_z)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::translated(double tx, double ty, double tz) const
 {
     auto tr = Trsf::translated(tx, ty, tz);
@@ -288,7 +289,7 @@ Mesh::translate(double tx, double ty, double tz)
     return transform(tr);
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::transformed(const Trsf & tr) const
 {
     std::vector<Point> pts;
@@ -302,16 +303,16 @@ Mesh::transformed(const Trsf & tr) const
     );
     // clang-format on
 
-    Mesh mesh(pts, this->elems_);
-    mesh.cell_sets_ = this->cell_sets_;
-    mesh.cell_set_names_ = this->cell_set_names_;
-    mesh.face_sets_ = this->face_sets_;
-    mesh.face_set_names_ = this->face_set_names_;
-    mesh.edge_sets_ = this->edge_sets_;
-    mesh.edge_set_names_ = this->edge_set_names_;
-    mesh.vertex_sets_ = this->vertex_sets_;
-    mesh.vertex_set_names_ = this->vertex_set_names_;
-    mesh.hasse_ = this->hasse_;
+    auto mesh = Ptr<Mesh>::alloc(pts, this->elems_);
+    mesh->cell_sets_ = this->cell_sets_;
+    mesh->cell_set_names_ = this->cell_set_names_;
+    mesh->face_sets_ = this->face_sets_;
+    mesh->face_set_names_ = this->face_set_names_;
+    mesh->edge_sets_ = this->edge_sets_;
+    mesh->edge_set_names_ = this->edge_set_names_;
+    mesh->vertex_sets_ = this->vertex_sets_;
+    mesh->vertex_set_names_ = this->vertex_set_names_;
+    mesh->hasse_ = this->hasse_;
     return mesh;
 }
 
@@ -424,6 +425,7 @@ Mesh &
 Mesh::remove_duplicate_points(double tolerance)
 {
     Log::info("Removing duplicates: tolerance={}", tolerance);
+    LoggingTimer timer;
 
     PointCloud cloud(*this);
     auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
@@ -437,15 +439,15 @@ Mesh::remove_duplicate_points(double tolerance)
     return *this;
 }
 
-Mesh
+Ptr<Mesh>
 Mesh::duplicate() const
 {
-    Mesh dup(this->pnts_, this->elems_);
-    dup.cell_sets_ = this->cell_sets_;
-    dup.face_sets_ = this->face_sets_;
-    dup.edge_sets_ = this->edge_sets_;
-    dup.vertex_sets_ = this->vertex_sets_;
-    dup.hasse_ = this->hasse_;
+    auto dup = Ptr<Mesh>::alloc(this->pnts_, this->elems_);
+    dup->cell_sets_ = this->cell_sets_;
+    dup->face_sets_ = this->face_sets_;
+    dup->edge_sets_ = this->edge_sets_;
+    dup->vertex_sets_ = this->vertex_sets_;
+    dup->hasse_ = this->hasse_;
     return dup;
 }
 
@@ -743,14 +745,41 @@ Mesh::build_hasse_diagram()
 {
     Log::debug("Building Hasse diagram");
 
-    auto n_cells = this->elems_.size();
-    auto n_pnts = this->pnts_.size();
-    this->hasse_.reserve(n_cells, n_pnts);
+    std::size_t sz = this->pnts_.size();
+    for (auto & el : this->elems_) {
+        auto et = el.type();
+        if (et == ElementType::LINE2) {
+            // no edges/faces
+        }
+        else if (et == ElementType::TRI3) {
+            sz += Tri3::N_EDGES;
+        }
+        else if (et == ElementType::QUAD4) {
+            sz += Quad4::N_EDGES;
+        }
+        else if (et == ElementType::TETRA4) {
+            sz += Tetra4::N_EDGES;
+            sz += Tetra4::N_FACES;
+        }
+        else if (et == ElementType::PYRAMID5) {
+            sz += Pyramid5::N_EDGES;
+            sz += Pyramid5::N_FACES;
+        }
+        else if (et == ElementType::PRISM6) {
+            sz += Prism6::N_EDGES;
+            sz += Prism6::N_FACES;
+        }
+        else if (et == ElementType::HEX8) {
+            sz += Hex8::N_EDGES;
+            sz += Hex8::N_FACES;
+        }
+    }
+    this->hasse_.reserve(sz);
     this->key_map_.clear();
-    this->key_map_.reserve(3 * n_cells + n_pnts);
+    this->key_map_.reserve(sz);
 
     // Add Hasse nodes for cells
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         auto id = utils::key(-(i + 1));
         if (this->key_map_.find(id) == this->key_map_.end()) {
             auto elem_node_id = i;
@@ -760,7 +789,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add Hasse nodes for points
-    for (Index i : make_range(n_pnts)) {
+    for (Index i : make_range(this->pnts_.size())) {
         auto vtx_id = utils::key(i);
         if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
             Index vtx_node_id = this->hasse_.size();
@@ -770,7 +799,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add faces
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TETRA4)
             hasse_add_faces<Tetra4>(i, cell);
@@ -783,7 +812,7 @@ Mesh::build_hasse_diagram()
     }
 
     // Add edges
-    for (Index i : make_range(n_cells)) {
+    for (Index i : make_range(this->elems_.size())) {
         const auto & cell = this->elems_[i];
         if (cell.type() == ElementType::TRI3) {
             hasse_add_edges<Tri3>(i, cell);
@@ -908,6 +937,12 @@ compute_bounding_box(const Mesh & mesh)
     return bbox;
 }
 
+BoundingBox3D
+compute_bounding_box(Ptr<const Mesh> mesh)
+{
+    return compute_bounding_box(*mesh);
+}
+
 //
 
 std::tuple<std::vector<Point>, std::map<Ptr<MeshVertexAbstract>, Index>>
@@ -916,6 +951,12 @@ build_points(const GeomModel & model)
     Log::debug("Building points");
 
     std::vector<Point> pnts;
+    std::size_t sz = model.vertices().size();
+    pnts.reserve(sz);
+    for (auto & [_, curve] : model.curves())
+        sz += curve->curve_vertices().size();
+    for (auto & [id, surface] : model.surfaces())
+        sz += surface->surface_vertices().size();
     std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
     Index gid = 0;
 
@@ -945,6 +986,10 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 1D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, curve] : model.curves())
+        sz += curve->segments().size();
+    elems.reserve(sz);
     for (auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
         for (auto & local_elem : curve->segments()) {
@@ -965,6 +1010,12 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 2D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, surface] : model.surfaces()) {
+        sz += surface->triangles().size();
+        sz += surface->quadrangles().size();
+    }
+    elems.reserve(sz);
     for (auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
@@ -995,6 +1046,11 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
     Log::debug("Building 3D elements");
 
     std::vector<Element> elems;
+    std::size_t sz = 0;
+    for (auto & [id, volume] : model.volumes()) {
+        sz += volume->tetrahedra().size();
+    }
+    elems.reserve(sz);
     for (auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
         for (auto & local_elem : volume->tetrahedra()) {
@@ -1031,15 +1087,15 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
         throw Exception("Element construction for your setup is not implemented yet");
 }
 
-Mesh
+Ptr<Mesh>
 build_mesh(const GeomModel & model)
 {
     Log::debug("Building mesh");
 
     auto [points, vtx_map] = build_points(model);
     auto elements = build_elements(model, vtx_map);
-    Mesh mesh(points, elements);
-    mesh.set_up();
+    auto mesh = Ptr<Mesh>::alloc(points, elements);
+    mesh->set_up();
     // TODO: create cell sets
     // TODO: create face sets
     // TODO: create vertex sets

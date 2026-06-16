@@ -16,6 +16,7 @@ LinearPattern::LinearPattern(const Axis2 & ax2, int nx, double dx) :
     dy_(0)
 {
     std::vector<Point> points;
+    points.reserve(nx);
     auto origin = ax2.location();
     auto x_vec = Vector(ax2.x_direction());
     for (auto i : make_range(nx)) {
@@ -35,6 +36,7 @@ LinearPattern::LinearPattern(const Axis2 & ax2, int nx, int ny, double dx, doubl
     dy_(dy)
 {
     std::vector<Point> points;
+    points.reserve(nx * ny);
     auto origin = ax2.location();
     auto x_vec = Vector(ax2.x_direction());
     auto y_vec = Vector(ax2.y_direction());

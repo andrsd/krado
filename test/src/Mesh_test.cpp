@@ -4,6 +4,7 @@
 #include "krado/exodusii_file.h"
 #include "krado/range.h"
 #include "krado/vector.h"
+#include "krado/ops.h"
 #include <filesystem>
 
 using namespace krado;
@@ -14,36 +15,36 @@ TEST(MeshTest, point)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
-    EXPECT_THAT(mesh.point(0), Point(0, 0));
-    EXPECT_THAT(mesh.point(1), Point(2, 0));
-    EXPECT_THAT(mesh.point(2), Point(0, 2));
-    EXPECT_THAT(mesh.point(3), Point(2, 2));
+    EXPECT_THAT(mesh->point(0), Point(0, 0));
+    EXPECT_THAT(mesh->point(1), Point(2, 0));
+    EXPECT_THAT(mesh->point(2), Point(0, 2));
+    EXPECT_THAT(mesh->point(3), Point(2, 2));
 }
 
 TEST(MeshTest, scaled)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
-    auto mesh = f.read().scaled(0.25);
-    auto pnts = mesh.points();
+    auto mesh = f.read()->scaled(0.25);
+    auto pnts = mesh->points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(0.5, 0));
     EXPECT_EQ(pnts[2], Point(0, 0.5));
     EXPECT_EQ(pnts[3], Point(0.5, 0.5));
 
-    auto cell_set_ids = mesh.cell_set_ids();
+    auto cell_set_ids = mesh->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = mesh.cell_set(0);
+    auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-    auto ss_ids = mesh.edge_set_ids();
+    auto ss_ids = mesh->edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = mesh.edge_set(10);
+    auto ss0 = mesh->edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto ss1 = mesh.edge_set(11);
+    auto ss1 = mesh->edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -51,54 +52,54 @@ TEST(MeshTest, scale)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
-    mesh.scale(0.25);
-    auto pnts = mesh.points();
+    mesh->scale(0.25);
+    auto pnts = mesh->points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(0, 0));
     EXPECT_EQ(pnts[1], Point(0.5, 0));
     EXPECT_EQ(pnts[2], Point(0, 0.5));
     EXPECT_EQ(pnts[3], Point(0.5, 0.5));
 
-    auto cell_set_ids = mesh.cell_set_ids();
+    auto cell_set_ids = mesh->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = mesh.cell_set(0);
+    auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-    auto ss_ids = mesh.edge_set_ids();
+    auto ss_ids = mesh->edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = mesh.edge_set(10);
+    auto ss0 = mesh->edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto ss1 = mesh.edge_set(11);
+    auto ss1 = mesh->edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
 TEST(MeshTest, translated)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
-    auto mesh = f.read().translated(2, 3);
-    auto pnts = mesh.points();
+    auto mesh = f.read()->translated(2, 3);
+    auto pnts = mesh->points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(2, 3));
     EXPECT_EQ(pnts[1], Point(4, 3));
     EXPECT_EQ(pnts[2], Point(2, 5));
     EXPECT_EQ(pnts[3], Point(4, 5));
 
-    auto cell_set_ids = mesh.cell_set_ids();
+    auto cell_set_ids = mesh->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = mesh.cell_set(0);
+    auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-    auto ss_ids = mesh.edge_set_ids();
+    auto ss_ids = mesh->edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = mesh.edge_set(10);
+    auto ss0 = mesh->edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto ss1 = mesh.edge_set(11);
+    auto ss1 = mesh->edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -106,27 +107,27 @@ TEST(MeshTest, translate)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
-    mesh.translate(2, 3);
-    auto pnts = mesh.points();
+    mesh->translate(2, 3);
+    auto pnts = mesh->points();
     EXPECT_EQ(pnts.size(), 4);
     EXPECT_EQ(pnts[0], Point(2, 3));
     EXPECT_EQ(pnts[1], Point(4, 3));
     EXPECT_EQ(pnts[2], Point(2, 5));
     EXPECT_EQ(pnts[3], Point(4, 5));
 
-    auto cell_set_ids = mesh.cell_set_ids();
+    auto cell_set_ids = mesh->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = mesh.cell_set(0);
+    auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-    auto ss_ids = mesh.edge_set_ids();
+    auto ss_ids = mesh->edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = mesh.edge_set(10);
+    auto ss0 = mesh->edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto ss1 = mesh.edge_set(11);
+    auto ss1 = mesh->edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -136,9 +137,9 @@ TEST(MeshTest, add_mesh)
     auto square = f.read();
 
     Mesh m;
-    m.add(square);
-    auto sq2 = square.translated(0, 2);
-    m.add(sq2);
+    m.add(*square);
+    auto sq2 = square->translated(0, 2);
+    m.add(*sq2);
 
     auto pnts = m.points();
     EXPECT_EQ(pnts.size(), 8);
@@ -182,14 +183,10 @@ TEST(MeshTest, remove_duplicate_points)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
-
-    Mesh m;
-    m.add(square);
-    auto sq2 = square.translated(2, 0);
-    m.add(sq2);
-
-    m.remove_duplicate_points();
-    auto pnts = m.points();
+    auto sq2 = square->translated(2, 0);
+    auto m = combine({ square, sq2 });
+    m->remove_duplicate_points();
+    auto pnts = m->points();
 
     EXPECT_EQ(pnts.size(), 6);
     EXPECT_EQ(pnts[0], Point(0, 0));
@@ -199,7 +196,7 @@ TEST(MeshTest, remove_duplicate_points)
     EXPECT_EQ(pnts[4], Point(4, 0));
     EXPECT_EQ(pnts[5], Point(4, 2));
 
-    auto elems = m.elements();
+    auto elems = m->elements();
     EXPECT_EQ(elems.size(), 4);
     EXPECT_EQ(elems[0].type(), ElementType::TRI3);
     EXPECT_THAT(elems[0].indices(), ElementsAre(0, 1, 2));
@@ -220,23 +217,23 @@ TEST(MeshTest, duplicate)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
 
-    auto dup = square.duplicate();
-    EXPECT_TRUE(std::ranges::equal(square.points(), dup.points()));
-    EXPECT_TRUE(std::ranges::equal(square.elements(), dup.elements()));
+    auto dup = square->duplicate();
+    EXPECT_TRUE(std::ranges::equal(square->points(), dup->points()));
+    EXPECT_TRUE(std::ranges::equal(square->elements(), dup->elements()));
 
-    auto cell_set_ids = dup.cell_set_ids();
+    auto cell_set_ids = dup->cell_set_ids();
     EXPECT_THAT(cell_set_ids, ElementsAre(0));
 
-    auto cs0 = dup.cell_set(0);
+    auto cs0 = dup->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-    auto ss_ids = dup.edge_set_ids();
+    auto ss_ids = dup->edge_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = dup.edge_set(10);
+    auto ss0 = dup->edge_set(10);
     EXPECT_EQ(ss0[0], 9);
 
-    auto ss1 = dup.edge_set(11);
+    auto ss1 = dup->edge_set(11);
     EXPECT_EQ(ss1[0], 8);
 }
 
@@ -244,11 +241,11 @@ TEST(MeshTest, remap_block_ids)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto square = f.read();
-    square.set_cell_set(0, { 0, 1 });
-    square.remap_block_ids({ { 0, 1000 } });
+    square->set_cell_set(0, { 0, 1 });
+    square->remap_block_ids({ { 0, 1000 } });
 
-    EXPECT_THAT(square.cell_set_ids(), ElementsAre(1000));
-    EXPECT_THAT(square.cell_set(1000), ElementsAre(0, 1));
+    EXPECT_THAT(square->cell_set_ids(), ElementsAre(1000));
+    EXPECT_THAT(square->cell_set(1000), ElementsAre(0, 1));
 }
 
 TEST(MeshTest, element_ids_2d)
@@ -304,34 +301,34 @@ TEST(MeshTest, element_ids_from_file_2d)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto m = f.read();
 
-    EXPECT_EQ(m.cell_range(), krado::Range(0, 2));
-    EXPECT_EQ(m.edge_range(), krado::Range(6, 11));
+    EXPECT_EQ(m->cell_range(), krado::Range(0, 2));
+    EXPECT_EQ(m->edge_range(), krado::Range(6, 11));
     // EXPECT_EQ(m.face_ids(), krado::Range());
-    EXPECT_EQ(m.vertex_range(), krado::Range(2, 6));
+    EXPECT_EQ(m->vertex_range(), krado::Range(2, 6));
 
-    EXPECT_THAT(m.support(0), ElementsAre());
-    EXPECT_THAT(m.support(1), ElementsAre());
-    EXPECT_THAT(m.support(2), ElementsAre(6, 8));
-    EXPECT_THAT(m.support(3), ElementsAre(6, 7, 9));
-    EXPECT_THAT(m.support(4), ElementsAre(7, 8, 10));
-    EXPECT_THAT(m.support(5), ElementsAre(9, 10));
-    EXPECT_THAT(m.support(6), ElementsAre(0));
-    EXPECT_THAT(m.support(7), ElementsAre(0, 1));
-    EXPECT_THAT(m.support(8), ElementsAre(0));
-    EXPECT_THAT(m.support(9), ElementsAre(1));
-    EXPECT_THAT(m.support(10), ElementsAre(1));
+    EXPECT_THAT(m->support(0), ElementsAre());
+    EXPECT_THAT(m->support(1), ElementsAre());
+    EXPECT_THAT(m->support(2), ElementsAre(6, 8));
+    EXPECT_THAT(m->support(3), ElementsAre(6, 7, 9));
+    EXPECT_THAT(m->support(4), ElementsAre(7, 8, 10));
+    EXPECT_THAT(m->support(5), ElementsAre(9, 10));
+    EXPECT_THAT(m->support(6), ElementsAre(0));
+    EXPECT_THAT(m->support(7), ElementsAre(0, 1));
+    EXPECT_THAT(m->support(8), ElementsAre(0));
+    EXPECT_THAT(m->support(9), ElementsAre(1));
+    EXPECT_THAT(m->support(10), ElementsAre(1));
 
-    EXPECT_THAT(m.cone(0), ElementsAre(6, 7, 8));
-    EXPECT_THAT(m.cone(1), ElementsAre(7, 9, 10));
-    EXPECT_THAT(m.cone(2), ElementsAre());
-    EXPECT_THAT(m.cone(3), ElementsAre());
-    EXPECT_THAT(m.cone(4), ElementsAre());
-    EXPECT_THAT(m.cone(5), ElementsAre());
-    EXPECT_THAT(m.cone(6), ElementsAre(2, 3));
-    EXPECT_THAT(m.cone(7), ElementsAre(3, 4));
-    EXPECT_THAT(m.cone(8), ElementsAre(4, 2));
-    EXPECT_THAT(m.cone(9), ElementsAre(3, 5));
-    EXPECT_THAT(m.cone(10), ElementsAre(5, 4));
+    EXPECT_THAT(m->cone(0), ElementsAre(6, 7, 8));
+    EXPECT_THAT(m->cone(1), ElementsAre(7, 9, 10));
+    EXPECT_THAT(m->cone(2), ElementsAre());
+    EXPECT_THAT(m->cone(3), ElementsAre());
+    EXPECT_THAT(m->cone(4), ElementsAre());
+    EXPECT_THAT(m->cone(5), ElementsAre());
+    EXPECT_THAT(m->cone(6), ElementsAre(2, 3));
+    EXPECT_THAT(m->cone(7), ElementsAre(3, 4));
+    EXPECT_THAT(m->cone(8), ElementsAre(4, 2));
+    EXPECT_THAT(m->cone(9), ElementsAre(3, 5));
+    EXPECT_THAT(m->cone(10), ElementsAre(5, 4));
 }
 
 TEST(MeshTest, element_ids_from_file_3d)
@@ -339,10 +336,10 @@ TEST(MeshTest, element_ids_from_file_3d)
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "cube-tet.e");
     auto m = f.read();
 
-    EXPECT_EQ(m.cell_range(), krado::Range(0, 6));
-    EXPECT_EQ(m.face_range(), krado::Range(14, 32));
-    EXPECT_EQ(m.edge_range(), krado::Range(32, 51));
-    EXPECT_EQ(m.vertex_range(), krado::Range(6, 14));
+    EXPECT_EQ(m->cell_range(), krado::Range(0, 6));
+    EXPECT_EQ(m->face_range(), krado::Range(14, 32));
+    EXPECT_EQ(m->edge_range(), krado::Range(32, 51));
+    EXPECT_EQ(m->vertex_range(), krado::Range(6, 14));
 
     ExodusIIFile out("a.e");
     out.write(m);
@@ -509,7 +506,7 @@ TEST(MeshTest, remove_edge_sets)
 {
     ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "square-half-tri.e");
     auto mesh = f.read();
-    mesh.remove_edge_sets();
-    auto edge_set_ids = mesh.edge_set_ids();
+    mesh->remove_edge_sets();
+    auto edge_set_ids = mesh->edge_set_ids();
     EXPECT_EQ(edge_set_ids.size(), 0);
 }

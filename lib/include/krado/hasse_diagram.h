@@ -137,9 +137,9 @@ public:
     }
 
     void
-    reserve(std::size_t n_cells, std::size_t n_pts)
+    reserve(std::size_t size)
     {
-        this->grph_.m_vertices.reserve(3 * n_cells + n_pts);
+        this->grph_.m_vertices.reserve(size);
     }
 
 private:

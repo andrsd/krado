@@ -99,7 +99,7 @@ extrude_element_side<ElementType::QUAD4>(const Element & /* el */, int side)
 
 } // namespace
 
-Mesh
+Ptr<Mesh>
 extrude(const Mesh & mesh, Vector normal, int layers, double thickness)
 {
     Log::info("Extruding mesh: normal={}, layers={}, thickness={}", normal, layers, thickness);
@@ -108,7 +108,7 @@ extrude(const Mesh & mesh, Vector normal, int layers, double thickness)
     return extrude(mesh, normal, thicknesses);
 }
 
-Mesh
+Ptr<Mesh>
 extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thicknesses)
 {
     auto n = direction.normalized();
@@ -129,6 +129,15 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
     int dim = -1;
     std::vector<Element> elems;
+    auto sz = std::count_if(
+        //
+        mesh.elements().begin(),
+        mesh.elements().end(),
+        [](const auto & el) {
+            return el.type() == ElementType::LINE2 || el.type() == ElementType::TRI3 ||
+                   el.type() == ElementType::QUAD4;
+        });
+    elems.reserve(thicknesses.size() * sz);
     for (auto i : make_range(thicknesses.size())) {
         for (auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {
@@ -159,8 +168,8 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
             side_sets[id] = utils::create_side_set(mesh, mesh.edge_set(id));
     }
 
-    Mesh extruded_mesh(points, elems);
-    extruded_mesh.set_up();
+    auto extruded_mesh = Ptr<Mesh>::alloc(points, elems);
+    extruded_mesh->set_up();
     // extrude cell sets
     for (auto & id : mesh.cell_set_ids()) {
         auto cells = mesh.cell_set(id);
@@ -170,8 +179,8 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
             for (auto & cell : cells)
                 cell_set.push_back(cell + elem_stride * i);
         }
-        extruded_mesh.set_cell_set(id, cell_set);
-        extruded_mesh.set_cell_set_name(id, mesh.cell_set_name(id));
+        extruded_mesh->set_cell_set(id, cell_set);
+        extruded_mesh->set_cell_set_name(id, mesh.cell_set_name(id));
     }
 
     // extrude side sets
@@ -193,9 +202,10 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
                                         Element::type(cell.type()));
                 }
             }
-            extruded_mesh.set_edge_set(id,
-                                       utils::set_from_side_set(extruded_mesh, extruded_side_sets));
-            extruded_mesh.set_edge_set_name(id, mesh.vertex_set_name(id));
+            extruded_mesh->set_edge_set(
+                id,
+                utils::set_from_side_set(*extruded_mesh, extruded_side_sets));
+            extruded_mesh->set_edge_set_name(id, mesh.vertex_set_name(id));
         }
     }
     else if (dim == 2) {
@@ -219,9 +229,10 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
                                         Element::type(cell.type()));
                 }
             }
-            extruded_mesh.set_face_set(id,
-                                       utils::set_from_side_set(extruded_mesh, extruded_side_sets));
-            extruded_mesh.set_face_set_name(id, mesh.edge_set_name(id));
+            extruded_mesh->set_face_set(
+                id,
+                utils::set_from_side_set(*extruded_mesh, extruded_side_sets));
+            extruded_mesh->set_face_set_name(id, mesh.edge_set_name(id));
         }
     }
 

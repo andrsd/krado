@@ -13,13 +13,13 @@ public:
     ///
     /// @param file_name Name of the file
     /// @param mesh Mesh to write
-    static void export_mesh(const std::string & file_name, const Mesh & mesh);
+    static void export_mesh(const std::string & file_name, Ptr<const Mesh> mesh);
 
     /// Read mesh from a file
     ///
     /// @param file_name Name of the file
     /// @return Mesh read from the file
-    [[nodiscard]] static Mesh import_mesh(const std::string & file_name);
+    [[nodiscard]] static Ptr<Mesh> import_mesh(const std::string & file_name);
 };
 
 } // namespace krado
