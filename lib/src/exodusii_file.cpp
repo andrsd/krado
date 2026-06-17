@@ -553,7 +553,6 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
         // homogeneous in terms of cell type.
 
         int exii_idx = 1;
-        std::vector<std::string> blk_names;
         auto cell_set_ids = mesh.cell_set_ids();
         for (auto & blk_id : cell_set_ids) {
             auto elem_ids = mesh.cell_set(blk_id);
@@ -565,7 +564,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
                     auto & el = mesh.element(id);
                     block.push_back(el);
                 }
-                blk_names.push_back(mesh.cell_set_name(blk_id));
+                names[blk_id] = mesh.cell_set_name(blk_id);
             }
         }
     }
