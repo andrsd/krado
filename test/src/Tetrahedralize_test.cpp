@@ -14,8 +14,8 @@ TEST(TetrahedralizeTest, pyramid5)
                                 Point(0, 1, 0),
                                 Point(0.5, 0.5, 1) };
     std::vector<Element> elems = { Element::Pyramid5({ 0, 1, 2, 3, 4 }) };
-    Mesh mesh(pnts, elems);
-    mesh.set_cell_set(12, { 0 });
+    auto mesh = Ptr<Mesh>::alloc(pnts, elems);
+    mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
     ASSERT_EQ(tet_mesh->elements().size(), 2);
@@ -35,8 +35,8 @@ TEST(TetrahedralizeTest, prism6)
     std::vector<Point> pnts = { Point(0, 0, 0), Point(1, 0, 0), Point(0, 1, 0),
                                 Point(0, 0, 1), Point(1, 0, 1), Point(0, 1, 1) };
     std::vector<Element> elems = { Element::Prism6({ 0, 1, 2, 3, 4, 5 }) };
-    Mesh mesh(pnts, elems);
-    mesh.set_cell_set(12, { 0 });
+    auto mesh = Ptr<Mesh>::alloc(pnts, elems);
+    mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
     ASSERT_EQ(tet_mesh->elements().size(), 3);
@@ -62,8 +62,8 @@ TEST(TetrahedralizeTest, hex8)
         Point(0, 0, 1), Point(1, 0, 1), Point(1, 1, 1), Point(0, 1, 1),
     };
     std::vector<Element> elems = { Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }) };
-    Mesh mesh(pnts, elems);
-    mesh.set_cell_set(12, { 0 });
+    auto mesh = Ptr<Mesh>::alloc(pnts, elems);
+    mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
     ASSERT_EQ(tet_mesh->elements().size(), 6);

@@ -13,6 +13,6 @@ class Mesh;
 ///
 /// @param mesh Mesh to tetrahedralize
 /// @return Tetrahedral mesh
-[[nodiscard]] Ptr<Mesh> tetrahedralize(const Mesh & mesh);
+[[nodiscard]] Ptr<Mesh> tetrahedralize(Ptr<const Mesh> mesh);
 
 } // namespace krado

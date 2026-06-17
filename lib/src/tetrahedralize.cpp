@@ -7,6 +7,7 @@
 #include "krado/types.h"
 #include "krado/element.h"
 #include "krado/log.h"
+#include "krado/timer.h"
 #include <vector>
 #include <array>
 
@@ -365,23 +366,24 @@ nodes_to_tet_nodes_determiner<ElementType::PRISM6>(
 } // namespace
 
 Ptr<Mesh>
-tetrahedralize(const Mesh & mesh)
+tetrahedralize(Ptr<const Mesh> mesh)
 {
     Log::info("Tetrahedralizing mesh");
+    LoggingTimer timer;
 
     std::vector<Point> points;
-    points.reserve(mesh.num_points());
-    std::ranges::copy(mesh.points(), points.begin());
+    points.reserve(mesh->num_points());
+    std::ranges::copy(mesh->points(), points.begin());
 
     gid_t n_tets = 0;
-    for (auto & el : mesh.elements())
+    for (auto & el : mesh->elements())
         n_tets += num_of_tets(el.type());
 
     std::map<Index, std::vector<Index>> elem_map;
     std::vector<Element> elems;
     elems.reserve(n_tets);
-    for (Index cell_id : make_range(mesh.elements().size())) {
-        auto & el = mesh.element(cell_id);
+    for (Index cell_id : make_range(mesh->elements().size())) {
+        auto & el = mesh->element(cell_id);
         if (el.type() == ElementType::HEX8) {
             auto tet4s = split_elem<ElementType::HEX8>(el);
             for (auto & tet : tet4s) {
@@ -410,8 +412,8 @@ tetrahedralize(const Mesh & mesh)
     }
 
     auto tet_mesh = Ptr<Mesh>::alloc(points, elems);
-    for (auto id : mesh.cell_set_ids()) {
-        auto cells = mesh.cell_set(id);
+    for (auto id : mesh->cell_set_ids()) {
+        auto cells = mesh->cell_set(id);
         std::vector<Index> new_cell_set;
         std::size_t sz = 0;
         for (auto & cell_id : cells)
@@ -422,7 +424,7 @@ tetrahedralize(const Mesh & mesh)
             new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());
         }
         tet_mesh->set_cell_set(id, new_cell_set);
-        tet_mesh->set_cell_set_name(id, mesh.cell_set_name(id));
+        tet_mesh->set_cell_set_name(id, mesh->cell_set_name(id));
     }
     return tet_mesh;
 }
