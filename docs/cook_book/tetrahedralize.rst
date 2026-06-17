@@ -18,4 +18,4 @@ existing 3D mesh elements like hexahedras or pyramids into tetrahedras.
 
 .. caution::
 
-   Vertex, side, and face sets are not preserved when using ``tetrahedralize``.
+   Side and node sets are not preserved when using ``tetrahedralize``.

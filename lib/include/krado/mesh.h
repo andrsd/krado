@@ -24,7 +24,7 @@ class GeomModel;
 ///
 /// A mesh is a collection of points and elements. Each element is a collection of points.
 /// A point has 3 coordinates (x, y, z).
-/// Cell sets, face sets, and edge sets can be defined on the mesh.
+/// Cell sets, side sets, and node sets can be defined on the mesh.
 /// Boundary edges and faces can be computed and obtained via API.
 /// Simple operations like scaling, and translation are supported. General transformations
 /// can be applied to the mesh as well. They are based on homogeneous coordinates and supported

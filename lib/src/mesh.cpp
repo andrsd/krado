@@ -361,7 +361,7 @@ Mesh::add(const Mesh & other)
                       name);
     }
 
-    // merge face sets
+    // merge side sets
     std::map<Marker, std::vector<SideEntry>> side_sets;
     {
         std::unordered_map<Marker, std::size_t> side_sets_size;
@@ -505,9 +505,9 @@ Mesh::remove_cell_sets()
 }
 
 Mesh &
-Mesh::set_side_set_name(Marker face_set_id, const std::string & name)
+Mesh::set_side_set_name(Marker side_set_id, const std::string & name)
 {
-    this->side_set_names_[face_set_id] = name;
+    this->side_set_names_[side_set_id] = name;
     return *this;
 }
 
@@ -535,7 +535,7 @@ Mesh::side_set(Marker id) const
         return this->side_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
-        throw Exception("Face set ID {} does not exist", id);
+        throw Exception("Side set ID {} does not exist", id);
     }
 }
 
@@ -584,7 +584,7 @@ Mesh::node_set(Marker id) const
         return this->node_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
-        throw Exception("Vertex set ID {} does not exist", id);
+        throw Exception("Node set ID {} does not exist", id);
     }
 }
 
@@ -883,8 +883,8 @@ build_mesh(const GeomModel & model)
     auto mesh = Ptr<Mesh>::alloc(points, elements);
     mesh->set_up();
     // TODO: create cell sets
-    // TODO: create face sets
-    // TODO: create vertex sets
+    // TODO: create side sets
+    // TODO: create node sets
     return mesh;
 }
 
