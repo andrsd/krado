@@ -18,6 +18,7 @@ TEST(TetrahedralizeTest, pyramid5)
     mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
+    EXPECT_EQ(tet_mesh->num_points(), 5);
     ASSERT_EQ(tet_mesh->elements().size(), 2);
     EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1));
 
@@ -39,6 +40,7 @@ TEST(TetrahedralizeTest, prism6)
     mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
+    EXPECT_EQ(tet_mesh->num_points(), 6);
     ASSERT_EQ(tet_mesh->elements().size(), 3);
     EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1, 2));
 
@@ -66,6 +68,7 @@ TEST(TetrahedralizeTest, hex8)
     mesh->set_cell_set(12, { 0 });
 
     auto tet_mesh = tetrahedralize(mesh);
+    EXPECT_EQ(tet_mesh->num_points(), 8);
     ASSERT_EQ(tet_mesh->elements().size(), 6);
     EXPECT_THAT(tet_mesh->cell_set(12), ElementsAre(0, 1, 2, 3, 4, 5));
 
