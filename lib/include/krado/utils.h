@@ -245,21 +245,6 @@ unreachable()
 #endif
 }
 
-/// Create "side set"
-///
-/// @param mesh Mesh object
-/// @param facets Facets/edges
-/// @return Side set
-std::vector<SideEntry>
-create_side_set(const Mesh & mesh, Span<const Index> facets, std::size_t ofst = 0);
-
-/// Create an edge/face set from a side set
-///
-/// @param mesh Mesh object
-/// @param side_set Side set
-/// @return Edge/face set
-std::vector<Index> set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set);
-
 } // namespace utils
 
 template <typename RANGE>

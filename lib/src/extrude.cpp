@@ -127,7 +127,6 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
             points.emplace_back(p);
         }
     }
-    int dim = -1;
     std::vector<Element> elems;
     auto sz = std::count_if(
         //
@@ -142,30 +141,17 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         for (auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {
                 elems.emplace_back(extrude_element<ElementType::LINE2>(el, i, point_stride));
-                dim = 1;
             }
             else if (el.type() == ElementType::TRI3) {
                 elems.emplace_back(extrude_element<ElementType::TRI3>(el, i, point_stride));
-                dim = 2;
             }
             else if (el.type() == ElementType::QUAD4) {
                 elems.emplace_back(extrude_element<ElementType::QUAD4>(el, i, point_stride));
-                dim = 2;
             }
             else
                 throw Exception("Extrusion of element type '{}' not supported",
                                 Element::type(el.type()));
         }
-    }
-
-    std::map<Marker, std::vector<SideEntry>> side_sets;
-    if (dim == 1) {
-        for (const auto & id : mesh.vertex_set_ids())
-            side_sets[id] = utils::create_side_set(mesh, mesh.vertex_set(id));
-    }
-    else if (dim == 2) {
-        for (const auto & id : mesh.edge_set_ids())
-            side_sets[id] = utils::create_side_set(mesh, mesh.edge_set(id));
     }
 
     auto extruded_mesh = Ptr<Mesh>::alloc(points, elems);
@@ -184,56 +170,49 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
 
     // extrude side sets
-    if (dim == 1) {
-        for (auto & [id, ss] : side_sets) {
-            std::vector<SideEntry> extruded_side_sets;
-            extruded_side_sets.reserve(ss.size() * thicknesses.size());
-            for (auto i : make_range(thicknesses.size())) {
-                for (auto & entry : ss) {
-                    auto cell_id = entry.elem + elem_stride * i;
-                    auto & cell = mesh.element(entry.elem);
-                    if (cell.type() == ElementType::LINE2) {
-                        extruded_side_sets.emplace_back(
-                            cell_id,
-                            extrude_element_side<ElementType::LINE2>(cell, entry.side));
-                    }
-                    else
-                        throw Exception("Extrusion of element type '{}' not supported in 1D",
-                                        Element::type(cell.type()));
+    for (auto id : mesh.side_set_ids()) {
+        auto ss = mesh.side_set(id);
+        std::vector<SideEntry> extruded_side_set;
+        extruded_side_set.reserve(ss.size() * thicknesses.size());
+        for (auto i : make_range(thicknesses.size())) {
+            for (auto & entry : ss) {
+                auto cell_id = entry.elem + elem_stride * i;
+                auto & cell = mesh.element(entry.elem);
+                if (cell.type() == ElementType::LINE2) {
+                    extruded_side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::LINE2>(cell, entry.side));
                 }
+                else if (cell.type() == ElementType::TRI3)
+                    extruded_side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::TRI3>(cell, entry.side));
+                else if (cell.type() == ElementType::QUAD4)
+                    extruded_side_set.emplace_back(
+                        cell_id,
+                        extrude_element_side<ElementType::QUAD4>(cell, entry.side));
+                else
+                    throw Exception("Extrusion of element type '{}' not supported in 1D",
+                                    Element::type(cell.type()));
             }
-            extruded_mesh->set_edge_set(
-                id,
-                utils::set_from_side_set(*extruded_mesh, extruded_side_sets));
-            extruded_mesh->set_edge_set_name(id, mesh.vertex_set_name(id));
         }
+        extruded_mesh->set_side_set(id, extruded_side_set);
+        extruded_mesh->set_side_set_name(id, mesh.side_set_name(id));
     }
-    else if (dim == 2) {
-        for (auto & [id, ss] : side_sets) {
-            std::vector<SideEntry> extruded_side_sets;
-            extruded_side_sets.reserve(ss.size() * thicknesses.size());
-            for (auto i : make_range(thicknesses.size())) {
-                for (auto & entry : ss) {
-                    auto cell_id = entry.elem + elem_stride * i;
-                    auto & cell = mesh.element(entry.elem);
-                    if (cell.type() == ElementType::TRI3)
-                        extruded_side_sets.emplace_back(
-                            cell_id,
-                            extrude_element_side<ElementType::TRI3>(cell, entry.side));
-                    else if (cell.type() == ElementType::QUAD4)
-                        extruded_side_sets.emplace_back(
-                            cell_id,
-                            extrude_element_side<ElementType::QUAD4>(cell, entry.side));
-                    else
-                        throw Exception("Extrusion of element type '{}' not supported",
-                                        Element::type(cell.type()));
-                }
+
+    // extrude node sets
+    for (auto id : mesh.node_set_ids()) {
+        auto ns = mesh.node_set(id);
+        std::vector<Index> extruded_node_set;
+        extruded_node_set.reserve(ns.size() * thicknesses.size());
+        for (auto i : make_range(thicknesses.size())) {
+            for (auto & idx : ns) {
+                auto node_id = idx + point_stride * i;
+                extruded_node_set.emplace_back(node_id);
             }
-            extruded_mesh->set_face_set(
-                id,
-                utils::set_from_side_set(*extruded_mesh, extruded_side_sets));
-            extruded_mesh->set_face_set_name(id, mesh.edge_set_name(id));
         }
+        extruded_mesh->set_node_set(id, extruded_node_set);
+        extruded_mesh->set_node_set_name(id, mesh.node_set_name(id));
     }
 
     return extruded_mesh;

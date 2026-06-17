@@ -95,21 +95,13 @@ local_side_index(ElementType et, int idx)
         throw Exception("Unsupported element type {}", Element::type(et));
 }
 
-/// Convert local exodusII side index into local krado edge index
-int
-local_edge_index(ElementType et, int idx)
-{
-    if (utils::in(et, { ElementType::TRI3, ElementType::QUAD4 }))
-        return idx;
-    else
-        throw Exception("Not implemented");
-}
-
 /// Convert local exodusII side index into local krado face index
 int
 local_face_index(ElementType et, int idx)
 {
-    if (et == ElementType::TETRA4) {
+    if (utils::in(et, { ElementType::TRI3, ElementType::QUAD4 }))
+        return idx;
+    else if (et == ElementType::TETRA4) {
         std::array<int, Tetra4::N_FACES> face = { 1, 2, 3, 0 };
         return face[idx - 1];
     }
@@ -579,22 +571,14 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
 /// @param exii_elem_ids Map that converts from krado cell IDs to exodus element numbers
 SideSet
 create_side_set(const Mesh & mesh,
-                Span<const Index> elem_ids,
+                Span<const SideEntry> side_entries,
                 const std::map<Index, int> & exii_elem_ids)
 {
     SideSet side_set;
-    auto n = elem_ids.size();
+    auto n = side_entries.size();
     side_set.elems.reserve(n);
     side_set.sides.reserve(n);
-    for (auto & eid : elem_ids) {
-        auto supp = mesh.support(eid);
-        if (supp.size() == 2)
-            throw Exception("Internal side sets are not supported, yet");
-        if (supp.size() == 0)
-            throw Exception("Entity {} has no support", eid);
-        auto cell = supp[0];
-        auto cell_connect = mesh.cone(cell);
-        auto side = utils::index_of(cell_connect, eid);
+    for (auto & [cell, side] : side_entries) {
         side_set.elems.push_back(exii_elem_ids.at(cell));
         auto et = mesh.element_type(cell);
         side_set.sides.push_back(exII::local_side_index(et, side));
@@ -605,21 +589,13 @@ create_side_set(const Mesh & mesh,
 std::tuple<SideSetMap, NamesMap>
 build_side_sets(const Mesh & mesh, int dim, const std::map<Index, int> & exii_elem_ids)
 {
+    (void) dim;
     SideSetMap side_sets;
     NamesMap names;
-    if (dim == 2) {
-        for (auto & id : mesh.edge_set_ids()) {
-            side_sets[id] = create_side_set(mesh, mesh.edge_set(id), exii_elem_ids);
-            names[id] = mesh.edge_set_name(id);
-        }
+    for (auto & id : mesh.side_set_ids()) {
+        side_sets[id] = create_side_set(mesh, mesh.side_set(id), exii_elem_ids);
+        names[id] = mesh.node_set_name(id);
     }
-    else if (dim == 3) {
-        for (auto & id : mesh.face_set_ids()) {
-            side_sets[id] = create_side_set(mesh, mesh.face_set(id), exii_elem_ids);
-            names[id] = mesh.face_set_name(id);
-        }
-    }
-
     return { side_sets, names };
 }
 
@@ -629,58 +605,42 @@ build_node_sets(const Mesh & mesh)
     NodeSetMap node_sets;
     NamesMap names;
 
-    auto rng = mesh.vertex_range();
-    auto set_ids = mesh.vertex_set_ids();
+    auto set_ids = mesh.node_set_ids();
     for (auto & id : set_ids) {
-        auto vtx_ids = mesh.vertex_set(id);
+        auto vtx_ids = mesh.node_set(id);
         auto n = vtx_ids.size();
         auto & nodes = node_sets[id];
         nodes.reserve(n);
         for (auto & v : vtx_ids)
-            nodes.push_back(v - rng.first() + 1);
-        names[id] = mesh.vertex_set_name(id);
+            nodes.push_back(v + 1);
+        names[id] = mesh.node_set_name(id);
     }
 
     return { node_sets, names };
 }
 
-std::vector<Index>
-build_edge_set(const Mesh & mesh, const SideSet & side_set)
+std::vector<SideEntry>
+build_side_set(const Mesh & mesh, const SideSet & side_set)
 {
-    std::vector<Index> edges;
+    std::vector<SideEntry> sset;
     auto n = side_set.elems.size();
-    edges.reserve(n);
+    sset.reserve(n);
     for (std::size_t i = 0; i < n; i++) {
-        auto cone = mesh.cone(side_set.elems[i]);
-        auto et = mesh.element_type(side_set.elems[i]);
-        auto lei = exII::local_edge_index(et, side_set.sides[i]);
-        edges.push_back(cone[lei]);
-    }
-    return edges;
-}
-
-std::vector<Index>
-build_face_set(const Mesh & mesh, const SideSet & side_set)
-{
-    std::vector<Index> faces;
-    auto n = side_set.elems.size();
-    faces.reserve(n);
-    for (std::size_t i = 0; i < n; i++) {
-        auto cone = mesh.cone(side_set.elems[i]);
-        auto et = mesh.element_type(side_set.elems[i]);
+        Index eid = side_set.elems[i];
+        auto et = mesh.element_type(eid);
         auto lei = exII::local_face_index(et, side_set.sides[i]);
-        faces.push_back(cone[lei]);
+        sset.push_back(SideEntry(eid, lei));
     }
-    return faces;
+    return sset;
 }
 
 std::vector<Index>
-build_vertex_set(const NodeSet & ns, std::size_t n_elems)
+build_vertex_set(const NodeSet & ns)
 {
     std::vector<Index> vertex_ids;
     vertex_ids.reserve(ns.size());
     for (auto & id : ns)
-        vertex_ids.push_back(id + n_elems - 1);
+        vertex_ids.push_back(id - 1);
     return vertex_ids;
 }
 
@@ -998,33 +958,20 @@ ExodusIIFile::read()
     mesh->set_up();
 
     // side sets
-    int dim = this->exo_.get_dim();
-    if (dim == 1) {
+    for (auto & [id, sides] : side_sets) {
+        auto sset = build_side_set(*mesh, sides);
+        mesh->set_side_set(id, sset);
     }
-    else if (dim == 2) {
-        for (auto & [id, sides] : side_sets) {
-            auto edges = build_edge_set(*mesh, sides);
-            mesh->set_edge_set(id, edges);
-        }
-        for (auto [id, name] : side_set_names)
-            mesh->set_edge_set_name(id, side_set_names[id]);
-    }
-    else if (dim == 3) {
-        for (auto & [id, sides] : side_sets) {
-            auto faces = build_face_set(*mesh, sides);
-            mesh->set_face_set(id, faces);
-        }
-        for (auto [id, name] : side_set_names)
-            mesh->set_face_set_name(id, side_set_names[id]);
-    }
+    for (auto [id, name] : side_set_names)
+        mesh->set_side_set_name(id, side_set_names[id]);
 
     // node sets
     for (auto & [id, ns] : node_sets) {
-        auto vertex_ids = build_vertex_set(ns, elems.size());
-        mesh->set_vertex_set(id, vertex_ids);
+        auto node_ids = build_vertex_set(ns);
+        mesh->set_node_set(id, node_ids);
     }
     for (auto [id, name] : node_set_names)
-        mesh->set_vertex_set_name(id, node_set_names[id]);
+        mesh->set_node_set_name(id, node_set_names[id]);
 
     return mesh;
 }

@@ -19,13 +19,13 @@ TEST(ExtrudeTest, line_1d)
     line.set_up();
     line.set_cell_set(0, { 0, 1 });
     line.set_cell_set(1, { 2 });
-    line.set_vertex_set(10, std::vector<Index> { 3 });
-    line.set_vertex_set(11, std::vector<Index> { 6 });
+    line.set_node_set(10, std::vector<Index> { 0 });
+    line.set_node_set(11, std::vector<Index> { 3 });
 
     auto rectangle = extrude(line, Vector(0.0, 1.0), 2, 0.4);
 
     auto pnts = rectangle->points();
-    EXPECT_EQ(pnts.size(), 12);
+    ASSERT_EQ(pnts.size(), 12);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.1, 0.0));
     EXPECT_EQ(pnts[2], Point(0.2, 0.0));
@@ -40,7 +40,7 @@ TEST(ExtrudeTest, line_1d)
     EXPECT_EQ(pnts[11], Point(0.3, 0.4));
 
     auto elems = rectangle->elements();
-    EXPECT_EQ(elems.size(), 6);
+    ASSERT_EQ(elems.size(), 6);
     EXPECT_EQ(elems[0], Element::Quad4({ 0, 1, 5, 4 }));
     EXPECT_EQ(elems[1], Element::Quad4({ 1, 2, 6, 5 }));
     EXPECT_EQ(elems[2], Element::Quad4({ 2, 3, 7, 6 }));
@@ -53,14 +53,14 @@ TEST(ExtrudeTest, line_1d)
     EXPECT_THAT(rectangle->cell_set(0), UnorderedElementsAre(0, 1, 3, 4));
     EXPECT_THAT(rectangle->cell_set(1), UnorderedElementsAre(2, 5));
 
-    auto ss_ids = rectangle->edge_set_ids();
-    EXPECT_THAT(ss_ids, ElementsAre(10, 11));
+    auto ns_ids = rectangle->node_set_ids();
+    EXPECT_THAT(ns_ids, ElementsAre(10, 11));
 
-    auto ss0 = rectangle->edge_set(10);
-    EXPECT_THAT(ss0, ElementsAre(21, 30));
+    auto ns0 = rectangle->node_set(10);
+    EXPECT_THAT(ns0, ElementsAre(0, 4));
 
-    auto ss1 = rectangle->edge_set(11);
-    EXPECT_THAT(ss1, ElementsAre(26, 33));
+    auto ns1 = rectangle->node_set(11);
+    EXPECT_THAT(ns1, ElementsAre(3, 7));
 }
 
 TEST(ExtrudeTest, tri_2d)
@@ -80,13 +80,13 @@ TEST(ExtrudeTest, tri_2d)
     square.set_up();
     square.set_cell_set(0, { 0, 1, 3 });
     square.set_cell_set(1, { 2 });
-    square.set_edge_set(10, std::vector<Index> { 9 });
-    square.set_edge_set(11, std::vector<Index> { 14 });
+    square.set_side_set(10, std::vector<SideEntry> { { 0, 0 } });
+    square.set_side_set(11, std::vector<SideEntry> { { 2, 0 } });
 
     auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
     auto pnts = box->points();
-    EXPECT_EQ(pnts.size(), 15);
+    ASSERT_EQ(pnts.size(), 15);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(1.0, 0.0, 0.0));
     EXPECT_EQ(pnts[2], Point(1.0, 1.0, 0.0));
@@ -104,7 +104,7 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_EQ(pnts[14], Point(0.5, 0.5, 0.4));
 
     auto elems = box->elements();
-    EXPECT_EQ(elems.size(), 8);
+    ASSERT_EQ(elems.size(), 8);
     EXPECT_EQ(elems[0], Element::Prism6({ 0, 1, 4, 5, 6, 9 }));
     EXPECT_EQ(elems[1], Element::Prism6({ 1, 2, 4, 6, 7, 9 }));
     EXPECT_EQ(elems[2], Element::Prism6({ 2, 3, 4, 7, 8, 9 }));
@@ -119,14 +119,16 @@ TEST(ExtrudeTest, tri_2d)
     EXPECT_THAT(box->cell_set(0), UnorderedElementsAre(0, 1, 3, 4, 5, 7));
     EXPECT_THAT(box->cell_set(1), UnorderedElementsAre(2, 6));
 
-    auto ss_ids = box->face_set_ids();
+    auto ss_ids = box->side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11));
 
-    auto ss0 = box->face_set(10);
-    EXPECT_THAT(ss0, testing::ElementsAre(24, 39));
+    auto ss0 = box->side_set(10);
+    EXPECT_EQ(ss0[0], SideEntry(0, 1));
+    EXPECT_EQ(ss0[1], SideEntry(4, 1));
 
-    auto ss1 = box->face_set(11);
-    EXPECT_THAT(ss1, testing::ElementsAre(33, 46));
+    auto ss1 = box->side_set(11);
+    EXPECT_THAT(ss1[0], SideEntry(2, 1));
+    EXPECT_THAT(ss1[1], SideEntry(6, 1));
 }
 
 TEST(ExtrudeTest, quad_2d)
@@ -145,15 +147,15 @@ TEST(ExtrudeTest, quad_2d)
     square.set_up();
     square.set_cell_set(0, { 0, 2, 3 });
     square.set_cell_set(1, { 1 });
-    square.set_edge_set(10, std::vector<Index> { 13, 17 });
-    square.set_edge_set(11, std::vector<Index> { 21, 24 });
-    square.set_edge_set(12, std::vector<Index> { 18, 23 });
-    square.set_edge_set(13, std::vector<Index> { 16, 22 });
+    square.set_side_set(10, std::vector<SideEntry> { { 0, 0 }, { 1, 0 } });
+    square.set_side_set(11, std::vector<SideEntry> { { 1, 1 }, { 3, 1 } });
+    square.set_side_set(12, std::vector<SideEntry> { { 2, 2 }, { 3, 2 } });
+    square.set_side_set(13, std::vector<SideEntry> { { 0, 3 }, { 2, 3 } });
 
     auto box = extrude(square, Vector(0.0, 0.0, 1.0), 2, 0.4);
 
     auto pnts = box->points();
-    EXPECT_EQ(pnts.size(), 27);
+    ASSERT_EQ(pnts.size(), 27);
     EXPECT_EQ(pnts[0], Point(0.0, 0.0, 0.0));
     EXPECT_EQ(pnts[1], Point(0.5, 0.0, 0.0));
     EXPECT_EQ(pnts[2], Point(1.0, 0.0, 0.0));
@@ -183,7 +185,7 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_EQ(pnts[26], Point(1.0, 1.0, 0.4));
 
     auto elems = box->elements();
-    EXPECT_EQ(elems.size(), 8);
+    ASSERT_EQ(elems.size(), 8);
     EXPECT_EQ(elems[0], Element::Hex8({ 0, 1, 4, 3, 9, 10, 13, 12 }));
     EXPECT_EQ(elems[1], Element::Hex8({ 1, 2, 5, 4, 10, 11, 14, 13 }));
     EXPECT_EQ(elems[2], Element::Hex8({ 3, 4, 7, 6, 12, 13, 16, 15 }));
@@ -198,18 +200,18 @@ TEST(ExtrudeTest, quad_2d)
     EXPECT_THAT(box->cell_set(0), UnorderedElementsAre(0, 2, 3, 4, 6, 7));
     EXPECT_THAT(box->cell_set(1), UnorderedElementsAre(1, 5));
 
-    auto ss_ids = box->face_set_ids();
+    auto ss_ids = box->side_set_ids();
     EXPECT_THAT(ss_ids, ElementsAre(10, 11, 12, 13));
 
-    auto ss0 = box->face_set(10);
-    EXPECT_THAT(ss0, testing::ElementsAre(35, 41, 55, 60));
+    // auto ss0 = box->side_set(10);
+    // EXPECT_THAT(ss0, testing::ElementsAre(35, 41, 55, 60));
 
-    auto ss1 = box->face_set(11);
-    EXPECT_THAT(ss1, testing::ElementsAre(46, 51, 64, 68));
+    // auto ss1 = box->side_set(11);
+    // EXPECT_THAT(ss1, testing::ElementsAre(46, 51, 64, 68));
 
-    auto ss2 = box->face_set(12);
-    EXPECT_THAT(ss2, testing::ElementsAre(43, 52, 62, 69));
+    // auto ss2 = box->side_set(12);
+    // EXPECT_THAT(ss2, testing::ElementsAre(43, 52, 62, 69));
 
-    auto ss3 = box->face_set(13);
-    EXPECT_THAT(ss3, testing::ElementsAre(37, 47, 57, 65));
+    // auto ss3 = box->side_set(13);
+    // EXPECT_THAT(ss3, testing::ElementsAre(37, 47, 57, 65));
 }

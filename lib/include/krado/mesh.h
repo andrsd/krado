@@ -184,151 +184,81 @@ public:
     /// @return Reference to this mesh
     Mesh & remove_cell_sets();
 
-    /// Set face set name
+    /// Set side set name
     ///
-    /// @param face_set_id Face set ID (marker)
-    /// @param name Face set name
+    /// @param side_set_id Side set ID (marker)
+    /// @param name Side set name
     /// @return Reference to this mesh
-    Mesh & set_face_set_name(Marker face_set_id, const std::string & name);
+    Mesh & set_side_set_name(Marker side_set_id, const std::string & name);
 
-    /// Get face set name
+    /// Get side set name
     ///
-    /// @param face_set_id Face set ID (marker)
-    /// @return Face set name
-    [[nodiscard]] std::string face_set_name(Marker cell_set_id) const;
+    /// @param side_set_id Side set ID (marker)
+    /// @return Side set name
+    [[nodiscard]] std::string side_set_name(Marker side_set_id) const;
 
-    /// Get face set IDs
-    [[nodiscard]] std::vector<Marker> face_set_ids() const;
+    /// Get side set IDs
+    [[nodiscard]] std::vector<Marker> side_set_ids() const;
 
-    /// Get face set
+    /// Get side set
     ///
-    /// @param id Face set ID
-    /// @return Face set
-    [[nodiscard]] Span<const Index> face_set(Marker id) const;
+    /// @param id Side set ID
+    /// @return Side set
+    [[nodiscard]] Span<const SideEntry> side_set(Marker id) const;
 
-    /// Set face set
+    /// Set side set
     ///
-    /// @param id Face set ID
-    /// @param face_ids Face IDs
+    /// @param id Side set ID
+    /// @param side_set Side set
     /// @return Reference to this mesh
-    Mesh & set_face_set(Marker id, const std::vector<Index> & face_ids);
+    Mesh & set_side_set(Marker id, const std::vector<SideEntry> & side_set);
 
-    /// Remove face sets
-    ///
-    /// @return Reference to this mesh
-    Mesh & remove_face_sets();
-
-    /// Set edge set name
-    ///
-    /// @param edge_set_id Edge set ID (marker)
-    /// @param name Edge set name
-    /// @return Reference to this mesh
-    Mesh & set_edge_set_name(Marker edge_set_id, const std::string & name);
-
-    /// Get edge set name
-    ///
-    /// @param edge_set_id Edge set ID (marker)
-    /// @return Edge set name
-    [[nodiscard]] std::string edge_set_name(Marker edge_set_id) const;
-
-    /// Get edge set IDs
-    [[nodiscard]] std::vector<Marker> edge_set_ids() const;
-
-    /// Get edge set
-    ///
-    /// @param id Edge set ID
-    /// @return Edge set
-    [[nodiscard]] Span<const Index> edge_set(Marker id) const;
-
-    /// Set edge set
-    ///
-    /// @param id Edge set ID
-    /// @param edge_ids Edge IDs
-    /// @return Reference to this mesh
-    Mesh & set_edge_set(Marker id, const std::vector<Index> & edge_ids);
-
-    /// Remove edge sets
+    /// Remove side sets
     ///
     /// @return Reference to this mesh
-    Mesh & remove_edge_sets();
+    Mesh & remove_side_sets();
 
-    /// Set vertex set name
+    /// Set node set name
     ///
-    /// @param id Vertex set ID
-    /// @param name Vertex set name
+    /// @param id Node set ID
+    /// @param name Node set name
     /// @return Reference to this mesh
-    Mesh & set_vertex_set_name(Marker id, const std::string & name);
+    Mesh & set_node_set_name(Marker id, const std::string & name);
 
-    /// Get vertex set name
+    /// Get node set name
     ///
-    /// @param id Vertex set ID
-    /// @return Vertex set name
-    [[nodiscard]] std::string vertex_set_name(Marker id) const;
+    /// @param id Node set ID
+    /// @return Node set name
+    [[nodiscard]] std::string node_set_name(Marker id) const;
 
-    /// Get vertex set IDs
+    /// Get node set IDs
     ///
-    /// @return Vertex set IDs
-    [[nodiscard]] std::vector<Marker> vertex_set_ids() const;
+    /// @return Node set IDs
+    [[nodiscard]] std::vector<Marker> node_set_ids() const;
 
-    /// Get vertex set
+    /// Get node set
     ///
-    /// @param id Vertex set ID
-    /// @return Vertex set
-    [[nodiscard]] Span<const Index> vertex_set(Marker id) const;
+    /// @param id Node set ID
+    /// @return Node set
+    [[nodiscard]] Span<const Index> node_set(Marker id) const;
 
-    /// Set vertex set
+    /// Set node set
     ///
-    /// @param id Vertex set ID
-    /// @param vertex_ids Vertex IDs
+    /// @param id Node set ID
+    /// @param node_ids Node IDs
     /// @return Reference to this mesh
-    Mesh & set_vertex_set(Marker id, const std::vector<Index> & vertex_ids);
+    Mesh & set_node_set(Marker id, const std::vector<Index> & node_ids);
 
-    /// Remove vertex sets
+    /// Remove node sets
     ///
     /// @return Reference to this mesh
-    Mesh & remove_vertex_sets();
+    Mesh & remove_node_sets();
 
     /// Remap block IDs
     ///
     /// @param block_map Map of old block IDs to new block IDs
     /// @return Reference to this mesh
     Mesh & remap_block_ids(const std::map<Marker, Marker> & block_map);
-
-    /// Get mesh vertex ID range
-    ///
-    /// @return Mesh point ID range
-    [[nodiscard]] Range vertex_range() const;
-
-    /// Get mesh edge ID range
-    ///
-    /// @return Mesh edge ID range
-    [[nodiscard]] Range edge_range() const;
-
-    /// Get mesh face ID range
-    ///
-    /// @return Mesh face ID range
-    [[nodiscard]] Range face_range() const;
-
-    /// Get mesh cell ID range
-    ///
-    /// @return Mesh cell ID range
-    [[nodiscard]] Range cell_range() const;
-
-    /// Get support of a mesh node
-    ///
-    /// @param index Index of the node
-    [[nodiscard]] std::vector<Index> support(Index index) const;
-
-    /// Get connectivity of a mesh node
-    ///
-    /// @param index Index of the node
-    [[nodiscard]] std::vector<Index> cone(Index index) const;
-
-    /// Get cone vertices of a mesh node
-    ///
-    /// @param index Index of the node
-    /// @return Cone vertices
-    [[nodiscard]] std::set<Index> cone_vertices(Index index) const;
 
     /// Get element type
     ///
@@ -362,100 +292,6 @@ public:
     [[nodiscard]] Vector outward_normal(Index index) const;
 
 private:
-    void build_hasse_diagram();
-
-    void
-    hasse_add_edge(Index parent_node_id, const std::array<Index, 2> & edge_connect)
-    {
-        auto k = utils::key(edge_connect);
-        if (this->key_map_.find(k) == this->key_map_.end()) {
-            Index edge_node_id = this->hasse_.size();
-            this->key_map_[k] = edge_node_id;
-            this->hasse_.add_node(edge_node_id, HasseDiagram::NodeType::Edge);
-            this->hasse_.add_edge(parent_node_id, edge_node_id);
-        }
-        else {
-            auto edge_node_id = this->key_map_[k];
-            this->hasse_.add_edge(parent_node_id, edge_node_id);
-        }
-    }
-
-    template <class ELEMENT_TYPE>
-    void
-    hasse_add_faces(Index id, const Element & elem)
-    {
-        auto iid = utils::key(-(id + 1));
-        auto elem_node_id = this->key_map_[iid];
-
-        auto elem_connect = elem.indices();
-        for (auto j : make_range(ELEMENT_TYPE::N_FACES)) {
-            auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[j]);
-            auto k = utils::key(face_connect);
-            if (this->key_map_.find(k) == this->key_map_.end()) {
-                auto face_node_id = this->hasse_.size();
-                this->key_map_[k] = face_node_id;
-                this->hasse_.add_node(face_node_id, HasseDiagram::NodeType::Face);
-                this->hasse_.add_edge(elem_node_id, face_node_id);
-            }
-            else {
-                auto face_node_id = this->key_map_[k];
-                this->hasse_.add_edge(elem_node_id, face_node_id);
-            }
-        }
-    }
-
-    template <class ELEMENT_TYPE>
-    void
-    hasse_add_face_edges(Index /*id*/, const Element & elem)
-    {
-        auto elem_connect = elem.indices();
-        for (auto i : make_range(ELEMENT_TYPE::N_FACES)) {
-            auto face_connect = utils::sub_connect(elem_connect, ELEMENT_TYPE::FACE_VERTICES[i]);
-            auto face_node_id = this->key_map_[utils::key(face_connect)];
-
-            for (std::size_t j = 0; j < ELEMENT_TYPE::FACE_EDGES[i].size(); ++j) {
-                auto edge = ELEMENT_TYPE::FACE_EDGES[i][j];
-                auto edge_connect =
-                    utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[edge]);
-                hasse_add_edge(face_node_id, edge_connect);
-            }
-        }
-    }
-
-    template <class ELEMENT_TYPE>
-    void
-    hasse_add_edges(Index id, const Element & elem)
-    {
-        auto iid = utils::key(-(id + 1));
-        auto elem_node_id = this->key_map_[iid];
-
-        auto elem_connect = elem.indices();
-        for (auto j : make_range(ELEMENT_TYPE::N_EDGES)) {
-            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
-            hasse_add_edge(elem_node_id, edge_connect);
-        }
-    }
-
-    template <class ELEMENT_TYPE>
-    void
-    hasse_add_edge_vertices(Index /*id*/, const Element & elem)
-    {
-        auto elem_connect = elem.indices();
-        for (auto j : make_range(ELEMENT_TYPE::N_EDGES)) {
-            auto edge_connect = utils::edge_connect(elem_connect, ELEMENT_TYPE::EDGE_VERTICES[j]);
-            auto edge_node_id = this->key_map_[utils::key(edge_connect)];
-            for (auto & vtx : edge_connect) {
-                auto vtx_id = utils::key(vtx);
-                if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
-                    auto vtx_node_id = this->key_map_[vtx_id];
-                    this->hasse_.add_edge(edge_node_id, vtx_node_id);
-                }
-                else
-                    throw Exception("Vertex not found in key map");
-            }
-        }
-    }
-
     /// Mesh points
     std::vector<Point> pnts_;
     /// All mesh elements. Point, edge, face, and cell IDs are indexing into this container.
@@ -464,23 +300,14 @@ private:
     std::map<Marker, std::string> cell_set_names_;
     /// Cell sets
     std::map<Marker, std::vector<Index>> cell_sets_;
-    /// Face set names
-    std::map<Marker, std::string> face_set_names_;
-    /// Face sets
-    std::map<Marker, std::vector<Index>> face_sets_;
-    /// Edge set names
-    std::map<Marker, std::string> edge_set_names_;
-    /// Edge sets
-    std::map<Marker, std::vector<Index>> edge_sets_;
-    /// Vertex set names
-    std::map<Marker, std::string> vertex_set_names_;
-    /// Vertex sets
-    std::map<Marker, std::vector<Index>> vertex_sets_;
-
-    /// Hasse diagram representing the mesh
-    HasseDiagram hasse_;
-    /// Map of keys to node IDs
-    std::unordered_map<std::size_t, Index> key_map_;
+    /// Side set names
+    std::map<Marker, std::string> side_set_names_;
+    /// Side sets
+    std::map<Marker, std::vector<SideEntry>> side_sets_;
+    /// Node set names
+    std::map<Marker, std::string> node_set_names_;
+    /// Node sets
+    std::map<Marker, std::vector<Index>> node_sets_;
 };
 
 /// Compute bounding box around the mesh

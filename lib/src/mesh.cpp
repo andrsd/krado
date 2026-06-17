@@ -165,6 +165,7 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     return { unique_points, point_remap };
 }
 
+#if 0
 std::vector<Index>
 boundary_entities(const Mesh & mesh, Range range)
 {
@@ -181,12 +182,14 @@ boundary_entities(const Mesh & mesh, Range range)
 
     return bnd_ents;
 }
+#endif
 
+template <typename T>
 void
 expand_size(std::unordered_map<Marker, std::size_t> & sizes,
-            const std::map<Marker, std::vector<Index>> & face_sets)
+            const std::map<Marker, std::vector<T>> & sets)
 {
-    for (const auto & [id, fs] : face_sets) {
+    for (const auto & [id, fs] : sets) {
         auto it = sizes.find(id);
         if (it == sizes.end())
             sizes[id] = fs.size();
@@ -197,6 +200,12 @@ expand_size(std::unordered_map<Marker, std::size_t> & sizes,
 
 void
 append(std::vector<SideEntry> & dest, const std::vector<SideEntry> & src)
+{
+    dest.insert(dest.end(), src.begin(), src.end());
+}
+
+void
+append(std::vector<Index> & dest, const std::vector<Index> & src)
 {
     dest.insert(dest.end(), src.begin(), src.end());
 }
@@ -306,13 +315,10 @@ Mesh::transformed(const Trsf & tr) const
     auto mesh = Ptr<Mesh>::alloc(pts, this->elems_);
     mesh->cell_sets_ = this->cell_sets_;
     mesh->cell_set_names_ = this->cell_set_names_;
-    mesh->face_sets_ = this->face_sets_;
-    mesh->face_set_names_ = this->face_set_names_;
-    mesh->edge_sets_ = this->edge_sets_;
-    mesh->edge_set_names_ = this->edge_set_names_;
-    mesh->vertex_sets_ = this->vertex_sets_;
-    mesh->vertex_set_names_ = this->vertex_set_names_;
-    mesh->hasse_ = this->hasse_;
+    mesh->side_sets_ = this->side_sets_;
+    mesh->side_set_names_ = this->side_set_names_;
+    mesh->node_sets_ = this->node_sets_;
+    mesh->node_set_names_ = this->node_set_names_;
     return mesh;
 }
 
@@ -356,67 +362,66 @@ Mesh::add(const Mesh & other)
     }
 
     // merge face sets
-    std::map<Marker, std::vector<SideEntry>> face_side_sets;
+    std::map<Marker, std::vector<SideEntry>> side_sets;
     {
-        std::unordered_map<Marker, std::size_t> face_side_sets_size;
-        expand_size(face_side_sets_size, this->face_sets_);
-        expand_size(face_side_sets_size, other.face_sets_);
+        std::unordered_map<Marker, std::size_t> side_sets_size;
+        expand_size(side_sets_size, this->side_sets_);
+        expand_size(side_sets_size, other.side_sets_);
 
-        for (auto & [id, n] : face_side_sets_size)
-            face_side_sets[id].reserve(n);
-        for (auto & [id, fs] : this->face_sets_)
-            append(face_side_sets[id], utils::create_side_set(*this, fs));
-        for (auto & [id, fs] : other.face_sets_)
-            append(face_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
+        for (auto & [id, n] : side_sets_size)
+            side_sets[id].reserve(n);
+        for (auto & [id, ss] : this->side_sets_)
+            append(side_sets[id], ss);
+        for (auto & [id, ss] : other.side_sets_) {
+            auto ss_shifted = ss;
+            for (auto & ent : ss_shifted)
+                ent.elem += n_elem_ofst;
+            append(side_sets[id], ss_shifted);
+        }
 
-        for (auto & id : other.face_set_ids()) {
-            auto name = other.face_set_name(id);
-            auto my_name = this->face_set_names_[id];
+        for (auto & id : other.side_set_ids()) {
+            auto name = other.side_set_name(id);
+            auto my_name = this->side_set_names_[id];
             if (my_name.empty())
-                this->face_set_names_[id] = name;
+                this->side_set_names_[id] = name;
             else if (name != my_name)
-                Log::warn("Face set with id={} already exists, but with a different name '{}'",
+                Log::warn("Side set with id={} already exists, but with a different name '{}'",
                           id,
                           name);
         }
     }
-    // merge edge sets
-    std::map<Marker, std::vector<SideEntry>> edge_side_sets;
+    this->side_sets_ = side_sets;
+
+    // merge node sets
+    std::map<Marker, std::vector<Index>> node_sets;
     {
-        std::unordered_map<Marker, std::size_t> edge_side_sets_size;
-        expand_size(edge_side_sets_size, this->edge_sets_);
-        expand_size(edge_side_sets_size, other.edge_sets_);
+        std::unordered_map<Marker, std::size_t> node_sets_size;
+        expand_size(node_sets_size, this->node_sets_);
+        expand_size(node_sets_size, other.node_sets_);
+        for (auto & [id, n] : node_sets_size)
+            node_sets[id].reserve(n);
 
-        for (auto & [id, n] : edge_side_sets_size)
-            edge_side_sets[id].reserve(n);
-        for (auto & [id, fs] : this->edge_sets_)
-            append(edge_side_sets[id], utils::create_side_set(*this, fs));
-        for (auto & [id, fs] : other.edge_sets_)
-            append(edge_side_sets[id], utils::create_side_set(other, fs, n_elem_ofst));
+        for (auto & [id, ns] : this->node_sets_)
+            append(node_sets[id], ns);
+        for (auto & [id, ns] : other.node_sets_) {
+            auto ns_shifted = ns;
+            for (auto & idx : ns_shifted)
+                idx += n_pt_ofst;
+            append(node_sets[id], ns_shifted);
+        }
 
-        for (auto & id : other.edge_set_ids()) {
-            auto name = other.edge_set_name(id);
-            auto my_name = this->edge_set_names_[id];
+        for (auto & id : other.node_set_ids()) {
+            auto name = other.node_set_name(id);
+            auto my_name = this->node_set_names_[id];
             if (my_name.empty())
-                this->edge_set_names_[id] = name;
+                this->node_set_names_[id] = name;
             else if (name != my_name)
-                Log::warn("Edge set with id={} already exists, but with a different name '{}'",
+                Log::warn("Node set with id={} already exists, but with a different name '{}'",
                           id,
                           name);
         }
     }
-
-    set_up();
-
-    // reconstruct face sets
-    this->face_sets_.clear();
-    for (auto & [id, sset] : face_side_sets)
-        this->face_sets_[id] = utils::set_from_side_set(*this, sset);
-
-    // reconstruct edge sets
-    this->edge_sets_.clear();
-    for (auto & [id, sset] : edge_side_sets)
-        this->edge_sets_[id] = utils::set_from_side_set(*this, sset);
+    this->node_sets_ = node_sets;
 
     return *this;
 }
@@ -444,10 +449,8 @@ Mesh::duplicate() const
 {
     auto dup = Ptr<Mesh>::alloc(this->pnts_, this->elems_);
     dup->cell_sets_ = this->cell_sets_;
-    dup->face_sets_ = this->face_sets_;
-    dup->edge_sets_ = this->edge_sets_;
-    dup->vertex_sets_ = this->vertex_sets_;
-    dup->hasse_ = this->hasse_;
+    dup->side_sets_ = this->side_sets_;
+    dup->node_sets_ = this->node_sets_;
     return dup;
 }
 
@@ -502,17 +505,17 @@ Mesh::remove_cell_sets()
 }
 
 Mesh &
-Mesh::set_face_set_name(Marker face_set_id, const std::string & name)
+Mesh::set_side_set_name(Marker face_set_id, const std::string & name)
 {
-    this->face_set_names_[face_set_id] = name;
+    this->side_set_names_[face_set_id] = name;
     return *this;
 }
 
 std::string
-Mesh::face_set_name(Marker face_set_id) const
+Mesh::side_set_name(Marker side_set_id) const
 {
     try {
-        return this->face_set_names_.at(face_set_id);
+        return this->side_set_names_.at(side_set_id);
     }
     catch (const std::out_of_range & e) {
         return std::string("");
@@ -520,16 +523,16 @@ Mesh::face_set_name(Marker face_set_id) const
 }
 
 std::vector<Marker>
-Mesh::face_set_ids() const
+Mesh::side_set_ids() const
 {
-    return utils::map_keys(this->face_sets_);
+    return utils::map_keys(this->side_sets_);
 }
 
-Span<const Index>
-Mesh::face_set(Marker id) const
+Span<const SideEntry>
+Mesh::side_set(Marker id) const
 {
     try {
-        return this->face_sets_.at(id);
+        return this->side_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Face set ID {} does not exist", id);
@@ -537,98 +540,48 @@ Mesh::face_set(Marker id) const
 }
 
 Mesh &
-Mesh::set_face_set(Marker id, const std::vector<Index> & face_ids)
+Mesh::set_side_set(Marker id, const std::vector<SideEntry> & side_set)
 {
-    this->face_sets_[id] = face_ids;
+    this->side_sets_[id] = side_set;
     return *this;
 }
 
 Mesh &
-Mesh::remove_face_sets()
+Mesh::remove_side_sets()
 {
-    this->face_sets_.clear();
-    this->face_set_names_.clear();
+    this->side_sets_.clear();
+    this->side_set_names_.clear();
     return *this;
 }
 
 Mesh &
-Mesh::set_edge_set_name(Marker edge_set_id, const std::string & name)
+Mesh::set_node_set_name(Marker id, const std::string & name)
 {
-    this->edge_set_names_[edge_set_id] = name;
+    this->node_set_names_[id] = name;
     return *this;
 }
 
 std::string
-Mesh::edge_set_name(Marker edge_set_id) const
+Mesh::node_set_name(Marker id) const
 {
-    try {
-        return this->edge_set_names_.at(edge_set_id);
-    }
-    catch (const std::out_of_range & e) {
-        return std::string("");
-    }
-}
-
-std::vector<Marker>
-Mesh::edge_set_ids() const
-{
-    return utils::map_keys(this->edge_sets_);
-}
-
-Span<const Index>
-Mesh::edge_set(Marker id) const
-{
-    try {
-        return this->edge_sets_.at(id);
-    }
-    catch (const std::out_of_range & e) {
-        throw Exception("Edge set ID {} does not exist", id);
-    }
-}
-
-Mesh &
-Mesh::set_edge_set(Marker id, const std::vector<Index> & edge_ids)
-{
-    this->edge_sets_[id] = edge_ids;
-    return *this;
-}
-
-Mesh &
-Mesh::remove_edge_sets()
-{
-    this->edge_sets_.clear();
-    this->edge_set_names_.clear();
-    return *this;
-}
-
-Mesh &
-Mesh::set_vertex_set_name(Marker id, const std::string & name)
-{
-    this->vertex_set_names_[id] = name;
-    return *this;
-}
-
-std::string
-Mesh::vertex_set_name(Marker id) const
-{
-    auto it = this->vertex_set_names_.find(id);
-    if (it != this->vertex_set_names_.end())
+    auto it = this->node_set_names_.find(id);
+    if (it != this->node_set_names_.end())
         return it->second;
     else
         return std::string("");
 }
 
 std::vector<Marker>
-Mesh::vertex_set_ids() const
+Mesh::node_set_ids() const
 {
-    return utils::map_keys(this->vertex_sets_);
+    return utils::map_keys(this->node_sets_);
 }
 
 Span<const Index>
-Mesh::vertex_set(Marker id) const
+Mesh::node_set(Marker id) const
 {
     try {
-        return this->vertex_sets_.at(id);
+        return this->node_sets_.at(id);
     }
     catch (const std::out_of_range & e) {
         throw Exception("Vertex set ID {} does not exist", id);
@@ -636,17 +589,17 @@ Mesh::vertex_set(Marker id) const
 }
 
 Mesh &
-Mesh::set_vertex_set(Marker id, const std::vector<Index> & vertex_ids)
+Mesh::set_node_set(Marker id, const std::vector<Index> & node_ids)
 {
-    this->vertex_sets_[id] = vertex_ids;
+    this->node_sets_[id] = node_ids;
     return *this;
 }
 
 Mesh &
-Mesh::remove_vertex_sets()
+Mesh::remove_node_sets()
 {
-    this->vertex_sets_.clear();
-    this->vertex_set_names_.clear();
+    this->node_sets_.clear();
+    this->node_set_names_.clear();
     return *this;
 }
 
@@ -669,63 +622,6 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     return *this;
 }
 
-Range
-Mesh::vertex_range() const
-{
-    return this->hasse_.vertices();
-}
-
-Range
-Mesh::edge_range() const
-{
-    return this->hasse_.edges();
-}
-
-Range
-Mesh::face_range() const
-{
-    return this->hasse_.faces();
-}
-
-Range
-Mesh::cell_range() const
-{
-    return this->hasse_.cells();
-}
-
-std::vector<Index>
-Mesh::support(Index index) const
-{
-    return this->hasse_.get_in_vertices(index);
-}
-
-std::vector<Index>
-Mesh::cone(Index index) const
-{
-    return this->hasse_.get_out_vertices(index);
-}
-
-std::set<Index>
-Mesh::cone_vertices(Index index) const
-{
-    std::list<Index> pts_to_process;
-    for (auto & v : cone(index))
-        pts_to_process.push_back(v);
-
-    std::set<Index> verts;
-    for (auto & v : pts_to_process) {
-        auto cn = cone(v);
-        if (cn.size() == 0)
-            verts.insert(v);
-        else {
-            for (auto & c : cn)
-                pts_to_process.push_back(c);
-        }
-    }
-
-    return verts;
-}
-
 ElementType
 Mesh::element_type(Index index) const
 {
@@ -735,141 +631,26 @@ Mesh::element_type(Index index) const
 void
 Mesh::set_up()
 {
-    this->hasse_.clear();
-    build_hasse_diagram();
-    this->key_map_.clear();
-}
-
-void
-Mesh::build_hasse_diagram()
-{
-    Log::debug("Building Hasse diagram");
-
-    std::size_t sz = this->pnts_.size();
-    for (auto & el : this->elems_) {
-        auto et = el.type();
-        if (et == ElementType::LINE2) {
-            // no edges/faces
-        }
-        else if (et == ElementType::TRI3) {
-            sz += Tri3::N_EDGES;
-        }
-        else if (et == ElementType::QUAD4) {
-            sz += Quad4::N_EDGES;
-        }
-        else if (et == ElementType::TETRA4) {
-            sz += Tetra4::N_EDGES;
-            sz += Tetra4::N_FACES;
-        }
-        else if (et == ElementType::PYRAMID5) {
-            sz += Pyramid5::N_EDGES;
-            sz += Pyramid5::N_FACES;
-        }
-        else if (et == ElementType::PRISM6) {
-            sz += Prism6::N_EDGES;
-            sz += Prism6::N_FACES;
-        }
-        else if (et == ElementType::HEX8) {
-            sz += Hex8::N_EDGES;
-            sz += Hex8::N_FACES;
-        }
-    }
-    this->hasse_.reserve(sz);
-    this->key_map_.clear();
-    this->key_map_.reserve(sz);
-
-    // Add Hasse nodes for cells
-    for (Index i : make_range(this->elems_.size())) {
-        auto id = utils::key(-(i + 1));
-        if (this->key_map_.find(id) == this->key_map_.end()) {
-            auto elem_node_id = i;
-            this->key_map_[id] = elem_node_id;
-            this->hasse_.add_node(elem_node_id, HasseDiagram::NodeType::Cell);
-        }
-    }
-
-    // Add Hasse nodes for points
-    for (Index i : make_range(this->pnts_.size())) {
-        auto vtx_id = utils::key(i);
-        if (this->key_map_.find(vtx_id) == this->key_map_.end()) {
-            Index vtx_node_id = this->hasse_.size();
-            this->key_map_[vtx_id] = vtx_node_id;
-            this->hasse_.add_node(vtx_node_id, HasseDiagram::NodeType::Vertex);
-        }
-    }
-
-    // Add faces
-    for (Index i : make_range(this->elems_.size())) {
-        const auto & cell = this->elems_[i];
-        if (cell.type() == ElementType::TETRA4)
-            hasse_add_faces<Tetra4>(i, cell);
-        else if (cell.type() == ElementType::PYRAMID5)
-            hasse_add_faces<Pyramid5>(i, cell);
-        else if (cell.type() == ElementType::PRISM6)
-            hasse_add_faces<Prism6>(i, cell);
-        else if (cell.type() == ElementType::HEX8)
-            hasse_add_faces<Hex8>(i, cell);
-    }
-
-    // Add edges
-    for (Index i : make_range(this->elems_.size())) {
-        const auto & cell = this->elems_[i];
-        if (cell.type() == ElementType::TRI3) {
-            hasse_add_edges<Tri3>(i, cell);
-            hasse_add_edge_vertices<Tri3>(i, cell);
-        }
-        else if (cell.type() == ElementType::QUAD4) {
-            hasse_add_edges<Quad4>(i, cell);
-            hasse_add_edge_vertices<Quad4>(i, cell);
-        }
-        else if (cell.type() == ElementType::TETRA4) {
-            hasse_add_face_edges<Tetra4>(i, cell);
-            hasse_add_edge_vertices<Tetra4>(i, cell);
-        }
-        else if (cell.type() == ElementType::PYRAMID5) {
-            hasse_add_face_edges<Pyramid5>(i, cell);
-            hasse_add_edge_vertices<Pyramid5>(i, cell);
-        }
-        else if (cell.type() == ElementType::PRISM6) {
-            hasse_add_face_edges<Prism6>(i, cell);
-            hasse_add_edge_vertices<Prism6>(i, cell);
-        }
-        else if (cell.type() == ElementType::HEX8) {
-            hasse_add_face_edges<Hex8>(i, cell);
-            hasse_add_edge_vertices<Hex8>(i, cell);
-        }
-        else if (cell.type() == ElementType::LINE2) {
-            auto elem_node_id = i;
-            auto connect = cell.indices();
-            for (auto j : make_range(Line2::N_VERTICES)) {
-                auto vtx = connect[Line2::EDGE_VERTICES[j]];
-                auto vtx_id = utils::key(vtx);
-                if (this->key_map_.find(vtx_id) != this->key_map_.end()) {
-                    auto vtx_node_id = this->key_map_[vtx_id];
-                    this->hasse_.add_edge(elem_node_id, vtx_node_id);
-                }
-                else
-                    throw Exception("Vertex not found in key map");
-            }
-        }
-    }
 }
 
 std::vector<Index>
 Mesh::boundary_edges() const
 {
-    return boundary_entities(*this, edge_range());
+    throw Exception("Not implemented");
 }
 
 std::vector<Index>
 Mesh::boundary_faces() const
 {
-    return boundary_entities(*this, face_range());
+    throw Exception("Not implemented");
 }
 
 Point
 Mesh::compute_centroid(Index index) const
 {
+    (void) index;
+    throw Exception("Not implemented");
+#if 0
     auto connect = cone_vertices(index);
     auto pnts_ofst = this->elems_.size();
     Point ctr(0, 0, 0);
@@ -879,11 +660,15 @@ Mesh::compute_centroid(Index index) const
     }
     ctr *= 1. / connect.size();
     return ctr;
+#endif
 }
 
 Vector
 Mesh::outward_normal(Index index) const
 {
+    (void) index;
+    throw Exception("Not implemented");
+#if 0
     auto supp = support(index);
     if (supp.size() != 1)
         throw Exception("Normals are supported only for sides on boundaries");
@@ -926,6 +711,7 @@ Mesh::outward_normal(Index index) const
             n = -n;
         return n;
     }
+#endif
 }
 
 BoundingBox3D

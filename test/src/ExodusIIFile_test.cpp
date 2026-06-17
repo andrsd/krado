@@ -111,16 +111,14 @@ TEST(ExodusIIFileTest, read_2d)
     auto cs0 = mesh->cell_set(0);
     EXPECT_THAT(cs0, ElementsAre(0, 1));
 
-#if 0
-    auto side_set_ids = mesh.side_set_ids();
+    auto side_set_ids = mesh->side_set_ids();
     EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
 
-    auto & ss0 = mesh.side_set(10);
-    EXPECT_EQ(ss0[0], side_set_entry_t(1, 1));
+    auto ss0 = mesh->side_set(10);
+    EXPECT_EQ(ss0[0], SideEntry(1, 1));
 
-    auto & ss1 = mesh.side_set(11);
-    EXPECT_EQ(ss1[0], side_set_entry_t(0, 2));
-#endif
+    auto ss1 = mesh->side_set(11);
+    EXPECT_EQ(ss1[0], SideEntry(0, 2));
 }
 
 TEST(ExodusIIFileTest, write_2d)
@@ -142,18 +140,20 @@ TEST(ExodusIIFileTest, write_2d)
     mesh->set_up();
     mesh->set_cell_set(1, { 0 });
     mesh->set_cell_set(2, { 1 });
-    std::vector<Index> edges_left = { 8 };
-    mesh->set_face_set(100, edges_left);
-    mesh->set_face_set_name(100, "left");
-    std::vector<Index> edges_right = { 9 };
-    mesh->set_face_set(101, edges_right);
+    std::vector<SideEntry> edges_left = { { 1, 1 } };
+    mesh->set_side_set(100, edges_left);
+    mesh->set_side_set_name(100, "left");
+    std::vector<SideEntry> edges_right = { { 0, 1 } };
+    mesh->set_side_set(101, edges_right);
 
     ExodusIIFile f("sq-2d.exo");
     f.write(mesh);
 }
 
-TEST(ExodusIIFileTest, write_mesh_with_side_sets)
+TEST(ExodusIIFileTest, DISABLED_write_mesh_with_side_sets)
 {
+#if 0
+    // TODO: enable hen we have Mesh::boundary_edges() back
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
     auto mesh = Ptr<Mesh>::alloc(pts, elems);
@@ -174,6 +174,7 @@ TEST(ExodusIIFileTest, write_mesh_with_side_sets)
         auto ss10 = mesh_read->edge_set(10);
         EXPECT_EQ(ss10.size(), 1);
     }
+#endif
 }
 
 TEST(ExodusIIFileTest, warn_on_empty_side_set)
@@ -182,8 +183,8 @@ TEST(ExodusIIFileTest, warn_on_empty_side_set)
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
     auto mesh = Ptr<Mesh>::alloc(pts, elems);
     mesh->set_up();
-    mesh->set_edge_set(10, {});
-    mesh->set_edge_set_name(10, "bottom");
+    mesh->set_side_set(10, {});
+    mesh->set_side_set_name(10, "bottom");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     ExodusIIFile f(temp_fname);
@@ -197,8 +198,8 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
     auto mesh = Ptr<Mesh>::alloc(pts, elems);
     mesh->set_up();
 
-    mesh->set_vertex_set(10, { 1, 4 });
-    mesh->set_vertex_set_name(10, "sides");
+    mesh->set_node_set(10, { 0, 3 });
+    mesh->set_node_set_name(10, "sides");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     {
@@ -208,11 +209,11 @@ TEST(ExodusIIFileTest, write_mesh_with_node_sets)
     {
         ExodusIIFile exo(temp_fname);
         auto mesh_read = exo.read();
-        auto node_set_ids = mesh_read->vertex_set_ids();
+        auto node_set_ids = mesh_read->node_set_ids();
         EXPECT_THAT(node_set_ids, ElementsAre(10));
-        auto ns10 = mesh_read->vertex_set(10);
+        auto ns10 = mesh_read->node_set(10);
         EXPECT_EQ(ns10.size(), 2);
-        EXPECT_THAT(ns10, ElementsAre(1, 4));
+        EXPECT_THAT(ns10, ElementsAre(0, 3));
     }
 }
 
@@ -223,8 +224,8 @@ TEST(ExodusIIFileTest, warn_on_empty_node_set)
     auto mesh = Ptr<Mesh>::alloc(pts, elems);
     mesh->set_up();
 
-    mesh->set_vertex_set(10, {});
-    mesh->set_vertex_set_name(10, "sides");
+    mesh->set_node_set(10, {});
+    mesh->set_node_set_name(10, "sides");
 
     auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     ExodusIIFile exo(temp_fname);

@@ -108,37 +108,6 @@ distance(UVParam p1, UVParam p2)
     return std::sqrt(delta.u * delta.u + delta.v * delta.v);
 }
 
-std::vector<SideEntry>
-create_side_set(const Mesh & mesh, Span<const Index> facets, std::size_t ofst)
-{
-    std::vector<SideEntry> sset;
-    sset.reserve(facets.size());
-    for (auto & f : facets) {
-        auto support = mesh.support(f);
-        if (support.size() != 1)
-            throw Exception("Facet {} is not a boundary facet", f);
-
-        auto cell = support[0];
-        auto cell_connect = mesh.cone(cell);
-        auto lfi = utils::index_of(cell_connect, f);
-        sset.emplace_back(cell + ofst, lfi);
-    }
-    return sset;
-}
-
-std::vector<Index>
-set_from_side_set(const Mesh & mesh, const std::vector<SideEntry> & side_set)
-{
-    std::vector<Index> sset;
-    sset.reserve(side_set.size());
-    for (auto & ent : side_set) {
-        auto cell_connect = mesh.cone(ent.elem);
-        auto facet = cell_connect[ent.side];
-        sset.push_back(facet);
-    }
-    return sset;
-}
-
 std::string
 human_time(double time)
 {
