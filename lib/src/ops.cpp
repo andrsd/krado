@@ -258,12 +258,12 @@ compute_volume(Ptr<const Mesh> mesh)
 Ptr<Mesh>
 combine(const std::vector<Ptr<Mesh>> & parts)
 {
-    auto n_total_elems = 0;
-    auto n_total_points = 0;
+    Index n_total_elems = 0;
+    Index n_total_points = 0;
     // how much we shift element and point indices per mesh part
-    std::vector<std::size_t> elem_shift;
+    std::vector<Index> elem_shift;
     elem_shift.reserve(parts.size());
-    std::vector<std::size_t> pts_shift;
+    std::vector<Index> pts_shift;
     pts_shift.reserve(parts.size());
     for (auto & p : parts) {
         elem_shift.push_back(n_total_elems);
@@ -319,11 +319,83 @@ combine(const std::vector<Ptr<Mesh>> & parts)
         }
     }
 
+    // merge side sets
+    std::map<Marker, std::string> side_set_names;
+    std::map<Marker, std::vector<SideEntry>> side_sets;
+    {
+        std::unordered_map<Marker, std::size_t> side_sets_size;
+        for (auto & p : parts) {
+            for (auto id : p->side_set_ids()) {
+                auto side_set = p->side_set(id);
+                auto it = side_sets_size.find(id);
+                if (it == side_sets_size.end())
+                    side_sets_size[id] = side_set.size();
+                else
+                    side_sets_size[id] += side_set.size();
+            }
+        }
+
+        for (auto & [id, n] : side_sets_size)
+            side_sets[id].reserve(n);
+        for (auto i : make_range(parts.size())) {
+            auto & p = parts[i];
+            for (auto & id : p->side_set_ids()) {
+                auto name = p->side_set_name(id);
+                if (side_set_names.find(id) == side_set_names.end())
+                    side_set_names[id] = p->side_set_name(id);
+
+                auto side_set = p->side_set(id);
+                for (auto & c : side_set)
+                    side_sets[id].push_back({ c.elem + elem_shift[i], c.side });
+            }
+        }
+    }
+
+    // merge node sets
+    std::map<Marker, std::string> node_set_names;
+    std::map<Marker, std::vector<Index>> node_sets;
+    {
+        std::unordered_map<Marker, std::size_t> node_sets_size;
+        for (auto & p : parts) {
+            for (auto id : p->node_set_ids()) {
+                auto node_set = p->node_set(id);
+                auto it = node_sets_size.find(id);
+                if (it == node_sets_size.end())
+                    node_sets_size[id] = node_set.size();
+                else
+                    node_sets_size[id] += node_set.size();
+            }
+        }
+
+        for (auto & [id, n] : node_sets_size)
+            node_sets[id].reserve(n);
+        for (auto i : make_range(parts.size())) {
+            auto & p = parts[i];
+            for (auto & id : p->node_set_ids()) {
+                auto name = p->node_set_name(id);
+                if (node_set_names.find(id) == node_set_names.end())
+                    node_set_names[id] = p->node_set_name(id);
+
+                auto node_set = p->node_set(id);
+                for (auto & c : node_set)
+                    node_sets[id].push_back(c + pts_shift[i]);
+            }
+        }
+    }
+
     auto mesh = Ptr<Mesh>::alloc(points, elements);
     mesh->set_up();
     for (auto & [id, name] : cell_set_names) {
         mesh->set_cell_set(id, cell_sets[id]);
         mesh->set_cell_set_name(id, name);
+    }
+    for (auto & [id, name] : side_set_names) {
+        mesh->set_side_set(id, side_sets[id]);
+        mesh->set_side_set_name(id, name);
+    }
+    for (auto & [id, name] : node_set_names) {
+        mesh->set_node_set(id, node_sets[id]);
+        mesh->set_node_set_name(id, name);
     }
     return mesh;
 }
