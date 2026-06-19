@@ -594,7 +594,7 @@ build_side_sets(const Mesh & mesh, int dim, const std::map<Index, int> & exii_el
     NamesMap names;
     for (auto & id : mesh.side_set_ids()) {
         side_sets[id] = create_side_set(mesh, mesh.side_set(id), exii_elem_ids);
-        names[id] = mesh.node_set_name(id);
+        names[id] = mesh.side_set_name(id);
     }
     return { side_sets, names };
 }
