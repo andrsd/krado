@@ -119,6 +119,12 @@ key(const std::array<Index, 2> & idxs)
     return hash_value;
 }
 
+[[nodiscard]] inline std::size_t
+key(Index one, Index two)
+{
+    return key({ one, two });
+}
+
 /// Create a key from the supplied indices. Use this to construct keys for edges and faces
 ///
 /// @param idxs The indices to create a key from
