@@ -21,6 +21,7 @@
 #include <array>
 #include <unordered_map>
 #include <algorithm>
+#include <list>
 
 namespace krado {
 
@@ -165,7 +166,6 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     return { unique_points, point_remap };
 }
 
-#if 0
 std::vector<Index>
 boundary_entities(const Mesh & mesh, Range range)
 {
@@ -182,7 +182,6 @@ boundary_entities(const Mesh & mesh, Range range)
 
     return bnd_ents;
 }
-#endif
 
 template <typename T>
 void
@@ -622,6 +621,39 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     return *this;
 }
 
+Span<const Index>
+Mesh::support(Index index) const
+{
+    return this->hasse_.in_vertices(index);
+}
+
+Span<const Index>
+Mesh::cone(Index index) const
+{
+    return this->hasse_.out_vertices(index);
+}
+
+std::set<Index>
+Mesh::cone_vertices(Index index) const
+{
+    std::list<Index> pts_to_process;
+    for (auto & v : cone(index))
+        pts_to_process.push_back(v);
+
+    std::set<Index> verts;
+    for (auto & v : pts_to_process) {
+        auto cn = cone(v);
+        if (cn.size() == 0)
+            verts.insert(v);
+        else {
+            for (auto & c : cn)
+                pts_to_process.push_back(c);
+        }
+    }
+
+    return verts;
+}
+
 ElementType
 Mesh::element_type(Index index) const
 {
@@ -631,26 +663,24 @@ Mesh::element_type(Index index) const
 void
 Mesh::set_up()
 {
+    this->hasse_ = HasseDiagram(*this);
 }
 
 std::vector<Index>
 Mesh::boundary_edges() const
 {
-    throw Exception("Not implemented");
+    return boundary_entities(*this, this->hasse_.edges());
 }
 
 std::vector<Index>
 Mesh::boundary_faces() const
 {
-    throw Exception("Not implemented");
+    return boundary_entities(*this, this->hasse_.faces());
 }
 
 Point
 Mesh::compute_centroid(Index index) const
 {
-    (void) index;
-    throw Exception("Not implemented");
-#if 0
     auto connect = cone_vertices(index);
     auto pnts_ofst = this->elems_.size();
     Point ctr(0, 0, 0);
@@ -660,27 +690,22 @@ Mesh::compute_centroid(Index index) const
     }
     ctr *= 1. / connect.size();
     return ctr;
-#endif
 }
 
 Vector
 Mesh::outward_normal(Index index) const
 {
-    (void) index;
-    throw Exception("Not implemented");
-#if 0
     auto supp = support(index);
     if (supp.size() != 1)
-        throw Exception("Normals are supported only for sides on boundaries");
+        throw Exception("Normals are supported only for boundaries");
 
     auto cell_id = supp[0];
     auto cell_ctr = compute_centroid(cell_id);
 
-    auto side_type = this->hasse_.node_type(index);
-    if (side_type == HasseDiagram::NodeType::Vertex) {
+    if (this->hasse_.vertices().contains(index)) {
         throw Exception("Normals are not supported for points, yet");
     }
-    else if (side_type == HasseDiagram::NodeType::Edge) {
+    else if (this->hasse_.edges().contains(index)) {
         auto connect_verts = cone_vertices(index);
         std::vector<Index> verts(connect_verts.begin(), connect_verts.end());
         auto pnts_ofst = this->elems_.size();
@@ -694,7 +719,7 @@ Mesh::outward_normal(Index index) const
             n = -n;
         return n;
     }
-    else {
+    else if (this->hasse_.faces().contains(index)) {
         auto side_ctr = compute_centroid(index);
 
         auto connect_verts = cone_vertices(index);
@@ -711,7 +736,9 @@ Mesh::outward_normal(Index index) const
             n = -n;
         return n;
     }
-#endif
+    else {
+        throw Exception("Normals are not supported for cells");
+    }
 }
 
 BoundingBox3D

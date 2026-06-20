@@ -15,6 +15,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 namespace krado {
 
@@ -260,6 +261,22 @@ public:
     /// @return Reference to this mesh
     Mesh & remap_block_ids(const std::map<Marker, Marker> & block_map);
 
+    /// Get support of a mesh node
+    ///
+    /// @param index Index of the node
+    [[nodiscard]] Span<const Index> support(Index index) const;
+
+    /// Get connectivity of a mesh node
+    ///
+    /// @param index Index of the node
+    [[nodiscard]] Span<const Index> cone(Index index) const;
+
+    /// Get cone vertices of a mesh node
+    ///
+    /// @param index Index of the node
+    /// @return Cone vertices
+    [[nodiscard]] std::set<Index> cone_vertices(Index index) const;
+
     /// Get element type
     ///
     /// @param index Index of the element
@@ -308,6 +325,8 @@ private:
     std::map<Marker, std::string> node_set_names_;
     /// Node sets
     std::map<Marker, std::vector<Index>> node_sets_;
+    ///
+    HasseDiagram hasse_;
 };
 
 /// Compute bounding box around the mesh

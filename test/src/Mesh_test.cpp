@@ -5,6 +5,7 @@
 #include "krado/range.h"
 #include "krado/vector.h"
 #include "krado/ops.h"
+#include "krado/hasse_diagram.h"
 #include <filesystem>
 
 using namespace krado;
@@ -256,7 +257,7 @@ TEST(MeshTest, remap_block_ids)
     EXPECT_THAT(square->cell_set(1000), ElementsAre(0, 1));
 }
 
-TEST(MeshTest, DISABLED_boundary_edges)
+TEST(MeshTest, boundary_edges)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -278,7 +279,7 @@ TEST(MeshTest, DISABLED_boundary_edges)
     EXPECT_THAT(bnd_edges, UnorderedElementsAre(6, 8, 9, 10));
 }
 
-TEST(MeshTest, DISABLED_boundary_faces)
+TEST(MeshTest, boundary_faces)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -303,7 +304,7 @@ TEST(MeshTest, DISABLED_boundary_faces)
     EXPECT_THAT(bnd_faces, UnorderedElementsAre(9, 10, 11, 12, 13, 14));
 }
 
-TEST(MeshTest, DISABLED_centroid_2d)
+TEST(MeshTest, centroid_2d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -330,7 +331,7 @@ TEST(MeshTest, DISABLED_centroid_2d)
     EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0));
 }
 
-TEST(MeshTest, DISABLED_centroid_3d)
+TEST(MeshTest, centroid_3d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -360,7 +361,7 @@ TEST(MeshTest, DISABLED_centroid_3d)
     EXPECT_EQ(mesh.compute_centroid(14), Point(0.5, 0.5, 1.));
 }
 
-TEST(MeshTest, DISABLED_outward_normal_2d)
+TEST(MeshTest, outward_normal_2d)
 {
     // clang-format off
     std::vector<Point> pts = {
@@ -384,7 +385,7 @@ TEST(MeshTest, DISABLED_outward_normal_2d)
     EXPECT_EQ(mesh.outward_normal(8), Vector(-1, 0, 0));
 }
 
-TEST(MeshTest, DISABLED_outward_normal_3d)
+TEST(MeshTest, outward_normal_3d)
 {
     // clang-format off
     std::vector<Point> pts = {

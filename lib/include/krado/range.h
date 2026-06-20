@@ -105,6 +105,12 @@ public:
         this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
+    bool
+    contains(Index idx) const
+    {
+        return (this->start_idx_ <= idx) and (idx < this->end_idx_);
+    }
+
 private:
     Index start_idx_;
     Index end_idx_;
