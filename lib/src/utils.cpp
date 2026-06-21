@@ -17,6 +17,7 @@
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve_vertex.h"
 #include <cstdint>
+#include <chrono>
 
 namespace krado {
 namespace utils {
