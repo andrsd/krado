@@ -8,6 +8,7 @@
 #include "krado/utils.h"
 #include <vector>
 #include <limits>
+#include <unordered_map>
 
 namespace krado {
 
