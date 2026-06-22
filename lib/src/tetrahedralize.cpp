@@ -59,7 +59,7 @@ split_elem(const Element & elem)
 ///
 /// @param type The type of the element
 /// @return The number of TET4 elements
-int
+std::size_t
 num_of_tets(ElementType type)
 {
     if (type == ElementType::HEX8)
@@ -376,7 +376,7 @@ tetrahedralize(Ptr<const Mesh> mesh)
     for (auto pt : mesh->points())
         points.push_back(pt);
 
-    gid_t n_tets = 0;
+    std::size_t n_tets = 0;
     for (auto & el : mesh->elements())
         n_tets += num_of_tets(el.type());
 
