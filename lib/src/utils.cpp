@@ -142,6 +142,23 @@ human_time(double time)
     return join(" ", strs);
 }
 
+[[nodiscard]]
+std::vector<Index>
+get_face_connect(const Element & elem, int side)
+{
+    std::vector<Index> face_connect;
+    if (elem.type() == ElementType::TETRA4)
+        return utils::sub_connect(elem.indices(), Tetra4::FACE_VERTICES[side]);
+    else if (elem.type() == ElementType::PYRAMID5)
+        return utils::sub_connect(elem.indices(), Pyramid5::FACE_VERTICES[side]);
+    else if (elem.type() == ElementType::PRISM6)
+        return utils::sub_connect(elem.indices(), Prism6::FACE_VERTICES[side]);
+    else if (elem.type() == ElementType::HEX8)
+        return utils::sub_connect(elem.indices(), Hex8::FACE_VERTICES[side]);
+    else
+        throw Exception("Unsupported element type {}", elem.type());
+}
+
 } // namespace utils
 
 std::array<Ptr<MeshVertexAbstract>, 3>

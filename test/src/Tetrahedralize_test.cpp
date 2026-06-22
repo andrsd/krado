@@ -2,6 +2,7 @@
 #include "krado/point.h"
 #include "krado/mesh.h"
 #include "krado/tetrahedralize.h"
+#include "krado/exodusii_file.h"
 
 using namespace krado;
 using namespace testing;
@@ -66,6 +67,10 @@ TEST(TetrahedralizeTest, hex8)
     std::vector<Element> elems = { Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }) };
     auto mesh = Ptr<Mesh>::alloc(pnts, elems);
     mesh->set_cell_set(12, { 0 });
+
+    mesh->set_node_set(1002, { 0, 1, 2, 3 });
+
+    mesh->set_side_set(2002, std::vector<SideEntry> { { 0, 0 }, { 0, 1 } });
 
     auto tet_mesh = tetrahedralize(mesh);
     EXPECT_EQ(tet_mesh->num_points(), 8);

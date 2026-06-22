@@ -10,6 +10,7 @@
 #include "krado/timer.h"
 #include <vector>
 #include <array>
+#include <unordered_set>
 
 namespace krado {
 
@@ -426,6 +427,42 @@ tetrahedralize(Ptr<const Mesh> mesh)
         }
         tet_mesh->set_cell_set(id, new_cell_set);
         tet_mesh->set_cell_set_name(id, mesh->cell_set_name(id));
+    }
+    // reconstruct side sets
+    std::map<Marker, std::string> side_set_names;
+    std::map<Marker, std::vector<SideEntry>> side_sets;
+    for (auto & id : mesh->side_set_ids()) {
+        auto name = mesh->side_set_name(id);
+        if (side_set_names.find(id) == side_set_names.end())
+            side_set_names[id] = mesh->side_set_name(id);
+
+        auto & new_side_set = side_sets[id];
+        for (auto & c : mesh->side_set(id)) {
+            auto orig_elem = mesh->element(c.elem);
+            auto face_connect = utils::get_face_connect(orig_elem, c.side);
+            std::set<Index> orig_face_vtx(face_connect.begin(), face_connect.end());
+
+            for (auto & tet_id : elem_map[c.elem]) {
+                auto & tet4 = tet_mesh->element(tet_id);
+                for (auto tet_side : make_range(Tetra4::N_FACES)) {
+                    auto face_connect = utils::get_face_connect(tet4, tet_side);
+                    std::set<Index> tet_face_vtx(face_connect.begin(), face_connect.end());
+                    std::set<Index> isect_vtx;
+                    std::set_intersection(orig_face_vtx.begin(),
+                                          orig_face_vtx.end(),
+                                          tet_face_vtx.begin(),
+                                          tet_face_vtx.end(),
+                                          std::inserter(isect_vtx, isect_vtx.begin()));
+                    // did we match all 3 vertices of the triangle?
+                    if (isect_vtx.size() == 3)
+                        new_side_set.emplace_back(tet_id, tet_side);
+                }
+            }
+        }
+    }
+    for (auto & [id, name] : side_set_names) {
+        tet_mesh->set_side_set(id, side_sets[id]);
+        tet_mesh->set_side_set_name(id, name);
     }
     // copy node sets
     for (auto id : mesh->node_set_ids()) {
