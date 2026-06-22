@@ -155,7 +155,6 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     }
 
     auto extruded_mesh = Ptr<Mesh>::alloc(points, elems);
-    extruded_mesh->set_up();
     // extrude cell sets
     for (auto & id : mesh.cell_set_ids()) {
         auto cells = mesh.cell_set(id);

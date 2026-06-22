@@ -384,7 +384,6 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     }
 
     auto mesh = Ptr<Mesh>::alloc(points, elements);
-    mesh->set_up();
     for (auto & [id, name] : cell_set_names) {
         mesh->set_cell_set(id, cell_sets[id]);
         mesh->set_cell_set_name(id, name);

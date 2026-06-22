@@ -908,7 +908,6 @@ build_mesh(const GeomModel & model)
     auto [points, vtx_map] = build_points(model);
     auto elements = build_elements(model, vtx_map);
     auto mesh = Ptr<Mesh>::alloc(points, elements);
-    mesh->set_up();
     // TODO: create cell sets
     // TODO: create side sets
     // TODO: create node sets
