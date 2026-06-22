@@ -3,16 +3,50 @@
 
 #include "krado/hasse_diagram.h"
 #include "krado/mesh.h"
+#include "krado/log.h"
+#include "krado/timer.h"
 #include <iostream>
 
 namespace krado {
 
 HasseDiagram::HasseDiagram(const Mesh & mesh)
 {
+    Log::info(2, "Building Hasse diagram");
+    LoggingTimer timer;
+
     auto elems = mesh.elements();
     auto pnts = mesh.points();
 
     std::unordered_map<std::size_t, Index> key_map;
+    std::size_t n_entries = elems.size() + pnts.size();
+    for (auto & cell : elems) {
+        if (cell.type() == ElementType::TRI3) {
+            n_entries += Tri3::N_EDGES;
+        }
+        else if (cell.type() == ElementType::QUAD4) {
+            n_entries += Quad4::N_EDGES;
+        }
+        else if (cell.type() == ElementType::TETRA4) {
+            n_entries += Tetra4::N_EDGES;
+            n_entries += Tetra4::N_FACES;
+        }
+        else if (cell.type() == ElementType::PYRAMID5) {
+            n_entries += Pyramid5::N_EDGES;
+            n_entries += Pyramid5::N_FACES;
+        }
+        else if (cell.type() == ElementType::PRISM6) {
+            n_entries += Prism6::N_EDGES;
+            n_entries += Prism6::N_FACES;
+        }
+        else if (cell.type() == ElementType::HEX8) {
+            n_entries += Hex8::N_EDGES;
+            n_entries += Hex8::N_FACES;
+        }
+        else if (cell.type() == ElementType::LINE2) {
+            // do nothing
+        }
+    }
+    key_map.reserve(n_entries);
 
     // Count number of nodes
     u64 n_rows = 0;
@@ -68,6 +102,7 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
 
     // Count number of edges
     std::unordered_map<std::size_t, Index> edge_key_map;
+    edge_key_map.reserve(2 * n_entries);
     for (Index i : make_range(elems.size())) {
         const auto & cell = elems[i];
         if (cell.type() == ElementType::TRI3) {
