@@ -427,6 +427,13 @@ tetrahedralize(Ptr<const Mesh> mesh)
         tet_mesh->set_cell_set(id, new_cell_set);
         tet_mesh->set_cell_set_name(id, mesh->cell_set_name(id));
     }
+    // copy node sets
+    for (auto id : mesh->node_set_ids()) {
+        std::vector<Index> ns(mesh->node_set(id).begin(), mesh->node_set(id).end());
+        tet_mesh->set_node_set(id, ns);
+        tet_mesh->set_node_set_name(id, mesh->node_set_name(id));
+    }
+
     return tet_mesh;
 }
 
