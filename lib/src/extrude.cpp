@@ -165,7 +165,9 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
                 cell_set.push_back(cell + elem_stride * i);
         }
         extruded_mesh->set_cell_set(id, cell_set);
-        extruded_mesh->set_cell_set_name(id, mesh.cell_set_name(id));
+        auto cs_name = mesh.cell_set_name(id);
+        if (cs_name.has_value())
+            extruded_mesh->set_cell_set_name(id, cs_name.value());
     }
 
     // extrude side sets
@@ -196,7 +198,9 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
             }
         }
         extruded_mesh->set_side_set(id, extruded_side_set);
-        extruded_mesh->set_side_set_name(id, mesh.side_set_name(id));
+        auto ss_name = mesh.side_set_name(id);
+        if (ss_name.has_value())
+            extruded_mesh->set_side_set_name(id, ss_name.value());
     }
 
     // extrude node sets
@@ -211,7 +215,9 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
             }
         }
         extruded_mesh->set_node_set(id, extruded_node_set);
-        extruded_mesh->set_node_set_name(id, mesh.node_set_name(id));
+        auto ns_name = mesh.node_set_name(id);
+        if (ns_name.has_value())
+            extruded_mesh->set_node_set_name(id, ns_name.value());
     }
 
     return extruded_mesh;

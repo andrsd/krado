@@ -162,7 +162,7 @@ public:
     ///
     /// @param cell_set_id Cell set ID (marker)
     /// @return Cell set name
-    [[nodiscard]] std::string cell_set_name(Marker cell_set_id) const;
+    Optional<std::string> cell_set_name(Marker cell_set_id) const;
 
     /// Get cell set IDs
     [[nodiscard]] std::vector<Marker> cell_set_ids() const;
@@ -196,7 +196,7 @@ public:
     ///
     /// @param side_set_id Side set ID (marker)
     /// @return Side set name
-    [[nodiscard]] std::string side_set_name(Marker side_set_id) const;
+    Optional<std::string> side_set_name(Marker side_set_id) const;
 
     /// Get side set IDs
     [[nodiscard]] std::vector<Marker> side_set_ids() const;
@@ -230,7 +230,7 @@ public:
     ///
     /// @param id Node set ID
     /// @return Node set name
-    [[nodiscard]] std::string node_set_name(Marker id) const;
+    Optional<std::string> node_set_name(Marker id) const;
 
     /// Get node set IDs
     ///

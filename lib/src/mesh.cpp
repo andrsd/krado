@@ -353,11 +353,11 @@ Mesh::add(const Mesh & other)
         auto name = other.cell_set_name(id);
         auto my_name = this->cell_set_names_[id];
         if (my_name.empty())
-            this->cell_set_names_[id] = name;
+            this->cell_set_names_[id] = name.value();
         else if (name != my_name)
             Log::warn("Cell set with id={} already exists, but with a different name '{}'",
                       id,
-                      name);
+                      name.value());
     }
 
     // merge side sets
@@ -382,11 +382,11 @@ Mesh::add(const Mesh & other)
             auto name = other.side_set_name(id);
             auto my_name = this->side_set_names_[id];
             if (my_name.empty())
-                this->side_set_names_[id] = name;
+                this->side_set_names_[id] = name.value();
             else if (name != my_name)
                 Log::warn("Side set with id={} already exists, but with a different name '{}'",
                           id,
-                          name);
+                          name.value());
         }
     }
     this->side_sets_ = side_sets;
@@ -413,11 +413,11 @@ Mesh::add(const Mesh & other)
             auto name = other.node_set_name(id);
             auto my_name = this->node_set_names_[id];
             if (my_name.empty())
-                this->node_set_names_[id] = name;
+                this->node_set_names_[id] = name.value();
             else if (name != my_name)
                 Log::warn("Node set with id={} already exists, but with a different name '{}'",
                           id,
-                          name);
+                          name.value());
         }
     }
     this->node_sets_ = node_sets;
@@ -460,14 +460,14 @@ Mesh::set_cell_set_name(Marker cell_set_id, const std::string & name)
     return *this;
 }
 
-std::string
+Optional<std::string>
 Mesh::cell_set_name(Marker cell_set_id) const
 {
     try {
         return this->cell_set_names_.at(cell_set_id);
     }
     catch (const std::out_of_range & e) {
-        return std::string("");
+        return std::nullopt;
     }
 }
 
@@ -510,14 +510,14 @@ Mesh::set_side_set_name(Marker side_set_id, const std::string & name)
     return *this;
 }
 
-std::string
+Optional<std::string>
 Mesh::side_set_name(Marker side_set_id) const
 {
     try {
         return this->side_set_names_.at(side_set_id);
     }
     catch (const std::out_of_range & e) {
-        return std::string("");
+        return std::nullopt;
     }
 }
 
@@ -560,14 +560,14 @@ Mesh::set_node_set_name(Marker id, const std::string & name)
     return *this;
 }
 
-std::string
+Optional<std::string>
 Mesh::node_set_name(Marker id) const
 {
     auto it = this->node_set_names_.find(id);
     if (it != this->node_set_names_.end())
         return it->second;
     else
-        return std::string("");
+        return std::nullopt;
 }
 
 std::vector<Marker>
@@ -614,7 +614,9 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     for (auto & [block_id, cells] : this->cell_sets_) {
         auto new_block_id = block_map.at(block_id);
         new_cell_sets[new_block_id] = cells;
-        new_cell_set_names[new_block_id] = cell_set_name(block_id);
+        auto cs_name = cell_set_name(block_id);
+        if (cs_name.has_value())
+            new_cell_set_names[new_block_id] = cs_name.value();
     }
     this->cell_sets_ = new_cell_sets;
     this->cell_set_names_ = new_cell_set_names;

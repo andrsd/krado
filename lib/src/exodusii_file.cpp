@@ -632,7 +632,9 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
                     auto & el = mesh.element(id);
                     block.push_back(el);
                 }
-                names[blk_id] = mesh.cell_set_name(blk_id);
+                auto cs_name = mesh.cell_set_name(blk_id);
+                if (cs_name.has_value())
+                    names[blk_id] = cs_name.value();
             }
         }
     }
@@ -669,7 +671,9 @@ build_side_sets(const Mesh & mesh, const std::map<Index, int> & exii_elem_ids)
     NamesMap names;
     for (auto & id : mesh.side_set_ids()) {
         side_sets[id] = create_side_set(mesh, mesh.side_set(id), exii_elem_ids);
-        names[id] = mesh.side_set_name(id);
+        auto ss_name = mesh.side_set_name(id);
+        if (ss_name.has_value())
+            names[id] = ss_name.value();
     }
     return { side_sets, names };
 }
@@ -688,7 +692,9 @@ build_node_sets(const Mesh & mesh)
         nodes.reserve(n);
         for (auto & v : vtx_ids)
             nodes.push_back(v + 1);
-        names[id] = mesh.node_set_name(id);
+        auto ns_name = mesh.node_set_name(id);
+        if (ns_name.has_value())
+            names[id] = ns_name.value();
     }
 
     return { node_sets, names };
@@ -942,7 +948,8 @@ ExodusIIFile::read()
     for (auto & [id, cs] : cell_sets)
         mesh->set_cell_set(id, cs);
     for (auto [id, name] : cell_set_names)
-        mesh->set_cell_set_name(id, cell_set_names[id]);
+        if (!name.empty())
+            mesh->set_cell_set_name(id, name);
 
     // side sets
     for (auto & [id, sides] : side_sets) {
@@ -950,7 +957,8 @@ ExodusIIFile::read()
         mesh->set_side_set(id, sset);
     }
     for (auto [id, name] : side_set_names)
-        mesh->set_side_set_name(id, side_set_names[id]);
+        if (!name.empty())
+            mesh->set_side_set_name(id, name);
 
     // node sets
     for (auto & [id, ns] : node_sets) {
@@ -958,7 +966,8 @@ ExodusIIFile::read()
         mesh->set_node_set(id, node_ids);
     }
     for (auto [id, name] : node_set_names)
-        mesh->set_node_set_name(id, node_set_names[id]);
+        if (!name.empty())
+            mesh->set_node_set_name(id, name);
 
     return mesh;
 }

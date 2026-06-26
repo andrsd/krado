@@ -310,8 +310,10 @@ combine(const std::vector<Ptr<Mesh>> & parts)
         auto & p = parts[i];
         for (auto & id : p->cell_set_ids()) {
             auto name = p->cell_set_name(id);
-            if (cell_set_names.find(id) == cell_set_names.end())
-                cell_set_names[id] = p->cell_set_name(id);
+            if (cell_set_names.find(id) == cell_set_names.end()) {
+                if (name.has_value())
+                    cell_set_names[id] = name.value();
+            }
 
             auto cell_set = p->cell_set(id);
             for (auto & c : cell_set)
@@ -341,8 +343,10 @@ combine(const std::vector<Ptr<Mesh>> & parts)
             auto & p = parts[i];
             for (auto & id : p->side_set_ids()) {
                 auto name = p->side_set_name(id);
-                if (side_set_names.find(id) == side_set_names.end())
-                    side_set_names[id] = p->side_set_name(id);
+                if (side_set_names.find(id) == side_set_names.end()) {
+                    if (name.has_value())
+                        side_set_names[id] = name.value();
+                }
 
                 auto side_set = p->side_set(id);
                 for (auto & c : side_set)
@@ -373,8 +377,10 @@ combine(const std::vector<Ptr<Mesh>> & parts)
             auto & p = parts[i];
             for (auto & id : p->node_set_ids()) {
                 auto name = p->node_set_name(id);
-                if (node_set_names.find(id) == node_set_names.end())
-                    node_set_names[id] = p->node_set_name(id);
+                if (node_set_names.find(id) == node_set_names.end()) {
+                    if (name.has_value())
+                        node_set_names[id] = name.value();
+                }
 
                 auto node_set = p->node_set(id);
                 for (auto & c : node_set)
@@ -384,18 +390,21 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     }
 
     auto mesh = Ptr<Mesh>::alloc(points, elements);
-    for (auto & [id, name] : cell_set_names) {
-        mesh->set_cell_set(id, cell_sets[id]);
+    for (auto & [id, cset] : cell_sets)
+        mesh->set_cell_set(id, cset);
+    for (auto & [id, name] : cell_set_names)
         mesh->set_cell_set_name(id, name);
-    }
-    for (auto & [id, name] : side_set_names) {
-        mesh->set_side_set(id, side_sets[id]);
+
+    for (auto & [id, sset] : side_sets)
+        mesh->set_side_set(id, sset);
+    for (auto & [id, name] : side_set_names)
         mesh->set_side_set_name(id, name);
-    }
-    for (auto & [id, name] : node_set_names) {
-        mesh->set_node_set(id, node_sets[id]);
+
+    for (auto & [id, nset] : node_sets)
+        mesh->set_node_set(id, nset);
+    for (auto & [id, name] : node_set_names)
         mesh->set_node_set_name(id, name);
-    }
+
     return mesh;
 }
 
