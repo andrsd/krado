@@ -926,7 +926,11 @@ PYBIND11_MODULE(krado, m)
         auto vols = compute_volume(mesh);
         py::dict py_vols;
         for (const auto & [marker, volume] : vols) {
-            py_vols[py::cast(marker)] = volume;
+            auto name = mesh.cell_set_name(marker);
+            if (name.empty())
+                py_vols[py::cast(marker)] = volume;
+            else
+                py_vols[py::cast(name)] = volume;
         }
         return py_vols;
     });

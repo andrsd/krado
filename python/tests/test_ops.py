@@ -12,7 +12,7 @@ def test_area_of_a_square():
     file_name = os.path.join(assets_dir, "mesh", "square-half-tri.e")
     mesh = krado.import_mesh(file_name)
     vols = krado.compute_volume(mesh)
-    assert math.isclose(vols[0], 4.0, abs_tol=1e-10)
+    assert math.isclose(vols["block"], 4.0, abs_tol=1e-10)
 
 
 def test_volume_of_cube():
