@@ -351,13 +351,16 @@ Mesh::add(const Mesh & other)
             this->cell_sets_[id].emplace_back(cell_id + n_elem_ofst);
 
         auto name = other.cell_set_name(id);
-        auto my_name = this->cell_set_names_[id];
-        if (my_name.empty())
-            this->cell_set_names_[id] = name.value();
-        else if (name != my_name)
-            Log::warn("Cell set with id={} already exists, but with a different name '{}'",
-                      id,
-                      name.value());
+        if (name.has_value()) {
+            auto my_name = cell_set_name(id);
+            if (!my_name.has_value()) {
+                this->cell_set_names_[id] = name.value();
+            }
+            else if (name != my_name)
+                Log::warn("Cell set with id={} already exists, but with a different name '{}'",
+                          id,
+                          name.value());
+        }
     }
 
     // merge side sets
@@ -380,13 +383,15 @@ Mesh::add(const Mesh & other)
 
         for (auto & id : other.side_set_ids()) {
             auto name = other.side_set_name(id);
-            auto my_name = this->side_set_names_[id];
-            if (my_name.empty())
-                this->side_set_names_[id] = name.value();
-            else if (name != my_name)
-                Log::warn("Side set with id={} already exists, but with a different name '{}'",
-                          id,
-                          name.value());
+            if (name.has_value()) {
+                auto my_name = side_set_name(id);
+                if (my_name.has_value())
+                    this->side_set_names_[id] = name.value();
+                else if (name != my_name)
+                    Log::warn("Side set with id={} already exists, but with a different name '{}'",
+                              id,
+                              name.value());
+            }
         }
     }
     this->side_sets_ = side_sets;
@@ -411,13 +416,15 @@ Mesh::add(const Mesh & other)
 
         for (auto & id : other.node_set_ids()) {
             auto name = other.node_set_name(id);
-            auto my_name = this->node_set_names_[id];
-            if (my_name.empty())
-                this->node_set_names_[id] = name.value();
-            else if (name != my_name)
-                Log::warn("Node set with id={} already exists, but with a different name '{}'",
-                          id,
-                          name.value());
+            if (name.has_value()) {
+                auto my_name = node_set_name(id);
+                if (my_name.has_value())
+                    this->node_set_names_[id] = name.value();
+                else if (name != my_name)
+                    Log::warn("Node set with id={} already exists, but with a different name '{}'",
+                              id,
+                              name.value());
+            }
         }
     }
     this->node_sets_ = node_sets;
