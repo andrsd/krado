@@ -163,6 +163,17 @@ index_of(const std::vector<T> & vec, const T & value)
         return -1; // Value not found
 }
 
+template <typename T>
+[[nodiscard]] Optional<uint64_t>
+index_of(Span<const T> vec, const T & value)
+{
+    auto it = std::find(vec.begin(), vec.end(), value);
+    if (it != vec.end())
+        return std::distance(vec.begin(), it);
+    else
+        return std::nullopt;
+}
+
 // Conversion from `std::vector` to `std::array`
 //
 // Taken from: https://stackoverflow.com/a/40931342/6122323
@@ -303,5 +314,13 @@ std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
                                                       Ptr<MeshVertexAbstract> b,
                                                       Ptr<MeshVertexAbstract> c,
                                                       Ptr<MeshVertexAbstract> d);
+
+/// Create side set from Hasse indices
+///
+/// @param mesh Mesh
+/// @param indices
+/// @return Side set
+std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
+std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
 
 } // namespace krado

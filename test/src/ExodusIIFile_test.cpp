@@ -12,6 +12,7 @@
 #include "krado/line.h"
 #include "krado/scheme/equal.h"
 #include "krado/scheme/structured.h"
+#include "krado/utils.h"
 #include <filesystem>
 
 using namespace krado;
@@ -150,31 +151,40 @@ TEST(ExodusIIFileTest, write_2d)
     f.write(mesh);
 }
 
-TEST(ExodusIIFileTest, DISABLED_write_mesh_with_side_sets)
+TEST(ExodusIIFileTest, write_mesh_with_side_sets)
 {
-#if 0
-    // TODO: enable hen we have Mesh::boundary_edges() back
     std::vector<Point> pts = { Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0) };
     std::vector<Element> elems = { Element::Quad4({ 0, 1, 2, 3 }) };
     auto mesh = Ptr<Mesh>::alloc(pts, elems);
     mesh->set_up();
     auto bnd_edges = mesh->boundary_edges();
-    mesh->set_edge_set(10, { bnd_edges[0] });
-    mesh->set_edge_set_name(10, "bottom");
 
+    mesh->set_side_set(10, create_side_set(mesh, { bnd_edges[0] }));
+    mesh->set_side_set_name(10, "bottom");
+
+    mesh->set_side_set(11, create_side_set(mesh, { bnd_edges[2] }));
+    mesh->set_side_set_name(11, "bottom");
+
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
     {
-        ExodusIIFile f("quad-2d.exo");
+        ExodusIIFile f(temp_fname);
         f.write(mesh);
     }
     {
-        ExodusIIFile f_read("quad-2d.exo");
+        ExodusIIFile f_read(temp_fname);
         auto mesh_read = f_read.read();
-        auto side_set_ids = mesh_read->edge_set_ids();
-        EXPECT_THAT(side_set_ids, ElementsAre(10));
-        auto ss10 = mesh_read->edge_set(10);
+        auto side_set_ids = mesh_read->side_set_ids();
+        EXPECT_THAT(side_set_ids, ElementsAre(10, 11));
+        auto ss10 = mesh_read->side_set(10);
         EXPECT_EQ(ss10.size(), 1);
+        EXPECT_EQ(ss10[0].elem, 0);
+        EXPECT_EQ(ss10[0].side, 0);
+
+        auto ss11 = mesh_read->side_set(11);
+        EXPECT_EQ(ss11.size(), 1);
+        EXPECT_EQ(ss11[0].elem, 0);
+        EXPECT_EQ(ss11[0].side, 2);
     }
-#endif
 }
 
 TEST(ExodusIIFileTest, warn_on_empty_side_set)
