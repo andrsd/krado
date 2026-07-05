@@ -57,3 +57,29 @@ def test_mesh_remap_block_ids():
     remapped_ids = mesh.cell_set_ids()
     assert 100 in remapped_ids and 200 in remapped_ids
     assert 10 not in remapped_ids and 20 not in remapped_ids
+
+
+def test_mesh_create_side_set(tmp_path):
+    pts = [
+        krado.Point(0.0, 0.0),
+        krado.Point(1.0, 0.0),
+        krado.Point(1.0, 1.0),
+        krado.Point(0.0, 1.0),
+    ]
+    elems = [krado.Element(krado.ElementType.QUAD4, [0, 1, 2, 3])]
+
+    mesh = krado.Mesh(pts, elems)
+    mesh.set_up()
+    bnd_edges = mesh.boundary_edges()
+    mesh.create_side_set(10, [bnd_edges[0]])
+    mesh.create_side_set(11, [bnd_edges[2]])
+    # assert bnd_edges == [0, 1, 2]
+
+    temp_file = tmp_path / "krado_1234.exo"
+    f = krado.ExodusIIFile(temp_file)
+    f.write(mesh)
+    del f
+
+    f = krado.ExodusIIFile(temp_file)
+    mesh_rd = f.read()
+    assert mesh_rd.side_set_ids() == [10, 11]

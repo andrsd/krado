@@ -667,6 +667,11 @@ PYBIND11_MODULE(krado, m)
         .def("boundary_faces", &Mesh::boundary_faces)
         .def("compute_centroid", &Mesh::compute_centroid)
         .def("outward_normal", &Mesh::outward_normal)
+
+        .def("create_side_set", [](Mesh & self, Marker id, const std::vector<Index> & indices) {
+            auto sset = create_side_set(self, indices);
+            self.set_side_set(id, sset);
+        })
     ;
 
     py::class_<Meshable, Ptr<Meshable>>(m, "Meshable")
