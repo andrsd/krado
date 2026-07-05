@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
 #include "krado/arc_of_circle.h"
 #include "krado/axis1.h"
@@ -854,7 +855,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
-        .def(py::init<const std::string &>())
+        .def(py::init<const std::filesystem::path &>())
         .def("read", &ExodusIIFile::read)
         .def("write", py::overload_cast<Ptr<const Mesh>>(&ExodusIIFile::write))
         .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))

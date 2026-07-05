@@ -928,7 +928,7 @@ read_node_sets(exodusIIcpp::File & exo)
 
 //
 
-ExodusIIFile::ExodusIIFile(const std::string & file_name) : fn_(file_name) {}
+ExodusIIFile::ExodusIIFile(const std::filesystem::path & file_name) : fn_(file_name.string()) {}
 
 Ptr<Mesh>
 ExodusIIFile::read()

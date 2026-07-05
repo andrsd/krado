@@ -16,7 +16,7 @@ public:
     /// ExodusIIFile constructor
     ///
     /// @param file_name Name of the ExodusII file
-    explicit ExodusIIFile(const std::string & file_name);
+    explicit ExodusIIFile(const std::filesystem::path & file_name);
 
     /// Read mesh from ExodusII file
     ///
