@@ -39,11 +39,11 @@ TEST(ExodusIIFileTest, write_geom_model_1d)
 
     model.mesh_curve(1);
 
-    ExodusIIFile f("line-1d.exo");
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    ExodusIIFile f(temp_fname);
     f.write(model);
 
-    EXPECT_TRUE(fs::exists("line-1d.exo"));
-    fs::remove("line-1d.exo");
+    EXPECT_TRUE(fs::exists(temp_fname));
 }
 
 TEST(ExodusIIFileTest, write_geom_model_2d)
@@ -80,11 +80,11 @@ TEST(ExodusIIFileTest, write_geom_model_2d)
     model.set_side_set_name(1002, "top");
     model.set_side_set_name(1003, "left");
 
-    ExodusIIFile f("rect-2d.exo");
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    ExodusIIFile f(temp_fname);
     f.write(model);
 
-    EXPECT_TRUE(fs::exists("rect-2d.exo"));
-    fs::remove("rect-2d.exo");
+    EXPECT_TRUE(fs::exists(temp_fname));
 }
 
 TEST(ExodusIIFileTest, read_2d)
@@ -147,7 +147,8 @@ TEST(ExodusIIFileTest, write_2d)
     std::vector<SideEntry> edges_right = { { 0, 1 } };
     mesh->set_side_set(101, edges_right);
 
-    ExodusIIFile f("sq-2d.exo");
+    auto temp_fname = fs::temp_directory_path() / ("krado_" + std::to_string(rand()) + ".exo");
+    ExodusIIFile f(temp_fname);
     f.write(mesh);
 }
 
