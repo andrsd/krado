@@ -83,3 +83,27 @@ def test_mesh_create_side_set(tmp_path):
     f = krado.ExodusIIFile(temp_file)
     mesh_rd = f.read()
     assert mesh_rd.side_set_ids() == [10, 11]
+
+
+def test_mesh_cell_set_names():
+    file_name = os.path.join(assets_dir, "mesh", "square-half-tri.e")
+    mesh = krado.import_mesh(file_name)
+
+    assert mesh.cell_set_name(0) == "block"
+    assert mesh.cell_set_name(1) is None
+
+
+def test_mesh_side_set_names():
+    file_name = os.path.join(assets_dir, "mesh", "square-half-tri.e")
+    mesh = krado.import_mesh(file_name)
+
+    assert mesh.side_set_name(10) == "right"
+    assert mesh.side_set_name(11) == "left"
+    assert mesh.side_set_name(1000) is None
+
+
+def test_mesh_node_set_names():
+    file_name = os.path.join(assets_dir, "mesh", "square-half-tri.e")
+    mesh = krado.import_mesh(file_name)
+
+    assert mesh.node_set_name(10) is None
