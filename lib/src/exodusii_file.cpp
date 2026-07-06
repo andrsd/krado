@@ -1000,6 +1000,14 @@ ExodusIIFile::write(Ptr<const Mesh> mesh)
     write_element_blocks(this->exo_, blocks, block_names);
     write_side_sets(this->exo_, side_sets, side_set_names);
     write_node_sets(this->exo_, node_sets, node_set_names);
+
+    Log::info("- dim={}, nodes={}, elements={}, element blocks={}, node_sets={}, side_sets={}",
+              dim,
+              utils::human_number(n_nodes),
+              utils::human_number(n_elems),
+              utils::human_number(n_elem_blks),
+              utils::human_number(n_node_sets),
+              utils::human_number(n_side_sets));
 }
 
 void
@@ -1034,6 +1042,14 @@ ExodusIIFile::write(const GeomModel & model)
     write_element_blocks(this->exo_, blocks, block_names);
     write_side_sets(this->exo_, side_sets, side_set_names);
     write_node_sets(this->exo_, node_sets, node_set_names);
+
+    Log::info("- dim={}, nodes={}, elements={}, element blocks={}, node sets={}, side sets={}",
+              dim,
+              utils::human_number(n_nodes),
+              utils::human_number(n_elems),
+              utils::human_number(n_elem_blks),
+              utils::human_number(n_node_sets),
+              utils::human_number(n_side_sets));
 }
 
 } // namespace krado
