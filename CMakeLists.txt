@@ -18,6 +18,7 @@ endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
 option(KRADO_BUILD_TESTS "Build tests" NO)
 option(KRADO_WITH_MOAB "Build with MOAB support" NO)
+option(KRADO_WITH_PYTHON "Build with Python support" ON)
 
 find_package(fmt 11 REQUIRED)
 find_package(spdlog 1 REQUIRED)
@@ -38,7 +39,9 @@ add_subdirectory(contrib/bamg)
 add_subdirectory(contrib/robust_predicates)
 
 add_subdirectory(lib)
-add_subdirectory(python)
+if (KRADO_WITH_PYTHON)
+    add_subdirectory(python)
+endif()
 
 # Tests
 

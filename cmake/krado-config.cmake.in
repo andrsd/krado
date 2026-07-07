@@ -1,5 +1,6 @@
 set(KRADO_VERSION @PROJECT_VERSION@)
 set(KRADO_WITH_MOAB @KRADO_WITH_MOAB@)
+set(KRADO_WITH_PYTHON @KRADO_WITH_PYTHON@)
 
 @PACKAGE_INIT@
 
@@ -20,8 +21,21 @@ endif()
 find_library(KRADO_LIBRARY NAMES krado HINTS ${PACKAGE_PREFIX_DIR}/lib NO_DEFAULT_PATH)
 find_path(KRADO_INCLUDE_DIR mesh.h HINTS ${PACKAGE_PREFIX_DIR}/include/krado)
 
+foreach(component ${krado_FIND_COMPONENTS})
+    if(component STREQUAL "Python")
+        if(KRADO_WITH_PYTHON)
+            find_dependency(Python3 3.10 REQUIRED)
+            set(krado_Python_FOUND TRUE)
+        else()
+            set(krado_Python_FOUND FALSE)
+        endif()
+    endif()
+endforeach()
+
 find_package_handle_standard_args(
     krado
+    FOUND_VAR KRADO_FOUND
     REQUIRED_VARS KRADO_LIBRARY KRADO_INCLUDE_DIR
     VERSION_VAR KRADO_VERSION
+    HANDLE_COMPONENTS
 )
