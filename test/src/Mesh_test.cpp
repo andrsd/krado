@@ -257,6 +257,42 @@ TEST(MeshTest, remap_block_ids)
     EXPECT_THAT(square->cell_set(1000), ElementsAre(0, 1));
 }
 
+TEST(MeshTest, remap_block_ids_partial)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.),
+        Point(1., 0.),
+        Point(0., 1.),
+        Point(1., 1.),
+        Point(.5, .5),
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 4 }),
+        Element::Tri3({ 1, 2, 4 }),
+        Element::Tri3({ 2, 3, 4 }),
+        Element::Tri3({ 3, 0, 4 }),
+    };
+    // clang-format on
+
+    Mesh mesh(pts, elems);
+    mesh.set_cell_set(10, { 0, 1 });
+    mesh.set_cell_set(20, { 2, 3 });
+
+    auto initial_ids = mesh.cell_set_ids();
+    EXPECT_NE(std::find(initial_ids.begin(), initial_ids.end(), 10), initial_ids.end());
+    EXPECT_NE(std::find(initial_ids.begin(), initial_ids.end(), 20), initial_ids.end());
+    // assert 10 in initial_ids and 20 in initial_ids
+
+    // remap = {10: 100}
+    mesh.remap_block_ids({ { 10, 100 } });
+
+    auto remapped_ids = mesh.cell_set_ids();
+    EXPECT_NE(std::find(remapped_ids.begin(), remapped_ids.end(), 100), remapped_ids.end());
+    EXPECT_NE(std::find(remapped_ids.begin(), remapped_ids.end(), 20), remapped_ids.end());
+    EXPECT_EQ(std::find(remapped_ids.begin(), remapped_ids.end(), 10), remapped_ids.end());
+}
+
 TEST(MeshTest, boundary_edges)
 {
     // clang-format off

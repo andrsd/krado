@@ -59,6 +59,24 @@ def test_mesh_remap_block_ids():
     assert 10 not in remapped_ids and 20 not in remapped_ids
 
 
+def test_mesh_remap_block_ids_partial():
+    # This requires a mesh with blocks, so we'll load one or create a dummy structure
+    # For simplicity, we'll test the binding logic, assuming C++ remap works.
+    mesh = krado.Mesh()
+    mesh.set_cell_set(10, [0, 1])
+    mesh.set_cell_set(20, [2, 3])
+
+    initial_ids = mesh.cell_set_ids()
+    assert 10 in initial_ids and 20 in initial_ids
+
+    remap = {10: 100}
+    mesh.remap_block_ids(remap)
+
+    remapped_ids = mesh.cell_set_ids()
+    assert 100 in remapped_ids and 20 in remapped_ids
+    assert 10 not in remapped_ids
+
+
 def test_mesh_create_side_set(tmp_path):
     pts = [
         krado.Point(0.0, 0.0),

@@ -619,11 +619,20 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     std::map<Marker, std::string> new_cell_set_names;
     std::map<Marker, std::vector<Index>> new_cell_sets;
     for (auto & [block_id, cells] : this->cell_sets_) {
-        auto new_block_id = block_map.at(block_id);
-        new_cell_sets[new_block_id] = cells;
-        auto cs_name = cell_set_name(block_id);
-        if (cs_name.has_value())
-            new_cell_set_names[new_block_id] = cs_name.value();
+        auto it = block_map.find(block_id);
+        if (it != block_map.end()) {
+            auto new_block_id = it->second;
+            new_cell_sets[new_block_id] = cells;
+            auto cs_name = cell_set_name(block_id);
+            if (cs_name.has_value())
+                new_cell_set_names[new_block_id] = cs_name.value();
+        }
+        else {
+            new_cell_sets[block_id] = cells;
+            auto cs_name = cell_set_name(block_id);
+            if (cs_name.has_value())
+                new_cell_set_names[block_id] = cs_name.value();
+        }
     }
     this->cell_sets_ = new_cell_sets;
     this->cell_set_names_ = new_cell_set_names;
