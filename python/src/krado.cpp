@@ -918,6 +918,8 @@ PYBIND11_MODULE(krado, m)
 
     m.def("mirror", py::overload_cast<const GeomShape &, const Axis1 &>(&mirror),
         py::arg("shape"), py::arg("axis1"));
+    m.def("mirror", py::overload_cast<Ptr<const Mesh> , const Axis2 &>(&mirror),
+        py::arg("mesh"), py::arg("axis2"));
 
     // TODO:split curve
 

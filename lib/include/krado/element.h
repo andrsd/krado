@@ -76,6 +76,13 @@ public:
     [[nodiscard]] static Element Prism6(const std::array<Index, 6> & ids);
     [[nodiscard]] static Element Hex8(const std::array<Index, 8> & ids);
 
+    template <ElementType ET, std::size_t N>
+    static Element
+    create(const std::array<Index, N> & vtx_ids)
+    {
+        return Element(ET, vtx_ids);
+    }
+
     friend class Mesh;
 };
 

@@ -87,6 +87,12 @@ mirror(const GeomShape & shape, const Axis1 & axis)
     return GeomShape(brep_trsf.Shape());
 }
 
+Ptr<Mesh>
+mirror(Ptr<const Mesh> mesh, const Axis2 & axis)
+{
+    return mesh->mirrored(axis);
+}
+
 std::tuple<GeomCurve, GeomCurve>
 split_curve(const GeomCurve & curve, Standard_Real split_param)
 {

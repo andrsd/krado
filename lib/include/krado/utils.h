@@ -323,4 +323,15 @@ std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
 std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
 std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
 
+/// Permutation
+template <typename T, int N>
+std::array<T, N>
+permutate(Span<const T> idxs, const std::array<T, N> & perm)
+{
+    std::array<T, N> perm_idxs;
+    for (int i = 0; i < N; ++i)
+        perm_idxs[i] = idxs[perm[i]];
+    return perm_idxs;
+}
+
 } // namespace krado

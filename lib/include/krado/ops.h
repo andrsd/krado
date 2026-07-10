@@ -21,6 +21,7 @@ class Mesh;
 class Point;
 class Vector;
 class Axis1;
+class Axis2;
 class Wire;
 class Plane;
 class MeshSurface;
@@ -53,6 +54,13 @@ GeomShape scale(const GeomShape & shape, double s);
 /// @param axis Axis to mirror about
 /// @return Resulting shape
 GeomShape mirror(const GeomShape & shape, const Axis1 & axis);
+
+/// Mirror a mesh about an axis
+///
+/// @param mesh Mesh to mirror
+/// @param axis2 Axis2 to use for mirroring
+/// @return Mirrored mesh
+Ptr<Mesh> mirror(Ptr<const Mesh> mesh, const Axis2 & axis);
 
 /// Split a curve at a given parameter
 ///

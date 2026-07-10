@@ -134,6 +134,12 @@ public:
     /// @return Reference to this mesh which is transformed
     Mesh & transform(const Trsf & tr);
 
+    /// Mirror the mesh via a "plane"
+    ///
+    /// @param axis Plane to use for mirroring
+    /// @return Mirrored mesh
+    Ptr<Mesh> mirrored(const Axis2 & axis) const;
+
     /// Add another mesh to this mesh
     ///
     /// @param other Mesh to add

@@ -209,6 +209,87 @@ append(std::vector<Index> & dest, const std::vector<Index> & src)
     dest.insert(dest.end(), src.begin(), src.end());
 }
 
+// Element reversal
+
+// this defines how to "reverse"/permutate an element that was mirrored
+template <ElementType ET>
+struct ElementPermutation;
+
+template <>
+struct ElementPermutation<ElementType::TRI3> {
+    static constexpr std::array<Index, 3> PERMUTATION = { 0, 2, 1 };
+};
+
+template <>
+struct ElementPermutation<ElementType::QUAD4> {
+    static constexpr std::array<Index, 4> PERMUTATION = { 0, 3, 2, 1 };
+};
+
+template <>
+struct ElementPermutation<ElementType::TETRA4> {
+    static constexpr std::array<Index, 4> PERMUTATION = { 0, 1, 3, 2 };
+};
+
+template <>
+struct ElementPermutation<ElementType::PYRAMID5> {
+    static constexpr std::array<Index, 5> PERMUTATION = { 0, 3, 2, 1, 4 };
+};
+
+template <>
+struct ElementPermutation<ElementType::PRISM6> {
+    static constexpr std::array<Index, 6> PERMUTATION = { 0, 2, 1, 3, 5, 4 };
+};
+
+template <>
+struct ElementPermutation<ElementType::HEX8> {
+    static constexpr std::array<Index, 8> PERMUTATION = { 0, 3, 2, 1, 4, 7, 6, 5 };
+};
+
+template <ElementType ET>
+Element
+reverse_element_impl(const Element & elem)
+{
+    assert(elem.type() == ET);
+
+    constexpr auto N_VERTICES = ElementSelector<ET>::N_VERTICES;
+    constexpr auto perm_idxs = ElementPermutation<ET>::PERMUTATION;
+    auto idxs = permutate<Index, N_VERTICES>(elem.indices(), perm_idxs);
+    return Element::create<ET>(idxs);
+}
+
+Element
+reverse_element(const Element & elem)
+{
+    switch (elem.type()) {
+    case ElementType::POINT:
+        return elem;
+
+    case ElementType::LINE2:
+        return elem;
+
+    case ElementType::TRI3:
+        return reverse_element_impl<ElementType::TRI3>(elem);
+
+    case ElementType::QUAD4:
+        return reverse_element_impl<ElementType::QUAD4>(elem);
+
+    case ElementType::TETRA4:
+        return reverse_element_impl<ElementType::TETRA4>(elem);
+
+    case ElementType::PYRAMID5:
+        return reverse_element_impl<ElementType::PYRAMID5>(elem);
+
+    case ElementType::PRISM6:
+        return reverse_element_impl<ElementType::PRISM6>(elem);
+
+    case ElementType::HEX8:
+        return reverse_element_impl<ElementType::HEX8>(elem);
+
+    default:
+        throw Exception("`reverse_element` not implemented for {}", utils::to_str(elem.type()));
+    }
+}
+
 } // namespace
 
 Mesh::Mesh() {}
@@ -327,6 +408,29 @@ Mesh::transform(const Trsf & tr)
     for (auto & p : this->pnts_)
         p = tr * p;
     return *this;
+}
+
+Ptr<Mesh>
+Mesh::mirrored(const Axis2 & axis) const
+{
+    std::vector<Point> points;
+    points.reserve(this->num_points());
+    for (auto & pt : this->points())
+        points.push_back(pt.mirrored(axis));
+
+    std::vector<Element> elems;
+    elems.reserve(this->num_elements());
+    for (auto & elem : this->elements())
+        elems.push_back(reverse_element(elem));
+
+    auto mirrored_mesh = Ptr<Mesh>::alloc(std::move(points), std::move(elems));
+    mirrored_mesh->cell_sets_ = this->cell_sets_;
+    mirrored_mesh->cell_set_names_ = this->cell_set_names_;
+    mirrored_mesh->side_sets_ = this->side_sets_;
+    mirrored_mesh->side_set_names_ = this->side_set_names_;
+    mirrored_mesh->node_sets_ = this->node_sets_;
+    mirrored_mesh->node_set_names_ = this->node_set_names_;
+    return mirrored_mesh;
 }
 
 Mesh &
