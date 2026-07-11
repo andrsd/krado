@@ -125,3 +125,36 @@ def test_mesh_node_set_names():
     mesh = krado.import_mesh(file_name)
 
     assert mesh.node_set_name(10) is None
+
+
+def test_mesh_remap_block_ids_merge():
+    pts = [
+        krado.Point(0.0, 0.0),
+        krado.Point(1.0, 0.0),
+        krado.Point(0.0, 1.0),
+        krado.Point(1.0, 1.0),
+        krado.Point(2.0, 0.0),
+        krado.Point(2.0, 1.0),
+    ]
+    elems = [
+        krado.Element(krado.ElementType.TRI3, [0, 1, 2]),
+        krado.Element(krado.ElementType.TRI3, [1, 3, 2]),
+        krado.Element(krado.ElementType.TRI3, [1, 4, 5]),
+        krado.Element(krado.ElementType.TRI3, [1, 5, 3]),
+    ]
+    mesh = krado.Mesh(pts, elems)
+    mesh.set_cell_set(10, [0])
+    mesh.set_cell_set_name(10, "block_10")
+    mesh.set_cell_set(20, [1])
+    mesh.set_cell_set_name(20, "block_20")
+    mesh.set_cell_set(30, [2, 3])
+    mesh.set_cell_set_name(30, "block_30")
+
+    mesh.remap_block_ids({20: 10, 30: 10})
+
+    remapped_ids = mesh.cell_set_ids()
+    assert remapped_ids == [10]
+
+    cs10 = mesh.cell_set(10)
+    assert sorted(cs10) == [0, 1, 2, 3]
+    assert mesh.cell_set_name(10) == "block_10"

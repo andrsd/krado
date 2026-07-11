@@ -458,3 +458,35 @@ TEST(MeshTest, remove_side_sets)
     auto side_set_ids = mesh->side_set_ids();
     EXPECT_EQ(side_set_ids.size(), 0);
 }
+
+TEST(MeshTest, remap_block_ids_merge)
+{
+    // clang-format off
+    std::vector<Point> pts = {
+        Point(0., 0.), Point(1., 0.), Point(0., 1.), Point(1., 1.),
+        Point(2., 0.), Point(2., 1.)
+    };
+    std::vector<Element> elems = {
+        Element::Tri3({ 0, 1, 2 }),
+        Element::Tri3({ 1, 3, 2 }),
+        Element::Tri3({ 1, 4, 5 }),
+        Element::Tri3({ 1, 5, 3 })
+    };
+    // clang-format on
+    Mesh mesh(pts, elems);
+    mesh.set_cell_set(10, { 0 });
+    mesh.set_cell_set_name(10, "block_10");
+    mesh.set_cell_set(20, { 1 });
+    mesh.set_cell_set_name(20, "block_20");
+    mesh.set_cell_set(30, { 2, 3 });
+    mesh.set_cell_set_name(30, "block_30");
+
+    mesh.remap_block_ids({ { 20, 10 }, { 30, 10 } });
+
+    auto remapped_ids = mesh.cell_set_ids();
+    EXPECT_THAT(remapped_ids, ElementsAre(10));
+
+    auto cs10 = mesh.cell_set(10);
+    EXPECT_THAT(cs10, UnorderedElementsAre(0, 1, 2, 3));
+    EXPECT_EQ(mesh.cell_set_name(10).value(), "block_10");
+}

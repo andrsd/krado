@@ -722,22 +722,23 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
 
     std::map<Marker, std::string> new_cell_set_names;
     std::map<Marker, std::vector<Index>> new_cell_sets;
-    for (auto & [block_id, cells] : this->cell_sets_) {
+
+    for (auto const & [block_id, cells] : this->cell_sets_) {
         auto it = block_map.find(block_id);
-        if (it != block_map.end()) {
-            auto new_block_id = it->second;
-            new_cell_sets[new_block_id] = cells;
-            auto cs_name = cell_set_name(block_id);
-            if (cs_name.has_value())
-                new_cell_set_names[new_block_id] = cs_name.value();
-        }
-        else {
-            new_cell_sets[block_id] = cells;
-            auto cs_name = cell_set_name(block_id);
-            if (cs_name.has_value())
-                new_cell_set_names[block_id] = cs_name.value();
+        Marker new_id = (it == block_map.end()) ? block_id : it->second;
+
+        new_cell_sets[new_id].insert(new_cell_sets[new_id].end(), cells.begin(), cells.end());
+
+        auto it_name = this->cell_set_names_.find(block_id);
+        if (it_name != this->cell_set_names_.end()) {
+            // Only set the name for the new block if it hasn't been set yet.
+            // First one wins because std::map iterates in sorted key order.
+            if (new_cell_set_names.find(new_id) == new_cell_set_names.end()) {
+                new_cell_set_names[new_id] = it_name->second;
+            }
         }
     }
+
     this->cell_sets_ = new_cell_sets;
     this->cell_set_names_ = new_cell_set_names;
     return *this;
