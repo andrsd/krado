@@ -723,6 +723,17 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     std::map<Marker, std::string> new_cell_set_names;
     std::map<Marker, std::vector<Index>> new_cell_sets;
 
+    // Calculate final sizes and reserve memory
+    std::map<Marker, std::size_t> final_sizes;
+    for (auto const & [block_id, cells] : this->cell_sets_) {
+        auto it = block_map.find(block_id);
+        Marker new_id = (it == block_map.end()) ? block_id : it->second;
+        final_sizes[new_id] += cells.size();
+    }
+    for (auto const & [id, size] : final_sizes)
+        new_cell_sets[id].reserve(size);
+
+    // Perform the merge
     for (auto const & [block_id, cells] : this->cell_sets_) {
         auto it = block_map.find(block_id);
         Marker new_id = (it == block_map.end()) ? block_id : it->second;
