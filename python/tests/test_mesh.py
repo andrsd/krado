@@ -127,6 +127,48 @@ def test_mesh_node_set_names():
     assert mesh.node_set_name(10) is None
 
 
+def test_mesh_span_wrappers():
+    file_name = os.path.join(assets_dir, "mesh", "square-half-tri.e")
+    mesh = krado.import_mesh(file_name)
+    mesh.set_up()
+
+    # points()
+    points = mesh.points()
+    assert len(points) == 4
+    assert isinstance(points[0], krado.Point)
+    assert points[0].is_equal(krado.Point(0, 0), 1e-12)
+
+    # elements()
+    elements = mesh.elements()
+    assert len(elements) == 2
+    assert isinstance(elements[0], krado.Element)
+    assert elements[0].type() == krado.ElementType.TRI3
+
+    # cell_set()
+    cell_set_0 = mesh.cell_set(0)
+    assert len(cell_set_0) == 2
+    assert isinstance(cell_set_0, list)
+    assert cell_set_0 == [0, 1]
+
+    # side_set()
+    side_set_10 = mesh.side_set(10)
+    assert len(side_set_10) == 1
+    assert isinstance(side_set_10[0], krado.SideEntry)
+    assert side_set_10[0].elem == 1
+    assert side_set_10[0].side == 1
+
+    # node_set()
+    mesh.set_node_set(20, [0, 2])
+    node_set_20 = mesh.node_set(20)
+    assert node_set_20 == [0, 2]
+
+    # support() and cone()
+    support_0 = mesh.support(0)
+    assert isinstance(support_0, list)
+    cone_0 = mesh.cone(0)
+    assert isinstance(cone_0, list)
+
+
 def test_mesh_remap_block_ids_merge():
     pts = [
         krado.Point(0.0, 0.0),

@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
 #include "krado/arc_of_circle.h"
@@ -143,6 +144,11 @@ PYBIND11_MODULE(krado, m)
     m.attr("__version__") = KRADO_VERSION;
 
     // clang-format off
+
+    py::class_<SideEntry>(m, "SideEntry")
+        .def_readwrite("elem", &SideEntry::elem)
+        .def_readwrite("side", &SideEntry::side)
+    ;
 
     py::class_<Color>(m, "Color")
         .def(py::init<>())
@@ -620,9 +626,17 @@ PYBIND11_MODULE(krado, m)
         .def(py::init<>())
         .def(py::init<std::vector<Point>, std::vector<Element>>())
         .def("num_points", &Mesh::num_points)
-        // .def("points", /* TODO */)
+        .def("points",
+             [](const Mesh & self) {
+                 auto span = self.points();
+                 return std::vector<Point>(span.begin(), span.end());
+             })
         .def("point", &Mesh::point, py::return_value_policy::reference)
-        // .def("elements", /* TODO */)
+        .def("elements",
+             [](const Mesh & self) {
+                 auto span = self.elements();
+                 return std::vector<Element>(span.begin(), span.end());
+             })
         .def("num_elements", &Mesh::num_elements)
         .def("element", &Mesh::element, py::return_value_policy::reference)
         .def("scale", static_cast<Mesh &(Mesh::*)(double)>(&Mesh::scale))
@@ -654,17 +668,35 @@ PYBIND11_MODULE(krado, m)
         .def("set_side_set_name", &Mesh::set_side_set_name)
         .def("side_set_name", &Mesh::side_set_name)
         .def("side_set_ids", &Mesh::side_set_ids)
-        // .def("side_set", /* TODO */)
+        .def("side_set",
+             [](const Mesh & self, Marker marker) {
+                 auto span = self.side_set(marker);
+                 return std::vector<SideEntry>(span.begin(), span.end());
+             })
         .def("remove_side_sets", &Mesh::remove_side_sets)
 
         .def("set_node_set", &Mesh::set_node_set)
         .def("set_node_set_name", &Mesh::set_node_set_name)
         .def("node_set_name", &Mesh::node_set_name)
         .def("node_set_ids", &Mesh::node_set_ids)
-        // .def("node_set", /* TODO */)
+        .def("node_set",
+             [](const Mesh & self, Marker marker) {
+                 auto span = self.node_set(marker);
+                 return std::vector<Index>(span.begin(), span.end());
+             })
         .def("remove_node_sets", &Mesh::remove_node_sets)
 
         .def("remap_block_ids", &Mesh::remap_block_ids)
+        .def("support",
+             [](const Mesh & self, Index index) {
+                 auto span = self.support(index);
+                 return std::vector<Index>(span.begin(), span.end());
+             })
+        .def("cone",
+             [](const Mesh & self, Index index) {
+                 auto span = self.cone(index);
+                 return std::vector<Index>(span.begin(), span.end());
+             })
         .def("element_type", &Mesh::element_type)
         .def("set_up", &Mesh::set_up)
         .def("boundary_edges", &Mesh::boundary_edges)
