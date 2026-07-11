@@ -1035,6 +1035,10 @@ PYBIND11_MODULE(krado, m)
 
     m.def("export_mesh", &IO::export_mesh, py::arg("mesh"), py::arg("file_name"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
+    m.def("export_geometry", &IO::export_geometry,
+        py::arg("shapes"), py::arg("file_name"));
+    m.def("import_geometry", &IO::import_geometry,
+        py::arg("file_name"));
 
     auto log = m.def_submodule("log", "Submodule for logging");
     log.def("set_verbosity", &Log::set_verbosity);
