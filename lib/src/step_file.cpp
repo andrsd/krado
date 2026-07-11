@@ -20,7 +20,7 @@
 
 namespace krado {
 
-STEPFile::STEPFile(const std::string & file_name) : DocumentFile(file_name) {}
+STEPFile::STEPFile(const std::filesystem::path & file_name) : DocumentFile(file_name) {}
 
 void
 STEPFile::write(const std::vector<GeomShape> & shapes)

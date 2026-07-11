@@ -4,6 +4,7 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 namespace krado {
 
@@ -12,7 +13,7 @@ class GeomModel;
 /// Class for DAGMC files
 class DAGMCFile {
 public:
-    DAGMCFile(const std::string & file_name);
+    DAGMCFile(const std::filesystem::path & file_name);
 
     void write(const GeomModel & model);
 

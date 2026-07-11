@@ -11,26 +11,26 @@
 namespace krado {
 
 void
-IO::export_mesh(Ptr<const Mesh> mesh, const std::string & file_name)
+IO::export_mesh(Ptr<const Mesh> mesh, const std::filesystem::path & file_name)
 {
     try {
         ExodusIIFile file(file_name);
         file.write(mesh);
     }
     catch (exodusIIcpp::Exception & e) {
-        throw Exception("Failed to write '{}'.", file_name);
+        throw Exception("Failed to write '{}'.", file_name.string());
     }
 }
 
 Ptr<Mesh>
-IO::import_mesh(const std::string & file_name)
+IO::import_mesh(const std::filesystem::path & file_name)
 {
     try {
         ExodusIIFile file(file_name);
         return file.read();
     }
     catch (exodusIIcpp::Exception & e) {
-        throw Exception("Failed to read '{}'.", file_name);
+        throw Exception("Failed to read '{}'.", file_name.string());
     }
 }
 

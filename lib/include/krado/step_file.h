@@ -13,7 +13,7 @@ namespace krado {
 /// Class for reading STEP files
 class STEPFile : public DocumentFile {
 public:
-    STEPFile(const std::string & file_name);
+    STEPFile(const std::filesystem::path & file_name);
 
     /// Write shapes into a file
     ///

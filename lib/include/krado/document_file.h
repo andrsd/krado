@@ -18,7 +18,7 @@ public:
     /// Create a file object (no I/O done)
     ///
     /// @param file_name Name of the file to read
-    explicit DocumentFile(const std::string & file_name);
+    explicit DocumentFile(const std::filesystem::path & file_name);
 
     virtual ~DocumentFile() = default;
 

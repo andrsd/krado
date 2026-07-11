@@ -77,7 +77,7 @@ class MOABFile {
 public:
     MOABFile();
 
-    void write(const std::string & file_name);
+    void write(const std::filesystem::path & file_name);
 
     void add_surface(const MeshSurface & surface);
     void add_volume(const MeshVolume & volume);
@@ -210,7 +210,7 @@ MOABFile::create_tags()
 }
 
 void
-MOABFile::write(const std::string & file_name)
+MOABFile::write(const std::filesystem::path & file_name)
 {
     tag_set_data(this->faceting_tol_tag_, this->file_set_, this->faceting_tol_);
     // tag_set_data(this->geometry_resabs_tag_, this->file_set_, GEOMETRY_RESABS);
@@ -360,7 +360,7 @@ MOABFile::gather_entities()
 
 ///
 
-DAGMCFile::DAGMCFile(const std::string & file_name) : file_name_(file_name) {}
+DAGMCFile::DAGMCFile(const std::filesystem::path & file_name) : file_name_(file_name) {}
 
 void
 DAGMCFile::write(const GeomModel & model)
@@ -413,7 +413,7 @@ DAGMCFile::write(const GeomModel & model)
 
 #else
 
-DAGMCFile::DAGMCFile(const std::string & file_name) : file_name_(file_name)
+DAGMCFile::DAGMCFile(const std::filesystem::path & file_name) : file_name_(file_name)
 {
     throw Exception("krado was not build with MOAB support. Re-configure with -DKRADO_WITH_MOAB to "
                     "enable support for DAGMC files.");

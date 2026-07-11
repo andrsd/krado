@@ -16,7 +16,7 @@ public:
     /// IGES file
     ///
     /// @param file_name Name of the file to work with
-    explicit IGESFile(const std::string & file_name);
+    explicit IGESFile(const std::filesystem::path & file_name);
 
     /// Write shapes into a file
     ///

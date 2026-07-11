@@ -15,13 +15,13 @@ public:
     ///
     /// @param file_name Name of the file
     /// @param mesh Mesh to write
-    static void export_mesh(Ptr<const Mesh> mesh, const std::string & file_name);
+    static void export_mesh(Ptr<const Mesh> mesh, const std::filesystem::path & file_name);
 
     /// Read mesh from a file
     ///
     /// @param file_name Name of the file
     /// @return Mesh read from the file
-    [[nodiscard]] static Ptr<Mesh> import_mesh(const std::string & file_name);
+    [[nodiscard]] static Ptr<Mesh> import_mesh(const std::filesystem::path & file_name);
 
     /// Write geometry into a file
     ///

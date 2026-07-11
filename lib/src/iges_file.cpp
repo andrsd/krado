@@ -9,7 +9,7 @@
 
 namespace krado {
 
-IGESFile::IGESFile(const std::string & file_name) : DocumentFile(file_name) {}
+IGESFile::IGESFile(const std::filesystem::path & file_name) : DocumentFile(file_name) {}
 
 void
 IGESFile::write(const std::vector<GeomShape> & shapes)

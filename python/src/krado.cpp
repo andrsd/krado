@@ -278,13 +278,13 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<STEPFile>(m, "STEPFile")
-        .def(py::init<const std::string &>())
+        .def(py::init<const std::filesystem::path &>())
         .def("read", &STEPFile::read, py::return_value_policy::move)
         .def("write", &STEPFile::write)
     ;
 
     py::class_<IGESFile>(m, "IGESFile")
-        .def(py::init<const std::string &>())
+        .def(py::init<const std::filesystem::path &>())
         .def("read", &IGESFile::read, py::return_value_policy::move)
         .def("write", &IGESFile::write)
     ;
@@ -903,7 +903,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<DAGMCFile>(m, "DAGMCFile")
-        .def(py::init<const std::string &>())
+        .def(py::init<const std::filesystem::path &>())
         .def("write", &DAGMCFile::write)
     ;
 
