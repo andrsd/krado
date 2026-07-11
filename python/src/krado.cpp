@@ -1035,8 +1035,18 @@ PYBIND11_MODULE(krado, m)
 
     m.def("export_mesh", &IO::export_mesh, py::arg("mesh"), py::arg("file_name"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
-    m.def("export_geometry", &IO::export_geometry,
-        py::arg("shapes"), py::arg("file_name"));
+    m.def("export_geometry", [](const py::object & shapes_or_shape, const std::filesystem::path & file_name) {
+            std::vector<GeomShape> shapes;
+            if (py::isinstance<GeomShape>(shapes_or_shape))
+                shapes.push_back(shapes_or_shape.cast<GeomShape>());
+            else if (py::isinstance<py::list>(shapes_or_shape))
+                shapes = shapes_or_shape.cast<std::vector<GeomShape>>();
+            else
+                throw py::type_error("Argument must be a GeomShape or a list of GeomShapes.");
+            IO::export_geometry(shapes, file_name);
+        },
+        py::arg("shapes"), py::arg("file_name")
+    );
     m.def("import_geometry", &IO::import_geometry,
         py::arg("file_name"));
 

@@ -21,7 +21,14 @@ def test_import_geom_iges():
     assert math.isclose(shapes[0].volume(), 1.0, abs_tol=1e-8)
 
 
-def test_export_geom(tmp_path):
+def test_export_geom_single(tmp_path):
     box = krado.Box(krado.Point(0, 0, 0), krado.Point(2, 3, 4))
-    krado.export_geometry([box], tmp_path / "box.step")
-    krado.export_geometry([box], tmp_path / "box.iges")
+    krado.export_geometry(box, tmp_path / "box.step")
+    krado.export_geometry(box, tmp_path / "box.iges")
+
+
+def test_export_geom_list(tmp_path):
+    box1 = krado.Box(krado.Point(0, 0, 0), krado.Point(2, 3, 4))
+    box2 = krado.Box(krado.Point(5, 0, 0), krado.Point(6, 1, 1))
+    krado.export_geometry([box1, box2], tmp_path / "boxes.step")
+    krado.export_geometry([box1, box2], tmp_path / "boxes.iges")
