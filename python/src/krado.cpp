@@ -643,7 +643,11 @@ PYBIND11_MODULE(krado, m)
         .def("set_cell_set_name", &Mesh::set_cell_set_name)
         .def("cell_set_name", &Mesh::cell_set_name)
         .def("cell_set_ids", &Mesh::cell_set_ids)
-        // .def("cell_set", /* TODO */)
+        .def("cell_set",
+             [](const Mesh & self, Marker marker) {
+                 auto span = self.cell_set(marker);
+                 return std::vector<Index>(span.begin(), span.end());
+             })
         .def("remove_cell_sets", &Mesh::remove_cell_sets)
 
         .def("set_side_set", &Mesh::set_side_set)
