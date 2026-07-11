@@ -13,7 +13,7 @@ public:
     ///
     /// @param file_name Name of the file
     /// @param mesh Mesh to write
-    static void export_mesh(const std::string & file_name, Ptr<const Mesh> mesh);
+    static void export_mesh(Ptr<const Mesh> mesh, const std::string & file_name);
 
     /// Read mesh from a file
     ///

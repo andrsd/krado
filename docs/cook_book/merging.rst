@@ -40,7 +40,7 @@ mesh. To remove duplicate nodes, you can use the :meth:`krado.Mesh.remove_duplic
    merged_mesh.remove_duplicate_points(1e-10)
 
    merged_mesh.set_up()
-   krado.export_mesh("path/to/merged_mesh.exo", merged_mesh)
+   krado.export_mesh(merged_mesh, "path/to/merged_mesh.exo")
 
 The parameter ``1e-10`` is the (absolute) tolerance that decides if two nodes are identical or not.
 To see if nodes were actaully merged, turn on diagnostic report:

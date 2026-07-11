@@ -1033,7 +1033,7 @@ PYBIND11_MODULE(krado, m)
 
     // io.h
 
-    m.def("export_mesh", &IO::export_mesh, py::arg("file_name"), py::arg("mesh"));
+    m.def("export_mesh", &IO::export_mesh, py::arg("mesh"), py::arg("file_name"));
     m.def("import_mesh", &IO::import_mesh, py::arg("file_name"));
 
     auto log = m.def_submodule("log", "Submodule for logging");

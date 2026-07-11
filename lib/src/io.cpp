@@ -7,7 +7,7 @@
 namespace krado {
 
 void
-IO::export_mesh(const std::string & file_name, Ptr<const Mesh> mesh)
+IO::export_mesh(Ptr<const Mesh> mesh, const std::string & file_name)
 {
     try {
         ExodusIIFile file(file_name);
