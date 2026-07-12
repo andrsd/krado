@@ -6,6 +6,7 @@
 #include "krado/geom_shape.h"
 #include <vector>
 #include <string>
+#include <filesystem>
 
 class TDocStd_Document;
 class XSControl_Reader;
