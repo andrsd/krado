@@ -8,6 +8,7 @@
 #include "exodusIIcpp/exodusIIcpp.h"
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace krado {
 

@@ -6,6 +6,7 @@
 #include "krado/mesh.h"
 #include "krado/geom_shape.h"
 #include <vector>
+#include <filesystem>
 
 namespace krado {
 

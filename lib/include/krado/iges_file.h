@@ -7,6 +7,7 @@
 #include "krado/document_file.h"
 #include <vector>
 #include <string>
+#include <filesystem>
 
 namespace krado {
 
