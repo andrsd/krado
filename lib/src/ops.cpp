@@ -167,7 +167,7 @@ imprint(const GeomVolume & volume, const GeomCurve & curve)
 }
 
 GeomVolume
-imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
+imprint(const GeomVolume & volume, const GeomVolume & other)
 {
     TopTools_ListOfShape args;
     args.Append(volume);
@@ -178,7 +178,7 @@ imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
     TopExp_Explorer vol_exp;
     TopTools_DataMapOfShapeInteger crv_id;
     int id = 0;
-    for (vol_exp.Init(imp_vol, TopAbs_EDGE); vol_exp.More(); vol_exp.Next()) {
+    for (vol_exp.Init(other, TopAbs_EDGE); vol_exp.More(); vol_exp.Next()) {
         auto edge = TopoDS::Edge(vol_exp.Current());
         if (!crv_id.IsBound(edge)) {
             crv_id.Bind(edge, ++id);
@@ -198,7 +198,7 @@ imprint(const GeomVolume & volume, const GeomVolume & imp_vol)
     splitter.SetTools(tools);
     splitter.Build();
     if (!splitter.IsDone())
-        throw Exception("imprint volume with volume failed.");
+        throw Exception("Imprint volume with volume failed.");
 
     auto result = splitter.Shape();
     return GeomVolume(TopoDS::Solid(result));

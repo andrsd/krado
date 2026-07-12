@@ -84,12 +84,12 @@ Ptr<Mesh> mirror(Ptr<const Mesh> mesh, const Axis2 & axis);
 /// @return Imprinted volume
 [[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomCurve & curve);
 
-/// Imprint a curve on a volume
+/// Imprint a volume on a volume
 ///
-/// @param volume Volume to imprint the curve on
-/// @param curve Curve to imprint
+/// @param volume Volume to imprint the other volume on
+/// @param other Volume to imprint
 /// @return Imprinted volume
-[[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomVolume & imp_volume);
+[[nodiscard]] GeomVolume imprint(const GeomVolume & volume, const GeomVolume & other);
 
 /// Compute volume of blocks
 ///
