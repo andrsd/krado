@@ -5,6 +5,9 @@
 #include "krado/point.h"
 #include "krado/vector.h"
 #include "krado/exception.h"
+#include "krado/geom_shape.h"
+#include "Bnd_Box.hxx"
+#include "BRepBndLib.hxx"
 #include <limits>
 
 namespace krado {
@@ -24,6 +27,18 @@ BoundingBox3D::BoundingBox3D(double xmin,
     min_pt_(xmin, ymin, zmin),
     max_pt_(xmax, ymax, zmax)
 {
+}
+
+BoundingBox3D::BoundingBox3D(const GeomShape & shape)
+{
+    Bnd_Box bbox;
+    BRepBndLib::AddOptimal(shape, bbox);
+    bbox.Get(this->min_pt_.x,
+             this->min_pt_.y,
+             this->min_pt_.z,
+             this->max_pt_.x,
+             this->max_pt_.y,
+             this->max_pt_.z);
 }
 
 bool

@@ -9,6 +9,8 @@
 
 namespace krado {
 
+class GeomShape;
+
 /// Bounding box in 3D
 ///
 /// As points are added it grows to be the bounding box of the point set
@@ -17,6 +19,7 @@ public:
     BoundingBox3D();
     BoundingBox3D(Point pt);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
+    BoundingBox3D(const GeomShape & shape);
 
     [[nodiscard]] bool empty() const;
 

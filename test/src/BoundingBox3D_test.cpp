@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "builder.h"
 #include "krado/bounding_box_3d.h"
 
 using namespace krado;
@@ -47,6 +48,15 @@ TEST(BoundingBox3DTest, empty)
 
     bbox += Point(1, 2, 3);
     EXPECT_FALSE(bbox.empty());
+}
+
+TEST(BoundingBox3DTest, ctor_geom_shape_optimal)
+{
+    auto box = testing::build_box(Point(0, 0, 0), Point(1, 2, 3));
+
+    BoundingBox3D bbox(box);
+    EXPECT_EQ(bbox.min(), Point(0, 0, 0));
+    EXPECT_EQ(bbox.max(), Point(1, 2, 3));
 }
 
 TEST(BoundingBox3DTest, scale)
