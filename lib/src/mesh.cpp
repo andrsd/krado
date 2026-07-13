@@ -290,6 +290,39 @@ reverse_element(const Element & elem)
     }
 }
 
+std::size_t
+mirror_local_side(ElementType et, std::size_t side)
+{
+    switch (et) {
+    case ElementType::TRI3: {
+        static constexpr std::array<std::size_t, 3> mapping = { 2, 1, 0 };
+        return mapping.at(side);
+    }
+    case ElementType::QUAD4: {
+        static constexpr std::array<std::size_t, 4> mapping = { 3, 2, 1, 0 };
+        return mapping.at(side);
+    }
+    case ElementType::TETRA4: {
+        static constexpr std::array<std::size_t, 4> mapping = { 1, 0, 2, 3 };
+        return mapping.at(side);
+    }
+    case ElementType::PYRAMID5: {
+        static constexpr std::array<std::size_t, 5> mapping = { 0, 4, 3, 2, 1 };
+        return mapping.at(side);
+    }
+    case ElementType::PRISM6: {
+        static constexpr std::array<std::size_t, 5> mapping = { 0, 3, 2, 1, 4 };
+        return mapping.at(side);
+    }
+    case ElementType::HEX8: {
+        static constexpr std::array<std::size_t, 6> mapping = { 2, 3, 0, 1, 4, 5 };
+        return mapping.at(side);
+    }
+    default:
+        return side;
+    }
+}
+
 } // namespace
 
 Mesh::Mesh() {}
@@ -426,7 +459,20 @@ Mesh::mirrored(const Axis2 & axis) const
     auto mirrored_mesh = Ptr<Mesh>::alloc(std::move(points), std::move(elems));
     mirrored_mesh->cell_sets_ = this->cell_sets_;
     mirrored_mesh->cell_set_names_ = this->cell_set_names_;
-    mirrored_mesh->side_sets_ = this->side_sets_;
+    // parmute/correct side sets
+    std::map<Marker, std::vector<SideEntry>> side_sets;
+    for (auto const & [marker, side_entries] : this->side_sets_) {
+        std::vector<SideEntry> mapped_entries;
+        mapped_entries.reserve(side_entries.size());
+        for (auto const & entry : side_entries) {
+            auto et = element_type(entry.elem);
+            auto mapped_side = mirror_local_side(et, entry.side);
+            mapped_entries.emplace_back(entry.elem, mapped_side);
+        }
+        side_sets[marker] = std::move(mapped_entries);
+    }
+    mirrored_mesh->side_sets_ = std::move(side_sets);
+
     mirrored_mesh->side_set_names_ = this->side_set_names_;
     mirrored_mesh->node_sets_ = this->node_sets_;
     mirrored_mesh->node_set_names_ = this->node_set_names_;

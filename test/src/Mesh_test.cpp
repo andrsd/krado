@@ -5,6 +5,7 @@
 #include "krado/range.h"
 #include "krado/vector.h"
 #include "krado/ops.h"
+#include "krado/axis2.h"
 #include "krado/hasse_diagram.h"
 #include <filesystem>
 
@@ -489,4 +490,39 @@ TEST(MeshTest, remap_block_ids_merge)
     auto cs10 = mesh.cell_set(10);
     EXPECT_THAT(cs10, UnorderedElementsAre(0, 1, 2, 3));
     EXPECT_EQ(mesh.cell_set_name(10).value(), "block_10");
+}
+
+TEST(MeshTest, mirrored)
+{
+    ExodusIIFile f(fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "mesh" / "cube.e");
+    auto cube = f.read();
+    Axis2 ax2(Point(1, 0, 0), Vector(1, 0, 0));
+    auto mirrored_cube = cube->mirrored(ax2);
+
+    auto ss_ids = mirrored_cube->side_set_ids();
+    EXPECT_THAT(ss_ids, UnorderedElementsAre(1000, 1001));
+
+    auto ss1000 = mirrored_cube->side_set(1000);
+    EXPECT_EQ(ss1000.size(), 8);
+    EXPECT_THAT(ss1000,
+                UnorderedElementsAre(SideEntry(15, 0),
+                                     SideEntry(12, 1),
+                                     SideEntry(21, 0),
+                                     SideEntry(18, 1),
+                                     SideEntry(3, 0),
+                                     SideEntry(0, 1),
+                                     SideEntry(9, 0),
+                                     SideEntry(6, 1)));
+
+    auto ss1001 = mirrored_cube->side_set(1001);
+    EXPECT_EQ(ss1001.size(), 8);
+    EXPECT_THAT(ss1001,
+                UnorderedElementsAre(SideEntry(27, 0),
+                                     SideEntry(28, 1),
+                                     SideEntry(33, 0),
+                                     SideEntry(34, 1),
+                                     SideEntry(41, 0),
+                                     SideEntry(38, 1),
+                                     SideEntry(45, 0),
+                                     SideEntry(46, 1)));
 }
