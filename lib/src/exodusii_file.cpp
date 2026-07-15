@@ -39,7 +39,7 @@ element_name(ElementType et)
     case ElementType::QUAD4:
         return "QUAD4";
     case ElementType::TETRA4:
-        return "TET4";
+        return "TETRA4";
     case ElementType::PYRAMID5:
         return "PYRAMID5";
     case ElementType::PRISM6:
