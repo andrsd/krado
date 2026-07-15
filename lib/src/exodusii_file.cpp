@@ -43,7 +43,7 @@ element_name(ElementType et)
     case ElementType::PYRAMID5:
         return "PYRAMID5";
     case ElementType::PRISM6:
-        return "WEDGE6";
+        return "WEDGE";
     case ElementType::HEX8:
         return "HEX8";
     default:
