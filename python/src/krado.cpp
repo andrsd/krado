@@ -290,12 +290,13 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<Point>(m, "Point")
+        .def(py::init<>())
         .def(py::init<double, double, double>(), py::arg("x"), py::arg("y") = 0., py::arg("z") = 0.)
         .def_readwrite("x", &Point::x)
         .def_readwrite("y", &Point::y)
         .def_readwrite("z", &Point::z)
         .def("is_equal", &Point::is_equal,
-            py::arg("other"), py::arg("tol"))
+            py::arg("other"), py::arg("tol") = 1e-15)
         .def("distance", &Point::distance,
             py::arg("pt"))
         .def("mirror", static_cast<void (Point::*)(const Point &)>(&Point::mirror),
@@ -332,8 +333,47 @@ PYBIND11_MODULE(krado, m)
         .def("__add__", [](const Point& p, const Vector& v) {
             return p + v;
         }, py::is_operator())
-        .def("__add__", [](const Point& p, const Vector& v) {
-            return p + v;
+        .def("__sub__", [](const Point& a, const Point& b) {
+            return a - b;
+        }, py::is_operator())
+        .def("__sub__", [](const Point& p, const Vector& v) {
+            return p - v;
+        }, py::is_operator())
+        .def("__iadd__", [](Point& p, const Point& other) -> Point& {
+            p += other;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__iadd__", [](Point& p, const Vector& v) -> Point& {
+            p += v;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__isub__", [](Point& p, const Point& other) -> Point& {
+            p -= other;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__isub__", [](Point& p, const Vector& v) -> Point& {
+            p -= v;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__mul__", [](Point& p, double alpha) {
+            return p * alpha;
+        }, py::is_operator())
+        .def("__rmul__", [](const Point& p, double alpha) {
+            return alpha * p;
+        }, py::is_operator())
+        .def("__imul__", [](Point& p, double alpha) -> Point& {
+            p *= alpha;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__itruediv__", [](Point& p, double alpha) -> Point& {
+            p /= alpha;
+            return p;
+        }, py::is_operator(), py::return_value_policy::reference_internal)
+        .def("__eq__", [](const Point& a, const Point& b) {
+            return a == b;
+        }, py::is_operator())
+        .def("__lt__", [](const Point& a, const Point& b) {
+            return a < b;
         }, py::is_operator())
         .def("__repr__", [](const Point &pt) {
             return "<Point x=" + std::to_string(pt.x) + " y=" + std::to_string(pt.y) + ", z=" + std::to_string(pt.z) + ">";
