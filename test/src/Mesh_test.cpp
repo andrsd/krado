@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include "builder.h"
 #include "krado/element.h"
 #include "krado/mesh.h"
 #include "krado/exodusii_file.h"
@@ -7,6 +8,11 @@
 #include "krado/ops.h"
 #include "krado/axis2.h"
 #include "krado/hasse_diagram.h"
+#include "krado/geom_model.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_surface.h"
+#include "krado/scheme/equal.h"
+#include "krado/scheme/structured.h"
 #include <filesystem>
 
 using namespace krado;
@@ -525,4 +531,118 @@ TEST(MeshTest, mirrored)
                                      SideEntry(38, 1),
                                      SideEntry(45, 0),
                                      SideEntry(46, 1)));
+}
+
+TEST(MeshTest, build_mesh_options_top_level_only)
+{
+    Point pt1(0, 0, 0);
+    Point pt2(3, 2, 0);
+    auto rect = testing::build_rect(pt1, pt2);
+    GeomModel model(rect);
+
+    SchemeEqual::Options opts_h;
+    opts_h.intervals = 3;
+    SchemeEqual::Options opts_v;
+    opts_v.intervals = 2;
+
+    model.curve(1)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(1)->set_marker(1000);
+    model.curve(2)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(2)->set_marker(1001);
+    model.curve(3)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(3)->set_marker(1002);
+    model.curve(4)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(4)->set_marker(1003);
+
+    auto surf = model.surface(1);
+    SchemeStructured::Options opts;
+    surf->set_scheme<SchemeStructured>(opts);
+    surf->set_marker(100);
+
+    model.mesh_surface(1);
+
+    MeshBuildOptions options;
+    options.element_selection = MeshBuildOptions::ElementSelection::TopLevelOnly;
+    auto mesh = build_mesh(model, options);
+
+    // Expect 6 quadrangles, and boundary 1D curves to be filtered out
+    EXPECT_EQ(mesh->num_elements(), 6);
+    for (Index i = 0; i < mesh->num_elements(); ++i) {
+        EXPECT_EQ(mesh->element_type(i), ElementType::QUAD4);
+    }
+}
+
+TEST(MeshTest, build_mesh_options_all_meshed)
+{
+    Point pt1(0, 0, 0);
+    Point pt2(3, 2, 0);
+    auto rect = testing::build_rect(pt1, pt2);
+    GeomModel model(rect);
+
+    SchemeEqual::Options opts_h;
+    opts_h.intervals = 3;
+    SchemeEqual::Options opts_v;
+    opts_v.intervals = 2;
+
+    model.curve(1)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(1)->set_marker(1000);
+    model.curve(2)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(2)->set_marker(1001);
+    model.curve(3)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(3)->set_marker(1002);
+    model.curve(4)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(4)->set_marker(1003);
+
+    auto surf = model.surface(1);
+    SchemeStructured::Options opts;
+    surf->set_scheme<SchemeStructured>(opts);
+    surf->set_marker(100);
+
+    model.mesh_surface(1);
+
+    MeshBuildOptions options;
+    options.element_selection = MeshBuildOptions::ElementSelection::AllMeshed;
+    auto mesh = build_mesh(model, options);
+
+    // Expect 6 quadrangles + 10 segments = 16 elements total
+    EXPECT_EQ(mesh->num_elements(), 16);
+}
+
+TEST(MeshTest, build_mesh_options_max_dimension)
+{
+    Point pt1(0, 0, 0);
+    Point pt2(3, 2, 0);
+    auto rect = testing::build_rect(pt1, pt2);
+    GeomModel model(rect);
+
+    SchemeEqual::Options opts_h;
+    opts_h.intervals = 3;
+    SchemeEqual::Options opts_v;
+    opts_v.intervals = 2;
+
+    model.curve(1)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(1)->set_marker(1000);
+    model.curve(2)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(2)->set_marker(1001);
+    model.curve(3)->set_scheme<SchemeEqual>(opts_h);
+    model.curve(3)->set_marker(1002);
+    model.curve(4)->set_scheme<SchemeEqual>(opts_v);
+    model.curve(4)->set_marker(1003);
+
+    auto surf = model.surface(1);
+    SchemeStructured::Options opts;
+    surf->set_scheme<SchemeStructured>(opts);
+    surf->set_marker(100);
+
+    model.mesh_surface(1);
+
+    MeshBuildOptions options;
+    options.element_selection = MeshBuildOptions::ElementSelection::MaxDimension;
+    auto mesh = build_mesh(model, options);
+
+    // Max dim is 2D, so only include 6 quadrangles
+    EXPECT_EQ(mesh->num_elements(), 6);
+    for (Index i = 0; i < mesh->num_elements(); ++i) {
+        EXPECT_EQ(mesh->element_type(i), ElementType::QUAD4);
+    }
 }

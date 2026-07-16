@@ -21,6 +21,7 @@ __all__ = [
     "HexagonalPattern",
     "LinearPattern",
     "Mesh",
+    "MeshBuildOptions",
     "MeshElement",
     "MeshCurve",
     "MeshCurveVertex",
@@ -36,6 +37,7 @@ __all__ = [
     "Vector",
 
     "extrude",
+    "build_mesh",
     "tetrahedralize",
     "export_mesh",
     "import_mesh"

@@ -341,10 +341,23 @@ private:
 BoundingBox3D compute_bounding_box(const Mesh & mesh);
 BoundingBox3D compute_bounding_box(Ptr<const Mesh> mesh);
 
+/// Options for building mesh from GeomModel
+struct MeshBuildOptions {
+    enum class ElementSelection {
+        TopLevelOnly,
+        AllMeshed,
+        MaxDimension
+    };
+
+    ElementSelection element_selection = ElementSelection::TopLevelOnly;
+    Optional<int> spatial_dimension = std::nullopt;
+};
+
 /// Build mesh from geometric model
 ///
 /// @param model
+/// @param options
 /// @return Mesh
-Ptr<Mesh> build_mesh(const GeomModel & model);
+Ptr<Mesh> build_mesh(const GeomModel & model, const MeshBuildOptions & options = {});
 
 } // namespace krado

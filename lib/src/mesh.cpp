@@ -938,159 +938,456 @@ compute_bounding_box(Ptr<const Mesh> mesh)
 
 //
 
-std::tuple<std::vector<Point>, std::map<Ptr<MeshVertexAbstract>, Index>>
-build_points(const GeomModel & model)
-{
-    Log::debug("Building points");
-
-    std::vector<Point> pnts;
-    std::size_t sz = model.vertices().size();
-    pnts.reserve(sz);
-    for (auto & [_, curve] : model.curves())
-        sz += curve->curve_vertices().size();
-    for (auto & [id, surface] : model.surfaces())
-        sz += surface->surface_vertices().size();
-    std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
-    Index gid = 0;
-
-    for (auto & [id, v] : model.vertices()) {
-        vtx_map.emplace(v, gid);
-        pnts.emplace_back(v->point());
-        gid++;
-    }
-    for (auto & [id, curve] : model.curves())
-        for (auto & v : curve->curve_vertices()) {
-            vtx_map.emplace(v, gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    for (auto & [id, surface] : model.surfaces())
-        for (auto & v : surface->surface_vertices()) {
-            vtx_map.emplace(v, gid);
-            pnts.emplace_back(v->point());
-            gid++;
-        }
-    return { pnts, vtx_map };
-}
-
-std::vector<Element>
-build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
-{
-    Log::debug("Building 1D elements");
-
-    std::vector<Element> elems;
-    std::size_t sz = 0;
-    for (auto & [id, curve] : model.curves())
-        sz += curve->segments().size();
-    elems.reserve(sz);
-    for (auto & [id, curve] : model.curves()) {
-        std::array<Index, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve->segments()) {
-            for (auto i : make_range(Line2::N_VERTICES)) {
-                auto vtx = local_elem.vertex(i);
-                auto gid = vtx_map.at(vtx);
-                line[i] = gid;
-            }
-            elems.emplace_back(Element::Line2(line));
-        }
-    }
-    return elems;
-}
-
-std::vector<Element>
-build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
-{
-    Log::debug("Building 2D elements");
-
-    std::vector<Element> elems;
-    std::size_t sz = 0;
-    for (auto & [id, surface] : model.surfaces()) {
-        sz += surface->triangles().size();
-        sz += surface->quadrangles().size();
-    }
-    elems.reserve(sz);
-    for (auto & [id, surface] : model.surfaces()) {
-        std::array<Index, Tri3::N_VERTICES> tri;
-        for (auto & local_elem : surface->triangles()) {
-            for (auto i : make_range(Tri3::N_VERTICES)) {
-                auto vtx = local_elem.vertex(i);
-                auto gid = vtx_map.at(vtx);
-                tri[i] = gid;
-            }
-            elems.emplace_back(Element::Tri3(tri));
-        }
-
-        std::array<Index, Quad4::N_VERTICES> quad;
-        for (auto & local_elem : surface->quadrangles()) {
-            for (auto i : make_range(Quad4::N_VERTICES)) {
-                auto vtx = local_elem.vertex(i);
-                auto gid = vtx_map.at(vtx);
-                quad[i] = gid;
-            }
-            elems.emplace_back(Element::Quad4(quad));
-        }
-    }
-    return elems;
-}
-
-std::vector<Element>
-build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
-{
-    Log::debug("Building 3D elements");
-
-    std::vector<Element> elems;
-    std::size_t sz = 0;
-    for (auto & [id, volume] : model.volumes()) {
-        sz += volume->tetrahedra().size();
-    }
-    elems.reserve(sz);
-    for (auto & [id, volume] : model.volumes()) {
-        std::array<Index, Tetra4::N_VERTICES> tet;
-        for (auto & local_elem : volume->tetrahedra()) {
-            for (auto i : make_range(Tetra4::N_VERTICES)) {
-                auto vtx = local_elem.vertex(i);
-                auto gid = vtx_map.at(vtx);
-                tet[i] = gid;
-            }
-            elems.emplace_back(Element::Tetra4(tet));
-        }
-    }
-    return elems;
-}
-
-std::vector<Element>
-build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, Index> & vtx_map)
-{
-    Log::debug("Building elements");
-
-    auto bbox = compute_bounding_box(model);
-    auto dim = determine_spatial_dim(bbox);
-
-    if (dim == 1)
-        return build_1d_elements(model, vtx_map);
-    else if (dim == 2) {
-        if (model.surfaces().size() > 0)
-            return build_2d_elements(model, vtx_map);
-        else
-            return build_1d_elements(model, vtx_map);
-    }
-    else if (dim == 3)
-        return build_3d_elements(model, vtx_map);
-    else
-        throw Exception("Element construction for your setup is not implemented yet");
-}
-
 Ptr<Mesh>
-build_mesh(const GeomModel & model)
+build_mesh(const GeomModel & model, const MeshBuildOptions & options)
 {
     Log::debug("Building mesh");
 
-    auto [points, vtx_map] = build_points(model);
-    auto elements = build_elements(model, vtx_map);
+    // 1. Determine spatial dimension
+    int dim = 1;
+    if (options.spatial_dimension.has_value()) {
+        dim = options.spatial_dimension.value();
+    }
+    else {
+        auto bbox = compute_bounding_box(model);
+        auto sz = bbox.size();
+        if (sz[2] > 1e-15) {
+            dim = 3;
+        }
+        else if (sz[1] > 1e-15) {
+            dim = 2;
+        }
+        else {
+            dim = 1;
+        }
+    }
+
+    // 2. Identify all meshed volumes, surfaces, and curves
+    std::vector<Ptr<MeshVolume>> meshed_volumes;
+    std::vector<Ptr<MeshSurface>> meshed_surfaces;
+    std::vector<Ptr<MeshCurve>> meshed_curves;
+
+    for (auto & [id, volume] : model.volumes()) {
+        if (volume->is_meshed()) {
+            meshed_volumes.push_back(volume);
+        }
+    }
+    for (auto & [id, surface] : model.surfaces()) {
+        if (surface->is_meshed()) {
+            meshed_surfaces.push_back(surface);
+        }
+    }
+    for (auto & [id, curve] : model.curves()) {
+        if (curve->is_meshed()) {
+            meshed_curves.push_back(curve);
+        }
+    }
+
+    // 3. Identify boundary entities to filter out for TopLevelOnly strategy
+    std::set<Ptr<MeshSurface>> volume_boundary_surfaces;
+    for (auto & volume : meshed_volumes) {
+        for (auto & surface : volume->surfaces()) {
+            volume_boundary_surfaces.insert(surface);
+        }
+    }
+
+    std::set<Ptr<MeshCurve>> surface_boundary_curves;
+    for (auto & surface : meshed_surfaces) {
+        for (auto & curve : surface->curves()) {
+            surface_boundary_curves.insert(curve);
+        }
+    }
+
+    // 4. Select which entities are included in the physical mesh
+    std::vector<Ptr<MeshVolume>> included_volumes;
+    std::vector<Ptr<MeshSurface>> included_surfaces;
+    std::vector<Ptr<MeshCurve>> included_curves;
+
+    if (options.element_selection == MeshBuildOptions::ElementSelection::AllMeshed) {
+        included_volumes = meshed_volumes;
+        included_surfaces = meshed_surfaces;
+        included_curves = meshed_curves;
+    }
+    else if (options.element_selection == MeshBuildOptions::ElementSelection::MaxDimension) {
+        int max_dim = 0;
+        if (!meshed_volumes.empty()) {
+            max_dim = 3;
+        }
+        else if (!meshed_surfaces.empty()) {
+            max_dim = 2;
+        }
+        else if (!meshed_curves.empty()) {
+            max_dim = 1;
+        }
+
+        if (max_dim == 3) {
+            included_volumes = meshed_volumes;
+        }
+        else if (max_dim == 2) {
+            included_surfaces = meshed_surfaces;
+        }
+        else if (max_dim == 1) {
+            included_curves = meshed_curves;
+        }
+    }
+    else { // TopLevelOnly
+        included_volumes = meshed_volumes;
+        for (auto & surface : meshed_surfaces) {
+            if (volume_boundary_surfaces.find(surface) == volume_boundary_surfaces.end()) {
+                included_surfaces.push_back(surface);
+            }
+        }
+        for (auto & curve : meshed_curves) {
+            if (surface_boundary_curves.find(curve) == surface_boundary_curves.end()) {
+                included_curves.push_back(curve);
+            }
+        }
+    }
+
+    // 5. Collect referenced vertices
+    std::vector<Ptr<MeshVertexAbstract>> referenced_vertices;
+    std::set<Ptr<MeshVertexAbstract>> referenced_set;
+
+    auto add_vertex = [&](Ptr<MeshVertexAbstract> vtx) {
+        if (referenced_set.insert(vtx).second) {
+            referenced_vertices.push_back(vtx);
+        }
+    };
+
+    for (auto & [id, v] : model.vertices()) {
+        add_vertex(v);
+    }
+
+    for (auto & volume : included_volumes) {
+        for (auto & tet : volume->tetrahedra()) {
+            for (int i = 0; i < Tetra4::N_VERTICES; ++i) {
+                add_vertex(tet.vertex(i));
+            }
+        }
+    }
+
+    for (auto & surface : included_surfaces) {
+        for (auto & tri : surface->triangles()) {
+            for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                add_vertex(tri.vertex(i));
+            }
+        }
+        for (auto & quad : surface->quadrangles()) {
+            for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+                add_vertex(quad.vertex(i));
+            }
+        }
+    }
+
+    for (auto & curve : included_curves) {
+        for (auto & seg : curve->segments()) {
+            for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                add_vertex(seg.vertex(i));
+            }
+        }
+    }
+
+    // 6. Map referenced vertices to global points
+    std::vector<Point> points;
+    std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
+    points.reserve(referenced_vertices.size());
+    Index gid = 0;
+    for (auto & vtx : referenced_vertices) {
+        vtx_map[vtx] = gid++;
+        points.push_back(vtx->point());
+    }
+
+    // 7. Create physical elements and build cell sets
+    std::vector<Element> elements;
+    std::map<Marker, std::vector<Index>> cell_sets;
+    std::map<Marker, std::string> cell_set_names;
+
+    Index global_elem_idx = 0;
+
+    for (auto & volume : included_volumes) {
+        auto marker_opt = volume->marker();
+        if (marker_opt.has_value()) {
+            auto marker = marker_opt.value();
+            cell_set_names[marker] = model.block_name(marker);
+            auto & cell_ids = cell_sets[marker];
+            for (auto & local_elem : volume->tetrahedra()) {
+                std::array<Index, Tetra4::N_VERTICES> tet;
+                for (int i = 0; i < Tetra4::N_VERTICES; ++i) {
+                    tet[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Tetra4(tet));
+                cell_ids.push_back(global_elem_idx++);
+            }
+        }
+        else {
+            for (auto & local_elem : volume->tetrahedra()) {
+                std::array<Index, Tetra4::N_VERTICES> tet;
+                for (int i = 0; i < Tetra4::N_VERTICES; ++i) {
+                    tet[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Tetra4(tet));
+                global_elem_idx++;
+            }
+        }
+    }
+
+    for (auto & surface : included_surfaces) {
+        auto marker_opt = surface->marker();
+        if (marker_opt.has_value()) {
+            auto marker = marker_opt.value();
+            cell_set_names[marker] = model.block_name(marker);
+            auto & cell_ids = cell_sets[marker];
+            for (auto & local_elem : surface->triangles()) {
+                std::array<Index, Tri3::N_VERTICES> tri;
+                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                    tri[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Tri3(tri));
+                cell_ids.push_back(global_elem_idx++);
+            }
+            for (auto & local_elem : surface->quadrangles()) {
+                std::array<Index, Quad4::N_VERTICES> quad;
+                for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+                    quad[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Quad4(quad));
+                cell_ids.push_back(global_elem_idx++);
+            }
+        }
+        else {
+            for (auto & local_elem : surface->triangles()) {
+                std::array<Index, Tri3::N_VERTICES> tri;
+                for (int i = 0; i < Tri3::N_VERTICES; ++i) {
+                    tri[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Tri3(tri));
+                global_elem_idx++;
+            }
+            for (auto & local_elem : surface->quadrangles()) {
+                std::array<Index, Quad4::N_VERTICES> quad;
+                for (int i = 0; i < Quad4::N_VERTICES; ++i) {
+                    quad[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Quad4(quad));
+                global_elem_idx++;
+            }
+        }
+    }
+
+    for (auto & curve : included_curves) {
+        auto marker_opt = curve->marker();
+        if (marker_opt.has_value()) {
+            auto marker = marker_opt.value();
+            cell_set_names[marker] = model.block_name(marker);
+            auto & cell_ids = cell_sets[marker];
+            for (auto & local_elem : curve->segments()) {
+                std::array<Index, Line2::N_VERTICES> line;
+                for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                    line[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Line2(line));
+                cell_ids.push_back(global_elem_idx++);
+            }
+        }
+        else {
+            for (auto & local_elem : curve->segments()) {
+                std::array<Index, Line2::N_VERTICES> line;
+                for (int i = 0; i < Line2::N_VERTICES; ++i) {
+                    line[i] = vtx_map.at(local_elem.vertex(i));
+                }
+                elements.emplace_back(Element::Line2(line));
+                global_elem_idx++;
+            }
+        }
+    }
+
     auto mesh = Ptr<Mesh>::alloc(points, elements);
-    // TODO: create cell sets
-    // TODO: create side sets
-    // TODO: create node sets
+    mesh->set_up();
+
+    for (auto const & [marker, cell_ids] : cell_sets) {
+        mesh->set_cell_set(marker, cell_ids);
+    }
+    for (auto const & [marker, name] : cell_set_names) {
+        if (!name.empty()) {
+            mesh->set_cell_set_name(marker, name);
+        }
+    }
+
+    // 8. Create Node Sets
+    std::map<Marker, std::vector<Index>> node_sets;
+    std::map<Marker, std::string> node_set_names;
+
+    for (auto & [id, vertex] : model.vertices()) {
+        auto marker_opt = vertex->marker();
+        if (marker_opt.has_value()) {
+            auto marker = marker_opt.value();
+            if (vtx_map.find(vertex) != vtx_map.end()) {
+                node_sets[marker].push_back(vtx_map.at(vertex));
+                node_set_names[marker] = model.node_set_name(marker);
+            }
+        }
+    }
+
+    for (auto const & [marker, node_ids] : node_sets) {
+        mesh->set_node_set(marker, node_ids);
+    }
+    for (auto const & [marker, name] : node_set_names) {
+        if (!name.empty()) {
+            mesh->set_node_set_name(marker, name);
+        }
+    }
+
+    // 9. Create Side Sets
+    std::map<Index, std::vector<Index>> vertex_to_elements_map;
+    for (Index i = 0; i < elements.size(); ++i) {
+        for (auto v_idx : elements[i].indices()) {
+            vertex_to_elements_map[v_idx].push_back(i);
+        }
+    }
+
+    std::map<Marker, std::vector<SideEntry>> side_sets;
+    std::map<Marker, std::string> side_set_names;
+
+    if (!included_volumes.empty()) {
+        for (auto & [id, surface] : model.surfaces()) {
+            auto marker_opt = surface->marker();
+            if (marker_opt.has_value()) {
+                auto marker = marker_opt.value();
+                auto & sset = side_sets[marker];
+                side_set_names[marker] = model.side_set_name(marker);
+
+                for (auto & tri : surface->triangles()) {
+                    if (vtx_map.find(tri.vertex(0)) == vtx_map.end() ||
+                        vtx_map.find(tri.vertex(1)) == vtx_map.end() ||
+                        vtx_map.find(tri.vertex(2)) == vtx_map.end()) {
+                        continue;
+                    }
+                    Index v0_id = vtx_map.at(tri.vertex(0));
+                    Index v1_id = vtx_map.at(tri.vertex(1));
+                    Index v2_id = vtx_map.at(tri.vertex(2));
+
+                    bool found = false;
+                    for (auto elem_idx : vertex_to_elements_map[v0_id]) {
+                        const auto & element = elements[elem_idx];
+                        if (element.type() == ElementType::TETRA4) {
+                            const auto & elem_verts = element.indices();
+                            for (u8 f_idx = 0; f_idx < Tetra4::N_FACES; ++f_idx) {
+                                Index f_v0 = elem_verts[Tetra4::FACE_VERTICES[f_idx][0]];
+                                Index f_v1 = elem_verts[Tetra4::FACE_VERTICES[f_idx][1]];
+                                Index f_v2 = elem_verts[Tetra4::FACE_VERTICES[f_idx][2]];
+
+                                std::set<Index> face_set = { f_v0, f_v1, f_v2 };
+                                std::set<Index> tri_set = { v0_id, v1_id, v2_id };
+                                if (face_set == tri_set) {
+                                    sset.emplace_back(elem_idx, f_idx);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    else if (!included_surfaces.empty()) {
+        for (auto & [id, curve] : model.curves()) {
+            auto marker_opt = curve->marker();
+            if (marker_opt.has_value()) {
+                auto marker = marker_opt.value();
+                auto & sset = side_sets[marker];
+                side_set_names[marker] = model.side_set_name(marker);
+
+                for (auto & seg : curve->segments()) {
+                    if (vtx_map.find(seg.vertex(0)) == vtx_map.end() ||
+                        vtx_map.find(seg.vertex(1)) == vtx_map.end()) {
+                        continue;
+                    }
+                    Index v0_id = vtx_map.at(seg.vertex(0));
+                    Index v1_id = vtx_map.at(seg.vertex(1));
+
+                    bool found = false;
+                    for (auto elem_idx : vertex_to_elements_map[v0_id]) {
+                        const auto & element = elements[elem_idx];
+                        if (element.type() == ElementType::TRI3) {
+                            const auto & elem_verts = element.indices();
+                            for (u8 e_idx = 0; e_idx < Tri3::N_EDGES; ++e_idx) {
+                                Index e_v0 = elem_verts[Tri3::EDGE_VERTICES[e_idx][0]];
+                                Index e_v1 = elem_verts[Tri3::EDGE_VERTICES[e_idx][1]];
+                                if ((e_v0 == v0_id && e_v1 == v1_id) ||
+                                    (e_v0 == v1_id && e_v1 == v0_id)) {
+                                    sset.emplace_back(elem_idx, e_idx);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (element.type() == ElementType::QUAD4) {
+                            const auto & elem_verts = element.indices();
+                            for (u8 e_idx = 0; e_idx < Quad4::N_EDGES; ++e_idx) {
+                                Index e_v0 = elem_verts[Quad4::EDGE_VERTICES[e_idx][0]];
+                                Index e_v1 = elem_verts[Quad4::EDGE_VERTICES[e_idx][1]];
+                                if ((e_v0 == v0_id && e_v1 == v1_id) ||
+                                    (e_v0 == v1_id && e_v1 == v0_id)) {
+                                    sset.emplace_back(elem_idx, e_idx);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    else if (!included_curves.empty()) {
+        for (auto & [id, vertex] : model.vertices()) {
+            auto marker_opt = vertex->marker();
+            if (marker_opt.has_value()) {
+                auto marker = marker_opt.value();
+                if (vtx_map.find(vertex) == vtx_map.end()) {
+                    continue;
+                }
+                Index vertex_gidx = vtx_map.at(vertex);
+                auto & sset = side_sets[marker];
+                side_set_names[marker] = model.side_set_name(marker);
+
+                if (vertex_to_elements_map.find(vertex_gidx) != vertex_to_elements_map.end()) {
+                    const auto & candidate_elems = vertex_to_elements_map[vertex_gidx];
+                    if (!candidate_elems.empty()) {
+                        Index elem_idx = candidate_elems[0];
+                        const auto & element = elements[elem_idx];
+                        if (element.type() == ElementType::LINE2) {
+                            int local_side = -1;
+                            if (element.index(0) == vertex_gidx) {
+                                local_side = 0;
+                            }
+                            else if (element.index(1) == vertex_gidx) {
+                                local_side = 1;
+                            }
+                            if (local_side != -1) {
+                                sset.emplace_back(elem_idx, local_side);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (auto const & [marker, sset_entries] : side_sets) {
+        mesh->set_side_set(marker, sset_entries);
+    }
+    for (auto const & [marker, name] : side_set_names) {
+        if (!name.empty()) {
+            mesh->set_side_set_name(marker, name);
+        }
+    }
+
     return mesh;
 }
 

@@ -752,6 +752,33 @@ PYBIND11_MODULE(krado, m)
         })
     ;
 
+    py::class_<MeshBuildOptions> mesh_build_options(m, "MeshBuildOptions");
+    py::enum_<MeshBuildOptions::ElementSelection>(mesh_build_options, "ElementSelection")
+        .value("TopLevelOnly", MeshBuildOptions::ElementSelection::TopLevelOnly)
+        .value("AllMeshed", MeshBuildOptions::ElementSelection::AllMeshed)
+        .value("MaxDimension", MeshBuildOptions::ElementSelection::MaxDimension)
+        .export_values();
+
+    mesh_build_options
+        .def(py::init<>())
+        .def_readwrite("element_selection", &MeshBuildOptions::element_selection)
+        .def_property("spatial_dimension",
+            [](const MeshBuildOptions & self) -> py::object {
+                if (self.spatial_dimension.has_value()) {
+                    return py::cast(self.spatial_dimension.value());
+                } else {
+                    return py::none();
+                }
+            },
+            [](MeshBuildOptions & self, py::object val) {
+                if (val.is_none()) {
+                    self.spatial_dimension = std::nullopt;
+                } else {
+                    self.spatial_dimension = val.cast<int>();
+                }
+            })
+    ;
+
     py::class_<Meshable, Ptr<Meshable>>(m, "Meshable")
         .def(py::init<>())
         .def("is_meshed", &Meshable::is_meshed)
@@ -1068,6 +1095,9 @@ PYBIND11_MODULE(krado, m)
          py::arg("faces"), py::arg("tolerance") = 1e-6);
 
     m.def("smooth", &smooth, py::arg("surface"), py::arg("iterations") = 1);
+
+    // build_mesh
+    m.def("build_mesh", &build_mesh, py::arg("model"), py::arg("options") = MeshBuildOptions());
 
     // tetrahedralize.h
 
