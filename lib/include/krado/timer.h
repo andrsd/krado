@@ -23,7 +23,8 @@ public:
         auto end_time = std::chrono::steady_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end_time - this->start_time_;
-        Log::info(fmt::runtime(this->msg_), utils::human_time(elapsed_seconds.count()));
+        if (elapsed_seconds.count() > 1.)
+            Log::info(fmt::runtime(this->msg_), utils::human_time(elapsed_seconds.count()));
     }
 
     // Prevent copying to avoid duplicate timing logs
