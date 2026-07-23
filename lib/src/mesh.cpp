@@ -762,9 +762,9 @@ Mesh::remove_node_sets()
 Mesh &
 Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
 {
-    Log::info("Remapping block IDs:");
+    Log::info("Remapping block IDs...");
     for (auto & [block_id, new_block_id] : block_map)
-        Log::info("- {} -> {}", block_id, new_block_id);
+        Log::info(2, "- {} -> {}", block_id, new_block_id);
 
     std::map<Marker, std::string> new_cell_set_names;
     std::map<Marker, std::vector<Index>> new_cell_sets;
