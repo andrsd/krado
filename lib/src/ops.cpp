@@ -21,6 +21,7 @@
 #include "krado/axis1.h"
 #include "krado/range.h"
 #include "krado/timer.h"
+#include "krado/fe_values.h"
 #include "Geom_TrimmedCurve.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
@@ -209,26 +210,26 @@ compute_volume(const Mesh & mesh)
 {
     auto element_volume = [&](const Element & elem) {
         switch (elem.type()) {
-        case ElementType::LINE2: {
-            auto idxs = elem.indices();
-            auto vec = mesh.point(idxs[1]) - mesh.point(idxs[0]);
-            return vec.magnitude();
-        }
+        case ElementType::LINE2:
+            return integrate_volume<ElementType::LINE2>(elem, mesh);
 
-        case ElementType::TRI3: {
-            auto idxs = elem.indices();
-            auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
-            auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
-            return 0.5 * cross_product(va, vb).magnitude();
-        }
+        case ElementType::TRI3:
+            return integrate_volume<ElementType::TRI3>(elem, mesh);
 
-        case ElementType::TETRA4: {
-            auto idxs = elem.indices();
-            auto va = mesh.point(idxs[1]) - mesh.point(idxs[0]);
-            auto vb = mesh.point(idxs[2]) - mesh.point(idxs[0]);
-            auto vc = mesh.point(idxs[3]) - mesh.point(idxs[0]);
-            return std::abs(dot_product(va, cross_product(vb, vc))) / 6.;
-        }
+        case ElementType::QUAD4:
+            return integrate_volume<ElementType::QUAD4>(elem, mesh);
+
+        case ElementType::TETRA4:
+            return integrate_volume<ElementType::TETRA4>(elem, mesh);
+
+        case ElementType::PYRAMID5:
+            return integrate_volume<ElementType::PYRAMID5>(elem, mesh);
+
+        case ElementType::PRISM6:
+            return integrate_volume<ElementType::PRISM6>(elem, mesh);
+
+        case ElementType::HEX8:
+            return integrate_volume<ElementType::HEX8>(elem, mesh);
 
         default:
             throw Exception("compute_volume: Unsupported element type {}", elem.type());
