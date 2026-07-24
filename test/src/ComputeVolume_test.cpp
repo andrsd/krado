@@ -167,6 +167,44 @@ TEST(ComputeVolumeTest, volume_of_a_pyramid5)
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(4. / 3., 1e-10))));
 }
 
+TEST(ComputeVolumeTest, volume_of_a_pyramid5_blocks)
+{
+    // 2x3x5 box, split into 6 pyramids with a central node at (1, 1.5, 2.5)
+    // Points: 8 box vertices + 1 central point = 9 points
+    std::vector<Point> pts = {
+        Point(0, 0, 0), // 0
+        Point(2, 0, 0), // 1
+        Point(2, 3, 0), // 2
+        Point(0, 3, 0), // 3
+        Point(0, 0, 5), // 4
+        Point(2, 0, 5), // 5
+        Point(2, 3, 5), // 6
+        Point(0, 3, 5), // 7
+        Point(1, 1.5, 2.5), // 8 (Apex)
+    };
+
+    std::vector<Element> elements = {
+        Element::Pyramid5({ 0, 3, 2, 1, 8 }), // Bottom (z=0)
+        Element::Pyramid5({ 4, 5, 6, 7, 8 }), // Top (z=5)
+        Element::Pyramid5({ 0, 1, 5, 4, 8 }), // Front (y=0)
+        Element::Pyramid5({ 3, 7, 6, 2, 8 }), // Back (y=3)
+        Element::Pyramid5({ 0, 4, 7, 3, 8 }), // Left (x=0)
+        Element::Pyramid5({ 1, 2, 6, 5, 8 }), // Right (x=2)
+    };
+
+    Mesh mesh(pts, elements);
+    // All pyramids have volume 5.0.
+    // Block 1: 1 pyramid (expected volume 1 * 5.0 = 5.0)
+    mesh.set_cell_set(10, { 0 });
+    // Block 2: 5 pyramids (expected volume 5 * 5.0 = 25.0)
+    mesh.set_cell_set(20, { 1, 2, 3, 4, 5 });
+
+    auto vols = compute_volume(mesh);
+    EXPECT_THAT(
+        vols,
+        UnorderedElementsAre(Pair(10, DoubleNear(5.0, 1e-10)), Pair(20, DoubleNear(25.0, 1e-10))));
+}
+
 TEST(ComputeVolumeTest, area_of_a_quad4_blocks)
 {
     // Domain: 4x2
