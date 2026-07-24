@@ -27,6 +27,7 @@ if (DOXYGEN_FOUND AND SPHINX_BUILD)
             ${PROJECT_BINARY_DIR}/docs/conf.py
             ${PROJECT_BINARY_DIR}/docs/xml/index.xml
             ${RST_FILES}
+            ${PROJECT_BINARY_DIR}/python/stubs/krado/__init__.pyi
     )
 
     add_custom_command(
@@ -36,6 +37,15 @@ if (DOXYGEN_FOUND AND SPHINX_BUILD)
             doxygen Doxyfile
         DEPENDS
             ${PROJECT_BINARY_DIR}/docs/Doxyfile
+            ${HEADER_FILES}
+    )
+
+    add_custom_command(
+        OUTPUT
+            ${PROJECT_BINARY_DIR}/python/stubs/krado/__init__.pyi
+        COMMAND
+            pybind11-stubgen krado -o ${PROJECT_BINARY_DIR}/python/stubs
+        DEPENDS
             ${HEADER_FILES}
     )
 

@@ -260,6 +260,10 @@ PYBIND11_MODULE(krado, m)
         .value("HEX8", ElementType::HEX8)
         .export_values();
 
+    auto py_point = py::class_<Point>(m, "Point");
+
+    auto py_vector = py::class_<Vector>(m, "Vector");
+
     py::class_<Axis1>(m, "Axis1")
         .def(py::init<const Point &, const Vector &>())
         .def("location", &Axis1::location)
@@ -289,7 +293,7 @@ PYBIND11_MODULE(krado, m)
         .def("write", &IGESFile::write)
     ;
 
-    py::class_<Point>(m, "Point")
+    py_point
         .def(py::init<>())
         .def(py::init<double, double, double>(), py::arg("x"), py::arg("y") = 0., py::arg("z") = 0.)
         .def_readwrite("x", &Point::x)
@@ -380,7 +384,7 @@ PYBIND11_MODULE(krado, m)
         })
     ;
 
-    py::class_<Vector>(m, "Vector")
+    py_vector
         .def(py::init<double, double, double>(), py::arg("x"), py::arg("y") = 0., py::arg("z") = 0.)
         .def(py::init<const Point &>())
         .def_readwrite("x", &Vector::x)
@@ -938,10 +942,13 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<ExodusIIFile>(m, "ExodusIIFile")
-        .def(py::init<const std::filesystem::path &>())
+        .def(py::init<const std::filesystem::path &>(),
+            py::arg("file_name"))
         .def("read", &ExodusIIFile::read)
-        .def("write", py::overload_cast<Ptr<const Mesh>>(&ExodusIIFile::write))
-        .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write))
+        .def("write", py::overload_cast<Ptr<const Mesh>>(&ExodusIIFile::write),
+            py::arg("mesh"))
+        .def("write", py::overload_cast<const GeomModel &>(&ExodusIIFile::write),
+            py::arg("model"))
     ;
 
     py::class_<DAGMCFile>(m, "DAGMCFile")

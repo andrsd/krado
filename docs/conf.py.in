@@ -2,6 +2,9 @@ import os
 import sys
 import subprocess
 
+sys.path.insert(0, os.path.abspath('@PROJECT_BINARY_DIR@'))
+sys.path.insert(0, os.path.abspath('@PROJECT_BINARY_DIR@/python/stubs'))
+
 project = 'krado'
 copyright = '2024, David Andrs'
 author = 'David Andrs'
@@ -17,6 +20,9 @@ html_show_sourcelink = False
 html_title = "krado"
 
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
     'breathe',
     'sphinx_design'
 ]

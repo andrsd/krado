@@ -34,6 +34,14 @@ This provides the performance of C++ with the flexibility and ease of use of Pyt
 .. toctree::
    :maxdepth: 1
    :hidden:
+   :caption: Python API
+   :glob:
+
+   devel/python/*
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
    :caption: C++ API
    :glob:
 
