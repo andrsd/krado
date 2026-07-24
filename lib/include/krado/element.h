@@ -198,41 +198,159 @@ struct ElementSelector;
 
 template <>
 struct ElementSelector<ElementType::LINE2> {
+    static constexpr ElementType TYPE = ElementType::LINE2;
     static constexpr u8 N_VERTICES = Line2::N_VERTICES;
+    static const std::array<u8, 2> &
+    edge_vertices()
+    {
+        return Line2::EDGE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::TRI3> {
+    static constexpr ElementType TYPE = ElementType::TRI3;
     static constexpr u8 N_VERTICES = Tri3::N_VERTICES;
+    static constexpr u8 N_EDGES = Tri3::N_EDGES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Tri3::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Tri3::EDGE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::QUAD4> {
+    static constexpr ElementType TYPE = ElementType::QUAD4;
     static constexpr u8 N_VERTICES = Quad4::N_VERTICES;
+    static constexpr u8 N_EDGES = Quad4::N_EDGES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Quad4::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Quad4::EDGE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::TETRA4> {
+    static constexpr ElementType TYPE = ElementType::TETRA4;
     static constexpr u8 N_VERTICES = Tetra4::N_VERTICES;
+    static constexpr u8 N_EDGES = Tetra4::N_EDGES;
     static constexpr u8 N_FACES = Tetra4::N_FACES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Tetra4::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Tetra4::EDGE_VERTICES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_edges()
+    {
+        return Tetra4::FACE_EDGES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_vertices()
+    {
+        return Tetra4::FACE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::HEX8> {
+    static constexpr ElementType TYPE = ElementType::HEX8;
     static constexpr u8 N_VERTICES = Hex8::N_VERTICES;
+    static constexpr u8 N_EDGES = Hex8::N_EDGES;
     static constexpr u8 N_FACES = Hex8::N_FACES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Hex8::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Hex8::EDGE_VERTICES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_edges()
+    {
+        return Hex8::FACE_EDGES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_vertices()
+    {
+        return Hex8::FACE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::PRISM6> {
+    static constexpr ElementType TYPE = ElementType::PRISM6;
     static constexpr u8 N_VERTICES = Prism6::N_VERTICES;
+    static constexpr u8 N_EDGES = Prism6::N_EDGES;
     static constexpr u8 N_FACES = Prism6::N_FACES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Prism6::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Prism6::EDGE_VERTICES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_edges()
+    {
+        return Prism6::FACE_EDGES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_vertices()
+    {
+        return Prism6::FACE_VERTICES;
+    }
 };
 
 template <>
 struct ElementSelector<ElementType::PYRAMID5> {
+    static constexpr ElementType TYPE = ElementType::PYRAMID5;
     static constexpr u8 N_VERTICES = Pyramid5::N_VERTICES;
+    static constexpr u8 N_EDGES = Pyramid5::N_EDGES;
     static constexpr u8 N_FACES = Pyramid5::N_FACES;
+    static const std::vector<u8> &
+    edges()
+    {
+        return Pyramid5::EDGES;
+    }
+    static const std::vector<std::array<u8, 2>> &
+    edge_vertices()
+    {
+        return Pyramid5::EDGE_VERTICES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_edges()
+    {
+        return Pyramid5::FACE_EDGES;
+    }
+    static const std::vector<std::vector<u8>> &
+    face_vertices()
+    {
+        return Pyramid5::FACE_VERTICES;
+    }
 };
 
 } // namespace krado
