@@ -92,6 +92,31 @@ TEST(ComputeVolumeTest, volume_of_a_pyramid5)
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(4. / 3., 1e-10))));
 }
 
+TEST(ComputeVolumeTest, area_of_a_quad4_blocks)
+{
+    // Domain: 4x2
+    std::vector<Point> pts = {
+        Point(0, 0, 0), Point(2, 0, 0), Point(4, 0, 0), Point(0, 1, 0), Point(2, 1, 0),
+        Point(4, 1, 0), Point(0, 2, 0), Point(2, 2, 0), Point(4, 2, 0),
+    };
+    std::vector<Element> elements = {
+        Element::Quad4({ 0, 1, 4, 3 }), // Quad 0
+        Element::Quad4({ 1, 2, 5, 4 }), // Quad 1
+        Element::Quad4({ 3, 4, 7, 6 }), // Quad 2
+        Element::Quad4({ 4, 5, 8, 7 }), // Quad 3
+    };
+    Mesh mesh(pts, elements);
+    // Block 1: Quad 0 (area 2)
+    mesh.set_cell_set(10, { 0 });
+    // Block 2: Quads 1, 2, 3 (area 2+2+2 = 6)
+    mesh.set_cell_set(20, { 1, 2, 3 });
+
+    auto vols = compute_volume(mesh);
+    EXPECT_THAT(
+        vols,
+        UnorderedElementsAre(Pair(10, DoubleNear(2., 1e-10)), Pair(20, DoubleNear(6., 1e-10))));
+}
+
 TEST(ComputeVolumeTest, area_of_a_quad4_skewed)
 {
     std::vector<Point> points = {
