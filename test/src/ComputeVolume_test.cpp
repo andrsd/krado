@@ -122,6 +122,39 @@ TEST(ComputeVolumeTest, volume_of_a_prism6)
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(0.5, 1e-10))));
 }
 
+TEST(ComputeVolumeTest, volume_of_a_prism6_blocks)
+{
+    // 2x1x3 domain, 2 layers of PRISM6 on a 2-triangle base
+    // Points: 3 layers of 4 points = 12 points
+    std::vector<Point> pts;
+    for (double z : { 0.0, 1.5, 3.0 }) {
+        pts.push_back(Point(0, 0, z)); // 0, 4, 8
+        pts.push_back(Point(2, 0, z)); // 1, 5, 9
+        pts.push_back(Point(2, 1, z)); // 2, 6, 10
+        pts.push_back(Point(0, 1, z)); // 3, 7, 11
+    }
+
+    std::vector<Element> elements = {
+        // Layer 1
+        Element::Prism6({ 0, 1, 2, 4, 5, 6 }), // P0
+        Element::Prism6({ 0, 2, 3, 4, 6, 7 }), // P1
+        // Layer 2
+        Element::Prism6({ 4, 5, 6, 8, 9, 10 }), // P2
+        Element::Prism6({ 4, 6, 7, 8, 10, 11 }), // P3
+    };
+
+    Mesh mesh(pts, elements);
+    // Block 1: 1 element (expected volume 1 * 1.5 = 1.5)
+    mesh.set_cell_set(10, { 0 });
+    // Block 2: 3 elements (expected volume 3 * 1.5 = 4.5)
+    mesh.set_cell_set(20, { 1, 2, 3 });
+
+    auto vols = compute_volume(mesh);
+    EXPECT_THAT(
+        vols,
+        UnorderedElementsAre(Pair(10, DoubleNear(1.5, 1e-10)), Pair(20, DoubleNear(4.5, 1e-10))));
+}
+
 TEST(ComputeVolumeTest, volume_of_a_pyramid5)
 {
     std::vector<Point> points = {
