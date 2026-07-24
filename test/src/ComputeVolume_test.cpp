@@ -1,33 +1,29 @@
 #include "gmock/gmock.h"
-#include "builder.h"
 #include "krado/geom_model.h"
 #include "krado/mesh_vertex.h"
-#include "krado/mesh_curve.h"
-#include "krado/mesh_surface.h"
 #include "krado/ops.h"
 #include "krado/exodusii_file.h"
-#include "krado/scheme/equal.h"
 #include <filesystem>
 
 using namespace krado;
 using namespace testing;
 namespace fs = std::filesystem;
 
-TEST(ComputeVolumeTest, DISABLED_length_of_a_line)
+TEST(ComputeVolumeTest, length_of_a_line)
 {
-    auto ln = build_line(Point(0, 0, 0), Point(3, 4, 0));
-    GeomModel model(ln);
-
-    SchemeEqual::Options opts;
-    opts.intervals = 5;
-    model.curve(1)->set_scheme<SchemeEqual>(opts);
-
-    model.mesh_curve(1);
-    // FIXME
-    // auto mesh = build_mesh(model);
-    //
-    // auto vols = compute_volume(mesh);
-    // EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(5., 1e-10))));
+    std::vector<Point> points = {
+        Point(0, 0, 0),      Point(0.75, 1.0, 0), Point(1.5, 2.0, 0),
+        Point(2.25, 3.0, 0), Point(3.0, 4.0, 0),
+    };
+    std::vector<Element> elements = {
+        Element::Line2({ 0, 1 }),
+        Element::Line2({ 1, 2 }),
+        Element::Line2({ 2, 3 }),
+        Element::Line2({ 3, 4 }),
+    };
+    Mesh mesh(points, elements);
+    auto vols = compute_volume(mesh);
+    EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(5., 1e-10))));
 }
 
 TEST(ComputeVolumeTest, area_of_a_square)
