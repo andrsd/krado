@@ -68,6 +68,48 @@ TEST(ComputeVolumeTest, volume_of_a_hex8)
     EXPECT_THAT(vols, ElementsAre(Pair(0, DoubleNear(1., 1e-10))));
 }
 
+TEST(ComputeVolumeTest, volume_of_a_hex8_blocks)
+{
+    // 2x2x2 grid of HEX8 elements in a 2x3x4 domain
+    // Points: 3x3x3 = 27 points
+    // x: 0, 1, 2
+    // y: 0, 1.5, 3
+    // z: 0, 2, 4
+    std::vector<Point> pts;
+    for (int k = 0; k < 3; ++k)
+        for (int j = 0; j < 3; ++j)
+            for (int i = 0; i < 3; ++i)
+                pts.push_back(Point(i * 1.0, j * 1.5, k * 2.0));
+
+    auto idx = [](int i, int j, int k) {
+        return i + j * 3 + k * 9;
+    };
+
+    std::vector<Element> elements;
+    for (int k = 0; k < 2; ++k)
+        for (int j = 0; j < 2; ++j)
+            for (int i = 0; i < 2; ++i)
+                elements.push_back(Element::Hex8({ (Index) idx(i, j, k),
+                                                   (Index) idx(i + 1, j, k),
+                                                   (Index) idx(i + 1, j + 1, k),
+                                                   (Index) idx(i, j + 1, k),
+                                                   (Index) idx(i, j, k + 1),
+                                                   (Index) idx(i + 1, j, k + 1),
+                                                   (Index) idx(i + 1, j + 1, k + 1),
+                                                   (Index) idx(i, j + 1, k + 1) }));
+
+    Mesh mesh(pts, elements);
+    // Block 1: 1 element (expected volume 1 * 1.5 * 2 = 3.0)
+    mesh.set_cell_set(10, { 0 });
+    // Block 2: 7 elements (expected volume 7 * 3.0 = 21.0)
+    mesh.set_cell_set(20, { 1, 2, 3, 4, 5, 6, 7 });
+
+    auto vols = compute_volume(mesh);
+    EXPECT_THAT(
+        vols,
+        UnorderedElementsAre(Pair(10, DoubleNear(3., 1e-10)), Pair(20, DoubleNear(21., 1e-10))));
+}
+
 TEST(ComputeVolumeTest, volume_of_a_prism6)
 {
     std::vector<Point> points = {
