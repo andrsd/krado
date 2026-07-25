@@ -70,6 +70,7 @@
 #include "krado/vector.h"
 #include "krado/io.h"
 #include "krado/log.h"
+#include "krado/quality_measures.h"
 #include "krado/timer.h"
 #include <fmt/core.h>
 
@@ -1100,5 +1101,27 @@ PYBIND11_MODULE(krado, m)
     log.def("error", &py_log_error, py::arg("level"), py::arg("msg"));
     log.def("trace", &py_log_trace, py::arg("level"), py::arg("msg"));
     log.def("debug", &py_log_debug, py::arg("level"), py::arg("msg"));
+
+    auto qm = m.def_submodule("qm", "Submodule for quality measures");
+    py::enum_<qm::Metric>(qm, "Metric")
+        .value("ASPECT_RATIO", qm::Metric::ASPECT_RATIO)
+        .value("MIN_ANGLE", qm::Metric::MIN_ANGLE)
+        .value("MAX_ANGLE", qm::Metric::MAX_ANGLE)
+        .value("SCALED_JACOBIAN", qm::Metric::SCALED_JACOBIAN)
+        .value("ETA", qm::Metric::ETA)
+        .value("GAMMA", qm::Metric::GAMMA)
+        .value("SKEWNESS", qm::Metric::SKEWNESS)
+        .export_values();
+
+    py::class_<qm::QualityStats>(qm, "QualityStats")
+        .def_readonly("min", &qm::QualityStats::min)
+        .def_readonly("max", &qm::QualityStats::max)
+        .def_readonly("histogram", &qm::QualityStats::histogram)
+    ;
+
+    m.def("compute_quality", &compute_quality,
+        py::arg("mesh"), py::arg("metric"), py::arg("n_bins") = 10);
+    m.def("print_quality", &print_quality,
+        py::arg("stats"));
     // clang-format on
 }
