@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/scheme/delaunay.h"
+#include "krado/ref.h"
+#include "krado/qtr.h"
 #include "krado/consts.h"
 #include "krado/mesh_curve.h"
 #include "krado/mesh_surface.h"
@@ -315,14 +317,14 @@ private:
     bool deleted_;
     double circum_radius_;
     MeshElement base_;
-    std::array<Triangle *, Tri3::N_EDGES> neigh_;
+    std::array<Optional<Ref<Triangle>>, Tri3::N_EDGES> neigh_;
 
 public:
     Triangle(const MeshElement & t, double circum_radius) :
         deleted_(false),
         circum_radius_(circum_radius),
         base_(t),
-        neigh_({ nullptr, nullptr, nullptr })
+        neigh_({ std::nullopt, std::nullopt, std::nullopt })
     {
     }
 
@@ -347,9 +349,9 @@ public:
     Optional<Ptr<MeshVertexAbstract>>
     other_side(int i)
     {
-        auto * n = this->neigh_[i];
-        if (!n)
+        if (!this->neigh_[i])
             return std::nullopt;
+        auto n = this->neigh_[i].value();
         auto v1 = this->base_.vertex((i + 2) % 3);
         auto v2 = this->base_.vertex(i);
         for (int j = 0; j < Tri3::N_VERTICES; j++)
@@ -371,12 +373,12 @@ public:
     }
 
     void
-    set_neighbor(int idx, Triangle * n)
+    set_neighbor(int idx, Ref<Triangle> n)
     {
         this->neigh_[idx] = n;
     }
 
-    Triangle *
+    Optional<Ref<Triangle>>
     neighbor(int idx) const
     {
         return this->neigh_[idx];
@@ -393,14 +395,16 @@ public:
     {
         if (this->deleted_)
             return true;
-        for (int i = 0; i < Tri3::N_EDGES; i++)
-            if (this->neigh_[i] && (this->neigh_[i]->is_neigh(this) == false))
+        for (int i = 0; i < Tri3::N_EDGES; i++) {
+            auto n = this->neigh_[i];
+            if (n && (not(*n)->is_neigh(*this)))
                 return false;
+        }
         return true;
     }
 
     bool
-    is_neigh(const Triangle * t) const
+    is_neigh(Ref<const Triangle> t) const
     {
         for (int i = 0; i < Tri3::N_EDGES; i++)
             if (this->neigh_[i] == t)
@@ -410,11 +414,37 @@ public:
 };
 
 class CompareTrianglePtr {
-    MeshElementLessThan lf_;
-
 public:
+    using is_transparent = void;
+
     bool
-    operator()(const Triangle * a, const Triangle * b) const
+    operator()(const Qtr<Triangle> & a, const Qtr<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Ref<Triangle> & a, const Qtr<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Qtr<Triangle> & a, const Ref<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Ref<Triangle> & a, const Ref<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+private:
+    template <typename T, typename U>
+    bool
+    compare(const T & a, const U & b) const
     {
         if (a->radius() > b->radius())
             return true;
@@ -424,15 +454,17 @@ public:
         // operator()
         return this->lf_(a->tri(), b->tri());
     }
+
+    MeshElementLessThan lf_;
 };
 
 struct EdgeXFace {
     std::array<Ptr<MeshVertexAbstract>, 2> v;
-    Triangle * t1;
+    Ref<Triangle> t1;
     int i1;
     int ori;
 
-    EdgeXFace(Triangle * t, int i_fac) : t1(t), i1(i_fac), ori(1)
+    EdgeXFace(Ref<Triangle> t, int i_fac) : t1(t), i1(i_fac), ori(1)
     {
         v[0] = t1->tri().vertex(i_fac == 0 ? 2 : i_fac - 1);
         v[1] = t1->tri().vertex(i_fac);
@@ -506,13 +538,13 @@ set_lcs(const MeshElement & t,
 }
 
 bool
-is_active(Triangle * t, double limit, int & active)
+is_active(Ref<const Triangle> t, double limit, int & active)
 {
     if (t->is_deleted())
         return false;
     for (active = 0; active < 3; active++) {
-        auto * neigh = t->neighbor(active);
-        if (!neigh || (neigh->radius() < limit && neigh->radius() > 0)) {
+        auto neigh = t->neighbor(active);
+        if (!neigh || ((*neigh)->radius() < limit && (*neigh)->radius() > 0)) {
             return true;
         }
     }
@@ -528,7 +560,7 @@ connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
     while (beg != end) {
         if (!(*beg)->is_deleted()) {
             for (int j = 0; j < 3; j++) {
-                conn.push_back(EdgeXFace(*beg, j));
+                conn.push_back(EdgeXFace(ref(**beg), j));
             }
         }
         ++beg;
@@ -552,7 +584,7 @@ connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
 }
 
 void
-connect_triangles(std::set<Triangle *, CompareTrianglePtr> & l)
+connect_triangles(std::set<Qtr<Triangle>, CompareTrianglePtr> & l)
 {
     std::vector<EdgeXFace> conn;
     connect_tris(l.begin(), l.end(), conn);
@@ -561,10 +593,10 @@ connect_triangles(std::set<Triangle *, CompareTrianglePtr> & l)
 void
 recur_find_cavity_aniso(Ptr<MeshSurface> surface,
                         std::list<EdgeXFace> & shell,
-                        std::list<Triangle *> & cavity,
+                        std::list<Ref<Triangle>> & cavity,
                         Metric metric,
                         UVParam param,
-                        Triangle * t,
+                        Ref<Triangle> t,
                         BidimMeshData & data)
 {
     t->set_deleted(true);
@@ -573,16 +605,16 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
     cavity.push_back(t);
 
     for (int i = 0; i < Tri3::N_EDGES; i++) {
-        auto * neigh = t->neighbor(i);
+        auto neigh = t->neighbor(i);
         EdgeXFace exf(t, i);
         // take care of untouchable internal edges
         auto it = data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
-        if (neigh == nullptr || it != data.internal_edges.end())
+        if (not neigh || it != data.internal_edges.end())
             shell.push_back(exf);
-        else if (not neigh->is_deleted()) {
-            auto circ = in_circum_circle_aniso(neigh->tri(), param, metric, data);
+        else if (not(*neigh)->is_deleted()) {
+            auto circ = in_circum_circle_aniso((*neigh)->tri(), param, metric, data);
             if (circ)
-                recur_find_cavity_aniso(surface, shell, cavity, metric, param, neigh, data);
+                recur_find_cavity_aniso(surface, shell, cavity, metric, param, *neigh, data);
             else
                 shell.push_back(exf);
         }
@@ -591,7 +623,7 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
 
 bool
 build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
-                                      std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                                      std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
                                       BidimMeshData & data)
 {
     std::map<Ptr<MeshVertexAbstract>, double> v_sizes_map;
@@ -657,7 +689,7 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
                     3.;
 
         auto circum_radius = circum_radius_euclidian(tri, lc);
-        all_tris.insert(new Triangle(tri, circum_radius));
+        all_tris.emplace(Qtr<Triangle>::alloc(tri, circum_radius));
     }
     surface->remove_all_triangles();
     connect_triangles(all_tris);
@@ -1174,15 +1206,21 @@ bds2gmsh(BDS_Mesh & m,
     }
 }
 
+void
+mark_triangles_active(std::list<Ref<Triangle>> & cavity, bool state)
+{
+    for (auto & tri : cavity)
+        tri->set_deleted(not state);
+}
+
 int
 insert_vertex_b(std::list<EdgeXFace> & shell,
-                std::list<Triangle *> & cavity,
+                std::list<Ref<Triangle>> & cavity,
                 bool force,
                 Ptr<MeshVertexAbstract> v,
-                std::set<Triangle *, CompareTrianglePtr> & all_tris,
-                std::set<Triangle *, CompareTrianglePtr> * active_tris,
+                std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+                std::set<Ref<Triangle>, CompareTrianglePtr> * active_tris,
                 BidimMeshData & data,
-                Triangle ** one_new_triangle,
                 bool verify_star_shapeness = true)
 {
     if (cavity.size() == 1)
@@ -1201,14 +1239,14 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
         std::accumulate(begin(cavity),
                         end(cavity),
                         0.0,
-                        [&](double volume, Triangle * const triangle) {
+                        [&](double volume, Ref<const Triangle> triangle) {
                             return volume + std::abs(surf_uv(triangle->tri(), data));
                         });
 
-    std::vector<Triangle *> new_tris;
+    std::vector<Qtr<Triangle>> new_tris;
     new_tris.reserve(shell.size());
 
-    std::vector<Triangle *> new_cavity;
+    std::vector<Ref<Triangle>> new_cavity;
     bool one_point_is_too_close = false;
     for (auto it = shell.begin(); it != shell.end(); ++it) {
         Ptr<MeshVertexAbstract> v0, v1;
@@ -1229,12 +1267,9 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
             ONE_THIRD * (data.v_sizes[index0] + data.v_sizes[index1] + data.v_sizes[index2]);
 
         auto circ_radius = circum_radius_euclidian(t, lc);
-        auto * t4 = new Triangle(t, circ_radius);
-
-        if (one_new_triangle) {
-            force = true;
-            *one_new_triangle = t4;
-        }
+        // auto * t4 = new Triangle(t, circ_radius);
+        new_tris.emplace_back(Qtr<Triangle>::alloc(t, circ_radius));
+        auto t4 = ref(*new_tris.back());
 
         double d1 = utils::distance(v0->point(), v->point());
         double d2 = utils::distance(v1->point(), v->point());
@@ -1254,14 +1289,13 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
             one_point_is_too_close = true;
         }
 
-        new_tris.push_back(t4);
         // all new triangles are pushed front in order to be able to destroy them if
         // the cavity is not star shaped around the new vertex.
         new_cavity.push_back(t4);
 
-        auto * other_side = it->t1->neighbor(it->i1);
+        auto other_side = it->t1->neighbor(it->i1);
         if (other_side)
-            new_cavity.push_back(other_side);
+            new_cavity.push_back(other_side.value());
 
         auto ss = std::abs(surf_uv(t4->tri(), data));
         if (ss < 1.e-25)
@@ -1281,13 +1315,15 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
     if (std::abs(old_volume - new_volume) < EPS * old_volume && !one_point_is_too_close) {
         connect_tris(new_cavity.begin(), new_cavity.end(), conn);
         // 30 % of the time is spent here!
-        all_tris.insert(new_tris.begin(), new_tris.end());
+        all_tris.insert(std::make_move_iterator(new_tris.begin()),
+                        std::make_move_iterator(new_tris.end()));
         if (active_tris) {
             for (auto i = new_cavity.begin(); i != new_cavity.end(); ++i) {
+                auto cav_tri = *i;
                 int active_edge;
-                if (is_active(*i, LIMIT, active_edge) && (*i)->radius() > LIMIT) {
-                    if ((*active_tris).find(*i) == (*active_tris).end())
-                        (*active_tris).insert(*i);
+                if (is_active(cav_tri, LIMIT, active_edge) && cav_tri->radius() > LIMIT) {
+                    if ((*active_tris).find(cav_tri) == (*active_tris).end())
+                        active_tris->insert(cav_tri);
                 }
             }
         }
@@ -1295,10 +1331,8 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
     }
     else {
         // the cavity is NOT star shaped
-        for (auto & tri : cavity)
-            tri->set_deleted(false);
-        for (auto & tri : new_tris)
-            delete tri;
+        mark_triangles_active(cavity, true);
+        new_tris.clear();
 
         if (std::abs(old_volume - new_volume) > EPS * old_volume)
             return -3;
@@ -1308,11 +1342,11 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
     }
 }
 
-Optional<Triangle *>
-search_for_triangle(Triangle * t,
+Optional<Ref<Triangle>>
+search_for_triangle(Ref<Triangle> t,
                     UVParam pt,
                     BidimMeshData & data,
-                    std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                    std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
                     bool force = false)
 {
     auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
@@ -1338,9 +1372,9 @@ search_for_triangle(Triangle * t,
         if (i >= 3)
             throw Exception("impossible");
 
-        t = t->neighbor(i);
-        if (!t)
+        if (!t->neighbor(i))
             break;
+        t = t->neighbor(i).value();
 
         auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
         if (inside)
@@ -1357,7 +1391,7 @@ search_for_triangle(Triangle * t,
         if (not tri->is_deleted()) {
             auto [uv, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
-                return tri;
+                return ref(*tri);
         }
     }
     return std::nullopt;
@@ -1365,33 +1399,21 @@ search_for_triangle(Triangle * t,
 
 bool
 insert_a_point(Ptr<MeshSurface> surface,
-               std::set<Triangle *, CompareTrianglePtr>::iterator it,
+               Ref<Triangle> worst,
                UVParam center,
                Metric metric,
                BidimMeshData & data,
-               std::set<Triangle *, CompareTrianglePtr> & all_tris,
-               std::set<Triangle *, CompareTrianglePtr> * active_tris = nullptr,
-               Triangle * worst = nullptr,
-               Triangle ** one_new_triangle = nullptr,
+               std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+               std::set<Ref<Triangle>, CompareTrianglePtr> * active_tris = nullptr,
                bool test_star_shapeness = false)
 {
-    if (worst) {
-        it = all_tris.find(worst);
-        if (worst != *it) {
-            Log::error("Could not insert point");
-            return false;
-        }
-    }
-    else
-        worst = *it;
-
-    Optional<Triangle *> ptin;
+    Optional<Ref<Triangle>> ptin;
     std::list<EdgeXFace> shell;
-    std::list<Triangle *> cavity;
+    std::list<Ref<Triangle>> cavity;
 
     // if the point is able to break the bad triangle "worst"
     if (in_circum_circle_aniso(worst->tri(), center, metric, data)) {
-        recur_find_cavity_aniso(surface, shell, cavity, metric, center, worst, data);
+        recur_find_cavity_aniso(surface, shell, cavity, metric, center, ref(*worst), data);
         for (auto & t : cavity) {
             auto [uv, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
             if (inside) {
@@ -1401,7 +1423,7 @@ insert_a_point(Ptr<MeshSurface> surface,
         }
     }
     else {
-        ptin = search_for_triangle(worst, center, data, all_tris, one_new_triangle ? true : false);
+        ptin = search_for_triangle(worst, center, data, all_tris, false);
         if (ptin.has_value()) {
             recur_find_cavity_aniso(surface, shell, cavity, metric, center, ptin.value(), data);
         }
@@ -1421,7 +1443,6 @@ insert_a_point(Ptr<MeshSurface> surface,
                                      all_tris,
                                      active_tris,
                                      data,
-                                     one_new_triangle,
                                      test_star_shapeness);
 
         if (result != 1) {
@@ -1440,11 +1461,11 @@ insert_a_point(Ptr<MeshSurface> surface,
                     "Point {} cannot be inserted because it is out of the parametric domain)",
                     center);
 
-            all_tris.erase(it);
-            worst->force_radius(-1);
-            all_tris.insert(worst);
-            for (auto & tri : cavity)
-                tri->set_deleted(false);
+            auto it = all_tris.find(worst);
+            auto tri = all_tris.extract(it);
+            tri.value()->force_radius(-1);
+            all_tris.insert(std::move(tri));
+            mark_triangles_active(cavity, true);
             return false;
         }
         else {
@@ -1453,11 +1474,11 @@ insert_a_point(Ptr<MeshSurface> surface,
         }
     }
     else {
-        for (auto & tri : cavity)
-            tri->set_deleted(false);
-        all_tris.erase(it);
-        worst->force_radius(0);
-        all_tris.insert(worst);
+        mark_triangles_active(cavity, true);
+        auto it = all_tris.find(worst);
+        auto tri = all_tris.extract(it);
+        tri.value()->force_radius(0);
+        all_tris.insert(std::move(tri));
         return false;
     }
 }
@@ -1581,16 +1602,13 @@ compute_normal(const MeshElement & t, const BidimMeshData & data)
 
 void
 transfer_data_structure(Ptr<MeshSurface> surface,
-                        std::set<Triangle *, CompareTrianglePtr> & all_tris,
+                        std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
                         BidimMeshData & data)
 {
-    while (not all_tris.empty()) {
-        auto worst = *all_tris.begin();
-        if (not worst->is_deleted())
-            surface->add_element(worst->tri());
-        delete worst;
-        all_tris.erase(all_tris.begin());
-    }
+    for (auto & tri : all_tris)
+        if (not tri->is_deleted())
+            surface->add_element(std::move(tri->tri()));
+    all_tris.clear();
 
     // make sure all the triangles are oriented in the same way in
     // parameter space (it would be nicer to change the actual algorithm
@@ -1680,7 +1698,7 @@ length_metric(UVParam p, UVParam q, Metric metric)
 
 std::tuple<double, UVParam, Metric>
 optimal_point_frontal(Ptr<MeshSurface> surface,
-                      Triangle * worst,
+                      Ref<Triangle> worst,
                       int active_edge,
                       BidimMeshData & data)
 {
@@ -1944,7 +1962,7 @@ intersect_curve_surface(CurveFunctor & c, SurfaceFunctor & s, Point uvt, double 
 
 std::tuple<bool, UVParam, Metric>
 optimal_point_frontal_b(Ptr<MeshSurface> surface,
-                        Triangle * worst,
+                        Ref<Triangle> worst,
                         int active_edge,
                         BidimMeshData & data)
 {
@@ -1988,7 +2006,7 @@ optimal_point_frontal_b(Ptr<MeshSurface> surface,
 void
 bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
 {
-    std::set<Triangle *, CompareTrianglePtr> all_tris;
+    std::set<Qtr<Triangle>, CompareTrianglePtr> all_tris;
     BidimMeshData data;
     if (!build_mesh_generation_data_structures(surface, all_tris, data)) {
         Log::error("Invalid meshing data structure");
@@ -2002,9 +2020,8 @@ bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
 
     int iter = 0;
     while (true) {
-        auto * worst = *all_tris.begin();
+        auto worst = ref(**all_tris.begin());
         if (worst->is_deleted()) {
-            delete worst;
             all_tris.erase(all_tris.begin());
         }
         else {
@@ -2026,7 +2043,7 @@ bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
 
             auto metric = Metric::build(surface->geom_surface(), pa);
             auto [ctr2, r2] = circum_center_metric(worst->tri(), metric, data);
-            insert_a_point(surface, all_tris.begin(), ctr2, metric, data, all_tris);
+            insert_a_point(surface, worst, ctr2, metric, data, all_tris);
         }
     }
 
@@ -2039,8 +2056,8 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
                       std::map<Ptr<MeshVertexAbstract>, UVParam> * parametric_coordinates,
                       std::vector<UVParam> * true_boundary)
 {
-    std::set<Triangle *, CompareTrianglePtr> all_tris;
-    std::set<Triangle *, CompareTrianglePtr> active_tris;
+    std::set<Qtr<Triangle>, CompareTrianglePtr> all_tris;
+    std::set<Ref<Triangle>, CompareTrianglePtr> active_tris;
     BidimMeshData data(equivalence, parametric_coordinates);
     const bool test_star_shapeness = true;
 
@@ -2055,8 +2072,9 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     int n_iters = 0, active_edge;
     // compute active triangle
     for (auto & tri : all_tris) {
-        if (is_active(tri, LIMIT, active_edge))
-            active_tris.insert(tri);
+        auto ref_tri = ref(*tri);
+        if (is_active(ref_tri, LIMIT, active_edge))
+            active_tris.insert(ref_tri);
         else if (tri->radius() < LIMIT)
             break;
     }
@@ -2067,11 +2085,8 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     const UVParam FAR(2 * ru_hi, 2 * rv_hi);
 
     // insert points
-    while (true) {
-        if (!active_tris.size())
-            break;
-        auto * worst = (*active_tris.begin());
-        active_tris.erase(active_tris.begin());
+    while (not active_tris.empty()) {
+        auto worst = active_tris.extract(active_tris.begin()).value();
 
         if (!worst->is_deleted() && is_active(worst, LIMIT, active_edge) &&
             worst->radius() > LIMIT) {
@@ -2084,14 +2099,12 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
             if (success) {
                 if (true_boundary == nullptr) {
                     insert_a_point(surface,
-                                   all_tris.end(),
+                                   worst,
                                    new_point,
                                    metric,
                                    data,
                                    all_tris,
                                    &active_tris,
-                                   worst,
-                                   nullptr,
                                    test_star_shapeness);
                 }
                 else {
@@ -2099,14 +2112,12 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
                     auto [inside, nnnn] = point_inside_parametric_domain(*true_boundary, NP, FAR);
                     if (inside)
                         insert_a_point(surface,
-                                       all_tris.end(),
+                                       worst,
                                        new_point,
                                        metric,
                                        data,
                                        all_tris,
                                        &active_tris,
-                                       worst,
-                                       nullptr,
                                        test_star_shapeness);
                 }
             }
