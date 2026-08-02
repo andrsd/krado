@@ -1178,7 +1178,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 
 // TODO: rename this
 void
-bds2gmsh(BDS_Mesh & m,
+bds2gmsh(const BDS_Mesh & m,
          Ptr<MeshSurface> surface,
          std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
@@ -1216,7 +1216,7 @@ mark_triangles_active(std::list<Ref<Triangle>> & cavity, bool state)
 }
 
 int
-insert_vertex_b(std::list<EdgeXFace> & shell,
+insert_vertex_b(const std::list<EdgeXFace> & shell,
                 std::list<Ref<Triangle>> & cavity,
                 bool force,
                 Ptr<MeshVertexAbstract> v,
@@ -1350,7 +1350,7 @@ search_for_triangle(Ref<Triangle> t,
                     std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
                     bool force = false)
 {
-    auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
+    const auto [_, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
     if (inside)
         return t;
 
@@ -1376,7 +1376,7 @@ search_for_triangle(Ref<Triangle> t,
             break;
         t = t->neighbor(i).value();
 
-        auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
+        const auto [_, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
         if (inside)
             return t;
     }
@@ -1386,7 +1386,7 @@ search_for_triangle(Ref<Triangle> t,
 
     for (auto & tri : all_tris) {
         if (not tri->is_deleted()) {
-            auto [uv, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
+            const auto [_, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
                 return ref(*tri);
         }
@@ -1411,8 +1411,8 @@ insert_a_point(Ptr<MeshSurface> surface,
     // if the point is able to break the bad triangle "worst"
     if (in_circum_circle_aniso(worst->tri(), center, metric, data)) {
         recur_find_cavity_aniso(surface, shell, cavity, metric, center, ref(*worst), data);
-        for (auto & t : cavity) {
-            auto [uv, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
+        for (const auto & t : cavity) {
+            const auto [_, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
             if (inside) {
                 ptin = t;
                 break;
@@ -1428,19 +1428,19 @@ insert_a_point(Ptr<MeshSurface> surface,
 
     if (ptin.has_value()) {
         // we use here local coordinates as real coordinates x,y and z will be computed hereafter
-        auto & geom_surface = surface->geom_surface();
-        auto v = Ptr<MeshSurfaceVertex>::alloc(geom_surface, center);
-        auto lc = surface->mesh_size_at_param(center);
+        const auto & geom_surface = surface->geom_surface();
+        const auto v = Ptr<MeshSurfaceVertex>::alloc(geom_surface, center);
+        const auto lc = surface->mesh_size_at_param(center);
         data.add_vertex(v, center, lc);
 
-        auto result = insert_vertex_b(shell,
-                                      cavity,
-                                      false,
-                                      v,
-                                      all_tris,
-                                      active_tris,
-                                      data,
-                                      test_star_shapeness);
+        const auto result = insert_vertex_b(shell,
+                                            cavity,
+                                            false,
+                                            v,
+                                            all_tris,
+                                            active_tris,
+                                            data,
+                                            test_star_shapeness);
 
         if (result != 1) {
             if (result == -1)
@@ -1458,7 +1458,7 @@ insert_a_point(Ptr<MeshSurface> surface,
                     "Point {} cannot be inserted because it is out of the parametric domain)",
                     center);
 
-            auto it = all_tris.find(worst);
+            const auto it = all_tris.find(worst);
             auto tri = all_tris.extract(it);
             tri.value()->force_radius(-1);
             all_tris.insert(std::move(tri));
@@ -1491,11 +1491,11 @@ void
 compute_equivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
 {
     std::vector<MeshElement> new_tris;
-    for (auto & tri : surface->triangles()) {
+    for (const auto & tri : surface->triangles()) {
         std::array<Ptr<MeshVertexAbstract>, 3> v;
         for (int j = 0; j < Tri3::N_VERTICES; j++) {
             v[j] = tri.vertex(j);
-            auto it = data.equivalence->find(v[j]);
+            const auto it = data.equivalence->find(v[j]);
             if (it != data.equivalence->end()) {
                 v[j] = it->second;
             }
@@ -1518,8 +1518,8 @@ public:
         t_(t)
     {
         for (int i = 0; i < Tri3::N_VERTICES; i++) {
-            auto v = t.vertex(i);
-            auto it = equivalence.find(v);
+            const auto v = t.vertex(i);
+            const auto it = equivalence.find(v);
             if (it == equivalence.end())
                 this->v_[i] = v;
             else
@@ -1557,7 +1557,7 @@ compute_equivalent_triangles(
     std::set<EquivalentTriangle> eq_tris;
     for (auto & tri : surface->triangles()) {
         EquivalentTriangle et(tri, equivalence);
-        auto iteq = eq_tris.find(et);
+        const auto iteq = eq_tris.find(et);
         if (iteq == eq_tris.end())
             eq_tris.insert(et);
         else {
@@ -1703,7 +1703,7 @@ optimal_point_frontal(Ptr<MeshSurface> surface,
     auto center = circ_uv(base, data);
     auto index0 = data.index(base.vertex(0));
     auto index1 = data.index(base.vertex(1));
-    auto index2 = data.index(base.vertex(2));
+    const auto index2 = data.index(base.vertex(2));
     const auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
     const auto metric = Metric::build(surface->geom_surface(), pa);
     double r2;
@@ -1739,7 +1739,7 @@ optimal_point_frontal(Ptr<MeshSurface> surface,
 
     const auto L = std::min(d, q);
 
-    auto new_point = midpoint + L / RATIO * dir;
+    const auto new_point = midpoint + L / RATIO * dir;
 
     return { L, new_point, metric };
 }
@@ -2082,7 +2082,7 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     // insert points
     int n_iters = 0;
     while (not active_tris.empty()) {
-        auto worst = active_tris.extract(active_tris.begin()).value();
+        const auto worst = active_tris.extract(active_tris.begin()).value();
         if (worst->is_deleted())
             continue;
 
@@ -2106,7 +2106,7 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
                                    test_star_shapeness);
                 }
                 else {
-                    auto [inside, _] =
+                    const auto [inside, _] =
                         point_inside_parametric_domain(*true_boundary, new_point, FAR);
                     if (inside)
                         insert_a_point(surface,
@@ -2171,7 +2171,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     std::vector<Ptr<BDS_Point>> points(all_vertices.size());
     int count = 0;
-    for (auto & vtx : all_vertices) {
+    for (const auto & vtx : all_vertices) {
         const auto & ge = vtx->geom_shape();
         const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         const auto g = m.add_geom(ge.id(), ge.dim());
@@ -2202,7 +2202,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     }
 
     // effectively recover the medge
-    for (auto & crv : curves) {
+    for (const auto & crv : curves) {
         if (crv->is_mesh_degenerated())
             continue;
 
