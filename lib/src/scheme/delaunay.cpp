@@ -553,9 +553,9 @@ is_active(Ref<const Triangle> t, double limit)
 
 template <class Iterator>
 void
-connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
+connect_tris(Iterator beg, Iterator end)
 {
-    conn.clear();
+    std::vector<EdgeXFace> conn;
 
     while (beg != end) {
         if (!(*beg)->is_deleted()) {
@@ -586,8 +586,7 @@ connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
 void
 connect_triangles(std::set<Qtr<Triangle>, CompareTrianglePtr> & l)
 {
-    std::vector<EdgeXFace> conn;
-    connect_tris(l.begin(), l.end(), conn);
+    connect_tris(l.begin(), l.end());
 }
 
 void
@@ -1309,12 +1308,10 @@ insert_vertex_b(const std::list<EdgeXFace> & shell,
         new_min_quality = std::min(new_min_quality, tri_gamma);
     }
 
-    std::vector<EdgeXFace> conn;
-
     // for adding a point we require that the area remains the same after addition
     // of the point, and that the point is not too close to an edge
     if (std::abs(old_volume - new_volume) < EPS * old_volume && !one_point_is_too_close) {
-        connect_tris(new_cavity.begin(), new_cavity.end(), conn);
+        connect_tris(new_cavity.begin(), new_cavity.end());
         // 30 % of the time is spent here!
         all_tris.insert(std::make_move_iterator(new_tris.begin()),
                         std::make_move_iterator(new_tris.end()));
