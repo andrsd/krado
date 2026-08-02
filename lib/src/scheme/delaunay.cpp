@@ -767,9 +767,11 @@ build_embedded_vertices(Ptr<MeshSurface> surface)
     return vertices;
 }
 
-void
-get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & copies)
+std::unordered_map<int, NodeCopies>
+make_node_copies(Ptr<MeshSurface> surface)
 {
+    std::unordered_map<int, NodeCopies> copies;
+
     const auto & geom_surface = surface->geom_surface();
 
     std::vector<Ptr<MeshCurve>> all_curves;
@@ -840,6 +842,8 @@ get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & 
         NodeCopies c(v, param);
         copies.emplace(v->num(), c);
     }
+
+    return copies;
 }
 
 int
@@ -865,8 +869,7 @@ surface_initial_mesh(Ptr<MeshSurface> surface,
     const auto face_tag = surface->id();
     PolyMesh pm;
 
-    std::unordered_map<int, NodeCopies> copies;
-    get_node_copies(surface, copies);
+    auto copies = make_node_copies(surface);
 
     BoundingBox3D bb;
     for (auto & [_, c] : copies) {
