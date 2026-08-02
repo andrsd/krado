@@ -1175,9 +1175,8 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
     }
 }
 
-// TODO: rename this
 void
-bds2gmsh(const BDS_Mesh & m,
+bds2mesh(const BDS_Mesh & m,
          Ptr<MeshSurface> surface,
          std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
@@ -2356,7 +2355,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // ---
 
-    bds2gmsh(m, surface, recover_map);
+    bds2mesh(m, surface, recover_map);
 
     insertion_algo(surface);
 
