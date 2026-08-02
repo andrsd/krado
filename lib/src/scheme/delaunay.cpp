@@ -320,6 +320,12 @@ public:
     }
 
     bool
+    is_active() const
+    {
+        return not this->deleted_;
+    }
+
+    bool
     is_deleted() const
     {
         return this->deleted_;
@@ -376,9 +382,9 @@ public:
     }
 
     void
-    set_deleted(bool flag)
+    set_active(bool flag)
     {
-        this->deleted_ = flag;
+        this->deleted_ = not flag;
     }
 
     bool
@@ -549,7 +555,7 @@ connect_tris(Iterator beg, Iterator end)
     std::vector<EdgeXFace> conn;
 
     while (beg != end) {
-        if (!(*beg)->is_deleted()) {
+        if ((*beg)->is_active()) {
             for (int j = 0; j < 3; j++) {
                 conn.push_back(EdgeXFace(ref(**beg), j));
             }
@@ -589,7 +595,7 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
                         Ref<Triangle> t,
                         BidimMeshData & data)
 {
-    t->set_deleted(true);
+    t->set_active(false);
     // the cavity that has to be removed because it violates delaunay
     // criterion
     cavity.push_back(t);
@@ -602,7 +608,7 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
             data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
         if (not neigh || it != data.internal_edges.end())
             shell.push_back(exf);
-        else if (not(*neigh)->is_deleted()) {
+        else if ((*neigh)->is_active()) {
             const auto circ = in_circum_circle_aniso((*neigh)->tri(), param, metric, data);
             if (circ)
                 recur_find_cavity_aniso(surface, shell, cavity, metric, param, *neigh, data);
@@ -1201,7 +1207,7 @@ void
 mark_triangles_active(std::list<Ref<Triangle>> & cavity, bool state)
 {
     for (auto & tri : cavity)
-        tri->set_deleted(not state);
+        tri->set_active(state);
 }
 
 int
@@ -1372,7 +1378,7 @@ search_for_triangle(Ref<Triangle> t,
         return std::nullopt; // FIXME: removing this leads to horrible performance
 
     for (auto & tri : all_tris) {
-        if (not tri->is_deleted()) {
+        if (tri->is_active()) {
             const auto [_, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
                 return ref(*tri);
@@ -1590,7 +1596,7 @@ transfer_data_structure(Ptr<MeshSurface> surface,
                         BidimMeshData & data)
 {
     for (auto & tri : all_tris)
-        if (not tri->is_deleted())
+        if (tri->is_active())
             surface->add_element(std::move(tri->tri()));
     all_tris.clear();
 
