@@ -56,7 +56,7 @@ public:
     static Metric
     build(const GeomSurface & surface, UVParam uv)
     {
-        auto [du, dv] = surface.d1(uv);
+        const auto [du, dv] = surface.d1(uv);
         Metric metric(dot_product(du, du), dot_product(dv, du), dot_product(dv, dv));
         return metric;
     }
@@ -93,7 +93,7 @@ struct NodeCopies {
         double min_d = MAX_LC;
         std::size_t index = 0;
         for (std::size_t i = 0; i < this->n_copies; i++) {
-            auto dist = utils::distance(_uv, this->uv[i]);
+            const auto dist = utils::distance(_uv, this->uv[i]);
             if (dist < min_d) {
                 min_d = dist;
                 index = i;
@@ -156,10 +156,10 @@ struct BidimMeshData {
 UVParam
 circ_uv(const MeshElement & t, BidimMeshData & data)
 {
-    auto index0 = data.index(t.vertex(0));
-    auto index1 = data.index(t.vertex(1));
-    auto index2 = data.index(t.vertex(2));
-    auto ctr = Tri3::circum_center(data.uv[index0], data.uv[index1], data.uv[index2]);
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
+    const auto ctr = Tri3::circum_center(data.uv[index0], data.uv[index1], data.uv[index2]);
     if (ctr.has_value())
         return ctr.value();
     else
@@ -172,16 +172,16 @@ inv_map_uv(const MeshElement & t, UVParam p, const BidimMeshData & data, double 
     std::array<std::array<double, 2>, 2> mat;
     std::array<double, 2> b;
 
-    auto index0 = data.index(t.vertex(0));
-    auto index1 = data.index(t.vertex(1));
-    auto index2 = data.index(t.vertex(2));
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
 
-    auto u0 = data.uv[index0].u;
-    auto v0 = data.uv[index0].v;
-    auto u1 = data.uv[index1].u;
-    auto v1 = data.uv[index1].v;
-    auto u2 = data.uv[index2].u;
-    auto v2 = data.uv[index2].v;
+    const auto u0 = data.uv[index0].u;
+    const auto v0 = data.uv[index0].v;
+    const auto u1 = data.uv[index1].u;
+    const auto v1 = data.uv[index1].v;
+    const auto u2 = data.uv[index2].u;
+    const auto v2 = data.uv[index2].v;
 
     mat[0][0] = u1 - u0;
     mat[0][1] = u2 - u0;
@@ -190,11 +190,11 @@ inv_map_uv(const MeshElement & t, UVParam p, const BidimMeshData & data, double 
 
     b[0] = p.u - u0;
     b[1] = p.v - v0;
-    auto res = sys2x2(mat, b);
+    const auto res = sys2x2(mat, b);
     if (res.has_value()) {
-        auto uv = res.value();
-        auto inside = uv[0] >= -tol && uv[1] >= -tol && uv[0] <= 1. + tol && uv[1] <= 1. + tol &&
-                      1. - uv[0] - uv[1] > -tol;
+        const auto uv = res.value();
+        const auto inside = uv[0] >= -tol && uv[1] >= -tol && uv[0] <= 1. + tol &&
+                            uv[1] <= 1. + tol && 1. - uv[0] - uv[1] > -tol;
         return { { uv[0], uv[1] }, inside };
     }
     else {
@@ -205,16 +205,16 @@ inv_map_uv(const MeshElement & t, UVParam p, const BidimMeshData & data, double 
 double
 surf_uv(const MeshElement & t, BidimMeshData & data)
 {
-    auto index0 = data.index(t.vertex(0));
-    auto index1 = data.index(t.vertex(1));
-    auto index2 = data.index(t.vertex(2));
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
 
-    auto u1 = data.uv[index0].u;
-    auto v1 = data.uv[index0].v;
-    auto u2 = data.uv[index1].u;
-    auto v2 = data.uv[index1].v;
-    auto u3 = data.uv[index2].u;
-    auto v3 = data.uv[index2].v;
+    const auto u1 = data.uv[index0].u;
+    const auto v1 = data.uv[index0].v;
+    const auto u2 = data.uv[index1].u;
+    const auto v2 = data.uv[index1].v;
+    const auto u3 = data.uv[index2].u;
+    const auto v3 = data.uv[index2].v;
 
     const double vv1[2] = { u2 - u1, v2 - v1 };
     const double vv2[2] = { u3 - u1, v3 - v1 };
@@ -239,9 +239,9 @@ circum_center_metric(UVParam pa, UVParam pb, UVParam pc, Metric metric)
     std::array<std::array<double, 2>, 2> sys;
     std::array<double, 2> rhs;
 
-    const double a = metric[0];
-    const double b = metric[1];
-    const double d = metric[2];
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
 
     sys[0][0] = 2. * a * (pa.u - pb.u) + 2. * b * (pa.v - pb.v);
     sys[0][1] = 2. * d * (pa.v - pb.v) + 2. * b * (pa.u - pb.u);
@@ -253,11 +253,11 @@ circum_center_metric(UVParam pa, UVParam pb, UVParam pc, Metric metric)
     rhs[1] = a * (pa.u * pa.u - pc.u * pc.u) + d * (pa.v * pa.v - pc.v * pc.v) +
              2. * b * (pa.u * pa.v - pc.u * pc.v);
 
-    auto res = sys2x2(sys, rhs);
+    const auto res = sys2x2(sys, rhs);
     std::array<double, 2> x = res.has_value() ? res.value() : std::array<double, 2> { 0., 0. };
 
-    double radius = (x[0] - pa.u) * (x[0] - pa.u) * a + (x[1] - pa.v) * (x[1] - pa.v) * d +
-                    2. * (x[0] - pa.u) * (x[1] - pa.v) * b;
+    const auto radius = (x[0] - pa.u) * (x[0] - pa.u) * a + (x[1] - pa.v) * (x[1] - pa.v) * d +
+                        2. * (x[0] - pa.u) * (x[1] - pa.v) * b;
     return { { x[0], x[1] }, radius };
 }
 
@@ -265,22 +265,22 @@ std::tuple<UVParam, double>
 circum_center_metric(const MeshElement & base, Metric metric, const BidimMeshData & data)
 {
     // d = (u2-u1) M (u2-u1) = u2 M u2 + u1 M u1 - 2 u2 M u1
-    auto index0 = data.index(base.vertex(0));
-    auto index1 = data.index(base.vertex(1));
-    auto index2 = data.index(base.vertex(2));
+    const auto index0 = data.index(base.vertex(0));
+    const auto index1 = data.index(base.vertex(1));
+    const auto index2 = data.index(base.vertex(2));
     return circum_center_metric(data.uv[index0], data.uv[index1], data.uv[index2], metric);
 }
 
 bool
 in_circum_circle_aniso(UVParam p1, UVParam p2, UVParam p3, UVParam uv, Metric metric)
 {
-    auto [x, radius2] = circum_center_metric(p1, p2, p3, metric);
-    const double a = metric[0];
-    const double b = metric[1];
-    const double d = metric[2];
-    const double d0 = (x.u - uv.u);
-    const double d1 = (x.v - uv.v);
-    const double d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
+    const auto [x, radius2] = circum_center_metric(p1, p2, p3, metric);
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
+    const auto d0 = (x.u - uv.u);
+    const auto d1 = (x.v - uv.v);
+    const auto d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
     const auto tolerance = compute_tolerance(radius2);
     return d3 < radius2 - tolerance;
 }
@@ -288,13 +288,13 @@ in_circum_circle_aniso(UVParam p1, UVParam p2, UVParam p3, UVParam uv, Metric me
 bool
 in_circum_circle_aniso(const MeshElement & base, UVParam uv, Metric metric, BidimMeshData & data)
 {
-    auto [x, radius2] = circum_center_metric(base, metric, data);
-    const double a = metric[0];
-    const double b = metric[1];
-    const double d = metric[2];
-    const double d0 = (x.u - uv.u);
-    const double d1 = (x.v - uv.v);
-    const double d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
+    const auto [x, radius2] = circum_center_metric(base, metric, data);
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
+    const auto d0 = (x.u - uv.u);
+    const auto d1 = (x.v - uv.v);
+    const auto d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
     return d3 < radius2;
 }
 
@@ -351,9 +351,9 @@ public:
     {
         if (!this->neigh_[i])
             return std::nullopt;
-        auto n = this->neigh_[i].value();
-        auto v1 = this->base_.vertex((i + 2) % 3);
-        auto v2 = this->base_.vertex(i);
+        const auto n = this->neigh_[i].value();
+        const auto v1 = this->base_.vertex((i + 2) % 3);
+        const auto v2 = this->base_.vertex(i);
         for (int j = 0; j < Tri3::N_VERTICES; j++)
             if (n->tri().vertex(j) != v1 && n->tri().vertex(j) != v2)
                 return n->tri().vertex(j);
@@ -396,7 +396,7 @@ public:
         if (this->deleted_)
             return true;
         for (int i = 0; i < Tri3::N_EDGES; i++) {
-            auto n = this->neigh_[i];
+            const auto n = this->neigh_[i];
             if (n && (not(*n)->is_neigh(*this)))
                 return false;
         }
@@ -466,10 +466,10 @@ struct EdgeXFace {
 
     EdgeXFace(Ref<Triangle> t, int i_fac) : t1(t), i1(i_fac), ori(1)
     {
-        v[0] = t1->tri().vertex(i_fac == 0 ? 2 : i_fac - 1);
-        v[1] = t1->tri().vertex(i_fac);
-        if (v[0]->num() > v[1]->num()) {
-            ori = -1;
+        this->v[0] = t1->tri().vertex(i_fac == 0 ? 2 : i_fac - 1);
+        this->v[1] = t1->tri().vertex(i_fac);
+        if (this->v[0]->num() > this->v[1]->num()) {
+            this->ori = -1;
             std::swap(v[0], v[1]);
         }
     }
@@ -477,7 +477,7 @@ struct EdgeXFace {
     Ptr<MeshVertexAbstract>
     vertex(int i) const
     {
-        return v[i];
+        return this->v[i];
     }
 
     bool
@@ -507,8 +507,8 @@ set_lcs_init(const MeshElement & t, std::map<Ptr<MeshVertexAbstract>, double> & 
 {
     for (int i = 0; i < 3; i++) {
         for (int j = i + 1; j < 3; j++) {
-            auto vi = t.vertex(i);
-            auto vj = t.vertex(j);
+            const auto vi = t.vertex(i);
+            const auto vj = t.vertex(j);
             v_sizes[vi] = -1;
             v_sizes[vj] = -1;
         }
@@ -522,12 +522,12 @@ set_lcs(const MeshElement & t,
 {
     for (int i = 0; i < 3; i++) {
         for (int j = i + 1; j < 3; j++) {
-            auto vi = t.vertex(i);
-            auto vj = t.vertex(j);
+            const auto vi = t.vertex(i);
+            const auto vj = t.vertex(j);
             if (vi != data.equivalent(vj) && vj != data.equivalent(vi)) {
-                auto l = utils::distance(vi->point(), vj->point());
-                auto iti = v_sizes.find(vi);
-                auto itj = v_sizes.find(vj);
+                const auto l = utils::distance(vi->point(), vj->point());
+                const auto iti = v_sizes.find(vi);
+                const auto itj = v_sizes.find(vj);
                 if (iti->second < 0 || iti->second > l)
                     iti->second = l;
                 if (itj->second < 0 || itj->second > l)
@@ -543,7 +543,7 @@ is_active(Ref<const Triangle> t, double limit)
     if (t->is_deleted())
         return std::nullopt;
     for (int active = 0; active < 3; active++) {
-        auto neigh = t->neighbor(active);
+        const auto neigh = t->neighbor(active);
         if (!neigh || ((*neigh)->radius() < limit && (*neigh)->radius() > 0)) {
             return { active };
         }
@@ -572,8 +572,8 @@ connect_tris(Iterator beg, Iterator end, std::vector<EdgeXFace> & conn)
     std::sort(conn.begin(), conn.end());
 
     for (std::size_t i = 0; i < conn.size() - 1; i++) {
-        auto & f1 = conn[i];
-        auto & f2 = conn[i + 1];
+        const auto & f1 = conn[i];
+        const auto & f2 = conn[i + 1];
 
         if (f1 == f2 && f1.t1 != f2.t1) {
             f1.t1->set_neighbor(f1.i1, f2.t1);
@@ -605,14 +605,15 @@ recur_find_cavity_aniso(Ptr<MeshSurface> surface,
     cavity.push_back(t);
 
     for (int i = 0; i < Tri3::N_EDGES; i++) {
-        auto neigh = t->neighbor(i);
+        const auto neigh = t->neighbor(i);
         EdgeXFace exf(t, i);
         // take care of untouchable internal edges
-        auto it = data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
+        const auto it =
+            data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
         if (not neigh || it != data.internal_edges.end())
             shell.push_back(exf);
         else if (not(*neigh)->is_deleted()) {
-            auto circ = in_circum_circle_aniso((*neigh)->tri(), param, metric, data);
+            const auto circ = in_circum_circle_aniso((*neigh)->tri(), param, metric, data);
             if (circ)
                 recur_find_cavity_aniso(surface, shell, cavity, metric, param, *neigh, data);
             else
@@ -631,7 +632,7 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
     for (auto & tri : surface->triangles())
         set_lcs_init(tri, v_sizes_map);
 
-    auto itfind = v_sizes_map.find(nullptr);
+    const auto itfind = v_sizes_map.find(nullptr);
     if (itfind != v_sizes_map.end()) {
         Log::error("Some NULL points exist in 2D mesh");
         return false;
@@ -661,12 +662,12 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
             continue;
 
         for (auto & seg : crv->segments()) {
-            auto v0 = seg.vertex(0);
-            auto v1 = seg.vertex(1);
+            const auto v0 = seg.vertex(0);
+            const auto v1 = seg.vertex(1);
 
-            double d = utils::distance(v0->point(), v1->point());
-            double d0 = v_sizes_map[v0];
-            double d1 = v_sizes_map[v1];
+            const auto d = utils::distance(v0->point(), v1->point());
+            const auto d0 = v_sizes_map[v0];
+            const auto d1 = v_sizes_map[v1];
             if (d0 < .5 * d)
                 v_sizes_map[v0] = .5 * d;
             if (d1 < .5 * d)
@@ -674,21 +675,21 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
         }
     }
 
-    auto & geom_surface = surface->geom_surface();
-    for (auto & [vtx, size] : v_sizes_map) {
-        auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
+    const auto & geom_surface = surface->geom_surface();
+    for (const auto & [vtx, size] : v_sizes_map) {
+        const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         data.add_vertex(vtx, param, size);
     }
-    for (auto & tri : surface->triangles()) {
-        auto v0 = tri.vertex(0);
-        auto v1 = tri.vertex(1);
-        auto v2 = tri.vertex(2);
+    for (const auto & tri : surface->triangles()) {
+        const auto v0 = tri.vertex(0);
+        const auto v1 = tri.vertex(1);
+        const auto v2 = tri.vertex(2);
 
-        double lc = (data.v_sizes[data.index(v0)] + data.v_sizes[data.index(v1)] +
-                     data.v_sizes[data.index(v2)]) /
-                    3.;
+        const auto lc = (data.v_sizes[data.index(v0)] + data.v_sizes[data.index(v1)] +
+                         data.v_sizes[data.index(v2)]) /
+                        3.;
 
-        auto circum_radius = circum_radius_euclidian(tri, lc);
+        const auto circum_radius = circum_radius_euclidian(tri, lc);
         all_tris.emplace(Qtr<Triangle>::alloc(tri, circum_radius));
     }
     surface->remove_all_triangles();
@@ -713,16 +714,16 @@ build_vertices(Ptr<MeshSurface> surface, Span<const Ptr<MeshCurve>> curves)
     std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> all_vertices;
     std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> boundary;
 
-    auto & geom_surface = surface->geom_surface();
-    for (auto & crv : curves) {
-        auto & geom_curve = crv->geom_curve();
+    const auto & geom_surface = surface->geom_surface();
+    for (const auto & crv : curves) {
+        const auto & geom_curve = crv->geom_curve();
         if (geom_curve.is_seam(geom_surface))
             return { {}, {} };
 
         if (not crv->is_mesh_degenerated()) {
             for (auto & seg : crv->segments()) {
-                auto v1 = seg.vertex(0);
-                auto v2 = seg.vertex(1);
+                const auto v1 = seg.vertex(0);
+                const auto v2 = seg.vertex(1);
 
                 all_vertices.insert(v1);
                 all_vertices.insert(v2);
@@ -749,18 +750,18 @@ build_embedded_vertices(Ptr<MeshSurface> surface)
 {
     std::set<Ptr<MeshVertexAbstract>> vertices;
     // add embedded vertices
-    for (auto & crv : surface->embedded_curves()) {
+    for (const auto & crv : surface->embedded_curves()) {
         if (crv->is_mesh_degenerated())
             continue;
 
-        for (auto & vtx : crv->bounding_vertices())
+        for (const auto & vtx : crv->bounding_vertices())
             vertices.insert(vtx);
-        for (auto & vtx : crv->curve_vertices())
+        for (const auto & vtx : crv->curve_vertices())
             vertices.insert(vtx);
     }
 
     // add embedded vertices
-    for (auto & vtx : surface->embedded_vertices())
+    for (const auto & vtx : surface->embedded_vertices())
         vertices.insert(vtx);
 
     return vertices;
@@ -769,7 +770,7 @@ build_embedded_vertices(Ptr<MeshSurface> surface)
 void
 get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & copies)
 {
-    auto & geom_surface = surface->geom_surface();
+    const auto & geom_surface = surface->geom_surface();
 
     std::vector<Ptr<MeshCurve>> all_curves;
     auto curves = surface->curves();
@@ -787,11 +788,11 @@ get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & 
         if (crv->is_mesh_degenerated())
             continue;
 
-        auto & geom_curve = crv->geom_curve();
+        const auto & geom_curve = crv->geom_curve();
         std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> e_vertices;
         for (auto & seg : crv->segments()) {
-            auto v1 = seg.vertex(0);
-            auto v2 = seg.vertex(1);
+            const auto v1 = seg.vertex(0);
+            const auto v2 = seg.vertex(1);
             e_vertices.insert(v1);
             e_vertices.insert(v2);
         }
@@ -823,7 +824,7 @@ get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & 
                 param = reparam_mesh_vertex_on_surface(v, geom_surface);
 #endif
             }
-            auto it = copies.find(v->num());
+            const auto it = copies.find(v->num());
             if (it == copies.end()) {
                 NodeCopies c(v, param);
                 copies.emplace(v->num(), c);
@@ -835,7 +836,7 @@ get_node_copies(Ptr<MeshSurface> surface, std::unordered_map<int, NodeCopies> & 
     }
 
     for (auto & v : surface->embedded_vertices()) {
-        auto param = reparam_mesh_vertex_on_surface(v, geom_surface);
+        const auto param = reparam_mesh_vertex_on_surface(v, geom_surface);
         NodeCopies c(v, param);
         copies.emplace(v->num(), c);
     }
@@ -846,13 +847,13 @@ delaunay_edge_criterion_plane_isotropic(PolyMesh::HalfEdge * he, void *)
 {
     if (he->opposite == nullptr)
         return -1;
-    auto * v0 = he->v;
-    auto * v1 = he->next->v;
-    auto * v2 = he->next->next->v;
-    auto * v = he->opposite->next->next->v;
+    const auto * v0 = he->v;
+    const auto * v1 = he->next->v;
+    const auto * v2 = he->next->next->v;
+    const auto * v = he->opposite->next->next->v;
 
     // FIXME : should be oriented anyway !
-    auto result = -incircle(v0->position, v1->position, v2->position, v->position);
+    const auto result = -incircle(v0->position, v1->position, v2->position, v->position);
 
     return (result > 0) ? 1 : 0;
 }
@@ -861,7 +862,7 @@ PolyMesh
 surface_initial_mesh(Ptr<MeshSurface> surface,
                      bool recover /*, std::vector<double> * additional = nullptr*/)
 {
-    auto face_tag = surface->id();
+    const auto face_tag = surface->id();
     PolyMesh pm;
 
     std::unordered_map<int, NodeCopies> copies;
@@ -917,11 +918,11 @@ surface_initial_mesh(Ptr<MeshSurface> surface,
                     std::swap(c0, c1);
                 }
                 for (std::size_t j = 0; j < c0->second.n_copies; j++) {
-                    PolyMesh::Vertex * v0 = pm.vertices[c0->second.id[j]];
-                    PolyMesh::Vertex * v1 = pm.vertices[c1->second.closest(c0->second.uv[j])];
-                    auto result = recover_edge(pm, v0, v1);
+                    auto * v0 = pm.vertices[c0->second.id[j]];
+                    auto * v1 = pm.vertices[c1->second.closest(c0->second.uv[j])];
+                    const auto result = recover_edge(pm, v0, v1);
                     if (result.has_value()) {
-                        auto he = pm.get_edge(v0, v1);
+                        const auto he = pm.get_edge(v0, v1);
                         if (he) {
                             if (he->opposite)
                                 he->opposite->data = crv->id();
@@ -979,7 +980,7 @@ build_bds_mesh(Ptr<MeshSurface> surface,
                std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
                std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv)
 {
-    auto & geom_surface = surface->geom_surface();
+    const auto & geom_surface = surface->geom_surface();
 
     // std::vector<GEdge *> temp;
     // if (replacementEdges) {
@@ -988,32 +989,32 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     // }
     // recover and color so most of the code below can go away. Works also for
     // periodic faces
-    auto pm = surface_initial_mesh(surface, true);
+    const auto pm = surface_initial_mesh(surface, true);
 
     // if (replacementEdges) {
     //     gf->set(temp);
     // }
 
     std::map<int, Ptr<BDS_Point>> aaa;
-    for (auto & vtx : all_vertices)
+    for (const auto & vtx : all_vertices)
         aaa[vtx->num()] = recover_map_inv[vtx];
 
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
-        auto g = m.add_geom(surface->id(), 2);
-        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
+        const auto g = m.add_geom(surface->id(), 2);
+        const auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
         aaa[v->data] = pp;
     }
 
     for (size_t i = 0; i < pm.faces.size(); i++) {
         auto * he = pm.faces[i]->he;
-        auto a = he->v->data;
-        auto b = he->next->v->data;
-        auto c = he->next->next->v->data;
-        auto p1 = aaa[a];
-        auto p2 = aaa[b];
-        auto p3 = aaa[c];
+        const auto a = he->v->data;
+        const auto b = he->next->v->data;
+        const auto c = he->next->next->v->data;
+        const auto p1 = aaa[a];
+        const auto p2 = aaa[b];
+        const auto p3 = aaa[c];
         if (p1 && p2 && p3)
             m.add_triangle(p1->id(), p2->id(), p3->id());
     }
@@ -1062,31 +1063,31 @@ bool
 recover_edge(BDS_Mesh & m,
              Ptr<MeshSurface> surface,
              Ptr<MeshCurve> edge,
-             std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recoverMapInv,
+             std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv,
              std::set<EdgeToRecover> * e2r,
-             std::set<EdgeToRecover> * notRecovered,
+             std::set<EdgeToRecover> * not_recovered,
              int pass)
 {
     Optional<BDS_GeomEntity> g;
     if (pass == 2)
         g = m.add_geom(edge->id(), 1);
 
-    auto & geom_curve = edge->geom_curve();
+    const auto & geom_curve = edge->geom_curve();
     bool fatally_failed = false;
 
     for (auto & seg : edge->segments()) {
-        auto vstart = seg.vertex(0);
-        auto vend = seg.vertex(1);
-        auto itpstart = recoverMapInv.find(vstart);
-        auto itpend = recoverMapInv.find(vend);
-        if (itpstart != recoverMapInv.end() && itpend != recoverMapInv.end()) {
-            auto pstart = itpstart->second;
-            auto pend = itpend->second;
+        const auto vstart = seg.vertex(0);
+        const auto vend = seg.vertex(1);
+        const auto itpstart = recover_map_inv.find(vstart);
+        const auto itpend = recover_map_inv.find(vend);
+        if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
+            const auto pstart = itpstart->second;
+            const auto pend = itpend->second;
             if (pass == 1)
                 e2r->insert(EdgeToRecover(pstart->id(), pend->id(), &geom_curve));
             else {
-                auto e =
-                    m.recover_edge(pstart->id(), pend->id(), fatally_failed, e2r, notRecovered);
+                const auto e =
+                    m.recover_edge(pstart->id(), pend->id(), fatally_failed, e2r, not_recovered);
                 if (e.has_value())
                     e.value()->g_ = g;
                 else {
@@ -1103,20 +1104,18 @@ recover_edge(BDS_Mesh & m,
 
     auto bnd_vtxs = edge->bounding_vertices();
     if (pass == 2 && not bnd_vtxs[0].is_null()) {
-        auto vstart = bnd_vtxs[0];
-        auto vend = bnd_vtxs[1];
-        auto itpstart = recoverMapInv.find(vstart);
-        auto itpend = recoverMapInv.find(vend);
-        if (itpstart != recoverMapInv.end() && itpend != recoverMapInv.end()) {
-            auto pstart = itpstart->second;
-            auto pend = itpend->second;
+        const auto vstart = bnd_vtxs[0];
+        const auto vend = bnd_vtxs[1];
+        const auto itpstart = recover_map_inv.find(vstart);
+        const auto itpend = recover_map_inv.find(vend);
+        if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
+            const auto pstart = itpstart->second;
+            const auto pend = itpend->second;
             if (!pstart->g_) {
-                auto g0 = m.add_geom(pstart->id(), 0);
-                pstart->g_ = g0;
+                pstart->g_ = m.add_geom(pstart->id(), 0);
             }
             if (!pend->g_) {
-                auto g0 = m.add_geom(pend->id(), 0);
-                pend->g_ = g0;
+                pend->g_ = m.add_geom(pend->id(), 0);
             }
         }
     }
@@ -1135,20 +1134,20 @@ edge_swap_test_delaunay_aniso(Ptr<BDS_Edge> e,
     if (e->num_faces() != 2)
         return false;
 
-    auto op = e->opposite_of();
+    const auto op = e->opposite_of();
 
     SwapQuad sq(e->p1_->id(), e->p2_->id(), op[0]->id(), op[1]->id());
     if (configs.find(sq) != configs.end())
         return false;
     configs.insert(sq);
 
-    auto edge_center = 0.5 * (e->p1_->uv() + e->p2_->uv());
+    const auto edge_center = 0.5 * (e->p1_->uv() + e->p2_->uv());
 
-    auto p1 = e->p1_->uv();
-    auto p2 = e->p2_->uv();
-    auto p3 = op[0]->uv();
-    auto p4 = op[1]->uv();
-    auto metric = Metric::build(surface->geom_surface(), edge_center);
+    const auto p1 = e->p1_->uv();
+    const auto p2 = e->p2_->uv();
+    const auto p3 = op[0]->uv();
+    const auto p4 = op[1]->uv();
+    const auto metric = Metric::build(surface->geom_surface(), edge_center);
     return in_circum_circle_aniso(p1, p2, p3, p4, metric);
 }
 
@@ -1180,10 +1179,10 @@ bds2gmsh(BDS_Mesh & m,
          Ptr<MeshSurface> surface,
          std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
-    auto geom_surface = surface->geom_surface();
+    const auto & geom_surface = surface->geom_surface();
     for (auto & tri : m.triangles()) {
         if (tri->active()) {
-            auto n = tri->get_nodes().value();
+            const auto n = tri->get_nodes().value();
 
             Ptr<MeshVertexAbstract> v[3] = { nullptr, nullptr, nullptr };
             for (int i = 0; i < 3; i++) {
@@ -1235,7 +1234,7 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
     double new_volume = 0.0;
     double new_min_quality = 2.0;
 
-    double old_volume =
+    const double old_volume =
         std::accumulate(begin(cavity),
                         end(cavity),
                         0.0,
@@ -1258,30 +1257,29 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
             v0 = it->vertex(1);
             v1 = it->vertex(0);
         }
-        auto t = MeshElement::Tri3({ v0, v1, v });
-        auto index0 = data.index(t.vertex(0));
-        auto index1 = data.index(t.vertex(1));
-        auto index2 = data.index(t.vertex(2));
+        const auto t = MeshElement::Tri3({ v0, v1, v });
+        const auto index0 = data.index(t.vertex(0));
+        const auto index1 = data.index(t.vertex(1));
+        const auto index2 = data.index(t.vertex(2));
         constexpr double ONE_THIRD = 1. / 3.;
-        double lc =
+        const auto lc =
             ONE_THIRD * (data.v_sizes[index0] + data.v_sizes[index1] + data.v_sizes[index2]);
 
-        auto circ_radius = circum_radius_euclidian(t, lc);
-        // auto * t4 = new Triangle(t, circ_radius);
+        const auto circ_radius = circum_radius_euclidian(t, lc);
         new_tris.emplace_back(Qtr<Triangle>::alloc(t, circ_radius));
         auto t4 = ref(*new_tris.back());
 
-        double d1 = utils::distance(v0->point(), v->point());
-        double d2 = utils::distance(v1->point(), v->point());
-        double d3 = utils::distance(v0->point(), v1->point());
-        double d4 = MAX_LC;
+        const auto d1 = utils::distance(v0->point(), v->point());
+        const auto d2 = utils::distance(v1->point(), v->point());
+        const auto d3 = utils::distance(v0->point(), v1->point());
+        auto d4 = MAX_LC;
         // avoid angles that are too obtuse
-        double cosv = ((d1 * d1 + d2 * d2 - d3 * d3) / (2. * d1 * d2));
+        const double cosv = ((d1 * d1 + d2 * d2 - d3 * d3) / (2. * d1 * d2));
 
         if (v0->geom_shape().dim() != 2 && v1->geom_shape().dim() != 2) {
-            auto v0v1 = v1->point() - v0->point();
-            auto v0v = v->point() - v0->point();
-            auto pv = cross_product(v0v1, v0v);
+            const auto v0v1 = v1->point() - v0->point();
+            const auto v0v = v->point() - v0->point();
+            const auto pv = cross_product(v0v1, v0v);
             d4 = pv.magnitude() / d3;
         }
 
@@ -1293,7 +1291,7 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
         // the cavity is not star shaped around the new vertex.
         new_cavity.push_back(t4);
 
-        auto other_side = it->t1->neighbor(it->i1);
+        const auto other_side = it->t1->neighbor(it->i1);
         if (other_side)
             new_cavity.push_back(other_side.value());
 
@@ -1303,7 +1301,7 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
 
         new_volume += ss;
 
-        auto tri_gamma =
+        const auto tri_gamma =
             Tri3::gamma(t.vertex(0)->point(), t.vertex(1)->point(), t.vertex(1)->point());
         new_min_quality = std::min(new_min_quality, tri_gamma);
     }
@@ -1353,19 +1351,19 @@ search_for_triangle(Ref<Triangle> t,
     if (inside)
         return t;
 
-    UVParam q1 = pt;
+    const auto q1 = pt;
     std::size_t n_iter = 0;
     while (1) {
-        auto index0 = data.index(t->tri().vertex(0));
-        auto index1 = data.index(t->tri().vertex(1));
-        auto index2 = data.index(t->tri().vertex(2));
-        UVParam q2 = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+        const auto index0 = data.index(t->tri().vertex(0));
+        const auto index1 = data.index(t->tri().vertex(1));
+        const auto index2 = data.index(t->tri().vertex(2));
+        const auto q2 = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
         int i;
         for (i = 0; i < 3; i++) {
-            auto i1 = data.index(t->tri().vertex(i == 0 ? 2 : i - 1));
-            auto i2 = data.index(t->tri().vertex(i));
-            UVParam p1 = data.uv[i1];
-            UVParam p2 = data.uv[i2];
+            const auto i1 = data.index(t->tri().vertex(i == 0 ? 2 : i - 1));
+            const auto i2 = data.index(t->tri().vertex(i));
+            const auto p1 = data.uv[i1];
+            const auto p2 = data.uv[i2];
             if (intersection_segments_2(p1, p2, q1, q2))
                 break;
         }
@@ -1436,14 +1434,14 @@ insert_a_point(Ptr<MeshSurface> surface,
         auto lc = surface->mesh_size_at_param(center);
         data.add_vertex(v, center, lc);
 
-        int result = insert_vertex_b(shell,
-                                     cavity,
-                                     false,
-                                     v,
-                                     all_tris,
-                                     active_tris,
-                                     data,
-                                     test_star_shapeness);
+        auto result = insert_vertex_b(shell,
+                                      cavity,
+                                      false,
+                                      v,
+                                      all_tris,
+                                      active_tris,
+                                      data,
+                                      test_star_shapeness);
 
         if (result != 1) {
             if (result == -1)
@@ -1590,13 +1588,13 @@ split_equivalent_triangles(Ptr<MeshSurface> surface, BidimMeshData & data)
 Vector
 compute_normal(const MeshElement & t, const BidimMeshData & data)
 {
-    auto v0 = t.vertex(0);
-    auto v1 = t.vertex(1);
-    auto v2 = t.vertex(2);
+    const auto v0 = t.vertex(0);
+    const auto v1 = t.vertex(1);
+    const auto v2 = t.vertex(2);
 
-    auto index0 = data.index(v0);
-    auto index1 = data.index(v1);
-    auto index2 = data.index(v2);
+    const auto index0 = data.index(v0);
+    const auto index1 = data.index(v1);
+    const auto index2 = data.index(v2);
     return normal(data.uv[index0], data.uv[index1], data.uv[index2]);
 }
 
@@ -1616,12 +1614,12 @@ transfer_data_structure(Ptr<MeshSurface> surface,
     // first place)
 
     if (surface->triangles().size() > 1) {
-        auto & t1 = surface->triangles()[0];
-        auto n1 = compute_normal(t1, data);
+        const auto & t1 = surface->triangles()[0];
+        const auto n1 = compute_normal(t1, data);
 
         for (std::size_t j = 1; j < surface->triangles().size(); j++) {
             auto & tj = surface->triangles()[j];
-            auto nj = compute_normal(tj, data);
+            const auto nj = compute_normal(tj, data);
 
             // orient the bignou
             if (dot_product(n1, nj) < 0.0)
@@ -1702,45 +1700,45 @@ optimal_point_frontal(Ptr<MeshSurface> surface,
                       int active_edge,
                       BidimMeshData & data)
 {
-    auto & base = worst->tri();
+    const auto & base = worst->tri();
     auto center = circ_uv(base, data);
-    int index0 = data.index(base.vertex(0));
-    int index1 = data.index(base.vertex(1));
-    int index2 = data.index(base.vertex(2));
-    UVParam pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
-    auto metric = Metric::build(surface->geom_surface(), pa);
+    auto index0 = data.index(base.vertex(0));
+    auto index1 = data.index(base.vertex(1));
+    auto index2 = data.index(base.vertex(2));
+    const auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+    const auto metric = Metric::build(surface->geom_surface(), pa);
     double r2;
     std::tie(center, r2) = circum_center_metric(worst->tri(), metric, data);
     // compute the middle point of the edge
-    int ip1 = active_edge - 1 < 0 ? 2 : active_edge - 1;
-    int ip2 = active_edge;
+    const int ip1 = active_edge - 1 < 0 ? 2 : active_edge - 1;
+    const int ip2 = active_edge;
 
     index0 = data.index(base.vertex(ip1));
     index1 = data.index(base.vertex(ip2));
-    UVParam midpoint = 0.5 * (data.uv[index0] + data.uv[index1]);
+    const auto midpoint = 0.5 * (data.uv[index0] + data.uv[index1]);
 
     // now we have the edge center and the center of the circumcircle, we try to
     // find a point that would produce a perfect triangle while connecting the 2
     // points of the active edge
-    UVParam dir = center - midpoint;
-    double norm = std::sqrt(dir.u * dir.u + dir.v * dir.v);
+    auto dir = center - midpoint;
+    const auto norm = std::sqrt(dir.u * dir.u + dir.v * dir.v);
     dir.u /= norm;
     dir.v /= norm;
-    const double RATIO = std::sqrt(dir.u * dir.u * metric[0] + 2 * dir.v * dir.u * metric[1] +
-                                   dir.v * dir.v * metric[2]);
+    const auto RATIO = std::sqrt(dir.u * dir.u * metric[0] + 2 * dir.v * dir.u * metric[1] +
+                                 dir.v * dir.v * metric[2]);
 
-    const double rhoM1 = 0.5 * (data.v_sizes[index0] + data.v_sizes[index1]); // * RATIO;
+    const auto rhoM1 = 0.5 * (data.v_sizes[index0] + data.v_sizes[index1]); // * RATIO;
     // const double rhoM2 = 0.5 * (data.vSizesBGM[index0] + data.vSizesBGM[index1]); // * RATIO;
     // const double rhoM = Extend1dMeshIn2dSurfaces(gf) ? std::min(rhoM1, rhoM2) : rhoM2;
     // const double rhoM_hat = rhoM;
-    const double rhoM_hat = rhoM1;
+    const auto rhoM_hat = rhoM1;
 
-    const double q = length_metric(center, midpoint, metric);
-    const double d = rhoM_hat * std::sqrt(3.0) * 0.5;
+    const auto q = length_metric(center, midpoint, metric);
+    const auto d = rhoM_hat * std::sqrt(3.0) * 0.5;
 
     // d is corrected in a way that the mesh size is computed at point newPoint
 
-    const double L = std::min(d, q);
+    const auto L = std::min(d, q);
 
     auto new_point = midpoint + L / RATIO * dir;
 
@@ -1748,14 +1746,15 @@ optimal_point_frontal(Ptr<MeshSurface> surface,
 }
 
 std::tuple<bool, int>
-point_inside_parametric_domain(std::vector<UVParam> & bnd, UVParam p, UVParam out)
+point_inside_parametric_domain(const std::vector<UVParam> & bnd, UVParam p, UVParam out)
 {
+    assert(bnd.size() % 2 == 0);
     int count = 0;
-    for (size_t i = 0; i < bnd.size(); i += 2) {
-        UVParam p1 = bnd[i];
-        UVParam p2 = bnd[i + 1];
-        double a = orient2d(p1, p2, p);
-        double b = orient2d(p1, p2, out);
+    for (std::size_t i = 0; i < bnd.size(); i += 2) {
+        const auto p1 = bnd[i];
+        const auto p2 = bnd[i + 1];
+        auto a = orient2d(p1, p2, p);
+        auto b = orient2d(p1, p2, out);
         if (a * b < 0) {
             a = orient2d(p, out, p1);
             b = orient2d(p, out, p2);
@@ -1836,16 +1835,16 @@ newton_fd(bool (*func)(const Eigen::VectorXd &, Eigen::VectorXd &, void *),
             return false;
         }
 
-        bool isZero = false;
+        bool is_zero = false;
         for (int k = 0; k < N; k++) {
             if (f(k) == 0.)
-                isZero = true;
+                is_zero = true;
             else
-                isZero = false;
-            if (isZero == false)
+                is_zero = false;
+            if (is_zero == false)
                 break;
         }
-        if (isZero)
+        if (is_zero)
             break;
 
         for (int j = 0; j < N; j++) {
@@ -1911,10 +1910,7 @@ struct IntersectCurveSurfaceData {
             if (newton_fd(_kaboom, uvt, this)) {
                 // printf("--- CONVERGED -----------\n");
                 // printf("newton done\n");
-                new_point.x = uvt(0);
-                new_point.y = uvt(1);
-                new_point.z = uvt(2);
-                return new_point;
+                return Point(uvt(0), uvt(1), uvt(2));
             }
         }
         catch (...) {
@@ -1928,9 +1924,9 @@ struct IntersectCurveSurfaceData {
 bool
 _kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * context)
 {
-    auto * data = static_cast<IntersectCurveSurfaceData *>(context);
-    auto s = data->s(uvt(0), uvt(1));
-    auto c = data->c(uvt(2));
+    const auto * data = static_cast<IntersectCurveSurfaceData *>(context);
+    const auto s = data->s(uvt(0), uvt(1));
+    const auto c = data->c(uvt(2));
     res(0) = s.x - c.x;
     res(1) = s.y - c.y;
     res(2) = s.z - c.z;
@@ -1967,16 +1963,16 @@ optimal_point_frontal_b(Ptr<MeshSurface> surface,
                         BidimMeshData & data)
 {
     // as a starting point, let us use the "fast algo"
-    auto [d, new_point, metric] = optimal_point_frontal(surface, worst, active_edge, data);
-    int ip1 = (active_edge + 2) % 3;
-    int ip2 = active_edge;
-    int ip3 = (active_edge + 1) % 3;
-    auto v1 = worst->tri().vertex(ip1)->point();
-    auto v2 = worst->tri().vertex(ip2)->point();
-    auto v3 = worst->tri().vertex(ip3)->point();
-    auto middle = 0.5 * (v1 + v2);
-    auto v1v2 = v2 - v1;
-    auto tmp = v3 - middle;
+    const auto [d, new_point, metric] = optimal_point_frontal(surface, worst, active_edge, data);
+    const auto ip1 = (active_edge + 2) % 3;
+    const auto ip2 = active_edge;
+    const auto ip3 = (active_edge + 1) % 3;
+    const auto v1 = worst->tri().vertex(ip1)->point();
+    const auto v2 = worst->tri().vertex(ip2)->point();
+    const auto v3 = worst->tri().vertex(ip3)->point();
+    const auto middle = 0.5 * (v1 + v2);
+    const auto v1v2 = v2 - v1;
+    const auto tmp = v3 - middle;
     auto n1 = cross_product(v1v2, tmp);
     if (n1.magnitude() < 1.e-12)
         return { true, new_point, metric };
@@ -1992,7 +1988,7 @@ optimal_point_frontal_b(Ptr<MeshSurface> surface,
     CurveFunctorCircle cc(n2, n1, middle, d);
     SurfaceFunctorGFace ss(surface->geom_surface());
 
-    auto ppp = intersect_curve_surface(cc, ss, uvt, d * 1.e-8);
+    const auto ppp = intersect_curve_surface(cc, ss, uvt, d * 1.e-8);
     if (ppp.has_value()) {
         auto pt = ppp.value();
         return { true, { pt.x, pt.y }, metric };
@@ -2004,7 +2000,7 @@ optimal_point_frontal_b(Ptr<MeshSurface> surface,
 } // namespace
 
 void
-bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
+bowyer_watson(Ptr<MeshSurface> surface, int max_pnt)
 {
     std::set<Qtr<Triangle>, CompareTrianglePtr> all_tris;
     BidimMeshData data;
@@ -2031,18 +2027,18 @@ bowyer_watson(Ptr<MeshSurface> surface, int MAXPNT)
                            worst->radius());
             }
             // VERIFY STOP !!!
-            if (worst->radius() < 0.5 * std::sqrt(2.0) || (int) data.v_sizes.size() > MAXPNT) {
+            if (worst->radius() < 0.5 * std::sqrt(2.0) || (int) data.v_sizes.size() > max_pnt) {
                 break;
             }
 
             const auto & base = worst->tri();
-            int index0 = data.index(base.vertex(0));
-            int index1 = data.index(base.vertex(1));
-            int index2 = data.index(base.vertex(2));
-            auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+            const auto index0 = data.index(base.vertex(0));
+            const auto index1 = data.index(base.vertex(1));
+            const auto index2 = data.index(base.vertex(2));
+            const auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
 
-            auto metric = Metric::build(surface->geom_surface(), pa);
-            auto [ctr2, r2] = circum_center_metric(worst->tri(), metric, data);
+            const auto metric = Metric::build(surface->geom_surface(), pa);
+            const auto [ctr2, r2] = circum_center_metric(worst->tri(), metric, data);
             insert_a_point(surface, worst, ctr2, metric, data, all_tris);
         }
     }
@@ -2069,35 +2065,35 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
         return;
     }
 
-    int n_iters = 0;
     // compute active triangle
     for (auto & tri : all_tris) {
         auto ref_tri = ref(*tri);
-        auto active_edge = is_active(ref_tri, LIMIT);
+        const auto active_edge = is_active(ref_tri, LIMIT);
         if (active_edge.has_value())
             active_tris.insert(ref_tri);
         else if (tri->radius() < LIMIT)
             break;
     }
 
-    auto & geom_surface = surface->geom_surface();
-    auto [ru_lo, ru_hi] = geom_surface.param_range(0);
-    auto [rv_lo, rv_hi] = geom_surface.param_range(1);
+    const auto & geom_surface = surface->geom_surface();
+    const auto [ru_lo, ru_hi] = geom_surface.param_range(0);
+    const auto [rv_lo, rv_hi] = geom_surface.param_range(1);
     const UVParam FAR(2 * ru_hi, 2 * rv_hi);
 
     // insert points
+    int n_iters = 0;
     while (not active_tris.empty()) {
         auto worst = active_tris.extract(active_tris.begin()).value();
         if (worst->is_deleted())
             continue;
 
-        auto active_edge = is_active(worst, LIMIT);
+        const auto active_edge = is_active(worst, LIMIT);
         if (active_edge.has_value() && worst->radius() > LIMIT) {
             if (n_iters++ % 5000 == 0)
                 Log::debug("{} points created -- Worst tri radius is {}",
                            surface->surface_vertices().size(),
                            worst->radius());
-            auto [success, new_point, metric] =
+            const auto [success, new_point, metric] =
                 optimal_point_frontal_b(surface, worst, active_edge.value(), data);
             if (success) {
                 if (true_boundary == nullptr) {
@@ -2111,8 +2107,8 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
                                    test_star_shapeness);
                 }
                 else {
-                    UVParam NP = new_point;
-                    auto [inside, nnnn] = point_inside_parametric_domain(*true_boundary, NP, FAR);
+                    auto [inside, _] =
+                        point_inside_parametric_domain(*true_boundary, new_point, FAR);
                     if (inside)
                         insert_a_point(surface,
                                        worst,
@@ -2137,7 +2133,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
                                 Span<Ptr<MeshCurve>> curves,
                                 bool only_initial_mesh)
 {
-    auto & geom_surface = surface->geom_surface();
+    const auto & geom_surface = surface->geom_surface();
     ///
     auto [all_vertices, boundary] = build_vertices(surface, curves);
     if (not boundary.empty()) {
@@ -2177,10 +2173,10 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     std::vector<Ptr<BDS_Point>> points(all_vertices.size());
     int count = 0;
     for (auto & vtx : all_vertices) {
-        auto & ge = vtx->geom_shape();
-        auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
-        auto g = m.add_geom(ge.id(), ge.dim());
-        auto pp = m.add_point(count, param, &geom_surface, g);
+        const auto & ge = vtx->geom_shape();
+        const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
+        const auto g = m.add_geom(ge.id(), ge.dim());
+        const auto pp = m.add_point(count, param, &geom_surface, g);
         recover_map[pp] = vtx;
         recover_map_inv[vtx] = pp;
         points[count] = pp;
@@ -2237,9 +2233,9 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     for (auto & tri : m.triangles())
         tri->g_ = std::nullopt;
     for (auto & tri : m.triangles()) {
-        auto res = tri->get_nodes();
+        const auto res = tri->get_nodes();
         if (res.has_value()) {
-            auto n = res.value();
+            const auto n = res.value();
             if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
                 recur_tag(tri, CLASS_EXTERIOR.value());
                 break;
@@ -2248,9 +2244,9 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     }
 
     // now find an edge that has belongs to one of the exterior triangles
-    for (auto & e : m.edges()) {
+    for (const auto & e : m.edges()) {
         if (e->g_.has_value() && e->num_faces() == 2) {
-            auto faces = e->faces();
+            const auto faces = e->faces();
             if (faces[0]->g_ == CLASS_EXTERIOR) {
                 recur_tag(faces[1], CLASS_F.value());
                 break;
@@ -2268,8 +2264,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     for (auto & e : m.edges()) {
         if (e->g_.has_value() && e->num_faces() == 2) {
-            auto faces = e->faces();
-            auto oface = e->opposite_of();
+            const auto faces = e->faces();
+            const auto oface = e->opposite_of();
             if (oface[0]->id() < 0) {
                 recur_tag(faces[1], CLASS_F.value());
                 break;
@@ -2296,8 +2292,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
         for (auto & [id, pp] : m.points()) {
             if (auto itv = recover_map.find(pp); itv != recover_map.end()) {
-                auto vtx = itv->second;
-                auto & ge = vtx->geom_shape();
+                const auto vtx = itv->second;
+                const auto & ge = vtx->geom_shape();
                 double lc;
                 if (ge.dim() == 0) {
                     lc = 0.1; // BGM_MeshSize(ge, 0, 0, here->x(), here->y(), here->z());
@@ -2344,12 +2340,12 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     for (auto & t : m.triangles()) {
         if (t->active()) {
-            auto res = t->get_nodes();
+            const auto res = t->get_nodes();
             if (res.has_value()) {
-                auto n = res.value();
-                auto v1 = recover_map[n[0]];
-                auto v2 = recover_map[n[1]];
-                auto v3 = recover_map[n[2]];
+                const auto n = res.value();
+                const auto v1 = recover_map[n[0]];
+                const auto v2 = recover_map[n[1]];
+                const auto v3 = recover_map[n[2]];
                 if (v1 != v2 && v1 != v3 && v2 != v3)
                     surface->add_triangle(ccw_triangle(geom_surface, v1, v2, v3));
             }
