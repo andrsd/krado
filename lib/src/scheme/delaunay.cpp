@@ -208,18 +208,9 @@ surf_uv(const MeshElement & t, BidimMeshData & data)
     const auto index0 = data.index(t.vertex(0));
     const auto index1 = data.index(t.vertex(1));
     const auto index2 = data.index(t.vertex(2));
-
-    const auto u1 = data.uv[index0].u;
-    const auto v1 = data.uv[index0].v;
-    const auto u2 = data.uv[index1].u;
-    const auto v2 = data.uv[index1].v;
-    const auto u3 = data.uv[index2].u;
-    const auto v3 = data.uv[index2].v;
-
-    const double vv1[2] = { u2 - u1, v2 - v1 };
-    const double vv2[2] = { u3 - u1, v3 - v1 };
-
-    return 0.5 * (vv1[0] * vv2[1] - vv1[1] * vv2[0]);
+    const auto uv1 = data.uv[index1] - data.uv[index0];
+    const auto uv2 = data.uv[index2] - data.uv[index0];
+    return 0.5 * determinant(uv1, uv2);
 }
 
 double
