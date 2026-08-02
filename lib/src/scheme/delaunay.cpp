@@ -1719,10 +1719,7 @@ optimal_point_frontal(Ptr<MeshSurface> surface,
     // now we have the edge center and the center of the circumcircle, we try to
     // find a point that would produce a perfect triangle while connecting the 2
     // points of the active edge
-    auto dir = center - midpoint;
-    const auto norm = std::sqrt(dir.u * dir.u + dir.v * dir.v);
-    dir.u /= norm;
-    dir.v /= norm;
+    auto dir = (center - midpoint).normalized();
     const auto RATIO = std::sqrt(dir.u * dir.u * metric[0] + 2 * dir.v * dir.u * metric[1] +
                                  dir.v * dir.v * metric[2]);
 
