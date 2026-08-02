@@ -1352,8 +1352,7 @@ search_for_triangle(Ref<Triangle> t,
         return t;
 
     const auto q1 = pt;
-    std::size_t n_iter = 0;
-    while (1) {
+    for (std::size_t j = 0; j < all_tris.size(); j++) {
         const auto index0 = data.index(t->tri().vertex(0));
         const auto index1 = data.index(t->tri().vertex(1));
         const auto index2 = data.index(t->tri().vertex(2));
@@ -1377,9 +1376,6 @@ search_for_triangle(Ref<Triangle> t,
         auto [uv, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
         if (inside)
             return t;
-
-        if (n_iter++ > all_tris.size())
-            break;
     }
 
     if (!force)
