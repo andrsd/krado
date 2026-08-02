@@ -537,18 +537,18 @@ set_lcs(const MeshElement & t,
     }
 }
 
-bool
-is_active(Ref<const Triangle> t, double limit, int & active)
+Optional<int>
+is_active(Ref<const Triangle> t, double limit)
 {
     if (t->is_deleted())
-        return false;
-    for (active = 0; active < 3; active++) {
+        return std::nullopt;
+    for (int active = 0; active < 3; active++) {
         auto neigh = t->neighbor(active);
         if (!neigh || ((*neigh)->radius() < limit && (*neigh)->radius() > 0)) {
-            return true;
+            return { active };
         }
     }
-    return false;
+    return std::nullopt;
 }
 
 template <class Iterator>
@@ -1320,8 +1320,8 @@ insert_vertex_b(std::list<EdgeXFace> & shell,
         if (active_tris) {
             for (auto i = new_cavity.begin(); i != new_cavity.end(); ++i) {
                 auto cav_tri = *i;
-                int active_edge;
-                if (is_active(cav_tri, LIMIT, active_edge) && cav_tri->radius() > LIMIT) {
+                auto active_edge = is_active(cav_tri, LIMIT);
+                if (active_edge.has_value() && cav_tri->radius() > LIMIT) {
                     if ((*active_tris).find(cav_tri) == (*active_tris).end())
                         active_tris->insert(cav_tri);
                 }
@@ -2069,11 +2069,12 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
         return;
     }
 
-    int n_iters = 0, active_edge;
+    int n_iters = 0;
     // compute active triangle
     for (auto & tri : all_tris) {
         auto ref_tri = ref(*tri);
-        if (is_active(ref_tri, LIMIT, active_edge))
+        auto active_edge = is_active(ref_tri, LIMIT);
+        if (active_edge.has_value())
             active_tris.insert(ref_tri);
         else if (tri->radius() < LIMIT)
             break;
@@ -2087,15 +2088,17 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     // insert points
     while (not active_tris.empty()) {
         auto worst = active_tris.extract(active_tris.begin()).value();
+        if (worst->is_deleted())
+            continue;
 
-        if (!worst->is_deleted() && is_active(worst, LIMIT, active_edge) &&
-            worst->radius() > LIMIT) {
+        auto active_edge = is_active(worst, LIMIT);
+        if (active_edge.has_value() && worst->radius() > LIMIT) {
             if (n_iters++ % 5000 == 0)
                 Log::debug("{} points created -- Worst tri radius is {}",
                            surface->surface_vertices().size(),
                            worst->radius());
             auto [success, new_point, metric] =
-                optimal_point_frontal_b(surface, worst, active_edge, data);
+                optimal_point_frontal_b(surface, worst, active_edge.value(), data);
             if (success) {
                 if (true_boundary == nullptr) {
                     insert_a_point(surface,
