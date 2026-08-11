@@ -14,7 +14,7 @@ class Point;
 
 class MeshVertex : public MeshVertexAbstract, public Meshable {
 public:
-    MeshVertex(ShapeID id, const GeomVertex & geom_vertex);
+    MeshVertex(ShapeID id, GeomVertex & geom_vertex);
 
     /// Get the unique identifier of the vertex.
     ///
@@ -34,11 +34,6 @@ public:
     /// @copydoc MeshVertexAbstract::relocate
     void relocate(const Point & p) override;
 
-    /// Get the mesh size at the vertex.
-    ///
-    /// @return The mesh size at the vertex.
-    double mesh_size() const;
-
     /// Set the mesh size at the vertex.
     ///
     /// @param size The new mesh size.
@@ -48,9 +43,7 @@ private:
     ///
     ShapeID id_;
     ///
-    const GeomVertex & gvtx_;
-    /// Mesh size at the vertex.
-    double mesh_size_;
+    GeomVertex & gvtx_;
 };
 
 } // namespace krado

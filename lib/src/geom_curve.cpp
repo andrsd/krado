@@ -7,6 +7,7 @@
 #include "krado/exception.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/consts.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -173,6 +174,33 @@ GeomCurve::is_seam(const GeomSurface & surface) const
     TopLoc_Location l;
     const Handle(Geom_Surface) & surf = BRep_Tool::Surface(surface, l);
     return BRep_Tool::IsClosed(this->edge_, surf, l);
+}
+
+double
+GeomCurve::mesh_size_at_param(double u) const
+{
+    auto fv = first_vertex();
+    auto lv = last_vertex();
+
+    auto [u_lo, u_hi] = param_range();
+    if (this->mesh_size_.has_value()) {
+        return this->mesh_size_.value();
+    }
+    else if (not fv.is_null() && not lv.is_null()) {
+        // 2 bounding vertices => interpolate the size
+        auto lc1 = fv.mesh_size();
+        auto lc2 = lv.mesh_size();
+        auto alpha = (u - u_lo) / (u_hi - u_lo);
+        return (1 - alpha) * lc1 + alpha * lc2;
+    }
+    else if (not fv.is_null() && std::abs(u - u_lo) < EPSILON) {
+        return fv.mesh_size();
+    }
+    else if (not lv.is_null() && std::abs(u - u_hi) < EPSILON) {
+        return lv.mesh_size();
+    }
+    else
+        return MAX_LC;
 }
 
 GeomCurve::operator const TopoDS_Shape &() const

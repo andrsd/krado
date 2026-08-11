@@ -4,6 +4,7 @@
 #include "krado/mesh_volume.h"
 #include "krado/mesh_surface.h"
 #include "krado/mesh_vertex_abstract.h"
+#include "krado/consts.h"
 
 namespace krado {
 
@@ -61,6 +62,20 @@ MeshVolume::scheme()
     if (this->scheme_ == nullptr)
         throw Exception("No scheme assigned on volume {}", id());
     return *this->scheme_.get();
+}
+
+double
+MeshVolume::mesh_size() const
+{
+    if (this->mesh_size_.has_value())
+        return this->mesh_size_.value();
+    return MAX_LC;
+}
+
+void
+MeshVolume::set_mesh_size(double size)
+{
+    this->mesh_size_ = size;
 }
 
 } // namespace krado

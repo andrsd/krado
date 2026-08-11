@@ -781,10 +781,9 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<MeshVertex, MeshVertexAbstract, Ptr<MeshVertex>>(m, "MeshVertex")
-        .def(py::init<ShapeID, const GeomVertex &>())
+        .def(py::init<ShapeID, GeomVertex &>())
         .def("id", &MeshVertex::id)
         .def("point", &MeshVertex::point)
-        .def("mesh_size", &MeshVertex::mesh_size)
         .def("set_mesh_size", &MeshVertex::set_mesh_size)
     ;
 
@@ -802,7 +801,7 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<MeshCurve, Meshable, Ptr<MeshCurve>>(m, "MeshCurve")
-        .def(py::init<ShapeID, const GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
+        .def(py::init<ShapeID, GeomCurve &, Ptr<MeshVertex>, Ptr<MeshVertex>>())
         .def("id", &MeshCurve::id)
         // .def("bounding_vertices", /* TODO */)
         // .def("curve_vertices", /* TODO */)
@@ -810,8 +809,6 @@ PYBIND11_MODULE(krado, m)
         .def("add_segment", &MeshCurve::add_segment)
         // .def("segments", /* TODO */)
         .def("is_mesh_degenerated", &MeshCurve::is_mesh_degenerated)
-        .def("mesh_size_at_param", &MeshCurve::mesh_size_at_param)
-        .def("mesh_size", &MeshCurve::mesh_size)
         .def("set_mesh_size", &MeshCurve::set_mesh_size)
         .def("set_scheme",
              [](MeshCurve & self, const std::string & name, py::kwargs kwargs) {
@@ -856,12 +853,13 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<MeshSurface, Meshable, Ptr<MeshSurface>>(m, "MeshSurface")
-        .def(py::init<ShapeID, const GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
+        .def(py::init<ShapeID, GeomSurface &, const std::vector<Ptr<MeshCurve>> &>())
         .def("id", &MeshSurface::id)
         // .def("curves", /* TODO */)
         // .def("surface_vertices", /* TODO */)
         // .def("triangles", /* TODO */)
         // .def("quadrangles", /* TODO */)
+        .def("set_mesh_size", &MeshSurface::set_mesh_size)
         .def("add_vertex", py::overload_cast<Ptr<MeshSurfaceVertex>>(&MeshSurface::add_vertex))
         .def("add_triangle", &MeshSurface::add_triangle)
         .def("add_quadrangle", &MeshSurface::add_quadrangle)
@@ -918,8 +916,9 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<MeshVolume, Meshable, Ptr<MeshVolume>>(m, "MeshVolume")
-        .def(py::init<ShapeID, const GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
+        .def(py::init<ShapeID, GeomVolume &, const std::vector<Ptr<MeshSurface>> &>())
         .def("id", &MeshVolume::id)
+        .def("set_mesh_size", &MeshVolume::set_mesh_size)
         // .def("surfaces", /* TODO */)
         .def("set_scheme",
              [](MeshVolume & self, const std::string & name, py::kwargs kwargs) {

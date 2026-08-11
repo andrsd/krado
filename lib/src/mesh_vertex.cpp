@@ -2,17 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/mesh_vertex.h"
-#include "krado/consts.h"
 #include "krado/point.h"
 #include "krado/geom_vertex.h"
 
 namespace krado {
 
-MeshVertex::MeshVertex(ShapeID id, const GeomVertex & geom_vertex) :
+MeshVertex::MeshVertex(ShapeID id, GeomVertex & geom_vertex) :
     MeshVertexAbstract(geom_vertex),
     id_(id),
-    gvtx_(geom_vertex),
-    mesh_size_(MAX_LC)
+    gvtx_(geom_vertex)
 {
 }
 
@@ -40,16 +38,10 @@ MeshVertex::relocate(const Point & /*p*/)
     // A corner vertex cannot be relocated
 }
 
-double
-MeshVertex::mesh_size() const
-{
-    return this->mesh_size_;
-}
-
 void
 MeshVertex::set_mesh_size(double size)
 {
-    this->mesh_size_ = size;
+    this->gvtx_.mesh_size_ = size;
 }
 
 } // namespace krado

@@ -13,11 +13,12 @@
 #include "krado/utils.h"
 #include <array>
 #include <cassert>
+#include <set>
 
 namespace krado {
 
 MeshSurface::MeshSurface(ShapeID id,
-                         const GeomSurface & gsurface,
+                         GeomSurface & gsurface,
                          std::vector<Ptr<MeshCurve>> mesh_curves) :
     id_(id),
     gsurface_(gsurface),
@@ -51,28 +52,10 @@ MeshSurface::curves()
     return this->mesh_curves_;
 }
 
-double
-MeshSurface::mesh_size() const
-{
-    assert(this->mesh_size_.has_value());
-    return this->mesh_size_.value();
-}
-
 void
 MeshSurface::set_mesh_size(double size)
 {
-    this->mesh_size_ = size;
-}
-
-double
-MeshSurface::mesh_size_at_param(UVParam /* par */) const
-{
-    if (this->mesh_size_.has_value())
-        return this->mesh_size_.value();
-
-    // TODO: if no surface size set, figure it out from edges and vertices
-
-    return MAX_LC;
+    this->gsurface_.mesh_size_ = size;
 }
 
 Span<const Ptr<MeshSurfaceVertex>>

@@ -62,6 +62,16 @@ public:
 
     Scheme3D & scheme();
 
+    /// Get the mesh size for this volume
+    ///
+    /// @return The mesh size
+    [[nodiscard]] double mesh_size() const;
+
+    /// Set the mesh size for this volume
+    ///
+    /// @param size The new mesh size
+    void set_mesh_size(double size);
+
 private:
     ///
     ShapeID id_;
@@ -73,6 +83,8 @@ private:
     std::vector<MeshElement> tetras_;
     ///
     std::unique_ptr<Scheme3D> scheme_;
+    /// Mesh size for the volume
+    Optional<double> mesh_size_;
 };
 
 } // namespace krado
