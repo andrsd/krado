@@ -13,11 +13,9 @@
 #include "krado/consts.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
-#include "BRepGProp.hxx"
 #include "BRepLProp_SLProps.hxx"
 #include "BRepAdaptor_Surface.hxx"
 #include "BRepBuilderAPI_MakeFace.hxx"
-#include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
@@ -26,15 +24,14 @@
 
 namespace krado {
 
-GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face), face_(face)
+GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face)
+
 {
-    this->surface_ = BRep_Tool::Surface(this->face_);
+    auto face1 = TopoDS::Face(this->shape_);
 
-    GProp_GProps props;
-    BRepGProp::SurfaceProperties(this->face_, props);
-    this->surf_area_ = props.Mass();
+    this->surface_ = BRep_Tool::Surface(face1);
 
-    ShapeAnalysis::GetFaceUVBounds(this->face_, this->umin_, this->umax_, this->vmin_, this->vmax_);
+    ShapeAnalysis::GetFaceUVBounds(face1, this->umin_, this->umax_, this->vmin_, this->vmax_);
 
     this->proj_pt_on_surface_.Init(this->surface_,
                                    this->umin_,
@@ -45,9 +42,7 @@ GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face), face_(face
 
 GeomSurface::GeomSurface(const GeomSurface & other) :
     GeomShape(other),
-    face_(other.face_),
     surface_(other.surface_),
-    surf_area_(other.surf_area_),
     umin_(other.umin_),
     umax_(other.umax_),
     vmin_(other.vmin_),
@@ -62,9 +57,7 @@ GeomSurface::GeomSurface(const GeomSurface & other) :
 
 GeomSurface::GeomSurface(GeomSurface && other) :
     GeomShape(other),
-    face_(other.face_),
     surface_(other.surface_),
-    surf_area_(other.surf_area_),
     umin_(other.umin_),
     umax_(other.umax_),
     vmin_(other.vmin_),
@@ -92,7 +85,8 @@ GeomSurface::point(UVParam param) const
 Vector
 GeomSurface::normal(UVParam param) const
 {
-    BRepAdaptor_Surface breps(this->face_);
+    const auto & face = TopoDS::Face(this->shape_);
+    BRepAdaptor_Surface breps(face);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
     prop.SetParameters(param.u, param.v);
     auto n = prop.Normal();
@@ -102,18 +96,13 @@ GeomSurface::normal(UVParam param) const
 std::tuple<Vector, Vector>
 GeomSurface::d1(UVParam param) const
 {
-    BRepAdaptor_Surface breps(this->face_);
+    const auto & face = TopoDS::Face(this->shape_);
+    BRepAdaptor_Surface breps(face);
     BRepLProp_SLProps prop(breps, 1, 1e-10);
     prop.SetParameters(param.u, param.v);
     auto d1u = prop.D1U();
     auto d1v = prop.D1V();
     return { Vector(d1u.X(), d1u.Y(), d1u.Z()), Vector(d1v.X(), d1v.Y(), d1v.Z()) };
-}
-
-double
-GeomSurface::area() const
-{
-    return this->surf_area_;
 }
 
 std::tuple<double, double>
@@ -131,8 +120,9 @@ std::vector<GeomCurve>
 GeomSurface::curves() const
 {
     std::vector<GeomCurve> crvs;
+    const auto & face = TopoDS::Face(this->shape_);
     TopExp_Explorer exp;
-    for (exp.Init(this->face_, TopAbs_EDGE); exp.More(); exp.Next()) {
+    for (exp.Init(face, TopAbs_EDGE); exp.More(); exp.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp.Current());
         auto gcurve = GeomCurve(edge);
         crvs.emplace_back(gcurve);
@@ -150,14 +140,9 @@ GeomSurface::parameter_from_point(Point pt) const
         throw Exception("Projection of point failed to find parameter");
 }
 
-GeomSurface::operator const TopoDS_Shape &() const
-{
-    return this->face_;
-}
-
 GeomSurface::operator const TopoDS_Face &() const
 {
-    return this->face_;
+    return TopoDS::Face(this->shape_);
 }
 
 std::tuple<bool, UVParam>
@@ -199,8 +184,9 @@ GeomSurface::closest_point(Point qp, UVParam uv) const
 bool
 GeomSurface::contains_point(Point pt) const
 {
+    const auto & face = TopoDS::Face(this->shape_);
     auto xyz = nearest_point(pt);
-    const auto tolerance = BRep_Tool::Tolerance(this->face_);
+    const auto tolerance = BRep_Tool::Tolerance(face);
     if (pt.distance(xyz) <= tolerance)
         return true;
     else

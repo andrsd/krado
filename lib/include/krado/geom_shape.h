@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/types.h"
-#include "krado/flags.h"
 #include "krado/color.h"
 #include "TopoDS_Shape.hxx"
 
@@ -12,15 +11,6 @@ namespace krado {
 
 class GeomShape {
 public:
-    enum HealFlag : u8 {
-        FIX_DEGENERATED,
-        FIX_SMALL_EDGES,
-        FIX_SMALL_FACES,
-        SEW_FACES,
-        MAKE_SOLIDS
-    };
-
-    // GeomShape() = default;
     explicit GeomShape(const TopoDS_Shape & shape);
     virtual ~GeomShape() = default;
 
@@ -30,9 +20,7 @@ public:
     [[nodiscard]] int id() const;
 
     void clean();
-    void heal(double tolerance,
-              Flags<HealFlag> flags = FIX_DEGENERATED | FIX_SMALL_EDGES | FIX_SMALL_FACES |
-                                      SEW_FACES | MAKE_SOLIDS);
+
     void scale(double scale_factor);
 
     /// Get shape name
@@ -126,6 +114,11 @@ private:
     double density_ = 0.;
 
     friend class GeomModel;
+    friend class GeomVertex;
+    friend class GeomCurve;
+    friend class GeomSurface;
+    friend class GeomShell;
+    friend class GeomVolume;
 };
 
 } // namespace krado

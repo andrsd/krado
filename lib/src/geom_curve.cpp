@@ -10,10 +10,8 @@
 #include "krado/consts.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
-#include "BRepGProp.hxx"
 #include "BRepLProp_CLProps.hxx"
 #include "BRepAdaptor_Curve.hxx"
-#include "GProp_GProps.hxx"
 #include "TopExp.hxx"
 #include "Geom_BSplineCurve.hxx"
 #include "Geom_BezierCurve.hxx"
@@ -21,16 +19,28 @@
 #include "Geom_Circle.hxx"
 
 namespace krado {
+namespace {
 
-GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(edge), edge_(edge), umin_(0), umax_(0)
+// force orientation of internal/external edges, otherwise reverse will not produce the expected
+// result
+const TopoDS_Edge &
+get_oriented_edge(const TopoDS_Edge & edge)
 {
-    // force orientation of internal/external edges, otherwise reverse will not produce the expected
-    // result
-    if (this->edge_.Orientation() == TopAbs_INTERNAL ||
-        this->edge_.Orientation() == TopAbs_EXTERNAL) {
-        this->edge_ = TopoDS::Edge(this->edge_.Oriented(TopAbs_FORWARD));
-    }
-    this->curve_ = BRep_Tool::Curve(this->edge_, this->umin_, this->umax_);
+    if (edge.Orientation() == TopAbs_INTERNAL || edge.Orientation() == TopAbs_EXTERNAL)
+        return TopoDS::Edge(edge.Oriented(TopAbs_FORWARD));
+    else
+        return edge;
+}
+
+} // namespace
+
+GeomCurve::GeomCurve(const TopoDS_Edge & edge) :
+    GeomShape(get_oriented_edge(edge)),
+    umin_(0),
+    umax_(0)
+{
+    const auto & edge1 = TopoDS::Edge(this->shape_);
+    this->curve_ = BRep_Tool::Curve(edge1, this->umin_, this->umax_);
     if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve))
         this->crv_type_ = CurveType::BSpline;
     else if (this->curve_->DynamicType() == STANDARD_TYPE(Geom_BezierCurve))
@@ -41,10 +51,6 @@ GeomCurve::GeomCurve(const TopoDS_Edge & edge) : GeomShape(edge), edge_(edge), u
         this->crv_type_ = CurveType::Circle;
     else
         this->crv_type_ = CurveType::Unknown;
-
-    GProp_GProps props;
-    BRepGProp::LinearProperties(this->edge_, props);
-    this->len_ = props.Mass();
 }
 
 int
@@ -62,7 +68,8 @@ GeomCurve::type() const
 GeomCurve::Orientation
 GeomCurve::orientation() const
 {
-    if (this->edge_.Orientation() == TopAbs_FORWARD)
+    const auto & edge = TopoDS::Edge(this->shape_);
+    if (edge.Orientation() == TopAbs_FORWARD)
         return Orientation::Forward;
     else
         return Orientation::Reversed;
@@ -71,7 +78,8 @@ GeomCurve::orientation() const
 bool
 GeomCurve::is_degenerated() const
 {
-    return BRep_Tool::Degenerated(this->edge_);
+    const auto & edge = TopoDS::Edge(this->shape_);
+    return BRep_Tool::Degenerated(edge);
 }
 
 Point
@@ -83,7 +91,8 @@ GeomCurve::point(double u) const
 Vector
 GeomCurve::d1(double u) const
 {
-    BRepAdaptor_Curve brepc(this->edge_);
+    const auto & edge = TopoDS::Edge(this->shape_);
+    BRepAdaptor_Curve brepc(edge);
     BRepLProp_CLProps prop(brepc, 1, 1e-10);
     prop.SetParameter(u);
     gp_Vec d1 = prop.D1();
@@ -96,19 +105,14 @@ GeomCurve::curvature(double u) const
     if (is_degenerated())
         return 0.;
 
-    BRepAdaptor_Curve brepc(this->edge_);
+    const auto & edge = TopoDS::Edge(this->shape_);
+    BRepAdaptor_Curve brepc(edge);
     BRepLProp_CLProps prop(brepc, 2, 1e-15);
     prop.SetParameter(u);
     if (!prop.IsTangentDefined())
         return 0.;
     else
         return prop.Curvature();
-}
-
-double
-GeomCurve::length() const
-{
-    return this->len_;
 }
 
 std::tuple<double, double>
@@ -120,13 +124,15 @@ GeomCurve::param_range() const
 GeomVertex
 GeomCurve::first_vertex() const
 {
-    return GeomVertex(TopExp::FirstVertex(this->edge_));
+    const auto & edge = TopoDS::Edge(this->shape_);
+    return GeomVertex(TopExp::FirstVertex(edge));
 }
 
 GeomVertex
 GeomCurve::last_vertex() const
 {
-    return GeomVertex(TopExp::LastVertex(this->edge_));
+    const auto & edge = TopoDS::Edge(this->shape_);
+    return GeomVertex(TopExp::LastVertex(edge));
 }
 
 double
@@ -159,7 +165,8 @@ bool
 GeomCurve::contains_point(Point pt) const
 {
     Point xyz = nearest_point(pt);
-    const Standard_Real tolerance = BRep_Tool::Tolerance(this->edge_);
+    const auto & edge = TopoDS::Edge(this->shape_);
+    const Standard_Real tolerance = BRep_Tool::Tolerance(edge);
     if (pt.distance(xyz) <= tolerance)
         return true;
     else
@@ -171,7 +178,8 @@ GeomCurve::is_seam(const GeomSurface & surface) const
 {
     TopLoc_Location l;
     const Handle(Geom_Surface) & surf = BRep_Tool::Surface(surface, l);
-    return BRep_Tool::IsClosed(this->edge_, surf, l);
+    const auto & edge = TopoDS::Edge(this->shape_);
+    return BRep_Tool::IsClosed(edge, surf, l);
 }
 
 double
@@ -201,14 +209,9 @@ GeomCurve::mesh_size_at_param(double u) const
         return MAX_LC;
 }
 
-GeomCurve::operator const TopoDS_Shape &() const
-{
-    return this->edge_;
-}
-
 GeomCurve::operator const TopoDS_Edge &() const
 {
-    return this->edge_;
+    return TopoDS::Edge(this->shape_);
 }
 
 const Handle(Geom_Curve) & GeomCurve::curve_handle() const

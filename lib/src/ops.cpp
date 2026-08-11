@@ -23,10 +23,12 @@
 #include "krado/timer.h"
 #include "krado/fe_values.h"
 #include "Geom_TrimmedCurve.hxx"
+#include "BRepLib.hxx"
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "BRepBuilderAPI_MakeWire.hxx"
 #include "BRepBuilderAPI_Transform.hxx"
 #include "BRepBuilderAPI_Sewing.hxx"
+#include "BRepBuilderAPI_MakeSolid.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"
 #include "BRepAlgoAPI_Cut.hxx"
@@ -41,13 +43,12 @@
 #include "BRepPrimAPI_MakePrism.hxx"
 #include "BRepPrimAPI_MakeRevol.hxx"
 #include "BRepOffsetAPI_MakePipe.hxx"
-#include "TopoDS_Wire.hxx"
-#include "TopoDS_Solid.hxx"
 #include "TopoDS.hxx"
+#include "TopoDS_Edge.hxx"
 #include "TopExp_Explorer.hxx"
 #include "BRepAlgoAPI_Splitter.hxx"
-#include "TopoDS_Edge.hxx"
 #include "TopTools_DataMapOfShapeInteger.hxx"
+#include "BRepGProp.hxx"
 #include <set>
 
 namespace krado {

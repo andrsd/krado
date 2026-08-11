@@ -19,11 +19,6 @@ public:
 
     int dim() const final;
 
-    /// Get volume of the volume
-    ///
-    /// @return Volume of the volume
-    [[nodiscard]] double volume() const;
-
     /// Get surfaces bounding this volume
     ///
     /// @return Curves bounding the surface
@@ -35,12 +30,7 @@ public:
     /// @return Mesh size at parameter
     double mesh_size_at_param(Point pos) const;
 
-    operator const TopoDS_Shape &() const;
-
-private:
-    TopoDS_Solid solid_;
-    /// volume
-    double volume_;
+    operator const TopoDS_Solid &() const;
 
 public:
     static GeomVolume create(const GeomShape & shape);

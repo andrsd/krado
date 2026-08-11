@@ -10,8 +10,7 @@
 
 using namespace krado;
 
-// this does not work on github (IDK why)
-TEST(MeshCurveTest, DISABLED_api)
+TEST(MeshCurveTest, api)
 {
     auto edge = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
     auto gvtx1 = edge.first_vertex();

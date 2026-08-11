@@ -203,7 +203,7 @@ GeomModel::bind_solids(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_SOLID); exp0.More(); exp0.Next()) {
-        TopoDS_Solid solid = TopoDS::Solid(exp0.Current());
+        const auto & solid = TopoDS::Solid(exp0.Current());
         if (!this->vol_id_.IsBound(solid)) {
             auto id = get_shape_id(solid);
             this->vol_id_.Bind(solid, id);
@@ -221,7 +221,7 @@ GeomModel::bind_faces(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_FACE); exp0.More(); exp0.Next()) {
-        TopoDS_Face face = TopoDS::Face(exp0.Current());
+        const auto & face = TopoDS::Face(exp0.Current());
         if (!this->srf_id_.IsBound(face)) {
             auto id = get_shape_id(face);
             this->srf_id_.Bind(face, id);
@@ -239,7 +239,7 @@ GeomModel::bind_edges(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_EDGE); exp0.More(); exp0.Next()) {
-        TopoDS_Edge edge = TopoDS::Edge(exp0.Current());
+        const auto & edge = TopoDS::Edge(exp0.Current());
         if (!this->crv_id_.IsBound(edge)) {
             auto id = get_shape_id(edge);
             this->crv_id_.Bind(edge, id);
@@ -257,7 +257,7 @@ GeomModel::bind_vertices(const GeomShape & shape)
 {
     TopExp_Explorer exp0;
     for (exp0.Init(shape, TopAbs_VERTEX); exp0.More(); exp0.Next()) {
-        TopoDS_Vertex vertex = TopoDS::Vertex(exp0.Current());
+        const auto & vertex = TopoDS::Vertex(exp0.Current());
         if (!this->vtx_id_.IsBound(vertex)) {
             auto id = get_shape_id(vertex);
             this->vtx_id_.Bind(vertex, id);

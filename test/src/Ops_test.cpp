@@ -12,9 +12,11 @@
 #include "krado/wire.h"
 #include "krado/line.h"
 #include "krado/arc_of_circle.h"
+#include "krado/step_file.h"
 
 using namespace krado;
 using namespace testing;
+namespace fs = std::filesystem;
 
 namespace {
 

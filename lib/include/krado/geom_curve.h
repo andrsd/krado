@@ -60,11 +60,6 @@ public:
     /// @return Curvature at location `u`
     [[nodiscard]] double curvature(double u) const;
 
-    /// Get length of the curve
-    ///
-    /// @return Length of the curve
-    [[nodiscard]] double length() const;
-
     /// Get range of the parameter
     ///
     /// @return Range as a tuple [lower, upper]
@@ -106,14 +101,11 @@ public:
     /// @return Mesh size at parameter
     [[nodiscard]] double mesh_size_at_param(double u) const;
 
-    operator const TopoDS_Shape &() const;
-
     operator const TopoDS_Edge &() const;
 
     [[nodiscard]] const Handle(Geom_Curve) & curve_handle() const;
 
 private:
-    TopoDS_Edge edge_;
     Handle(Geom_Curve) curve_;
     /// Curve type
     CurveType crv_type_;
@@ -121,8 +113,6 @@ private:
     double umin_;
     /// Maximum value of the parameter
     double umax_;
-    /// Curve length
-    double len_;
     /// Mesh size for the edge.
     Optional<double> mesh_size_;
 

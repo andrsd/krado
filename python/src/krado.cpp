@@ -453,8 +453,6 @@ PYBIND11_MODULE(krado, m)
 
     py::class_<GeomShape>(m, "GeomShape")
         .def("clean", &GeomShape::clean)
-        .def("heal", &GeomShape::heal)
-        .def("scale", &GeomShape::scale)
         .def("name", &GeomShape::name)
         .def("set_name", &GeomShape::set_name)
         .def("has_material", &GeomShape::has_material)
