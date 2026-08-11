@@ -640,7 +640,8 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
     // NOTE: just a rough sketch what should happen here - will need fixing
     // take care of embedded vertices
     for (auto & v : surface->embedded_vertices()) {
-        v_sizes_map[v] = std::min(v_sizes_map[v], v->mesh_size());
+        auto & gvtx = v->geom_vertex();
+        v_sizes_map[v] = std::min(v_sizes_map[v], gvtx.mesh_size());
     }
 
     // take care of embedded edges
@@ -1423,7 +1424,7 @@ insert_a_point(Ptr<MeshSurface> surface,
         // we use here local coordinates as real coordinates x,y and z will be computed hereafter
         const auto & geom_surface = surface->geom_surface();
         const auto v = Ptr<MeshSurfaceVertex>::alloc(geom_surface, center);
-        const auto lc = surface->mesh_size_at_param(center);
+        const auto lc = geom_surface.mesh_size_at_param(center);
         data.add_vertex(v, center, lc);
 
         const auto result = insert_vertex_b(shell,
@@ -2279,17 +2280,22 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // compute characteristic lengths at vertices
     if (!only_initial_mesh) {
         Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
+        // const auto & sf = sizing_field();
         for (auto & [id, pp] : m.points()) {
             if (auto itv = recover_map.find(pp); itv != recover_map.end()) {
                 const auto vtx = itv->second;
                 const auto & ge = vtx->geom_shape();
                 double lc;
                 if (ge.dim() == 0) {
-                    lc = 0.1; // BGM_MeshSize(ge, 0, 0, here->x(), here->y(), here->z());
+                    auto mvtx = dynamic_ptr_cast<MeshVertex>(vtx);
+                    auto gvertex = mvtx->geom_vertex();
+                    lc = gvertex.mesh_size();
                 }
                 else if (ge.dim() == 1) {
-                    // auto u = here->parameter();
-                    lc = 0.1; // BGM_MeshSize(ge, u, 0, here->x(), here->y(), here->z());
+                    auto mcvtx = dynamic_ptr_cast<MeshCurveVertex>(vtx);
+                    auto gcurve = mcvtx->geom_curve();
+                    auto t = mcvtx->parameter();
+                    lc = gcurve.mesh_size_at_param(t);
                 }
                 else
                     lc = MAX_LC;

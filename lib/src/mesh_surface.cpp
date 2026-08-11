@@ -13,6 +13,7 @@
 #include "krado/utils.h"
 #include <array>
 #include <cassert>
+#include <set>
 
 namespace krado {
 
