@@ -19,7 +19,7 @@ public:
     CircularPattern(const Axis2 & center, double radius, int divisions, double start_angle = 0.);
 
     /// Get radius
-    double radius() const;
+    [[nodiscard]] double radius() const;
 
 private:
     /// Center of the pattern
