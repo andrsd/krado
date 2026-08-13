@@ -20,7 +20,7 @@ Cone::create(const Axis2 & location, double radius1, double radius2, double heig
     cone.Build();
     if (!cone.IsDone())
         throw Exception("Cone was not created");
-    return Cone(cone.Solid());
+    return { cone.Solid() };
 }
 
 } // namespace krado
