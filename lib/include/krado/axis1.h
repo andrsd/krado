@@ -21,14 +21,14 @@ public:
     /// Get location
     ///
     /// @return Location
-    Point location() const;
+    [[nodiscard]] Point location() const;
 
     /// Get direction
     ///
     /// @return Direction
-    Vector direction() const;
+    [[nodiscard]] Vector direction() const;
 
-    bool is_equal(const Axis1 & other, double tol) const;
+    [[nodiscard]] bool is_equal(const Axis1 & other, double tol) const;
 
     operator gp_Ax1() const;
 
