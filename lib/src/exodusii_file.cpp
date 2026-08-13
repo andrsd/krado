@@ -872,7 +872,7 @@ read_elements(exodusIIcpp::File & exo)
     std::map<int, std::vector<Index>> cell_sets;
     for (auto & eb : exo.get_element_blocks()) {
         auto et = element_type(eb.get_element_type());
-        auto connect = eb.get_connectivity();
+        const auto & connect = eb.get_connectivity();
         auto n_elem_nodes = eb.get_num_nodes_per_element();
         auto blk_id = eb.get_id();
         for (int i = 0; i < eb.get_num_elements(); i++) {
