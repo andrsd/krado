@@ -13,7 +13,7 @@ namespace krado {
 
 ArcOfCircle::ArcOfCircle(const TopoDS_Edge & edge, Handle(Geom_TrimmedCurve) arc) :
     GeomCurve(edge),
-    arc_(arc)
+    arc_(std::move(arc))
 {
 }
 
@@ -40,7 +40,7 @@ ArcOfCircle::create(Point pt1, Point pt2, Point pt3)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Edge was not created");
-    return ArcOfCircle(maker.Edge(), arc);
+    return { maker.Edge(), arc };
 }
 
 ArcOfCircle
@@ -54,7 +54,7 @@ ArcOfCircle::create(const Circle & circ, Point pt1, Point pt2, bool sense)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Edge was not created");
-    return ArcOfCircle(maker.Edge(), arc);
+    return { maker.Edge(), arc };
 }
 
 ArcOfCircle
@@ -68,7 +68,7 @@ ArcOfCircle::create(Point pt1, Vector tangent, Point pt2)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Edge was not created");
-    return ArcOfCircle(maker.Edge(), arc);
+    return { maker.Edge(), arc };
 }
 
 } // namespace krado
