@@ -15,13 +15,13 @@ Cylinder::Cylinder(const TopoDS_Solid & solid) : GeomVolume(solid)
 }
 
 Cylinder
-Cylinder::create(const Axis2 & axis, double radius, double height)
+Cylinder::create(const Axis2 & location, double radius, double height)
 {
-    BRepPrimAPI_MakeCylinder cyl(axis, radius, height);
+    BRepPrimAPI_MakeCylinder cyl(location, radius, height);
     cyl.Build();
     if (!cyl.IsDone())
         throw Exception("Cylinder was not created");
-    return Cylinder(cyl.Solid());
+    return { cyl.Solid() };
 }
 
 } // namespace krado
