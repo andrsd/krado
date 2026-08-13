@@ -47,7 +47,7 @@ Circle::create(const Axis2 & origin, double radius)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Circle was not created");
-    return Circle(maker.Edge(), make_circ.Value()->Circ());
+    return { maker.Edge(), make_circ.Value()->Circ() };
 }
 
 Circle
@@ -60,7 +60,7 @@ Circle::create(Point center, double radius, Vector normal)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Circle was not created");
-    return Circle(maker.Edge(), make_circ.Value()->Circ());
+    return { maker.Edge(), make_circ.Value()->Circ() };
 }
 
 Circle
@@ -74,7 +74,7 @@ Circle::create(Point center, Point pt, Vector normal)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Circle was not created");
-    return Circle(maker.Edge(), make_circ.Value()->Circ());
+    return { maker.Edge(), make_circ.Value()->Circ() };
 }
 
 Circle
@@ -87,7 +87,7 @@ Circle::create(Point pt1, Point pt2, Point pt3)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Circle was not created");
-    return Circle(maker.Edge(), make_circ.Value()->Circ());
+    return { maker.Edge(), make_circ.Value()->Circ() };
 }
 
 } // namespace krado
