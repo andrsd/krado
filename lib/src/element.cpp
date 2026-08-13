@@ -126,49 +126,48 @@ Element::shift(Index ofst)
 Element
 Element::Line2(const std::array<Index, 2> & ids)
 {
-    return Element(ElementType::LINE2, ids);
+    return { ElementType::LINE2, ids };
 }
 
 Element
 Element::Tri3(const std::array<Index, 3> & ids)
 {
-    return Element(ElementType::TRI3, ids);
+    return { ElementType::TRI3, ids };
 }
 
 Element
 Element::Quad4(const std::array<Index, 4> & ids)
 {
-    return Element(ElementType::QUAD4, ids);
+    return { ElementType::QUAD4, ids };
 }
 
 Element
 Element::Tetra4(const std::array<Index, 4> & ids)
 {
-    return Element(ElementType::TETRA4, ids);
+    return { ElementType::TETRA4, ids };
 }
 
 Element
 Element::Pyramid5(const std::array<Index, 5> & ids)
 {
-    return Element(ElementType::PYRAMID5, ids);
+    return { ElementType::PYRAMID5, ids };
 }
 
 Element
 Element::Prism6(const std::array<Index, 6> & ids)
 {
-    return Element(ElementType::PRISM6, ids);
+    return { ElementType::PRISM6, ids };
 }
 
 Element
 Element::Hex8(const std::array<Index, 8> & ids)
 {
-    return Element(ElementType::HEX8, ids);
+    return { ElementType::HEX8, ids };
 }
 
 std::string
 Element::type(ElementType type)
 {
-    std::string str_type;
     if (type == ElementType::POINT)
         return "POINT";
     else if (type == ElementType::LINE2)
@@ -226,9 +225,9 @@ Tri3::eta(Point pa, Point pb, Point pc)
     const auto a1 = 180. * utils::angle(pa, pb, pc) / M_PI;
     const auto a2 = 180. * utils::angle(pb, pc, pa) / M_PI;
     const auto a3 = 180. * utils::angle(pc, pa, pb) / M_PI;
-    const auto amin = std::min(std::min(a1, a2), a3);
+    const auto amin = std::min({ a1, a2, a3 });
     const auto angle = std::abs(60. - amin);
-    return 1. - angle / 60.;
+    return 1. - (angle / 60.);
 }
 
 Optional<UVParam>
@@ -245,9 +244,9 @@ Tri3::circum_center(UVParam p1, UVParam p2, UVParam p3)
     if (d == 0.0)
         return std::nullopt;
 
-    auto a1 = x1 * x1 + y1 * y1;
-    auto a2 = x2 * x2 + y2 * y2;
-    auto a3 = x3 * x3 + y3 * y3;
+    auto a1 = (x1 * x1) + (y1 * y1);
+    auto a2 = (x2 * x2) + (y2 * y2);
+    auto a3 = (x3 * x3) + (y3 * y3);
 
     return UVParam(((a1 * (y3 - y2) + a2 * (y1 - y3) + a3 * (y2 - y1)) / d),
                    ((a1 * (x2 - x3) + a2 * (x3 - x1) + a3 * (x1 - x2)) / d));
