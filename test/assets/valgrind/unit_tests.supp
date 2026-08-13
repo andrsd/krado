@@ -1,0 +1,48 @@
+{
+    STEPCAFControl_Writer-ctor
+    Memcheck:Leak
+    match-leak-kinds: reachable
+    ...
+    fun:_ZN18STEPControl_WriterC1Ev
+    fun:_ZN21STEPCAFControl_WriterC1Ev
+    ...
+}
+{
+    STEPCAFControl_Writer::Write
+    Memcheck:Leak
+    match-leak-kinds: definite
+    ...
+    fun:_ZN21STEPCAFControl_Writer5WriteEPKc
+    ...
+}
+{
+    Standard_Transient::get_type_descriptor()
+    Memcheck:Leak
+    match-leak-kinds: reachable
+    ...
+    fun:_ZN18Standard_Transient19get_type_descriptorEv
+    ...
+}
+{
+    XSControl_Reader::ReadFile
+    Memcheck:Leak
+    match-leak-kinds: definite
+    ...
+    fun:_ZN16XSControl_Reader8ReadFileEPKc
+    ...
+}
+{
+    STEPCAFControl_Reader::STEPCAFControl_Reader()
+    Memcheck:Leak
+    match-leak-kinds: reachable
+    ...
+    fun:_ZN21STEPCAFControl_ReaderC1Ev
+    ...
+}
+{
+    krado::Mesh::remove_duplicate_points(double)
+    Memcheck:Cond
+    ...
+    fun:_ZN5krado4Mesh23remove_duplicate_pointsEd
+    ...
+}
