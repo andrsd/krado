@@ -20,7 +20,7 @@ Box::create(Point pt1, Point pt2)
     box.Build();
     if (!box.IsDone())
         throw Exception("Box was not created");
-    return Box(box.Solid());
+    return { box.Solid() };
 }
 
 } // namespace krado
