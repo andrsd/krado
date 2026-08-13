@@ -28,27 +28,27 @@ public:
     /// Get location
     ///
     /// @return Location
-    Point location() const;
+    [[nodiscard]] Point location() const;
 
     /// Returns the main axis
     ///
     /// @return The main location point and the main direction
-    Axis1 axis() const;
+    [[nodiscard]] Axis1 axis() const;
 
     /// Get direction
     ///
     /// @return Direction
-    Vector direction() const;
+    [[nodiscard]] Vector direction() const;
 
     /// Get x-direction
     ///
     /// @return x-direction
-    Vector x_direction() const;
+    [[nodiscard]] Vector x_direction() const;
 
     /// Get y-direction
     ///
     /// @return x-direction
-    Vector y_direction() const;
+    [[nodiscard]] Vector y_direction() const;
 
     operator gp_Ax2() const;
 
