@@ -5,7 +5,6 @@
 
 #include <exception>
 #include <string>
-#include <vector>
 #include "fmt/format.h"
 
 namespace krado {
@@ -15,13 +14,13 @@ namespace krado {
 class Exception : public std::exception {
 public:
     template <typename... T>
-    Exception(fmt::format_string<T...> format, T... args)
+    Exception(fmt::format_string<T...> format, T... args) :
+        msg_(fmt::format(format, std::forward<T>(args)...))
     {
-        this->msg_ = fmt::format(format, std::forward<T>(args)...);
     }
 
     /// Get the exception message
-    const char * what() const noexcept override;
+    [[nodiscard]] const char * what() const noexcept override;
 
 private:
     /// Error message
