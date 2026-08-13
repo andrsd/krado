@@ -96,15 +96,13 @@ GeomCurve::curvature(double u) const
     if (is_degenerated())
         return 0.;
 
-    Standard_Real curvature;
     BRepAdaptor_Curve brepc(this->edge_);
     BRepLProp_CLProps prop(brepc, 2, 1e-15);
     prop.SetParameter(u);
     if (!prop.IsTangentDefined())
-        curvature = 0.;
+        return 0.;
     else
-        curvature = prop.Curvature();
-    return curvature;
+        return prop.Curvature();
 }
 
 double
@@ -151,7 +149,7 @@ GeomCurve::nearest_point(Point pt) const
     GeomAPI_ProjectPointOnCurve proj_pt_on_curve;
     proj_pt_on_curve.Init(this->curve_, this->umin_, this->umax_);
     proj_pt_on_curve.Perform(pt);
-    if (proj_pt_on_curve.NbPoints())
+    if (proj_pt_on_curve.NbPoints() > 0)
         return Point::create(proj_pt_on_curve.NearestPoint());
     else
         throw Exception("Projection of point failed to find parameter");
@@ -191,7 +189,7 @@ GeomCurve::mesh_size_at_param(double u) const
         auto lc1 = fv.mesh_size();
         auto lc2 = lv.mesh_size();
         auto alpha = (u - u_lo) / (u_hi - u_lo);
-        return (1 - alpha) * lc1 + alpha * lc2;
+        return ((1 - alpha) * lc1) + (alpha * lc2);
     }
     else if (not fv.is_null() && std::abs(u - u_lo) < EPSILON) {
         return fv.mesh_size();
