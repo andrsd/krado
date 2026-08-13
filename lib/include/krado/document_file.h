@@ -24,7 +24,7 @@ public:
     virtual ~DocumentFile() = default;
 
     /// Get file name
-    const std::string file_name() const;
+    const std::string & file_name() const;
 
 protected:
     TDocStd_Document * create_doc(const std::vector<GeomShape> & shapes);

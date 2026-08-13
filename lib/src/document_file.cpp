@@ -20,7 +20,7 @@ namespace krado {
 
 DocumentFile::DocumentFile(const std::filesystem::path & file_name) : fname_(file_name) {}
 
-const std::string
+const std::string &
 DocumentFile::file_name() const
 {
     return this->fname_;
