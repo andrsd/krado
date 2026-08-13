@@ -83,6 +83,12 @@ public:
     /// @return `true` if the point is on the curve, `false` otherwise
     [[nodiscard]] bool contains_point(Point pt) const;
 
+    /// Get mesh size at given surface parameter
+    ///
+    /// @param par Surface parameter (u, v)
+    /// @return Mesh size at the parameter
+    [[nodiscard]] double mesh_size_at_param(UVParam par) const;
+
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Face &() const;
@@ -96,12 +102,16 @@ private:
     double surf_area_;
     double umin_, umax_;
     double vmin_, vmax_;
+    /// Mesh size for the edge.
+    Optional<double> mesh_size_;
 
     /// Needs to be a pointer, because GeomSurface must be movable
     mutable GeomAPI_ProjectPointOnSurf proj_pt_on_surface_;
 
 public:
     static GeomSurface create(const Wire & wire);
+
+    friend class MeshSurface;
 };
 
 /// Check that the surface is circular

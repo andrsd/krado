@@ -20,7 +20,7 @@ class MeshCurveVertex;
 
 class MeshCurve : public Meshable {
 public:
-    MeshCurve(ShapeID id, const GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
+    MeshCurve(ShapeID id, GeomCurve & gcurve, Ptr<MeshVertex> v1, Ptr<MeshVertex> v2);
     ~MeshCurve();
 
     /// Get the unique identifier of the curve.
@@ -66,21 +66,10 @@ public:
 
     void set_too_small(bool value);
 
-    /// Get the mesh size at the vertex.
-    ///
-    /// @return The mesh size at the vertex.
-    double mesh_size() const;
-
     /// Set the mesh size at the vertex.
     ///
     /// @param size The new mesh size.
     void set_mesh_size(double size);
-
-    /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
-    ///
-    /// @param u Parameter value
-    /// @return Mesh size at parameter
-    double mesh_size_at_param(double u) const;
 
     /// Set meshing scheme
     ///
@@ -105,7 +94,7 @@ private:
     ///
     ShapeID id_;
     ///
-    const GeomCurve & gcurve_;
+    GeomCurve & gcurve_;
     /// Bounding vertices
     std::vector<Ptr<MeshVertex>> bnd_vtxs_;
     /// Vertices on the curve (excluding the bounding vertices)
@@ -116,8 +105,6 @@ private:
     bool too_smoll;
     ///
     std::unique_ptr<Scheme1D> scheme_;
-    /// Mesh size for the edge.
-    Optional<double> mesh_size_;
 };
 
 /// Build array of mesh vertices that are on a given curve

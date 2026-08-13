@@ -4,6 +4,7 @@
 #include "krado/geom_volume.h"
 #include "krado/geom_surface.h"
 #include "krado/geom_model.h"
+#include "krado/consts.h"
 #include "TopoDS.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
@@ -41,6 +42,12 @@ GeomVolume::surfaces() const
         surfs.emplace_back(gface);
     }
     return surfs;
+}
+
+double
+GeomVolume::mesh_size_at_param(Point /*pos*/) const
+{
+    return MAX_LC;
 }
 
 GeomVolume::operator const TopoDS_Shape &() const

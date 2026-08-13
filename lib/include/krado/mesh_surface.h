@@ -23,7 +23,7 @@ class MeshCurve;
 
 class MeshSurface : public Meshable {
 public:
-    MeshSurface(ShapeID id, const GeomSurface & gcurve, std::vector<Ptr<MeshCurve>> mesh_curves);
+    MeshSurface(ShapeID id, GeomSurface & gcurve, std::vector<Ptr<MeshCurve>> mesh_curves);
     ~MeshSurface();
 
     /// Get the unique identifier of the surface.
@@ -49,12 +49,6 @@ public:
     ///
     /// @param size The new mesh size
     void set_mesh_size(double size);
-
-    /// Get mesh size at given surface parameter
-    ///
-    /// @param par Surface parameter (u, v)
-    /// @return Mesh size at the parameter
-    [[nodiscard]] double mesh_size_at_param(UVParam par) const;
 
     /// Get (internal) vertices on the surface
     ///
@@ -133,7 +127,7 @@ private:
     ///
     ShapeID id_;
     ///
-    const GeomSurface & gsurface_;
+    GeomSurface & gsurface_;
     /// Mesh curves bounding this surface
     std::vector<Ptr<MeshCurve>> mesh_curves_;
     /// Surface vertices (not including boundary and mesh vertices)
@@ -142,8 +136,6 @@ private:
     std::vector<MeshElement> tris_;
     /// Quadrangles
     std::vector<MeshElement> quads_;
-    /// Mesh size for the surface
-    Optional<double> mesh_size_;
     ///
     std::unique_ptr<Scheme2D> scheme_;
 };

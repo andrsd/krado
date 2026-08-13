@@ -10,6 +10,7 @@
 #include "krado/uv_param.h"
 #include "krado/exception.h"
 #include "krado/log.h"
+#include "krado/consts.h"
 #include "TopoDS.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepGProp.hxx"
@@ -21,6 +22,7 @@
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
 #include "Geom_Circle.hxx"
+#include <set>
 
 namespace krado {
 
@@ -203,6 +205,44 @@ GeomSurface::contains_point(Point pt) const
         return true;
     else
         return false;
+}
+
+double
+GeomSurface::mesh_size_at_param(UVParam par) const
+{
+    if (this->mesh_size_.has_value())
+        return this->mesh_size_.value();
+
+    std::set<GeomVertex> vertices;
+    for (auto & curve : curves()) {
+        auto fv = curve.first_vertex();
+        if (not fv.is_null())
+            vertices.emplace(fv);
+
+        auto lv = curve.last_vertex();
+        if (not lv.is_null())
+            vertices.emplace(lv);
+    }
+
+    if (vertices.empty())
+        return MAX_LC;
+
+    double num = 0;
+    double den = 0;
+    auto p = point(par);
+    for (auto v : vertices) {
+        auto d = p.distance(v.point());
+        if (d < 1e-10)
+            return v.mesh_size();
+        auto w = 1.0 / (d * d);
+        num += w * v.mesh_size();
+        den += w;
+    }
+
+    if (den > 0)
+        return num / den;
+
+    return MAX_LC;
 }
 
 GeomSurface

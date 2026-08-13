@@ -31,11 +31,22 @@ public:
     /// @return Vertex location
     [[nodiscard]] Point point() const;
 
+    /// Get the mesh size at the vertex.
+    ///
+    /// @return The mesh size at the vertex.
+    double mesh_size() const;
+
+    bool operator<(const GeomVertex & other) const;
+
     operator const TopoDS_Shape &() const;
 
 private:
     TopoDS_Vertex vertex_;
     Point pt_;
+    /// Mesh size at the vertex.
+    double mesh_size_;
+
+    friend class MeshVertex;
 };
 
 } // namespace krado

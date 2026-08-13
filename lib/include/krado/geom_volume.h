@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/geom_shape.h"
+#include "krado/point.h"
 #include "TopoDS_Solid.hxx"
 #include <vector>
 
@@ -27,6 +28,12 @@ public:
     ///
     /// @return Curves bounding the surface
     [[nodiscard]] std::vector<GeomSurface> surfaces() const;
+
+    /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
+    ///
+    /// @param u Parameter value
+    /// @return Mesh size at parameter
+    double mesh_size_at_param(Point pos) const;
 
     operator const TopoDS_Shape &() const;
 

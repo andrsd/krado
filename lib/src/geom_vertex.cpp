@@ -3,11 +3,15 @@
 
 #include "krado/geom_vertex.h"
 #include "krado/geom_model.h"
+#include "krado/consts.h"
 #include "BRep_Tool.hxx"
 
 namespace krado {
 
-GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) : GeomShape(vertex), vertex_(vertex)
+GeomVertex::GeomVertex(const TopoDS_Vertex & vertex) :
+    GeomShape(vertex),
+    vertex_(vertex),
+    mesh_size_(MAX_LC)
 {
     if (!this->vertex_.IsNull()) {
         this->pt_ = Point::create(BRep_Tool::Pnt(this->vertex_));
@@ -48,6 +52,18 @@ Point
 GeomVertex::point() const
 {
     return this->pt_;
+}
+
+double
+GeomVertex::mesh_size() const
+{
+    return this->mesh_size_;
+}
+
+bool
+GeomVertex::operator<(const GeomVertex & other) const
+{
+    return this->id() < other.id();
 }
 
 GeomVertex::operator const TopoDS_Shape &() const

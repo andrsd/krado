@@ -100,6 +100,12 @@ public:
 
     bool is_seam(const GeomSurface & surface) const;
 
+    /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
+    ///
+    /// @param u Parameter value
+    /// @return Mesh size at parameter
+    double mesh_size_at_param(double u) const;
+
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Edge &() const;
@@ -117,7 +123,10 @@ private:
     double umax_;
     /// Curve length
     double len_;
+    /// Mesh size for the edge.
+    Optional<double> mesh_size_;
 
+    friend class MeshCurve;
     friend Point get_circle_center(const GeomCurve & crv);
 };
 
