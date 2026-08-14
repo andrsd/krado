@@ -32,7 +32,7 @@ struct PointCloud {
 
     Span<const Point> points;
 
-    inline std::size_t
+    [[nodiscard]] inline std::size_t
     kdtree_get_point_count() const
     {
         return this->points.size();
@@ -49,7 +49,7 @@ struct PointCloud {
     }
 
     // Returns the dim'th component of the idx'th point in the class
-    inline double
+    [[nodiscard]] inline double
     kdtree_get_pt(const std::size_t idx, int dim) const
     {
         return this->points[idx](dim);
