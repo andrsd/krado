@@ -470,9 +470,9 @@ GeomModel::mesh_surface(Ptr<MeshSurface> surface)
         LoggingTimer timer;
         scheme.mesh_surface(surface);
     }
-    if (surface->triangles().size() > 0)
+    if (not surface->triangles().empty())
         Log::info("- created {} triangles(s)", utils::human_number(surface->triangles().size()));
-    if (surface->quadrangles().size() > 0)
+    if (not surface->quadrangles().empty())
         Log::info("- created {} quadrangles(s)",
                   utils::human_number(surface->quadrangles().size()));
 

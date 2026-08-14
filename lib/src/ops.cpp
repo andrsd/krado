@@ -652,7 +652,7 @@ smooth(Ptr<MeshSurface> surface, int iterations)
             for (const auto & neighbor : adj)
                 avg += neighbor->point();
 
-            if (adj.size() > 0) {
+            if (not adj.empty()) {
                 avg *= 1.0 / adj.size();
                 new_positions[vtx] = avg;
             }

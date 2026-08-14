@@ -239,21 +239,21 @@ build_2d_blocks(const GeomModel & model, const VertexIdMap & pnt_map)
         auto blk_id = surface->marker().value();
         auto tris = surface->triangles();
         auto quads = surface->quadrangles();
-        if (tris.size() > 0 and quads.size() == 0) {
+        if (not tris.empty() and quads.empty()) {
             for (auto & mt : tris) {
                 auto tri = elem2idxs<Tri3::N_VERTICES>(mt, pnt_map);
                 blocks[blk_id].emplace_back(Element::Tri3(tri));
             }
             names[blk_id] = model.block_name(blk_id);
         }
-        else if (quads.size() > 0 and tris.size() == 0) {
+        else if (not quads.empty() and tris.empty()) {
             for (auto & mq : quads) {
                 auto quad = elem2idxs<Quad4::N_VERTICES>(mq, pnt_map);
                 blocks[blk_id].emplace_back(Element::Quad4(quad));
             }
             names[blk_id] = model.block_name(blk_id);
         }
-        else if (quads.size() > 0 and tris.size() > 0) {
+        else if (not quads.empty() and not tris.empty()) {
             throw Exception("Heterogeneous meshes are not supported, yet");
         }
     }
@@ -788,7 +788,7 @@ write_side_sets(exodusIIcpp::File & exo, const SideSetMap & side_sets, const Nam
     for (const auto & [id, side_set] : side_sets) {
         auto name = create_name(id, names);
 
-        if (side_set.elems.size() > 0) {
+        if (not side_set.elems.empty()) {
             exo.write_side_set(id, side_set.elems, side_set.sides);
             side_sets_names.push_back(name);
         }
@@ -808,7 +808,7 @@ write_node_sets(exodusIIcpp::File & exo, const NodeSetMap & node_sets, const Nam
     for (const auto & [id, nodes] : node_sets) {
         auto name = create_name(id, names);
 
-        if (nodes.size() > 0) {
+        if (not nodes.empty()) {
             exo.write_node_set(id, nodes);
             node_set_names.push_back(name);
         }

@@ -84,11 +84,10 @@ MeshCurve::is_mesh_degenerated() const
 {
     if (this->too_smoll)
         Log::debug("Degenerated mesh on curve {}: too small", id());
-    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-        this->curve_vtx_.size() == 0)
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->curve_vtx_.empty())
         Log::debug("Degenerated mesh on curve {}", id());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-                               this->curve_vtx_.size() == 0);
+                               this->curve_vtx_.empty());
 }
 
 void

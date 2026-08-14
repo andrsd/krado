@@ -822,7 +822,7 @@ Mesh::cone_vertices(Index index) const
     std::set<Index> verts;
     for (auto & v : pts_to_process) {
         auto cn = cone(v);
-        if (cn.size() == 0)
+        if (cn.empty())
             verts.insert(v);
         else {
             for (auto & c : cn)
@@ -1068,7 +1068,7 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
     if (dim == 1)
         return build_1d_elements(model, vtx_map);
     else if (dim == 2) {
-        if (model.surfaces().size() > 0)
+        if (not model.surfaces().empty())
             return build_2d_elements(model, vtx_map);
         else
             return build_1d_elements(model, vtx_map);
