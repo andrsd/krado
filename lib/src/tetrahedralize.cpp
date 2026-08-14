@@ -435,7 +435,7 @@ tetrahedralize(Ptr<const Mesh> mesh)
     std::map<Marker, std::vector<SideEntry>> side_sets;
     for (auto & id : mesh->side_set_ids()) {
         auto name = mesh->side_set_name(id);
-        if (side_set_names.find(id) == side_set_names.end()) {
+        if (not side_set_names.contains(id)) {
             auto ss_name = mesh->side_set_name(id);
             if (ss_name.has_value())
                 side_set_names[id] = ss_name.value();

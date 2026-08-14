@@ -317,7 +317,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
         auto & p = parts[i];
         for (auto & id : p->cell_set_ids()) {
             auto name = p->cell_set_name(id);
-            if (cell_set_names.find(id) == cell_set_names.end()) {
+            if (not cell_set_names.contains(id)) {
                 if (name.has_value())
                     cell_set_names[id] = name.value();
             }
@@ -350,7 +350,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
             auto & p = parts[i];
             for (auto & id : p->side_set_ids()) {
                 auto name = p->side_set_name(id);
-                if (side_set_names.find(id) == side_set_names.end()) {
+                if (not side_set_names.contains(id)) {
                     if (name.has_value())
                         side_set_names[id] = name.value();
                 }
@@ -384,7 +384,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
             auto & p = parts[i];
             for (auto & id : p->node_set_ids()) {
                 auto name = p->node_set_name(id);
-                if (node_set_names.find(id) == node_set_names.end()) {
+                if (not node_set_names.contains(id)) {
                     if (name.has_value())
                         node_set_names[id] = name.value();
                 }

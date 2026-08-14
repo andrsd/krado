@@ -789,7 +789,7 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
         if (it_name != this->cell_set_names_.end()) {
             // Only set the name for the new block if it hasn't been set yet.
             // First one wins because std::map iterates in sorted key order.
-            if (new_cell_set_names.find(new_id) == new_cell_set_names.end()) {
+            if (not new_cell_set_names.contains(new_id)) {
                 new_cell_set_names[new_id] = it_name->second;
             }
         }

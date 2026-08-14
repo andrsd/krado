@@ -80,3 +80,13 @@ install(
 )
 
 add_subdirectory(docs)
+
+#
+add_custom_target(clang-tidy ALL
+    COMMAND run-clang-tidy
+        -use-color 1
+        -p ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/**/*.cpp
+        -quiet
+    COMMENT "Checking with clang-tidy"
+)
