@@ -4,10 +4,10 @@
 #include "krado/dagmc_file.h"
 #include "krado/geom_model.h"
 #include "krado/exception.h"
-#include "krado/log.h"
 #ifdef KRADO_WITH_MOAB
     #include "MBTagConventions.hpp"
     #include "moab/Core.hpp"
+    #include "krado/log.h"
 #endif
 
 namespace krado {
@@ -420,7 +420,7 @@ DAGMCFile::DAGMCFile(const std::filesystem::path & file_name) : file_name_(file_
 }
 
 void
-DAGMCFile::write(const GeomModel &)
+DAGMCFile::write(const GeomModel & /* model */)
 {
     // do nothing
 }

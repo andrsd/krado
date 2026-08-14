@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/document_file.h"
-#include "krado/exception.h"
 #include "Standard_Handle.hxx"
 #include "TDocStd_Document.hxx"
-#include "XSControl_Reader.hxx"
 #include "XCAFDoc_DocumentTool.hxx"
 #include "XCAFDoc_ShapeTool.hxx"
 #include "XCAFDoc_ColorTool.hxx"
@@ -29,11 +27,11 @@ DocumentFile::file_name() const
 TDocStd_Document *
 DocumentFile::create_doc(const std::vector<GeomShape> & shapes)
 {
-    auto doc = new TDocStd_Document(TCollection_ExtendedString("formo-doc"));
+    auto * doc = new TDocStd_Document(TCollection_ExtendedString("formo-doc"));
     auto shape_tool = XCAFDoc_DocumentTool::ShapeTool(doc->Main());
     auto color_tool = XCAFDoc_DocumentTool::ColorTool(doc->Main());
     auto material_tool = XCAFDoc_DocumentTool::MaterialTool(doc->Main());
-    for (auto & shp : shapes) {
+    for (const auto & shp : shapes) {
         auto shape_label = shape_tool->AddShape(shp, false);
         if (!shp.name().empty())
             TDataStd_Name::Set(shape_label, TCollection_ExtendedString(shp.name().c_str()));

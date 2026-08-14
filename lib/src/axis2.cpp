@@ -36,7 +36,7 @@ Axis2::axis() const
     auto ax1 = this->ax2_.Axis();
     auto loc = ax1.Location();
     auto dir = ax1.Direction();
-    return Axis1(Point(loc.X(), loc.Y(), loc.Z()), Vector(dir.X(), dir.Y(), dir.Z()));
+    return { Point(loc.X(), loc.Y(), loc.Z()), Vector(dir.X(), dir.Y(), dir.Z()) };
 }
 
 Vector

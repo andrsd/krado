@@ -5,7 +5,7 @@
 
 namespace krado {
 
-Pattern::Pattern() {}
+Pattern::Pattern() = default;
 
 Pattern::Pattern(const std::vector<Point> & points) : pts_(points) {}
 

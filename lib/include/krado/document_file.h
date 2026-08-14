@@ -21,10 +21,8 @@ public:
     /// @param file_name Name of the file to read
     explicit DocumentFile(const std::filesystem::path & file_name);
 
-    virtual ~DocumentFile() = default;
-
     /// Get file name
-    const std::string & file_name() const;
+    [[nodiscard]] const std::string & file_name() const;
 
 protected:
     TDocStd_Document * create_doc(const std::vector<GeomShape> & shapes);

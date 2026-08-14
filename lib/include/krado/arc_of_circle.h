@@ -16,10 +16,10 @@ class Circle;
 class ArcOfCircle : public GeomCurve {
 public:
     /// Get the start point of the curve
-    Point start_point() const;
+    [[nodiscard]] Point start_point() const;
 
     /// Get the end point of the curve
-    Point end_point() const;
+    [[nodiscard]] Point end_point() const;
 
 private:
     ArcOfCircle(const TopoDS_Edge & edge, Handle(Geom_TrimmedCurve) arc);

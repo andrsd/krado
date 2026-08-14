@@ -212,7 +212,7 @@ operator<<(std::ostream & stream, const krado::MeshSurface & srf)
     for (auto c : crvs)
         cids.push_back(c->id());
     stream << "curves=[" << krado::join(", ", cids) << "], ";
-    auto & gsurf = srf.geom_surface();
+    const auto & gsurf = srf.geom_surface();
     auto [u_min, u_max] = gsurf.param_range(0);
     auto [v_min, v_max] = gsurf.param_range(1);
     stream << "(u, v)=[" << u_min << ", " << u_max << "]x";

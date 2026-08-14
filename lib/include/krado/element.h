@@ -63,7 +63,7 @@ private:
     /// Number of valid indices in `vtx_id_`
     u8 n_ids_ = 0;
     /// Global index into `points` array
-    std::array<Index, MAX_INDICES> vtx_id_;
+    std::array<Index, MAX_INDICES> vtx_id_ = {};
 
 public:
     [[nodiscard]] static std::string type(ElementType type);
@@ -359,7 +359,7 @@ inline std::ostream &
 operator<<(std::ostream & stream, const krado::Element & el)
 {
     stream << "(" << krado::Element::type(el.type()) << ",";
-    for (auto & id : el.indices())
+    for (const auto & id : el.indices())
         stream << " " << id;
     stream << ")";
     return stream;

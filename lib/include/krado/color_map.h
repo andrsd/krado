@@ -9,90 +9,90 @@ namespace krado {
 
 class ColorMap {
 public:
-    static Color black;
-    static Color blue;
-    static Color red;
+    static const Color black;
+    static const Color blue;
+    static const Color red;
 
-    static Color medium_blue;
-    static Color medium_grey;
-    static Color dark_blue;
-    static Color light_grey;
-    static Color light_blue;
-    static Color orange;
-    static Color dark_grey;
-    static Color yellow;
+    static const Color medium_blue;
+    static const Color medium_grey;
+    static const Color dark_blue;
+    static const Color light_grey;
+    static const Color light_blue;
+    static const Color orange;
+    static const Color dark_grey;
+    static const Color yellow;
 
-    static Color grey1;
-    static Color grey2;
-    static Color grey3;
-    static Color grey4;
-    static Color grey5;
-    static Color grey6;
-    static Color grey7;
+    static const Color grey1;
+    static const Color grey2;
+    static const Color grey3;
+    static const Color grey4;
+    static const Color grey5;
+    static const Color grey6;
+    static const Color grey7;
 
-    static Color gold1;
-    static Color gold2;
-    static Color gold3;
-    static Color gold4;
-    static Color gold5;
-    static Color gold6;
-    static Color gold7;
+    static const Color gold1;
+    static const Color gold2;
+    static const Color gold3;
+    static const Color gold4;
+    static const Color gold5;
+    static const Color gold6;
+    static const Color gold7;
 
-    static Color silver1;
-    static Color silver2;
-    static Color silver3;
-    static Color silver4;
-    static Color silver5;
-    static Color silver6;
-    static Color silver7;
+    static const Color silver1;
+    static const Color silver2;
+    static const Color silver3;
+    static const Color silver4;
+    static const Color silver5;
+    static const Color silver6;
+    static const Color silver7;
 
-    static Color red1;
-    static Color red2;
-    static Color red3;
-    static Color red4;
-    static Color red5;
-    static Color red6;
-    static Color red7;
+    static const Color red1;
+    static const Color red2;
+    static const Color red3;
+    static const Color red4;
+    static const Color red5;
+    static const Color red6;
+    static const Color red7;
 
-    static Color orange1;
-    static Color orange2;
-    static Color orange3;
-    static Color orange4;
-    static Color orange5;
-    static Color orange6;
-    static Color orange7;
+    static const Color orange1;
+    static const Color orange2;
+    static const Color orange3;
+    static const Color orange4;
+    static const Color orange5;
+    static const Color orange6;
+    static const Color orange7;
 
-    static Color yellow1;
-    static Color yellow2;
-    static Color yellow3;
-    static Color yellow4;
-    static Color yellow5;
-    static Color yellow6;
-    static Color yellow7;
+    static const Color yellow1;
+    static const Color yellow2;
+    static const Color yellow3;
+    static const Color yellow4;
+    static const Color yellow5;
+    static const Color yellow6;
+    static const Color yellow7;
 
-    static Color green1;
-    static Color green2;
-    static Color green3;
-    static Color green4;
-    static Color green5;
-    static Color green6;
-    static Color green7;
+    static const Color green1;
+    static const Color green2;
+    static const Color green3;
+    static const Color green4;
+    static const Color green5;
+    static const Color green6;
+    static const Color green7;
 
-    static Color teal1;
-    static Color teal2;
-    static Color teal3;
-    static Color teal4;
-    static Color teal5;
-    static Color teal6;
-    static Color teal7;
+    static const Color teal1;
+    static const Color teal2;
+    static const Color teal3;
+    static const Color teal4;
+    static const Color teal5;
+    static const Color teal6;
+    static const Color teal7;
 
-    static Color blue1;
-    static Color blue2;
-    static Color blue3;
-    static Color blue4;
-    static Color blue5;
-    static Color blue6;
-    static Color blue7;
+    static const Color blue1;
+    static const Color blue2;
+    static const Color blue3;
+    static const Color blue4;
+    static const Color blue5;
+    static const Color blue6;
+    static const Color blue7;
 };
 
 } // namespace krado

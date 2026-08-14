@@ -11,7 +11,12 @@ namespace krado {
 /// constructed such that all of its sides touch a circle.
 class CircumscribedPolygon : public Polygon {
 private:
-    CircumscribedPolygon(const TopoDS_Wire & wire);
+    CircumscribedPolygon(const TopoDS_Wire & wire, double radius, int n_sides);
+
+public:
+    [[nodiscard]] double radius() const;
+
+    [[nodiscard]] int num_sides() const;
 
 private:
     /// Radius of the circle

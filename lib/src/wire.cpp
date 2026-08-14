@@ -30,10 +30,10 @@ Wire::operator const TopoDS_Wire &() const
 Wire
 Wire::create(const std::vector<GeomCurve> & curves)
 {
-    if (curves.size() == 0)
+    if (curves.empty())
         throw Exception("The list of curves is empty");
     BRepBuilderAPI_MakeWire make_wire;
-    for (auto & edge : curves)
+    for (const auto & edge : curves)
         make_wire.Add(edge);
     make_wire.Build();
     if (!make_wire.IsDone())

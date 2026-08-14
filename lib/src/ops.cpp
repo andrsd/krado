@@ -239,7 +239,7 @@ compute_volume(const Mesh & mesh)
     auto cellsets_ids = mesh.cell_set_ids();
     if (cellsets_ids.empty()) {
         double volume = 0.;
-        for (auto & elem : mesh.elements())
+        for (const auto & elem : mesh.elements())
             volume += element_volume(elem);
         return { std::pair(0, volume) };
     }
@@ -247,8 +247,8 @@ compute_volume(const Mesh & mesh)
         std::map<Marker, double> vols_per_cellset;
         for (auto csid : cellsets_ids) {
             auto & volume = vols_per_cellset[csid];
-            for (auto & cid : mesh.cell_set(csid)) {
-                auto & elem = mesh.element(cid);
+            for (const auto & cid : mesh.cell_set(csid)) {
+                const auto & elem = mesh.element(cid);
                 volume += element_volume(elem);
             }
         }
@@ -272,7 +272,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     elem_shift.reserve(parts.size());
     std::vector<Index> pts_shift;
     pts_shift.reserve(parts.size());
-    for (auto & p : parts) {
+    for (const auto & p : parts) {
         elem_shift.push_back(n_total_elems);
         pts_shift.push_back(n_total_points);
         n_total_elems += p->num_elements();
@@ -284,13 +284,13 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     std::vector<Element> elements;
     points.reserve(n_total_points);
     elements.reserve(n_total_elems);
-    for (auto & p : parts) {
+    for (const auto & p : parts) {
         points.insert(points.end(), p->points().begin(), p->points().end());
         elements.insert(elements.end(), p->elements().begin(), p->elements().end());
     }
     // shift points
     for (std::size_t i = 0, k = 0; i < parts.size(); ++i) {
-        auto & p = parts[i];
+        const auto & p = parts[i];
         for (std::size_t j = 0; j < p->num_elements(); ++j, ++k) {
             auto & elem = elements[k];
             elem.shift(pts_shift[i]);
@@ -299,7 +299,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
 
     // merge cell sets
     std::unordered_map<Marker, std::size_t> cell_sets_size;
-    for (auto & p : parts) {
+    for (const auto & p : parts) {
         for (auto id : p->cell_set_ids()) {
             auto cell_set = p->cell_set(id);
             auto it = cell_sets_size.find(id);
@@ -314,16 +314,16 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     for (auto & [id, size] : cell_sets_size)
         cell_sets[id].reserve(size);
     for (auto i : make_range(parts.size())) {
-        auto & p = parts[i];
+        const auto & p = parts[i];
         for (auto & id : p->cell_set_ids()) {
             auto name = p->cell_set_name(id);
-            if (cell_set_names.find(id) == cell_set_names.end()) {
+            if (not cell_set_names.contains(id)) {
                 if (name.has_value())
                     cell_set_names[id] = name.value();
             }
 
             auto cell_set = p->cell_set(id);
-            for (auto & c : cell_set)
+            for (const auto & c : cell_set)
                 cell_sets[id].push_back(c + elem_shift[i]);
         }
     }
@@ -333,7 +333,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     std::map<Marker, std::vector<SideEntry>> side_sets;
     {
         std::unordered_map<Marker, std::size_t> side_sets_size;
-        for (auto & p : parts) {
+        for (const auto & p : parts) {
             for (auto id : p->side_set_ids()) {
                 auto side_set = p->side_set(id);
                 auto it = side_sets_size.find(id);
@@ -347,17 +347,17 @@ combine(const std::vector<Ptr<Mesh>> & parts)
         for (auto & [id, n] : side_sets_size)
             side_sets[id].reserve(n);
         for (auto i : make_range(parts.size())) {
-            auto & p = parts[i];
+            const auto & p = parts[i];
             for (auto & id : p->side_set_ids()) {
                 auto name = p->side_set_name(id);
-                if (side_set_names.find(id) == side_set_names.end()) {
+                if (not side_set_names.contains(id)) {
                     if (name.has_value())
                         side_set_names[id] = name.value();
                 }
 
                 auto side_set = p->side_set(id);
-                for (auto & c : side_set)
-                    side_sets[id].push_back({ c.elem + elem_shift[i], c.side });
+                for (const auto & c : side_set)
+                    side_sets[id].emplace_back(c.elem + elem_shift[i], c.side);
             }
         }
     }
@@ -367,7 +367,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
     std::map<Marker, std::vector<Index>> node_sets;
     {
         std::unordered_map<Marker, std::size_t> node_sets_size;
-        for (auto & p : parts) {
+        for (const auto & p : parts) {
             for (auto id : p->node_set_ids()) {
                 auto node_set = p->node_set(id);
                 auto it = node_sets_size.find(id);
@@ -381,16 +381,16 @@ combine(const std::vector<Ptr<Mesh>> & parts)
         for (auto & [id, n] : node_sets_size)
             node_sets[id].reserve(n);
         for (auto i : make_range(parts.size())) {
-            auto & p = parts[i];
+            const auto & p = parts[i];
             for (auto & id : p->node_set_ids()) {
                 auto name = p->node_set_name(id);
-                if (node_set_names.find(id) == node_set_names.end()) {
+                if (not node_set_names.contains(id)) {
                     if (name.has_value())
                         node_set_names[id] = name.value();
                 }
 
                 auto node_set = p->node_set(id);
-                for (auto & c : node_set)
+                for (const auto & c : node_set)
                     node_sets[id].push_back(c + pts_shift[i]);
             }
         }
@@ -474,7 +474,7 @@ GeomShape
 fillet(const GeomShape & shape, const std::vector<GeomCurve> & edges, double radius)
 {
     BRepFilletAPI_MakeFillet flt(shape);
-    for (auto & e : edges)
+    for (const auto & e : edges)
         flt.Add(radius, e);
     return GeomShape(flt.Shape());
 }
@@ -486,7 +486,7 @@ hollow(const GeomShape & shape,
        double tolerance)
 {
     TopTools_ListOfShape rem_faces;
-    for (auto & face : faces_to_remove)
+    for (const auto & face : faces_to_remove)
         rem_faces.Append(face);
 
     BRepOffsetAPI_MakeThickSolid result;
@@ -500,7 +500,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, Vector vec)
 {
-    BRepPrimAPI_MakePrism result(shape, (gp_Vec) vec);
+    BRepPrimAPI_MakePrism result(shape, static_cast<gp_Vec>(vec));
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");
@@ -533,7 +533,7 @@ section(const GeomShape & shape, const Plane & plane)
     result.Build();
     if (!result.IsDone())
         throw Exception("Section operation failed");
-    auto & section_edges = result.SectionEdges();
+    const auto & section_edges = result.SectionEdges();
     BRepBuilderAPI_MakeWire wire;
     wire.Add(section_edges);
     wire.Build();
@@ -550,7 +550,7 @@ draft(const GeomShape & shape,
 {
     auto dir = pln.axis().direction();
     BRepOffsetAPI_DraftAngle drft(shape);
-    for (auto & f : faces) {
+    for (const auto & f : faces) {
         drft.Add(f, dir, angle, pln);
         if (!drft.AddDone())
             throw Exception("Faulty face was given");
@@ -603,7 +603,7 @@ GeomShape
 sew(const std::vector<GeomShape> & faces, double tol)
 {
     BRepBuilderAPI_Sewing sewing_tool(tol);
-    for (auto & face : faces)
+    for (const auto & face : faces)
         sewing_tool.Add(face);
     sewing_tool.Perform();
     return GeomShape(sewing_tool.SewedShape());
@@ -652,7 +652,7 @@ smooth(Ptr<MeshSurface> surface, int iterations)
             for (const auto & neighbor : adj)
                 avg += neighbor->point();
 
-            if (adj.size() > 0) {
+            if (not adj.empty()) {
                 avg *= 1.0 / adj.size();
                 new_positions[vtx] = avg;
             }

@@ -76,7 +76,7 @@ operator==(const SideEntry & lhs, const SideEntry & rhs)
     return lhs.elem == rhs.elem && lhs.side == rhs.side;
 }
 
-enum class QuadSplitMode {
+enum class QuadSplitMode : u8 {
     /// Split into 2 triangles
     SPLIT2,
     /// Split into 4 triangles

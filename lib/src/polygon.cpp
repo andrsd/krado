@@ -32,7 +32,7 @@ BRepBuilderAPI_MakePolygon
 Polygon::build_polygon(const std::vector<Point> & points, bool closed)
 {
     BRepBuilderAPI_MakePolygon polygon;
-    for (auto & pt : points)
+    for (const auto & pt : points)
         polygon.Add(pt);
     if (closed)
         polygon.Close();
@@ -48,7 +48,7 @@ Polygon::create(const std::vector<Point> & points, bool closed)
     if (points.size() < 3)
         throw Exception("Polygon needs at least 3 points");
     auto polygon = Polygon::build_polygon(points, closed);
-    return Polygon(polygon.Wire());
+    return { polygon.Wire() };
 }
 
 } // namespace krado

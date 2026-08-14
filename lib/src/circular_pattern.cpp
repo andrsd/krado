@@ -12,7 +12,6 @@ CircularPattern::CircularPattern(const Axis2 & center,
                                  double radius,
                                  int divisions,
                                  double start_angle) :
-    Pattern(),
     center_(center),
     radius_(radius),
     divs_(divisions)

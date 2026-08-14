@@ -31,7 +31,7 @@ Spline::create(const std::vector<Point> & points)
     make_edge.Build();
     if (!make_edge.IsDone())
         throw Exception("Edge was not created");
-    return Spline(make_edge.Edge(), mk.Curve());
+    return { make_edge.Edge(), mk.Curve() };
 }
 
 Spline
@@ -50,7 +50,7 @@ Spline::create(const std::vector<Point> & points, Vector initial_tg, Vector fina
     make_edge.Build();
     if (!make_edge.IsDone())
         throw Exception("Edge was not created");
-    return Spline(make_edge.Edge(), mk.Curve());
+    return { make_edge.Edge(), mk.Curve() };
 }
 
 } // namespace krado

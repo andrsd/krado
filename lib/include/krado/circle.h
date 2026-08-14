@@ -19,15 +19,15 @@ public:
     /// Get circle area
     ///
     /// @return Area of the circle
-    double area() const;
+    [[nodiscard]] double area() const;
 
     /// Get radius
     ///
     /// @return Radius
-    double radius() const;
+    [[nodiscard]] double radius() const;
 
     /// Get circle location
-    Point location() const;
+    [[nodiscard]] Point location() const;
 
     operator gp_Circ() const;
 

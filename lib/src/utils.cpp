@@ -166,7 +166,7 @@ create_side_set(const Mesh & mesh, const std::vector<Index> & idxs)
 {
     std::vector<SideEntry> sset;
     sset.reserve(idxs.size());
-    for (auto & f : idxs) {
+    for (const auto & f : idxs) {
         auto support = mesh.support(f);
         if (support.size() != 1)
             throw Exception("Facet {} is not a boundary facet", f);

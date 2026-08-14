@@ -1,0 +1,100 @@
+---
+Checks: "-*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -boost-*,
+        -bugprone-*,
+        -cert-*,
+        -clang-analyzer-*,
+        -concurrency-*,
+        -cppcoreguidelines-*,
+        -darwin-*,
+        -fuchsia-*,
+        -google-*,
+        -linuxkernel-*,
+        -llvm-*,
+        -llvmlibc-*,
+        -misc-*,
+        -modernize-*,
+        -mpi-*,
+        -openmp-*,
+        -objc-*,
+        -performance-*,
+        -portability-*,
+        -readability-*,
+        bugprone-assert-side-effect,
+        bugprone-float-loop-counter,
+        modernize-avoid-c-style-cast,
+        modernize-avoid-setjmp-longjmp,
+        modernize-return-braced-init-list,
+        modernize-use-auto,
+        modernize-use-bool-literals,
+        modernize-use-emplace,
+        modernize-use-equals-default,
+        modernize-use-equals-delete,
+        modernize-use-noexcept,
+        modernize-use-nodiscard,
+        modernize-use-nullptr,
+        modernize-use-override,
+        modernize-use-scoped-lock,
+        modernize-use-starts-ends-with,
+        modernize-use-transparent-functors,
+        modernize-use-using,
+        performance-use-std-move,
+        readability-avoid-const-params-in-decls,
+        readability-avoid-nested-conditional-operator,
+        readability-avoid-return-with-void-value,
+        readability-container-contains,
+        readability-container-size-empty,
+        readability-function-size,
+        readability-identifier-naming,
+        readability-qualified-auto,
+"
+WarningsAsErrors: '*'
+HeaderFilterRegex: ''
+FormatStyle: none
+
+CheckOptions:
+- key: LineThreshold
+  value: 200
+- key: MacroDefinitionCase
+  value: UPPER_CASE
+- key: ClassMemberCase
+  value: lower_case
+- key: ClassMethodCase
+  value: lower_case
+- key: ClassCase
+  value: CamelCase
+- key: EnumCase
+  value: CamelCase
+- key: FunctionCase
+  value: lower_case
+- key: LocalVariableCase
+  value: lower_case
+- key: MemberCase
+  value: lower_case
+- key: MethodCase
+  value: lower_case
+- key: NamespaceCase
+  value: lower_case
+- key: ParameterCase
+  value: lower_case
+- key: PrivateMemberCase
+  value: lower_case
+- key: PrivateMemberSuffix
+  value: _
+- key: PrivateMethodCase
+  value: lower_case
+- key: ProtectedMemberCase
+  value: lower_case
+- key: ProtectedMemberSuffix
+  value: _
+- key: PublicMemberCase
+  value: lower_case
+- key: ProtectedMethodCase
+  value: lower_case
+- key: VariableCase
+  value: lower_case
+- key: TemplateParameterCase
+  value: UPPER_CASE

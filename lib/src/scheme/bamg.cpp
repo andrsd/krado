@@ -221,7 +221,7 @@ private:
         for (i64 i = 0; i < this->Gh.nbv; i++)
             if (this->Gh.vertices[i].color > 0)
                 this->Gh.vertices[i].m =
-                    bamg::Metric(this->len[i] / (bamg::Real4) this->Gh.vertices[i].color);
+                    bamg::Metric(this->len[i] / static_cast<bamg::Real4>(this->Gh.vertices[i].color));
             else
                 this->Gh.vertices[i].m = bamg::Metric(this->Hmin);
     }

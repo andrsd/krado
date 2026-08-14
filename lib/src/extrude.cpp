@@ -100,12 +100,15 @@ extrude_element_side<ElementType::QUAD4>(const Element & /* el */, int side)
 } // namespace
 
 Ptr<Mesh>
-extrude(const Mesh & mesh, Vector normal, int layers, double thickness)
+extrude(const Mesh & mesh, Vector direction, int layers, double thickness)
 {
-    Log::info("Extruding mesh: normal={}, layers={}, thickness={}", normal, layers, thickness);
+    Log::info("Extruding mesh: direction={}, layers={}, thickness={}",
+              direction,
+              layers,
+              thickness);
 
     std::vector<double> thicknesses(layers, thickness / layers);
-    return extrude(mesh, normal, thicknesses);
+    return extrude(mesh, direction, thicknesses);
 }
 
 Ptr<Mesh>
@@ -118,11 +121,11 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
     // extrude elements
     std::vector<Point> points;
     points.reserve(point_stride * (thicknesses.size() + 1));
-    for (auto & pt : mesh.points())
+    for (const auto & pt : mesh.points())
         points.emplace_back(pt);
     for (auto i : make_range(thicknesses.size())) {
         auto delta = thicknesses[i];
-        for (auto & pt : mesh.points()) {
+        for (const auto & pt : mesh.points()) {
             auto p = pt + (i + 1) * n * delta;
             points.emplace_back(p);
         }
@@ -138,7 +141,7 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         });
     elems.reserve(thicknesses.size() * sz);
     for (auto i : make_range(thicknesses.size())) {
-        for (auto & el : mesh.elements()) {
+        for (const auto & el : mesh.elements()) {
             if (el.type() == ElementType::LINE2) {
                 elems.emplace_back(extrude_element<ElementType::LINE2>(el, i, point_stride));
             }
@@ -161,8 +164,8 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         std::vector<Index> cell_set;
         cell_set.reserve(cells.size() * thicknesses.size());
         for (auto i : make_range(thicknesses.size())) {
-            for (auto & cell : cells)
-                cell_set.push_back(cell + elem_stride * i);
+            for (const auto & cell : cells)
+                cell_set.push_back(cell + (elem_stride * i));
         }
         extruded_mesh->set_cell_set(id, cell_set);
         auto cs_name = mesh.cell_set_name(id);
@@ -176,9 +179,9 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         std::vector<SideEntry> extruded_side_set;
         extruded_side_set.reserve(ss.size() * thicknesses.size());
         for (auto i : make_range(thicknesses.size())) {
-            for (auto & entry : ss) {
-                auto cell_id = entry.elem + elem_stride * i;
-                auto & cell = mesh.element(entry.elem);
+            for (const auto & entry : ss) {
+                auto cell_id = entry.elem + (elem_stride * i);
+                const auto & cell = mesh.element(entry.elem);
                 if (cell.type() == ElementType::LINE2) {
                     extruded_side_set.emplace_back(
                         cell_id,
@@ -209,8 +212,8 @@ extrude(const Mesh & mesh, Vector direction, const std::vector<double> & thickne
         std::vector<Index> extruded_node_set;
         extruded_node_set.reserve(ns.size() * thicknesses.size());
         for (auto i : make_range(thicknesses.size())) {
-            for (auto & idx : ns) {
-                auto node_id = idx + point_stride * i;
+            for (const auto & idx : ns) {
+                auto node_id = idx + (point_stride * i);
                 extruded_node_set.emplace_back(node_id);
             }
         }

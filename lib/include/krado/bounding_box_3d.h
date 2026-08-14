@@ -45,7 +45,7 @@ public:
 
     void thicken(double factor);
 
-    [[nodiscard]] bool contains(const BoundingBox3D & bound) const;
+    [[nodiscard]] bool contains(const BoundingBox3D & other) const;
 
     [[nodiscard]] bool contains(Point p) const;
 

@@ -34,7 +34,7 @@ IGESFile::read() const
     std::vector<GeomShape> shapes;
     shapes.reserve(reader.NbShapes());
     for (int idx = 1; idx <= reader.NbShapes(); ++idx)
-        shapes.push_back(GeomShape(reader.Shape(idx)));
+        shapes.emplace_back(reader.Shape(idx));
     return shapes;
 }
 

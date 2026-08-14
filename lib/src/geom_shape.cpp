@@ -29,15 +29,15 @@ namespace krado {
 
 namespace {
 
-std::vector<Color> shape_color = { ColorMap::medium_blue, ColorMap::medium_grey,
-                                   ColorMap::dark_blue,   ColorMap::light_grey,
-                                   ColorMap::light_blue,  ColorMap::orange,
-                                   ColorMap::dark_grey,   ColorMap::yellow };
+const std::vector<Color> shape_color = { ColorMap::medium_blue, ColorMap::medium_grey,
+                                         ColorMap::dark_blue,   ColorMap::light_grey,
+                                         ColorMap::light_blue,  ColorMap::orange,
+                                         ColorMap::dark_grey,   ColorMap::yellow };
 
 Color
 get_next_color()
 {
-    static int color_index = 0;
+    static std::size_t color_index = 0;
     Color clr = shape_color[color_index];
     color_index = (color_index + 1) % shape_color.size();
     return clr;
@@ -45,9 +45,7 @@ get_next_color()
 
 } // namespace
 
-GeomShape::GeomShape(const TopoDS_Shape & shape) : id_(-1), shape_(shape) {}
-
-GeomShape::~GeomShape() = default;
+GeomShape::GeomShape(const TopoDS_Shape & shape) : shape_(shape) {}
 
 int
 GeomShape::dim() const
@@ -250,12 +248,13 @@ GeomShape::fix_small_edges(double tolerance)
 void
 GeomShape::fix_small_wires(double tolerance)
 {
-    TopExp_Explorer exp0, exp1;
+    TopExp_Explorer exp0;
     ShapeBuild_ReShape rebuild;
 
     for (exp0.Init(this->shape_, TopAbs_FACE); exp0.More(); exp0.Next()) {
         TopoDS_Face face = TopoDS::Face(exp0.Current());
 
+        TopExp_Explorer exp1;
         for (exp1.Init(face, TopAbs_WIRE); exp1.More(); exp1.Next()) {
             TopoDS_Wire oldwire = TopoDS::Wire(exp1.Current());
             ShapeFix_Wire sfw(oldwire, face, tolerance);
@@ -265,7 +264,7 @@ GeomShape::fix_small_wires(double tolerance)
             replace = sfw.FixReorder() || replace;
             replace = sfw.FixConnected() || replace;
 
-            if (sfw.FixSmall(Standard_False, tolerance) &&
+            if (sfw.FixSmall(Standard_False, tolerance) > 0 &&
                 !(sfw.StatusSmall(ShapeExtend_FAIL1) || sfw.StatusSmall(ShapeExtend_FAIL2) ||
                   sfw.StatusSmall(ShapeExtend_FAIL3))) {
                 replace = true;

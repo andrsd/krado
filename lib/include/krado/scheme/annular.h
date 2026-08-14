@@ -7,6 +7,7 @@
 #include "krado/scheme.h"
 #include "krado/scheme2d.h"
 #include "krado/mesh_vertex_abstract.h"
+#include <vector>
 
 namespace krado {
 

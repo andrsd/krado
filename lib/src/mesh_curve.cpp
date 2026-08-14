@@ -84,11 +84,10 @@ MeshCurve::is_mesh_degenerated() const
 {
     if (this->too_smoll)
         Log::debug("Degenerated mesh on curve {}: too small", id());
-    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-        this->curve_vtx_.size() == 0)
+    if (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] && this->curve_vtx_.empty())
         Log::debug("Degenerated mesh on curve {}", id());
     return this->too_smoll || (this->bnd_vtxs_[0] && this->bnd_vtxs_[0] == this->bnd_vtxs_[1] &&
-                               this->curve_vtx_.size() == 0);
+                               this->curve_vtx_.empty());
 }
 
 void
@@ -123,11 +122,11 @@ get_mesh_curve_vertices(Ptr<MeshCurve> curve)
     std::vector<Ptr<MeshVertexAbstract>> vtxs;
     vtxs.reserve(curve->curve_vertices().size() + 2);
     auto bnd_vtxs = curve->bounding_vertices();
-    vtxs.push_back(bnd_vtxs[0]);
+    vtxs.emplace_back(bnd_vtxs[0]);
     for (auto cv : curve->curve_vertices()) {
-        vtxs.push_back(cv);
+        vtxs.emplace_back(cv);
     }
-    vtxs.push_back(bnd_vtxs[1]);
+    vtxs.emplace_back(bnd_vtxs[1]);
     return vtxs;
 }
 
@@ -137,7 +136,7 @@ std::ostream &
 operator<<(std::ostream & stream, const krado::MeshCurve & curve)
 {
     stream << "Curve " << curve.id() << ": ";
-    auto & gcurve = curve.geom_curve();
+    const auto & gcurve = curve.geom_curve();
     stream << "type=" << gcurve.type() << ", ";
     auto bnd_vtxs = curve.bounding_vertices();
     std::vector<krado::i32> vids;

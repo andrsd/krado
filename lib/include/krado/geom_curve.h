@@ -19,13 +19,13 @@ class Vector;
 
 class GeomCurve : public GeomShape {
 public:
-    enum class CurveType { Line, Circle, BSpline, Bezier, Unknown };
+    enum class CurveType : u8 { Line, Circle, BSpline, Bezier, Unknown };
 
-    enum class Orientation { Forward, Reversed };
+    enum class Orientation : u8 { Forward, Reversed };
 
     explicit GeomCurve(const TopoDS_Edge & edge);
 
-    int dim() const final;
+    [[nodiscard]] int dim() const final;
 
     /// Get curve type
     ///
@@ -98,19 +98,19 @@ public:
     /// @return `true` if the point is on the curve, `false` otherwise
     [[nodiscard]] bool contains_point(Point pt) const;
 
-    bool is_seam(const GeomSurface & surface) const;
+    [[nodiscard]] bool is_seam(const GeomSurface & surface) const;
 
     /// Get mesh size at parameter (interpolates between mesh size at bounding vertices)
     ///
     /// @param u Parameter value
     /// @return Mesh size at parameter
-    double mesh_size_at_param(double u) const;
+    [[nodiscard]] double mesh_size_at_param(double u) const;
 
     operator const TopoDS_Shape &() const;
 
     operator const TopoDS_Edge &() const;
 
-    const Handle(Geom_Curve) & curve_handle() const;
+    [[nodiscard]] const Handle(Geom_Curve) & curve_handle() const;
 
 private:
     TopoDS_Edge edge_;

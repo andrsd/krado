@@ -8,7 +8,7 @@
 
 namespace krado {
 
-IDWInterpolation::IDWInterpolation() {}
+IDWInterpolation::IDWInterpolation() = default;
 
 IDWInterpolation::IDWInterpolation(const std::vector<Point> & pnts,
                                    const std::vector<double> & weights) :
