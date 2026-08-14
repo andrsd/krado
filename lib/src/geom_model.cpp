@@ -34,12 +34,12 @@ compute_bounding_box(const GeomModel & model)
     Log::debug("Computing mesh bounding box");
 
     BoundingBox3D bbox;
-    for (auto & [id, v] : model.vertices())
+    for (const auto & [id, v] : model.vertices())
         bbox += v->point();
-    for (auto & [id, curve] : model.curves())
+    for (const auto & [id, curve] : model.curves())
         for (auto & v : curve->curve_vertices())
             bbox += v->point();
-    for (auto & [id, surface] : model.surfaces())
+    for (const auto & [id, surface] : model.surfaces())
         for (auto & v : surface->surface_vertices())
             bbox += v->point();
     return bbox;
@@ -415,7 +415,7 @@ GeomModel::mesh_curve(Ptr<MeshCurve> curve)
 
     auto & scheme = curve->scheme();
 
-    auto & geom_curve = curve->geom_curve();
+    const auto & geom_curve = curve->geom_curve();
     if ((geom_curve.length() == 0.) || (geom_curve.is_degenerated()))
         return;
 
@@ -568,7 +568,7 @@ ShapeID
 GeomModel::get_shape_id(const TopoDS_Vertex & vertex)
 {
     if (!this->vtx_id_.IsBound(vertex)) {
-        ShapeID id = this->vtxs_.size() + 1;
+        auto id = static_cast<ShapeID>(this->vtxs_.size() + 1);
         this->vtx_id_.Bind(vertex, id);
         return id;
     }
@@ -581,7 +581,7 @@ ShapeID
 GeomModel::get_shape_id(const TopoDS_Edge & edge)
 {
     if (!this->crv_id_.IsBound(edge)) {
-        ShapeID id = this->crvs_.size() + 1;
+        auto id = static_cast<ShapeID>(this->crvs_.size() + 1);
         this->crv_id_.Bind(edge, id);
         return id;
     }
@@ -594,7 +594,7 @@ ShapeID
 GeomModel::get_shape_id(const TopoDS_Face & face)
 {
     if (!this->srf_id_.IsBound(face)) {
-        ShapeID id = this->srfs_.size() + 1;
+        auto id = static_cast<ShapeID>(this->srfs_.size() + 1);
         this->srf_id_.Bind(face, id);
         return id;
     }
@@ -607,7 +607,7 @@ ShapeID
 GeomModel::get_shape_id(const TopoDS_Shell & shell)
 {
     if (!this->vol_id_.IsBound(shell)) {
-        ShapeID id = this->vols_.size() + 1;
+        auto id = static_cast<ShapeID>(this->vols_.size() + 1);
         this->vol_id_.Bind(shell, id);
         return id;
     }
@@ -620,7 +620,7 @@ ShapeID
 GeomModel::get_shape_id(const TopoDS_Solid & solid)
 {
     if (!this->vol_id_.IsBound(solid)) {
-        ShapeID id = this->vols_.size() + 1;
+        auto id = static_cast<ShapeID>(this->vols_.size() + 1);
         this->vol_id_.Bind(solid, id);
         return id;
     }
