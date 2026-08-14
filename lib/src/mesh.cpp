@@ -325,7 +325,7 @@ mirror_local_side(ElementType et, std::size_t side)
 
 } // namespace
 
-Mesh::Mesh() {}
+Mesh::Mesh() = default;
 
 Mesh::Mesh(std::vector<Point> points, std::vector<Element> elems) :
     pnts_(std::move(points)),
