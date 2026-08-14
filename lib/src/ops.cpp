@@ -357,7 +357,7 @@ combine(const std::vector<Ptr<Mesh>> & parts)
 
                 auto side_set = p->side_set(id);
                 for (auto & c : side_set)
-                    side_sets[id].push_back({ c.elem + elem_shift[i], c.side });
+                    side_sets[id].emplace_back(c.elem + elem_shift[i], c.side);
             }
         }
     }
@@ -500,7 +500,7 @@ hollow(const GeomShape & shape,
 GeomShape
 extrude(const GeomShape & shape, Vector vec)
 {
-    BRepPrimAPI_MakePrism result(shape, (gp_Vec) vec);
+    BRepPrimAPI_MakePrism result(shape, static_cast<gp_Vec>(vec));
     result.Build();
     if (!result.IsDone())
         throw Exception("extrude failed");

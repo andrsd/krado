@@ -157,8 +157,8 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
             auto uv01 = gsurf.parameter_from_point(grid[0][nj - 1]->point());
             auto uv11 = gsurf.parameter_from_point(grid[ni - 1][nj - 1]->point());
 
-            auto ri = (double) i / (ni - 1);
-            auto rj = (double) j / (nj - 1);
+            auto ri = static_cast<double>(i) / (ni - 1);
+            auto rj = static_cast<double>(j) / (nj - 1);
 
             auto uv_i0 = gsurf.parameter_from_point(grid[i][0]->point());
             auto uv_i1 = gsurf.parameter_from_point(grid[i][nj - 1]->point());

@@ -99,7 +99,7 @@ SchemeTriAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
             auto uv = gsurf.parameter_from_point(p);
             auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
             mesh_surface->add_vertex(v);
-            rings[k].push_back(v);
+            rings[k].emplace_back(v);
         }
         rings[k].push_back(rings[k].front());
     }
@@ -114,7 +114,7 @@ SchemeTriAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
         int v = 0; // outer index
         int w = 0; // inner index
         while (v < Sout || w < Sin) {
-            if (v < Sout && (w == Sin || (double) v / Sout <= (double) w / Sin)) {
+            if (v < Sout && (w == Sin || static_cast<double>(v) / Sout <= static_cast<double>(w) / Sin)) {
                 mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], inner[w]));
                 v++;
             }

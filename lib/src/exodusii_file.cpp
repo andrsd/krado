@@ -988,8 +988,8 @@ ExodusIIFile::write(Ptr<const Mesh> mesh)
     auto [side_sets, side_set_names] = build_side_sets(*mesh, exii_elem_ids);
     auto [node_sets, node_set_names] = build_node_sets(*mesh);
 
-    int n_nodes = (int) mesh->points().size();
-    int n_elems = (int) mesh->elements().size();
+    auto n_nodes = static_cast<int>(mesh->points().size());
+    auto n_elems = static_cast<int>(mesh->elements().size());
     int n_elem_blks = blocks.size();
     int n_node_sets = node_sets.size();
     int n_side_sets = side_sets.size();

@@ -100,7 +100,7 @@ SchemeQuadAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
             auto uv = gsurf.parameter_from_point(p);
             auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
             mesh_surface->add_vertex(v);
-            rings[k].push_back(v);
+            rings[k].emplace_back(v);
         }
         rings[k].push_back(rings[k].front());
     }

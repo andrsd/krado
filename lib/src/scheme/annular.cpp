@@ -44,7 +44,7 @@ SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
 
     while (true) {
         int start_idx = -1;
-        for (int i = 0; i < (int) mesh_curves.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(mesh_curves.size()); ++i) {
             if (!visited[i]) {
                 start_idx = i;
                 break;
@@ -64,7 +64,7 @@ SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
         while (loop.front() != loop.back()) {
             auto last_v = loop.back();
             bool found_next = false;
-            for (int i = 0; i < (int) mesh_curves.size(); ++i) {
+            for (int i = 0; i < static_cast<int>(mesh_curves.size()); ++i) {
                 if (!visited[i]) {
                     auto next_crv = mesh_curves[i];
                     auto next_vtxs = get_mesh_curve_vertices(next_crv);

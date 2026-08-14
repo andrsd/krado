@@ -39,7 +39,7 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
     for (int count = 1, num_pts = 1; num_pts < n_segs;) {
         auto pt1 = igrl.point(count - 1);
         auto pt2 = igrl.point(count);
-        const auto d = (double) num_pts * b;
+        const auto d = static_cast<double>(num_pts) * b;
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             const auto dt = pt2.t - pt1.t;
             const auto dp = pt2.p - pt1.p;
