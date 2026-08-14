@@ -82,7 +82,7 @@ install(
 add_subdirectory(docs)
 
 #
-add_custom_target(clang-tidy ALL
+add_custom_target(clang-tidy
     COMMAND run-clang-tidy
         -use-color 1
         -p ${CMAKE_CURRENT_BINARY_DIR}

@@ -11,17 +11,6 @@ on:
       - 3.x
 
 jobs:
-  formatting-check:
-    name: Check formatting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Clang-format style check
-        uses: jidicula/clang-format-action@v4.18.0
-        with:
-          clang-format-version: "14"
-          include-regex: '(.\/lib\/|.\/src\/|.\/test\/)'
-
   check-spdx-tags:
     name: check spdx tags
     defaults:
@@ -32,3 +21,60 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: kt3k/license_checker@v1.0.6
+
+  clang-tidy:
+    name: clang-tidy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Set up miniconda
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: false
+          channels: andrsd,defaults
+
+      - name: Install conda packages
+        run: |
+          conda install \
+            cmake \
+            make \
+            gcc_linux-64 \
+            gxx_linux-64 \
+            exodusiicpp=3.1 \
+            occt=7.9 \
+            spdlog=1.16 \
+            fmt=11 \
+            eigen=3.4 \
+            libboost-devel>=1.88 \
+            gtest=1.17 \
+            pybind11 \
+            pytest \
+            flake8 \
+            valgrind \
+            lcov
+
+      - name: Checkout source
+        uses: actions/checkout@v7
+
+      - name: Configure
+        run: |
+          cmake -B build --preset ci-debug \
+            -DGCOV_PATH=`which x86_64-conda-linux-gnu-gcov` \
+            -DBUILD_SHARED_LIBS=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run clang-tidy
+        uses: cpp-linter/cpp-linter-action@v2
+        with:
+          style: file
+          tidy-checks: ""
+          version: 21
+          lines-changed-only: true
+          ignore: "cmake|contrib|docs"
+          step-summary: true
+          database: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

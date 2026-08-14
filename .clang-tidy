@@ -46,11 +46,10 @@ Checks: "-*,
         readability-avoid-nested-conditional-operator,
         readability-avoid-return-with-void-value,
         readability-container-contains,
-        -readability-container-size-empty,
-        -readability-function-size,
-        -readability-identifier-naming,
-        -readability-qualified-auto,
-        -readability-math-missing-parentheses,
+        readability-container-size-empty,
+        readability-function-size,
+        readability-identifier-naming,
+        readability-qualified-auto,
 "
 WarningsAsErrors: '*'
 HeaderFilterRegex: ''
