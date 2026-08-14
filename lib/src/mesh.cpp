@@ -102,11 +102,10 @@ remove_duplicates(const PointCloud & cloud, double threshold)
 {
     constexpr int32_t DIM3 = 3;
     using namespace nanoflann;
-    typedef KDTreeSingleIndexAdaptor<L2_Simple_Adaptor<double, PointCloud>,
-                                     PointCloud,
-                                     DIM3,
-                                     std::size_t>
-        KDTree;
+    using KDTree = KDTreeSingleIndexAdaptor<L2_Simple_Adaptor<double, PointCloud>,
+                                            PointCloud,
+                                            DIM3,
+                                            std::size_t>;
 
     // Construct a kd-tree index
     // 30 is the maxium number of neighboring nodes we can have per any node
