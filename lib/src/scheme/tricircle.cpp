@@ -14,7 +14,7 @@
 #include "krado/scheme/equal.h"
 #include "krado/vector.h"
 #include "krado/utils.h"
-#include "krado/range.h"
+#include <vector>
 
 namespace krado {
 
