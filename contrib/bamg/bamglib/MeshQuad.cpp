@@ -657,8 +657,8 @@ namespace bamg {
       // Triangle * tc=0;
 #ifndef NDEBUG
       int nbmkadj = 0;
-      Int4 mkadj[100];
-      mkadj[0] = i;
+      // Int4 mkadj[100] = { 0 };
+      // mkadj[0] = i;
 #endif
       Int4 kk = ksplit[i] / 10;
       int ke = (int)(ksplit[i] % 10);
@@ -797,7 +797,7 @@ namespace bamg {
       //  t0.SetDetf();
       // save all the new triangles
 #ifdef DEBUG
-      mkadj[nbmkadj++] = i;
+      // mkadj[nbmkadj++] = i;
 #endif
       Int4 jj;
       if (t0.link)
@@ -805,7 +805,7 @@ namespace bamg {
           triangles[jj].link = t0.link;
           t0.link = triangles + jj;
 #ifdef DEBUG
-          mkadj[nbmkadj++] = jj;
+          // mkadj[nbmkadj++] = jj;
 #endif
           // triangles[jj].SetDet();
         }
