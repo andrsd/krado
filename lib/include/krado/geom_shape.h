@@ -12,16 +12,22 @@ namespace krado {
 
 class GeomShape {
 public:
-    enum HealFlag { FIX_DEGENERATED, FIX_SMALL_EDGES, FIX_SMALL_FACES, SEW_FACES, MAKE_SOLIDS };
+    enum HealFlag : u8 {
+        FIX_DEGENERATED,
+        FIX_SMALL_EDGES,
+        FIX_SMALL_FACES,
+        SEW_FACES,
+        MAKE_SOLIDS
+    };
 
-    GeomShape() = default;
+    // GeomShape() = default;
     explicit GeomShape(const TopoDS_Shape & shape);
-    virtual ~GeomShape();
+    virtual ~GeomShape() = default;
 
-    virtual int dim() const;
+    [[nodiscard]] virtual int dim() const;
 
     /// Get shape ID
-    int id() const;
+    [[nodiscard]] int id() const;
 
     void clean();
     void heal(double tolerance,
@@ -32,7 +38,7 @@ public:
     /// Get shape name
     ///
     /// @return Shape name
-    std::string name() const;
+    [[nodiscard]] std::string name() const;
 
     /// Set shape name
     ///
@@ -42,7 +48,7 @@ public:
     /// Query if this shape has material assigned to it
     ///
     /// @return `true` if material is assigned, `false` otherwise
-    bool has_material() const;
+    [[nodiscard]] bool has_material() const;
 
     /// Set material
     ///
@@ -55,15 +61,15 @@ public:
     /// Get material description
     ///
     /// @return Material description
-    const std::string & material_description() const;
+    [[nodiscard]] const std::string & material_description() const;
 
     /// Get material
     ///
     /// @return Material name
-    const std::string & material() const;
+    [[nodiscard]] const std::string & material() const;
 
     /// Get color
-    Color color() const;
+    [[nodiscard]] Color color() const;
 
     /// Set color
     void set_color(const Color & color);
@@ -71,22 +77,22 @@ public:
     /// Compute the length of the edge
     ///
     /// @return Length of the edge
-    double length() const;
+    [[nodiscard]] double length() const;
 
     /// Compute the area of the face
     ///
     /// @return Area of the face
-    double area() const;
+    [[nodiscard]] double area() const;
 
     /// Compute the volume of the shape
     ///
     /// @return Volume of the shape
-    double volume() const;
+    [[nodiscard]] double volume() const;
 
     /// Return density
     ///
     /// @return Density [g/cm^3]
-    double density() const;
+    [[nodiscard]] double density() const;
 
     operator const TopoDS_Shape &() const;
 
@@ -105,7 +111,7 @@ private:
     void make_solids(double tolerance);
 
     /// Shape ID
-    ShapeID id_;
+    ShapeID id_ = -1;
     ///
     TopoDS_Shape shape_;
     /// Shape name
@@ -117,7 +123,7 @@ private:
     /// Material description
     std::string material_description_;
     /// Density
-    double density_;
+    double density_ = 0.;
 
     friend class GeomModel;
 };
