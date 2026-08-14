@@ -81,7 +81,7 @@ STEPFile::read() const
             auto name = name_attr->Get();
             std::string nm;
             nm.reserve(name.LengthOfCString() + 1);
-            auto pchar = nm.data();
+            auto * pchar = nm.data();
             name.ToUTF8CString(pchar);
             geom_shape.set_name(nm);
         }

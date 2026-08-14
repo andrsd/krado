@@ -596,7 +596,7 @@ build_blocks(const Mesh & mesh, std::map<Index, int> & exii_elem_ids)
         int exii_idx = 1;
         for (Index cell_id = 0; cell_id < mesh.elements().size(); ++cell_id) {
             exii_elem_ids[cell_id] = exii_idx++;
-            auto & cell = mesh.element(cell_id);
+            const auto & cell = mesh.element(cell_id);
             auto et = cell.type();
             elem_blks[et].push_back(cell_id);
         }

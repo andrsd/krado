@@ -447,12 +447,12 @@ Mesh::mirrored(const Axis2 & axis) const
 {
     std::vector<Point> points;
     points.reserve(this->num_points());
-    for (auto & pt : this->points())
+    for (const auto & pt : this->points())
         points.push_back(pt.mirrored(axis));
 
     std::vector<Element> elems;
     elems.reserve(this->num_elements());
-    for (auto & elem : this->elements())
+    for (const auto & elem : this->elements())
         elems.push_back(reverse_element(elem));
 
     auto mirrored_mesh = Ptr<Mesh>::alloc(std::move(points), std::move(elems));
@@ -496,7 +496,7 @@ Mesh::add(const Mesh & other)
     // merge cell sets
     for (auto & id : other.cell_set_ids()) {
         auto cs = other.cell_set(id);
-        for (auto & cell_id : cs)
+        for (const auto & cell_id : cs)
             this->cell_sets_[id].emplace_back(cell_id + n_elem_ofst);
 
         auto name = other.cell_set_name(id);
@@ -523,7 +523,7 @@ Mesh::add(const Mesh & other)
             side_sets[id].reserve(n);
         for (auto & [id, ss] : this->side_sets_)
             append(side_sets[id], ss);
-        for (auto & [id, ss] : other.side_sets_) {
+        for (const auto & [id, ss] : other.side_sets_) {
             auto ss_shifted = ss;
             for (auto & ent : ss_shifted)
                 ent.elem += n_elem_ofst;
@@ -556,7 +556,7 @@ Mesh::add(const Mesh & other)
 
         for (auto & [id, ns] : this->node_sets_)
             append(node_sets[id], ns);
-        for (auto & [id, ns] : other.node_sets_) {
+        for (const auto & [id, ns] : other.node_sets_) {
             auto ns_shifted = ns;
             for (auto & idx : ns_shifted)
                 idx += n_pt_ofst;
@@ -762,7 +762,7 @@ Mesh &
 Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
 {
     Log::info("Remapping block IDs...");
-    for (auto & [block_id, new_block_id] : block_map)
+    for (const auto & [block_id, new_block_id] : block_map)
         Log::info(2, "- {} -> {}", block_id, new_block_id);
 
     std::map<Marker, std::string> new_cell_set_names;
@@ -816,7 +816,7 @@ std::set<Index>
 Mesh::cone_vertices(Index index) const
 {
     std::list<Index> pts_to_process;
-    for (auto & v : cone(index))
+    for (const auto & v : cone(index))
         pts_to_process.push_back(v);
 
     std::set<Index> verts;
@@ -825,7 +825,7 @@ Mesh::cone_vertices(Index index) const
         if (cn.empty())
             verts.insert(v);
         else {
-            for (auto & c : cn)
+            for (const auto & c : cn)
                 pts_to_process.push_back(c);
         }
     }
@@ -863,8 +863,8 @@ Mesh::compute_centroid(Index index) const
     auto connect = cone_vertices(index);
     auto pnts_ofst = this->elems_.size();
     Point ctr(0, 0, 0);
-    for (auto & pt_id : connect) {
-        auto & pt = this->pnts_[pt_id - pnts_ofst];
+    for (const auto & pt_id : connect) {
+        const auto & pt = this->pnts_[pt_id - pnts_ofst];
         ctr += pt;
     }
     ctr *= 1. / connect.size();
@@ -945,25 +945,25 @@ build_points(const GeomModel & model)
     std::vector<Point> pnts;
     std::size_t sz = model.vertices().size();
     pnts.reserve(sz);
-    for (auto & [_, curve] : model.curves())
+    for (const auto & [_, curve] : model.curves())
         sz += curve->curve_vertices().size();
-    for (auto & [id, surface] : model.surfaces())
+    for (const auto & [id, surface] : model.surfaces())
         sz += surface->surface_vertices().size();
     std::map<Ptr<MeshVertexAbstract>, Index> vtx_map;
     Index gid = 0;
 
-    for (auto & [id, v] : model.vertices()) {
+    for (const auto & [id, v] : model.vertices()) {
         vtx_map.emplace(v, gid);
         pnts.emplace_back(v->point());
         gid++;
     }
-    for (auto & [id, curve] : model.curves())
+    for (const auto & [id, curve] : model.curves())
         for (auto & v : curve->curve_vertices()) {
             vtx_map.emplace(v, gid);
             pnts.emplace_back(v->point());
             gid++;
         }
-    for (auto & [id, surface] : model.surfaces())
+    for (const auto & [id, surface] : model.surfaces())
         for (auto & v : surface->surface_vertices()) {
             vtx_map.emplace(v, gid);
             pnts.emplace_back(v->point());
@@ -979,12 +979,12 @@ build_1d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
 
     std::vector<Element> elems;
     std::size_t sz = 0;
-    for (auto & [id, curve] : model.curves())
+    for (const auto & [id, curve] : model.curves())
         sz += curve->segments().size();
     elems.reserve(sz);
-    for (auto & [id, curve] : model.curves()) {
+    for (const auto & [id, curve] : model.curves()) {
         std::array<Index, Line2::N_VERTICES> line;
-        for (auto & local_elem : curve->segments()) {
+        for (const auto & local_elem : curve->segments()) {
             for (auto i : make_range(Line2::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);
@@ -1003,12 +1003,12 @@ build_2d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
 
     std::vector<Element> elems;
     std::size_t sz = 0;
-    for (auto & [id, surface] : model.surfaces()) {
+    for (const auto & [id, surface] : model.surfaces()) {
         sz += surface->triangles().size();
         sz += surface->quadrangles().size();
     }
     elems.reserve(sz);
-    for (auto & [id, surface] : model.surfaces()) {
+    for (const auto & [id, surface] : model.surfaces()) {
         std::array<Index, Tri3::N_VERTICES> tri;
         for (auto & local_elem : surface->triangles()) {
             for (auto i : make_range(Tri3::N_VERTICES)) {
@@ -1039,13 +1039,13 @@ build_3d_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract
 
     std::vector<Element> elems;
     std::size_t sz = 0;
-    for (auto & [id, volume] : model.volumes()) {
+    for (const auto & [id, volume] : model.volumes()) {
         sz += volume->tetrahedra().size();
     }
     elems.reserve(sz);
-    for (auto & [id, volume] : model.volumes()) {
+    for (const auto & [id, volume] : model.volumes()) {
         std::array<Index, Tetra4::N_VERTICES> tet;
-        for (auto & local_elem : volume->tetrahedra()) {
+        for (const auto & local_elem : volume->tetrahedra()) {
             for (auto i : make_range(Tetra4::N_VERTICES)) {
                 auto vtx = local_elem.vertex(i);
                 auto gid = vtx_map.at(vtx);

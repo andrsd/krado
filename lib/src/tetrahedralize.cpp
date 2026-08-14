@@ -112,7 +112,7 @@ hex8_face_diagonal_directions(const std::array<Index, Hex8::N_VERTICES> & hex)
     };
     std::array<bool, Hex8::N_FACES> diagonal_directions;
     for (auto i : make_range(Hex8::N_FACES)) {
-        auto & face_index = face_indices[i];
+        const auto & face_index = face_indices[i];
         std::array<Index, Quad4::N_VERTICES> quad = { hex[face_index[0]],
                                                       hex[face_index[1]],
                                                       hex[face_index[2]],
@@ -378,14 +378,14 @@ tetrahedralize(Ptr<const Mesh> mesh)
         points.push_back(pt);
 
     std::size_t n_tets = 0;
-    for (auto & el : mesh->elements())
+    for (const auto & el : mesh->elements())
         n_tets += num_of_tets(el.type());
 
     std::map<Index, std::vector<Index>> elem_map;
     std::vector<Element> elems;
     elems.reserve(n_tets);
     for (Index cell_id : make_range(mesh->elements().size())) {
-        auto & el = mesh->element(cell_id);
+        const auto & el = mesh->element(cell_id);
         if (el.type() == ElementType::HEX8) {
             auto tet4s = split_elem<ElementType::HEX8>(el);
             for (auto & tet : tet4s) {
@@ -418,10 +418,10 @@ tetrahedralize(Ptr<const Mesh> mesh)
         auto cells = mesh->cell_set(id);
         std::vector<Index> new_cell_set;
         std::size_t sz = 0;
-        for (auto & cell_id : cells)
+        for (const auto & cell_id : cells)
             sz += elem_map[cell_id].size();
         new_cell_set.reserve(sz);
-        for (auto & cell_id : cells) {
+        for (const auto & cell_id : cells) {
             auto & tet_elems = elem_map[cell_id];
             new_cell_set.insert(new_cell_set.end(), tet_elems.begin(), tet_elems.end());
         }
@@ -442,13 +442,13 @@ tetrahedralize(Ptr<const Mesh> mesh)
         }
 
         auto & new_side_set = side_sets[id];
-        for (auto & c : mesh->side_set(id)) {
+        for (const auto & c : mesh->side_set(id)) {
             auto orig_elem = mesh->element(c.elem);
             auto face_connect = utils::get_face_connect(orig_elem, c.side);
             std::set<Index> orig_face_vtx(face_connect.begin(), face_connect.end());
 
             for (auto & tet_id : elem_map[c.elem]) {
-                auto & tet4 = tet_mesh->element(tet_id);
+                const auto & tet4 = tet_mesh->element(tet_id);
                 for (auto tet_side : make_range(Tetra4::N_FACES)) {
                     auto face_connect = utils::get_face_connect(tet4, tet_side);
                     std::set<Index> tet_face_vtx(face_connect.begin(), face_connect.end());

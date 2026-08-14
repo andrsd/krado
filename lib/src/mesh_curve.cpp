@@ -136,7 +136,7 @@ std::ostream &
 operator<<(std::ostream & stream, const krado::MeshCurve & curve)
 {
     stream << "Curve " << curve.id() << ": ";
-    auto & gcurve = curve.geom_curve();
+    const auto & gcurve = curve.geom_curve();
     stream << "type=" << gcurve.type() << ", ";
     auto bnd_vtxs = curve.bounding_vertices();
     std::vector<krado::i32> vids;

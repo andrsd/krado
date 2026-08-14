@@ -19,7 +19,7 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
 
     std::unordered_map<std::size_t, Index> key_map;
     std::size_t n_entries = elems.size() + pnts.size();
-    for (auto & cell : elems) {
+    for (const auto & cell : elems) {
         if (cell.type() == ElementType::TRI3) {
             n_entries += Tri3::N_EDGES;
         }

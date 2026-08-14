@@ -494,7 +494,7 @@ compute_quality(const Mesh & mesh, qm::Metric metric, int n_bins)
     std::vector<double> qualities;
     qualities.reserve(mesh.num_elements());
 
-    for (auto & elem : mesh.elements()) {
+    for (const auto & elem : mesh.elements()) {
         double q = qm::compute_metric(elem, mesh, metric);
         q_min = std::min(q_min, q);
         q_max = std::max(q_max, q);
