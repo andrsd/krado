@@ -1,0 +1,29 @@
+---
+Checks: "*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -boost-*,
+        -objc-*,
+        -darwin-*,
+        -fuchsia-*,
+        -google-*,
+        -hicpp-*,
+        -linuxkernel-*,
+        -llvm*,
+        -mpi-*,
+        -zircon-*,
+        -cert-*,
+        -cppcoreguidelines-avoid-magic-numbers,
+        -bugprone-easily-swappable-parameters,
+        -modernize-use-trailing-return-type,
+        -readability-braces-around-statements,
+        -readability-else-after-return,
+        -readability-identifier-length,
+        -readability-magic-numbers,
+        -readability-simplify-boolean-expr,
+        -readability-use-std-min-max,
+"
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none
