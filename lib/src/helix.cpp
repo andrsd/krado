@@ -60,7 +60,7 @@ Helix::create(const Axis2 & ax2, double radius, double height, double turns, dou
     make_edge.Build();
     if (!make_edge.IsDone())
         throw Exception("Edge was not created");
-    return Helix(make_edge.Edge(), mk.Curve());
+    return { make_edge.Edge(), mk.Curve() };
 }
 
 } // namespace krado

@@ -17,7 +17,7 @@ Line::create(Point pt1, Point pt2)
     maker.Build();
     if (!maker.IsDone())
         throw Exception("Edge was not created");
-    return Line(maker.Edge());
+    return { maker.Edge() };
 }
 
 } // namespace krado

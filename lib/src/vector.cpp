@@ -82,12 +82,12 @@ Vector::is_equal(const Vector & other, double tol) const
 
 Vector::operator gp_Vec() const
 {
-    return gp_Vec(this->x, this->y, this->z);
+    return { this->x, this->y, this->z };
 }
 
 Vector::operator gp_Dir() const
 {
-    return gp_Dir(this->x, this->y, this->z);
+    return { this->x, this->y, this->z };
 }
 
 Vector

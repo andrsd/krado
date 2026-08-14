@@ -297,7 +297,7 @@ Point::transform(const std::vector<double> & tfo)
 
 Point::operator gp_Pnt() const
 {
-    return gp_Pnt(this->x, this->y, this->z);
+    return { this->x, this->y, this->z };
 }
 
 bool
