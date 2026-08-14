@@ -562,7 +562,7 @@ ListofIntersectionTriangles::SplitEdge(const Triangles & Bh, const R2 & A, const
     //  if(SHOW)  cout << " splitedge " << A << B << " " <<  nbegin << endl;
     Triangle *tbegin, *t;
 
-    Icoor2 deta[3], deti, detj;
+    Icoor2 deta[3], deti = 0, detj = 0;
     Real8 ba[3];
     int nbt = 0, ifirst = -1, ilast;
     int i0, i1, i2;
@@ -3846,7 +3846,7 @@ Triangles::GeomToTriangles0(Int4 inbvx)
 {
     Gh.NbRef++; // add a ref to GH
 
-    Int4 i, NbNewPoints, NbEdgeCurve;
+    Int4 i, NbNewPoints, NbEdgeCurve = 0;
     Real8 lcurve, lstep, s;
 #ifdef DRAWING
     if (withrgraphique) {
@@ -3857,8 +3857,8 @@ Triangles::GeomToTriangles0(Int4 inbvx)
 
     R2 AB;
     GeometricalVertex *a, *b;
-    Vertex *va, *vb;
-    GeometricalEdge * e;
+    Vertex *va = nullptr, *vb = nullptr;
+    GeometricalEdge * e = nullptr;
     PreInit(inbvx);
     int background = &BTh != this;
     //  int  SameGeom = background && (&BTh.Gh == &Gh);
@@ -4136,7 +4136,7 @@ Triangles::GeomToTriangles0(Int4 inbvx)
             assert(NbVerticesOnGeomEdge == NbVerticesOnGeomEdge0);
         //     cout << " Nb of Curves = " << NbOfCurves << "nbe = " << nbe
         //	  << "== " << nbex << "  nbv = " << nbv <<  endl;
-        assert(nbex = nbe);
+        assert(nbex == nbe);
     } // for (step=0;step<2;step++)
 
 #ifdef DRAWING1

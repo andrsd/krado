@@ -589,8 +589,8 @@ Mesh::remove_duplicate_points(double tolerance)
     LoggingTimer timer;
 
     PointCloud cloud(*this);
-    auto [unique_points, point_map] = remove_duplicates(cloud, tolerance);
-    this->pnts_ = unique_points;
+    std::map<std::size_t, std::size_t> point_map;
+    std::tie(this->pnts_, point_map) = remove_duplicates(cloud, tolerance);
     for (auto & elem : this->elems_) {
         auto & ids = elem.vtx_id_;
         for (auto & id : ids)

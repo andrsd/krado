@@ -12,7 +12,7 @@ namespace krado {
 class SchemeEqual : public Scheme, public Scheme1D {
 public:
     struct Options {
-        int intervals;
+        int intervals = 4;
     };
 
 public:

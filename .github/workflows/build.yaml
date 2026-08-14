@@ -10,27 +10,36 @@ on:
 
 jobs:
   build:
-    name: "${{ matrix.os }}, ${{ matrix.build-type }}, py-${{ matrix.python-version }}"
+    name: "${{ matrix.os }}, ${{ matrix.name }}, py-${{ matrix.python-version }}"
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
+          - name: release
+            os: ubuntu-22.04
             build-type: Release
             preset: ci-release
             python-version: "3.10"
-          - os: ubuntu-22.04
+          - name: release
+            os: ubuntu-22.04
             build-type: Release
             preset: ci-release
             python-version: "3.11"
-          - os: ubuntu-22.04
+          - name: release
+            os: ubuntu-22.04
             build-type: Release
             preset: ci-release
             python-version: "3.12"
-          - os: ubuntu-22.04
+          - name: release
+            os: ubuntu-22.04
             build-type: Release
             preset: ci-release
             python-version: "3.13"
+          - name: valgrind
+            os: ubuntu-22.04
+            build-type: Debug
+            preset: ci-debug
+            python-version: "3.12"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,7 +70,10 @@ jobs:
             pybind11 \
             pytest \
             flake8 \
+            valgrind \
             lcov
+          sudo apt-get update
+          sudo apt-get install -y libc6-dbg
 
       - name: Checkout source
         uses: actions/checkout@v7
@@ -76,10 +88,23 @@ jobs:
         run: |
           cmake --build build --preset ${{ matrix.preset }} --parallel 2
 
-      - name: Run tests
+      - name: Run tests (Release)
+        if: matrix.name == 'release'
         run: |
           ${{ github.workspace }}/build/test/krado-test \
             --gtest_output=xml:${{ github.workspace }}/build/gtest-results.xml
+
+      - name: Run unit tests (Debug w/valgrind)
+        if: matrix.name == 'valgrind'
+        run: |
+          valgrind \
+            --leak-check=full \
+            --show-leak-kinds=all \
+            --track-origins=yes \
+            --error-exitcode=1 \
+            --suppressions=${{ github.workspace }}/test/assets/valgrind/unit_tests.supp \
+            ${{ github.workspace }}/build/test/krado-test \
+              --gtest_output=xml:${{ github.workspace }}/build/gtest-results.xml
 
       - name: Test summary
         uses: test-summary/action@v2
