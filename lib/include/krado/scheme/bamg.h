@@ -13,7 +13,7 @@ class SchemeBAMG : public Scheme, public Scheme2D {
 public:
     struct Options {
         /// Maximum area
-        double max_area;
+        double max_area = 1.;
     };
 
 public:
