@@ -11,7 +11,24 @@
 
 namespace krado {
 
-InscribedPolygon::InscribedPolygon(const TopoDS_Wire & wire) : Polygon(wire) {}
+InscribedPolygon::InscribedPolygon(const TopoDS_Wire & wire, double radius, int n_sides) :
+    Polygon(wire),
+    radius_(radius),
+    n_sides_(n_sides)
+{
+}
+
+double
+InscribedPolygon::radius() const
+{
+    return this->radius_;
+}
+
+int
+InscribedPolygon::num_sides() const
+{
+    return this->n_sides_;
+}
 
 InscribedPolygon
 InscribedPolygon::create(const Axis2 & ax2, double radius, int n_sides)
@@ -20,9 +37,7 @@ InscribedPolygon::create(const Axis2 & ax2, double radius, int n_sides)
         throw Exception("CircumscribedPolygon needs at least 3 sides");
 
     auto points = build_points(ax2, radius * ax2.x_direction(), n_sides);
-    InscribedPolygon polygon(build_polygon(points, true));
-    polygon.n_sides_ = n_sides;
-    polygon.radius_ = radius;
+    InscribedPolygon polygon(build_polygon(points, true), radius, n_sides);
     return polygon;
 }
 
@@ -35,9 +50,7 @@ InscribedPolygon::create(const Axis2 & ax2, Point pt1, int n_sides)
     auto vec = pt1 - ax2.location();
     auto radius = vec.magnitude();
     auto points = build_points(ax2, vec, n_sides);
-    InscribedPolygon polygon(build_polygon(points, true));
-    polygon.n_sides_ = n_sides;
-    polygon.radius_ = radius;
+    InscribedPolygon polygon(build_polygon(points, true), radius, n_sides);
     return polygon;
 }
 

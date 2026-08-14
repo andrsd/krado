@@ -15,7 +15,12 @@ class Vector;
 /// constructed such that all of its vertices lie on the circle's circumference.
 class InscribedPolygon : public Polygon {
 private:
-    InscribedPolygon(const TopoDS_Wire & wire);
+    InscribedPolygon(const TopoDS_Wire & wire, double radius, int n_sides);
+
+public:
+    [[nodiscard]] double radius() const;
+
+    [[nodiscard]] int num_sides() const;
 
 private:
     /// Radius of the circle
