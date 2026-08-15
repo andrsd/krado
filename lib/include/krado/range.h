@@ -6,14 +6,16 @@
 #include "krado/types.h"
 #include <iterator>
 #include <ostream>
+#include <concepts>
 
 namespace krado {
 
-class Range {
+template <typename T>
+class TRange {
 public:
     struct Iterator {
         using iterator_category = std::forward_iterator_tag;
-        using value_type = Index;
+        using value_type = T;
         using difference_type = std::ptrdiff_t;
         using pointer = const value_type *;
 
@@ -62,10 +64,10 @@ public:
         };
 
     private:
-        Index idx_ = 0;
+        T idx_ = T(0);
     };
 
-    Range(Index start, Index end) : start_idx_(start), end_idx_(end) {}
+    TRange(T start, T end) : start_idx_(start), end_idx_(end) {}
 
     [[nodiscard]] Iterator
     begin() const
@@ -79,64 +81,72 @@ public:
         return Iterator(this->end_idx_);
     }
 
-    [[nodiscard]] Index
+    [[nodiscard]] T
     first() const
     {
         return this->start_idx_;
     }
 
-    [[nodiscard]] Index
+    [[nodiscard]] T
     last() const
     {
         return this->end_idx_;
     }
 
     /// Get the number of indices in the range
-    [[nodiscard]] Index
+    [[nodiscard]] T
     size() const
     {
         return this->end_idx_ - this->start_idx_;
     }
 
     void
-    expand(Index v)
+    expand(T v)
     {
         this->start_idx_ = std::min(this->start_idx_, v);
         this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
     [[nodiscard]] bool
-    contains(Index idx) const
+    contains(T idx) const
     {
         return (this->start_idx_ <= idx) and (idx < this->end_idx_);
     }
 
 private:
-    Index start_idx_;
-    Index end_idx_;
+    T start_idx_;
+    T end_idx_;
 };
 
+template <typename T>
 inline bool
-operator==(const Range & a, const Range & b)
+operator==(const TRange<T> & a, const TRange<T> & b)
 {
     return (a.first() == b.first()) && (a.last() == b.last());
 }
+
+class Range : public TRange<Index> {
+public:
+    Range(Index start, Index end) : krado::TRange<Index>(start, end) {}
+};
 
 /// Create a range from `start` to `end`
 ///
 /// @param start First element
 /// @param end Last elements (excluded)
-inline Range
-make_range(Index start, Index end)
+template <typename T, typename U>
+inline TRange<T>
+make_range(T start, U end)
 {
-    return { start, end };
+    return { static_cast<T>(start), static_cast<T>(end) };
 }
 
 /// Create a range from 0 to `end`
 ///
 /// @param end Last elements (excluded)
-inline Range
-make_range(Index end)
+template <typename T>
+inline TRange<T>
+make_range(T end)
 {
     return { 0, end };
 }
@@ -147,5 +157,12 @@ inline std::ostream &
 operator<<(std::ostream & stream, const krado::Range & el)
 {
     stream << "[" << el.first() << ", " << el.last() << "]";
+    return stream;
+}
+
+inline std::ostream &
+operator<<(std::ostream & stream, const krado::TRange<krado::HasseIndex> & el)
+{
+    stream << "[" << el.first().value() << ", " << el.last().value() << "]";
     return stream;
 }

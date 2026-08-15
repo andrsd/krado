@@ -313,7 +313,8 @@ TEST(MeshTest, boundary_edges)
     mesh.set_up();
 
     auto bnd_edges = mesh.boundary_edges();
-    EXPECT_THAT(bnd_edges, UnorderedElementsAre(6, 8, 9, 10));
+    EXPECT_THAT(bnd_edges,
+                UnorderedElementsAre(HasseIndex(6), HasseIndex(8), HasseIndex(9), HasseIndex(10)));
 }
 
 TEST(MeshTest, boundary_faces)
@@ -338,7 +339,13 @@ TEST(MeshTest, boundary_faces)
     mesh.set_up();
 
     auto bnd_faces = mesh.boundary_faces();
-    EXPECT_THAT(bnd_faces, UnorderedElementsAre(9, 10, 11, 12, 13, 14));
+    EXPECT_THAT(bnd_faces,
+                UnorderedElementsAre(HasseIndex(9),
+                                     HasseIndex(10),
+                                     HasseIndex(11),
+                                     HasseIndex(12),
+                                     HasseIndex(13),
+                                     HasseIndex(14)));
 }
 
 TEST(MeshTest, centroid_2d)
@@ -359,13 +366,13 @@ TEST(MeshTest, centroid_2d)
     Mesh mesh(pts, elems);
     mesh.set_up();
 
-    EXPECT_EQ(mesh.compute_centroid(0), Point(1. / 3., 1. / 3., 0));
-    EXPECT_EQ(mesh.compute_centroid(1), Point(2. / 3., 2. / 3., 0));
-    EXPECT_EQ(mesh.compute_centroid(6), Point(0.5, 0., 0));
-    EXPECT_EQ(mesh.compute_centroid(7), Point(0.5, 0.5, 0));
-    EXPECT_EQ(mesh.compute_centroid(8), Point(0., 0.5, 0));
-    EXPECT_EQ(mesh.compute_centroid(9), Point(1., 0.5, 0));
-    EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(0)), Point(1. / 3., 1. / 3., 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(1)), Point(2. / 3., 2. / 3., 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(6)), Point(0.5, 0., 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(7)), Point(0.5, 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(8)), Point(0., 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(9)), Point(1., 0.5, 0));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(10)), Point(0.5, 1., 0));
 }
 
 TEST(MeshTest, centroid_3d)
@@ -389,13 +396,13 @@ TEST(MeshTest, centroid_3d)
     Mesh mesh(pts, elems);
     mesh.set_up();
 
-    EXPECT_EQ(mesh.compute_centroid(0), Point(0.5, 0.5, 0.5));
-    EXPECT_EQ(mesh.compute_centroid(9), Point(0.5, 0., 0.5));
-    EXPECT_EQ(mesh.compute_centroid(10), Point(0.5, 1., 0.5));
-    EXPECT_EQ(mesh.compute_centroid(11), Point(0., 0.5, 0.5));
-    EXPECT_EQ(mesh.compute_centroid(12), Point(1., 0.5, 0.5));
-    EXPECT_EQ(mesh.compute_centroid(13), Point(0.5, 0.5, 0.));
-    EXPECT_EQ(mesh.compute_centroid(14), Point(0.5, 0.5, 1.));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(0)), Point(0.5, 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(9)), Point(0.5, 0., 0.5));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(10)), Point(0.5, 1., 0.5));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(11)), Point(0., 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(12)), Point(1., 0.5, 0.5));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(13)), Point(0.5, 0.5, 0.));
+    EXPECT_EQ(mesh.compute_centroid(HasseIndex(14)), Point(0.5, 0.5, 1.));
 }
 
 TEST(MeshTest, outward_normal_2d)
@@ -416,10 +423,10 @@ TEST(MeshTest, outward_normal_2d)
     Mesh mesh(pts, elems);
     mesh.set_up();
 
-    EXPECT_EQ(mesh.outward_normal(6), Vector(0, -1, 0));
-    EXPECT_EQ(mesh.outward_normal(9), Vector(1, 0, 0));
-    EXPECT_EQ(mesh.outward_normal(10), Vector(0, 1, 0));
-    EXPECT_EQ(mesh.outward_normal(8), Vector(-1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(6)), Vector(0, -1, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(9)), Vector(1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(10)), Vector(0, 1, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(8)), Vector(-1, 0, 0));
 }
 
 TEST(MeshTest, outward_normal_3d)
@@ -443,12 +450,12 @@ TEST(MeshTest, outward_normal_3d)
     Mesh mesh(pts, elems);
     mesh.set_up();
 
-    EXPECT_EQ(mesh.outward_normal(9), Vector(0, -1, 0));
-    EXPECT_EQ(mesh.outward_normal(10), Vector(0, 1, 0));
-    EXPECT_EQ(mesh.outward_normal(11), Vector(-1, 0, 0));
-    EXPECT_EQ(mesh.outward_normal(12), Vector(1, 0, 0));
-    EXPECT_EQ(mesh.outward_normal(13), Vector(0, 0, -1));
-    EXPECT_EQ(mesh.outward_normal(14), Vector(0, 0, 1));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(9)), Vector(0, -1, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(10)), Vector(0, 1, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(11)), Vector(-1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(12)), Vector(1, 0, 0));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(13)), Vector(0, 0, -1));
+    EXPECT_EQ(mesh.outward_normal(HasseIndex(14)), Vector(0, 0, 1));
 }
 
 TEST(MeshTest, remove_side_sets)

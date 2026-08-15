@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <functional>
 #include <span>
 #include "fmt/core.h"
 
@@ -83,4 +84,124 @@ enum class QuadSplitMode : u8 {
     SPLIT4
 };
 
+class HasseKey {
+public:
+    explicit constexpr HasseKey(u64 val) : value_(val) {}
+
+    [[nodiscard]] constexpr u64
+    value() const
+    {
+        return this->value_;
+    }
+
+    HasseKey
+    operator++(int)
+    {
+        auto tmp = *this;
+        ++(this->value_);
+        return tmp;
+    }
+
+    HasseKey &
+    operator+=(HasseKey other)
+    {
+        this->value_ += other.value_;
+        return *this;
+    }
+
+    HasseKey &
+    operator+=(u64 other)
+    {
+        this->value_ += other;
+        return *this;
+    }
+
+    auto operator<=>(const HasseKey &) const = default;
+
+private:
+    u64 value_;
+};
+
+class HasseIndex {
+public:
+    explicit constexpr HasseIndex() : value_(0) {}
+    explicit constexpr HasseIndex(u64 val) : value_(val) {}
+    explicit constexpr HasseIndex(HasseKey val) : value_(val.value()) {}
+
+    [[nodiscard]] constexpr u64
+    value() const
+    {
+        return this->value_;
+    }
+
+    HasseIndex
+    operator+(int other) const
+    {
+        return HasseIndex(this->value_ + other);
+    }
+
+    HasseIndex
+    operator-(int other) const
+    {
+        return HasseIndex(this->value_ - other);
+    }
+
+    HasseIndex
+    operator-() const
+    {
+        return static_cast<HasseIndex>(-this->value_);
+    }
+
+    constexpr bool
+    operator<(HasseIndex other) const
+    {
+        return this->value_ < other.value_;
+    }
+
+    constexpr bool
+    operator<=(HasseIndex other) const
+    {
+        return this->value_ <= other.value_;
+    }
+
+    constexpr bool
+    operator==(HasseIndex other) const
+    {
+        return this->value_ == other.value_;
+    }
+
+    constexpr bool
+    operator!=(HasseIndex other) const
+    {
+        return this->value_ != other.value_;
+    }
+
+    HasseIndex
+    operator++()
+    {
+        this->value_++;
+        return *this;
+    }
+
+    HasseIndex
+    operator++(int)
+    {
+        auto tmp = *this;
+        ++(this->value_);
+        return tmp;
+    }
+
+private:
+    u32 value_;
+};
+
 } // namespace krado
+
+template <>
+struct std::hash<krado::HasseKey> {
+    std::size_t
+    operator()(const krado::HasseKey & id) const noexcept
+    {
+        return std::hash<int> {}(id.value());
+    }
+};

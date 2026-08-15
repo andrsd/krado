@@ -25,17 +25,6 @@ TEST(UtilsTest, sub_connect)
     EXPECT_THAT(utils::sub_connect(connect, idxs), testing::ElementsAreArray({ 20, 40, 60 }));
 }
 
-TEST(UtilsTest, key)
-{
-    std::vector<Index> tri1 = { 1, 2, 3 };
-    auto key1 = utils::key(tri1);
-
-    std::vector<Index> tri2 = { 2, 1, 3 };
-    auto key2 = utils::key(tri2);
-
-    EXPECT_EQ(key1, key2);
-}
-
 TEST(UtilsTest, to_str)
 {
     EXPECT_EQ(utils::to_str(ElementType::POINT), "POINT");
@@ -112,7 +101,7 @@ TEST(UtilsTest, shift_span)
 
 TEST(UtilsTest, shift_set)
 {
-    std::set<Index> idxs = { 10, 15, 11 };
+    std::set<HasseIndex> idxs = { HasseIndex(10), HasseIndex(15), HasseIndex(11) };
     auto shifted = shift(idxs, -10);
     EXPECT_THAT(shifted, testing::UnorderedElementsAreArray({ 0, 1, 5 }));
 }

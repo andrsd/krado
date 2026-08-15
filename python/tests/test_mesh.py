@@ -163,9 +163,9 @@ def test_mesh_span_wrappers():
     assert node_set_20 == [0, 2]
 
     # support() and cone()
-    support_0 = mesh.support(0)
+    support_0 = mesh.support(krado.HasseIndex(0))
     assert isinstance(support_0, list)
-    cone_0 = mesh.cone(0)
+    cone_0 = mesh.cone(krado.HasseIndex(0))
     assert isinstance(cone_0, list)
 
 
