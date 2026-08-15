@@ -291,34 +291,6 @@ join(const char * con, const RANGE & vals)
     return oss.str();
 }
 
-/// Create a counter-clock-wise triangle
-///
-/// @param gsurf Geomterical surface
-/// @param a Vertex A
-/// @param b Vertex B
-/// @param c Vertex C
-/// @return Counter-clockwise triangle
-///
-/// NOTE: this should end up in some kind of triangularization module
-std::array<Ptr<MeshVertexAbstract>, 3> ccw_triangle(const GeomSurface & gsurf,
-                                                    Ptr<MeshVertexAbstract> a,
-                                                    Ptr<MeshVertexAbstract> b,
-                                                    Ptr<MeshVertexAbstract> c);
-
-/// Create a counter-clock-wise quadrangle
-///
-/// @param gsurf Geomterical surface
-/// @param a Vertex A
-/// @param b Vertex B
-/// @param c Vertex C
-/// @param d Vertex D
-/// @return Counter-clockwise quadrangle
-std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
-                                                      Ptr<MeshVertexAbstract> a,
-                                                      Ptr<MeshVertexAbstract> b,
-                                                      Ptr<MeshVertexAbstract> c,
-                                                      Ptr<MeshVertexAbstract> d);
-
 /// Permutation
 template <typename T, int N>
 std::array<T, N>

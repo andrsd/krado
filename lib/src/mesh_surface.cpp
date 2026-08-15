@@ -7,13 +7,11 @@
 #include "krado/mesh_element.h"
 #include "krado/mesh_vertex.h"
 #include "krado/mesh_curve.h"
-#include "krado/mesh_curve_vertex.h"
 #include "krado/mesh_surface_vertex.h"
-#include "krado/consts.h"
+#include "krado/predicates.h"
 #include "krado/utils.h"
 #include <array>
 #include <cassert>
-#include <set>
 
 namespace krado {
 
@@ -198,6 +196,47 @@ MeshSurface::scheme()
     if (this->scheme_ == nullptr)
         throw Exception("No scheme assigned on surface {}", id());
     return *this->scheme_.get();
+}
+
+//
+
+std::array<Ptr<MeshVertexAbstract>, 3>
+ccw_triangle(const GeomSurface & gsurf,
+             Ptr<MeshVertexAbstract> a,
+             Ptr<MeshVertexAbstract> b,
+             Ptr<MeshVertexAbstract> c)
+{
+    auto uv_a = gsurf.parameter_from_point(a->point());
+    auto uv_b = gsurf.parameter_from_point(b->point());
+    auto uv_c = gsurf.parameter_from_point(c->point());
+
+    auto orientation = orient2d(uv_a, uv_b, uv_c);
+    if (orientation > 0)
+        return std::array<Ptr<MeshVertexAbstract>, 3> { a, b, c };
+    else if (orientation < 0)
+        return std::array<Ptr<MeshVertexAbstract>, 3> { a, c, b };
+    else
+        throw Exception("Degenerate triangle detected. Points are collinear.");
+}
+
+std::array<Ptr<MeshVertexAbstract>, 4>
+ccw_quadrangle(const GeomSurface & gsurf,
+               Ptr<MeshVertexAbstract> a,
+               Ptr<MeshVertexAbstract> b,
+               Ptr<MeshVertexAbstract> c,
+               Ptr<MeshVertexAbstract> d)
+{
+    auto uv_a = gsurf.parameter_from_point(a->point());
+    auto uv_b = gsurf.parameter_from_point(b->point());
+    auto uv_c = gsurf.parameter_from_point(c->point());
+
+    auto orientation = orient2d(uv_a, uv_b, uv_c);
+    if (orientation > 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, b, c, d };
+    else if (orientation < 0)
+        return std::array<Ptr<MeshVertexAbstract>, 4> { a, d, c, b };
+    else
+        throw Exception("Degenerate quadrangle detected.");
 }
 
 } // namespace krado
