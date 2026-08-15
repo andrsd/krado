@@ -64,9 +64,9 @@ struct SideEntry {
     /// Element ID
     Index elem;
     /// Local side number
-    std::size_t side;
+    u8 side;
 
-    SideEntry(Index elem, std::size_t side) : elem(elem), side(side) {}
+    SideEntry(Index elem, u8 side) : elem(elem), side(side) {}
 };
 
 /// Equality operator for side set entry

@@ -93,7 +93,7 @@ edge_connect(Span<const Index> element_connect, const std::array<u8, 2> & idxs)
 /// @param elem Element
 /// @param side Local side number
 /// @return Vertex indices for a given side
-[[nodiscard]] std::vector<Index> get_face_connect(const Element & elem, int side);
+[[nodiscard]] std::vector<Index> get_face_connect(const Element & elem, u8 side);
 
 /// Create a key from the supplied index. Use this to construct keys for cells
 ///
