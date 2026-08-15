@@ -4,6 +4,51 @@
 
 using namespace krado;
 
+TEST(UtilsTest, to_upper)
+{
+    EXPECT_EQ(utils::to_upper("asdf"), "ASDF");
+    EXPECT_EQ(utils::to_upper("ASDF"), "ASDF");
+    EXPECT_EQ(utils::to_upper("AsDf"), "ASDF");
+}
+
+TEST(UtilsTest, to_lower)
+{
+    EXPECT_EQ(utils::to_lower("asdf"), "asdf");
+    EXPECT_EQ(utils::to_lower("ASDF"), "asdf");
+    EXPECT_EQ(utils::to_lower("AsDf"), "asdf");
+}
+
+TEST(UtilsTest, sub_connect)
+{
+    std::vector<Index> connect = { 10, 20, 30, 40, 50, 60 };
+    std::vector<u8> idxs = { 1, 3, 5 };
+    EXPECT_THAT(utils::sub_connect(connect, idxs), testing::ElementsAreArray({ 20, 40, 60 }));
+}
+
+TEST(UtilsTest, key)
+{
+    std::vector<Index> tri1 = { 1, 2, 3 };
+    auto key1 = utils::key(tri1);
+
+    std::vector<Index> tri2 = { 2, 1, 3 };
+    auto key2 = utils::key(tri2);
+
+    EXPECT_EQ(key1, key2);
+}
+
+TEST(UtilsTest, to_str)
+{
+    EXPECT_EQ(utils::to_str(ElementType::POINT), "POINT");
+    EXPECT_EQ(utils::to_str(ElementType::LINE2), "LINE2");
+    EXPECT_EQ(utils::to_str(ElementType::TRI3), "TRI3");
+    EXPECT_EQ(utils::to_str(ElementType::QUAD4), "QUAD4");
+    EXPECT_EQ(utils::to_str(ElementType::TETRA4), "TETRA4");
+    EXPECT_EQ(utils::to_str(ElementType::PYRAMID5), "PYRAMID5");
+    EXPECT_EQ(utils::to_str(ElementType::PRISM6), "PRISM6");
+    EXPECT_EQ(utils::to_str(ElementType::HEX8), "HEX8");
+    EXPECT_EQ(utils::to_str(ElementType::INVALID), "UNKNOWN");
+}
+
 TEST(UtilsTest, angle)
 {
     Point p1(0, 0, 0);
@@ -13,11 +58,18 @@ TEST(UtilsTest, angle)
     EXPECT_DOUBLE_EQ(alpha, M_PI / 2.);
 }
 
-TEST(UtilsTest, distance)
+TEST(UtilsTest, distance_pt)
 {
     Point a(1., 2., 3.);
     Point b(2., -1., 4.);
     EXPECT_NEAR(utils::distance(a, b), std::sqrt(11), 1e-15);
+}
+
+TEST(UtilsTest, distance_uv)
+{
+    UVParam a(1., 2.);
+    UVParam b(2., -1.);
+    EXPECT_NEAR(utils::distance(a, b), std::sqrt(10), 1e-15);
 }
 
 TEST(UtilsTest, human_number)

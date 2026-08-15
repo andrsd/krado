@@ -221,6 +221,11 @@ std::string to_str(T val);
 /// @return The distance between the two points
 [[nodiscard]] double distance(Point p1, Point p2);
 
+/// Compute the distance between two points in 2D parametrical space
+///
+/// @param p1 The first point
+/// @param p2 The second point
+/// @return The distance between the two points
 [[nodiscard]] double distance(UVParam p1, UVParam p2);
 
 /// Print number in human readable format
