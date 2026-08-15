@@ -26,7 +26,7 @@ SchemeEqual::params_to_str()
 void
 SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 {
-    auto & geom_curve = curve->geom_curve();
+    const auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;
 
     Integral igrl;

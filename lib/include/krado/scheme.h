@@ -12,7 +12,7 @@ public:
     Scheme(const std::string & name) : name_(name) {}
     virtual ~Scheme() = default;
 
-    const std::string
+    [[nodiscard]] const std::string
     name() const
     {
         return this->name_;

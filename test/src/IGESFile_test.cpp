@@ -12,7 +12,7 @@ TEST(IGESFileTest, read_nonexistent_file)
 {
     fs::path file = fs::path(KRADO_UNIT_TESTS_ROOT) / "no-such-file.iges";
     IGESFile step(file.string());
-    EXPECT_THROW({ step.read(); }, Exception);
+    EXPECT_THROW({ auto res = step.read(); }, Exception);
 }
 
 TEST(IGESFileTest, read)

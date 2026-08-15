@@ -28,11 +28,11 @@ class Flags {
 public:
     static_assert(std::is_enum<ENUM>::value, "Flags is only usable on enumeration types.");
 
-    typedef ENUM enum_type;
+    using enum_type = ENUM;
 
     constexpr inline Flags() noexcept : mask_(0) {}
 
-    constexpr inline Flags(ENUM flag) noexcept : mask_((unsigned int) (flag)) {}
+    constexpr inline Flags(ENUM flag) noexcept : mask_(static_cast<unsigned int>(flag)) {}
 
     constexpr inline Flags(unsigned int flags) noexcept : mask_(flags) {}
 
@@ -44,7 +44,7 @@ public:
     /// Test if there are set flags
     ///
     /// @return `true` if there are any flags set, `false` otherwise
-    constexpr bool
+    [[nodiscard]] constexpr bool
     has_flags() const noexcept
     {
         return this->mask_ != 0;
@@ -83,24 +83,22 @@ public:
         return (this->mask_ & flag);
     }
 
-    unsigned int
+    [[nodiscard]] unsigned int
     as_uint() const
     {
         return this->mask_;
     }
 
-    operator int() const
-    {
-        return static_cast<int>(this->mask_);
-    }
+    operator int() const { return static_cast<int>(this->mask_); }
 
 private:
     constexpr static inline unsigned int
     initializer_list_helper(typename std::initializer_list<ENUM>::const_iterator it,
                             typename std::initializer_list<ENUM>::const_iterator end) noexcept
     {
-        return (it == end ? (unsigned int) 0
-                          : ((unsigned int) (*it) | initializer_list_helper(it + 1, end)));
+        return (it == end
+                    ? static_cast<unsigned int>(0)
+                    : (static_cast<unsigned int>(*it) | initializer_list_helper(it + 1, end)));
     }
 
     /// Bit mask with flags

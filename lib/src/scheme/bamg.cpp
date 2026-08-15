@@ -68,27 +68,27 @@ public:
         return this->Th->nbt;
     }
 
-    bool
+    [[nodiscard]] bool
     is_triangle_active(i64 idx) const
     {
         return this->reft[idx] >= 0;
     }
 
-    const bamg::Triangle &
+    [[nodiscard]] const bamg::Triangle &
     triangle(i64 idx) const
     {
         assert(this->Th != nullptr);
         return this->Th->triangles[idx];
     }
 
-    i64
+    [[nodiscard]] i64
     num_of_edges() const
     {
         assert(this->Th != nullptr);
         return this->Th->nbe;
     }
 
-    const bamg::Edge &
+    [[nodiscard]] const bamg::Edge &
     edge(i64 idx) const
     {
         assert(this->Th != nullptr);
@@ -164,7 +164,7 @@ private:
             auto & curve = this->surface->curves()[curve_idx];
             assert(!curve.is_null());
             if (curve->is_meshed()) {
-                for (auto & segs : curve->segments()) {
+                for (const auto & segs : curve->segments()) {
                     std::array<i64, 2> edge = { this->local_vtx_id[segs.vertex(0)],
                                                 this->local_vtx_id[segs.vertex(1)] };
                     add_edge(eidx, edge, curve_idx, true);
@@ -199,7 +199,7 @@ private:
         this->Gh.edges[edge_idx].tg[0] = zero2;
         this->Gh.edges[edge_idx].tg[1] = zero2;
         this->Gh.edges[edge_idx].SensAdj[0] = this->Gh.edges[edge_idx].SensAdj[1] = -1;
-        this->Gh.edges[edge_idx].Adj[0] = this->Gh.edges[edge_idx].Adj[1] = 0;
+        this->Gh.edges[edge_idx].Adj[0] = this->Gh.edges[edge_idx].Adj[1] = nullptr;
         this->Gh.edges[edge_idx].flag = 0;
 
         this->Gh.vertices[i1].color++;
@@ -220,8 +220,8 @@ private:
     {
         for (i64 i = 0; i < this->Gh.nbv; i++)
             if (this->Gh.vertices[i].color > 0)
-                this->Gh.vertices[i].m =
-                    bamg::Metric(this->len[i] / static_cast<bamg::Real4>(this->Gh.vertices[i].color));
+                this->Gh.vertices[i].m = bamg::Metric(
+                    this->len[i] / static_cast<bamg::Real4>(this->Gh.vertices[i].color));
             else
                 this->Gh.vertices[i].m = bamg::Metric(this->Hmin);
     }
@@ -257,7 +257,7 @@ SchemeBAMG::mesh_surface(Ptr<MeshSurface> surface)
 
     SurfaceIndexMapper im(surface);
     for (i64 i = 0; i < bamg_session.num_of_edges(); i++) {
-        auto & edge = bamg_session.edge(i);
+        const auto & edge = bamg_session.edge(i);
         auto crv_idx = edge.ref;
         auto curve = surface->curves()[crv_idx];
         assert(!curve.is_null());

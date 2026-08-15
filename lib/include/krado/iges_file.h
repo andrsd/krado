@@ -27,7 +27,7 @@ public:
     /// Read the file
     ///
     /// @return Shapes that were contained in the IGES file
-    std::vector<GeomShape> read() const;
+    [[nodiscard]] std::vector<GeomShape> read() const;
 };
 
 } // namespace krado

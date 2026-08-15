@@ -196,21 +196,21 @@ public:
     }
 
     // Get the pointer
-    T *
+    [[nodiscard]] T *
     get() const
     {
         return this->ctrl_ ? this->ctrl_->ptr : nullptr;
     }
 
     // Get the reference count
-    int
+    [[nodiscard]] int
     ref_count() const
     {
         return this->ctrl_ ? this->ctrl_->strong : 0;
     }
 
     // Is this a null pointer?
-    bool
+    [[nodiscard]] bool
     is_null() const
     {
         return this->ctrl_ == nullptr;

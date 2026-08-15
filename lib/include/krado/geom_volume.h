@@ -17,7 +17,7 @@ class GeomVolume : public GeomShape {
 public:
     explicit GeomVolume(const TopoDS_Solid & solid);
 
-    int dim() const final;
+    [[nodiscard]] int dim() const final;
 
     /// Get surfaces bounding this volume
     ///
@@ -28,7 +28,7 @@ public:
     ///
     /// @param u Parameter value
     /// @return Mesh size at parameter
-    double mesh_size_at_param(Point pos) const;
+    [[nodiscard]] double mesh_size_at_param(Point pos) const;
 
     operator const TopoDS_Solid &() const;
 

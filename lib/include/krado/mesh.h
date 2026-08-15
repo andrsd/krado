@@ -45,12 +45,12 @@ public:
     /// Get number of points
     ///
     /// @return Number of points
-    std::size_t num_points() const;
+    [[nodiscard]] std::size_t num_points() const;
 
     /// Get number of elements
     ///
     /// @return Number of elements
-    std::size_t num_elements() const;
+    [[nodiscard]] std::size_t num_elements() const;
 
     /// Get mesh points
     ///
@@ -134,7 +134,7 @@ public:
     ///
     /// @param axis Plane to use for mirroring
     /// @return Mirrored mesh
-    Ptr<Mesh> mirrored(const Axis2 & axis) const;
+    [[nodiscard]] Ptr<Mesh> mirrored(const Axis2 & axis) const;
 
     /// Add another mesh to this mesh
     ///
@@ -164,7 +164,7 @@ public:
     ///
     /// @param cell_set_id Cell set ID (marker)
     /// @return Cell set name
-    Optional<std::string> cell_set_name(Marker cell_set_id) const;
+    [[nodiscard]] Optional<std::string> cell_set_name(Marker cell_set_id) const;
 
     /// Get cell set IDs
     [[nodiscard]] std::vector<Marker> cell_set_ids() const;
@@ -198,7 +198,7 @@ public:
     ///
     /// @param side_set_id Side set ID (marker)
     /// @return Side set name
-    Optional<std::string> side_set_name(Marker side_set_id) const;
+    [[nodiscard]] Optional<std::string> side_set_name(Marker side_set_id) const;
 
     /// Get side set IDs
     [[nodiscard]] std::vector<Marker> side_set_ids() const;
@@ -232,7 +232,7 @@ public:
     ///
     /// @param id Node set ID
     /// @return Node set name
-    Optional<std::string> node_set_name(Marker id) const;
+    [[nodiscard]] Optional<std::string> node_set_name(Marker id) const;
 
     /// Get node set IDs
     ///

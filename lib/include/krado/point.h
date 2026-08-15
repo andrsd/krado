@@ -33,7 +33,7 @@ public:
     /// @param other Other point
     /// @param tol Tolerance
     /// @return `true` if points are equal within tolerance
-    bool is_equal(const Point & other, double tol = 1e-15) const;
+    [[nodiscard]] bool is_equal(const Point & other, double tol = 1e-15) const;
 
     [[nodiscard]] double operator()(int idx) const;
     double & operator()(int idx);
@@ -70,21 +70,21 @@ public:
     void mirror(const Axis1 & ax1);
     void mirror(const Axis2 & ax2);
 
-    Point mirrored(const Point & pt) const;
-    Point mirrored(const Axis1 & ax1) const;
-    Point mirrored(const Axis2 & ax2) const;
+    [[nodiscard]] Point mirrored(const Point & pt) const;
+    [[nodiscard]] Point mirrored(const Axis1 & ax1) const;
+    [[nodiscard]] Point mirrored(const Axis2 & ax2) const;
 
     void rotate(const Axis1 & ax1, double angle);
-    Point rotated(const Axis1 & ax1, double angle) const;
+    [[nodiscard]] Point rotated(const Axis1 & ax1, double angle) const;
 
     void scale(const Point & pt, double s);
-    Point scaled(const Point & pt, double s) const;
+    [[nodiscard]] Point scaled(const Point & pt, double s) const;
 
     void translate(const Vector & vec);
     void translate(const Point & p1, const Point & p2);
 
-    Point translated(const Vector & vec) const;
-    Point translated(const Point & p1, const Point & p2) const;
+    [[nodiscard]] Point translated(const Vector & vec) const;
+    [[nodiscard]] Point translated(const Point & p1, const Point & p2) const;
 
     operator gp_Pnt() const;
 

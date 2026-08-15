@@ -15,7 +15,7 @@ public:
     Pattern(const std::vector<Point> & points);
 
     ///
-    const std::vector<Point> & points() const;
+    [[nodiscard]] const std::vector<Point> & points() const;
 
 protected:
     void set_points(std::vector<Point> && points);

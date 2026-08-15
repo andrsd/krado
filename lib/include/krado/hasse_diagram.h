@@ -24,13 +24,13 @@ public:
     HasseDiagram() = default;
     HasseDiagram(const Mesh & mesh);
 
-    Range vertices() const;
-    Range edges() const;
-    Range faces() const;
-    Range cells() const;
+    [[nodiscard]] Range vertices() const;
+    [[nodiscard]] Range edges() const;
+    [[nodiscard]] Range faces() const;
+    [[nodiscard]] Range cells() const;
 
-    Span<const Index> out_vertices(Index entity_id) const;
-    Span<const Index> in_vertices(Index entity_id) const;
+    [[nodiscard]] Span<const Index> out_vertices(Index entity_id) const;
+    [[nodiscard]] Span<const Index> in_vertices(Index entity_id) const;
 
     void print() const;
 

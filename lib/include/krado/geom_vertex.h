@@ -15,7 +15,7 @@ class GeomVertex : public GeomShape {
 public:
     explicit GeomVertex(const TopoDS_Vertex & vertex);
 
-    int dim() const final;
+    [[nodiscard]] int dim() const final;
 
     /// Is this a null vertex.  Infinite curves report null vertices as their bounding vertices.
     ///
@@ -34,7 +34,7 @@ public:
     /// Get the mesh size at the vertex.
     ///
     /// @return The mesh size at the vertex.
-    double mesh_size() const;
+    [[nodiscard]] double mesh_size() const;
 
     operator const TopoDS_Vertex &() const;
 
