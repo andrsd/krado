@@ -20,16 +20,6 @@ TEST(GeomShapeTest, clean)
     // TODO: actual check that clean happened
 }
 
-TEST(GeomShapeTest, heal)
-{
-    fs::path input_file = fs::path(KRADO_UNIT_TESTS_ROOT) / "assets" / "geo" / "line.step";
-    STEPFile file(input_file.string());
-    auto shapes = file.read();
-    auto shape = shapes[0];
-    shape.heal(1e-10);
-    // TODO: actual check that things were healed
-}
-
 TEST(GeomShapeTest, scale)
 {
     gp_Pnt pt(1, 2, 3);

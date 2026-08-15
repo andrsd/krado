@@ -36,12 +36,12 @@ public:
     /// @return The mesh size at the vertex.
     double mesh_size() const;
 
+    operator const TopoDS_Vertex &() const;
+
     bool operator<(const GeomVertex & other) const;
 
-    operator const TopoDS_Shape &() const;
-
 private:
-    TopoDS_Vertex vertex_;
+    /// Physical location of the point
     Point pt_;
     /// Mesh size at the vertex.
     double mesh_size_;

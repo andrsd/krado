@@ -6,18 +6,11 @@
 #include "krado/geom_model.h"
 #include "krado/consts.h"
 #include "TopoDS.hxx"
-#include "BRepGProp.hxx"
-#include "GProp_GProps.hxx"
 #include "TopExp_Explorer.hxx"
 
 namespace krado {
 
-GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(solid), solid_(solid)
-{
-    GProp_GProps props;
-    BRepGProp::VolumeProperties(this->solid_, props);
-    this->volume_ = props.Mass();
-}
+GeomVolume::GeomVolume(const TopoDS_Solid & solid) : GeomShape(solid) {}
 
 int
 GeomVolume::dim() const
@@ -25,18 +18,13 @@ GeomVolume::dim() const
     return 3;
 }
 
-double
-GeomVolume::volume() const
-{
-    return this->volume_;
-}
-
 std::vector<GeomSurface>
 GeomVolume::surfaces() const
 {
+    const auto & solid = TopoDS::Solid(this->shape_);
     std::vector<GeomSurface> surfs;
     TopExp_Explorer exp;
-    for (exp.Init(this->solid_, TopAbs_FACE); exp.More(); exp.Next()) {
+    for (exp.Init(solid, TopAbs_FACE); exp.More(); exp.Next()) {
         TopoDS_Face face = TopoDS::Face(exp.Current());
         auto gface = GeomSurface(face);
         surfs.emplace_back(gface);
@@ -50,9 +38,9 @@ GeomVolume::mesh_size_at_param(Point /*pos*/) const
     return MAX_LC;
 }
 
-GeomVolume::operator const TopoDS_Shape &() const
+GeomVolume::operator const TopoDS_Solid &() const
 {
-    return this->solid_;
+    return TopoDS::Solid(this->shape_);
 }
 
 GeomVolume

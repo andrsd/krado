@@ -8,7 +8,7 @@
 
 namespace krado {
 
-GeomShell::GeomShell(const TopoDS_Shell & shell) : GeomShape(shell), shell_(shell) {}
+GeomShell::GeomShell(const TopoDS_Shell & shell) : GeomShape(shell) {}
 
 int
 GeomShell::dim() const
@@ -19,9 +19,10 @@ GeomShell::dim() const
 std::vector<GeomSurface>
 GeomShell::surfaces() const
 {
+    const auto & shell = TopoDS::Shell(this->shape_);
     std::vector<GeomSurface> surfs;
     TopExp_Explorer exp;
-    for (exp.Init(this->shell_, TopAbs_FACE); exp.More(); exp.Next()) {
+    for (exp.Init(shell, TopAbs_FACE); exp.More(); exp.Next()) {
         TopoDS_Face face = TopoDS::Face(exp.Current());
         auto gface = GeomSurface(face);
         surfs.emplace_back(gface);
@@ -31,7 +32,7 @@ GeomShell::surfaces() const
 
 GeomShell::operator const TopoDS_Shell &() const
 {
-    return this->shell_;
+    return TopoDS::Shell(this->shape_);
 }
 
 } // namespace krado

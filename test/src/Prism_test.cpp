@@ -14,6 +14,5 @@ TEST(PrismTest, test)
     auto base = GeomSurface::create(plgn);
 
     auto prm = Prism::create(base, Vector(0, 0, 5));
-    auto vol = GeomVolume::create(prm);
-    EXPECT_NEAR(vol.volume(), 5., 1e-10);
+    EXPECT_NEAR(prm.volume(), 5., 1e-10);
 }

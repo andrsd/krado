@@ -24,9 +24,6 @@ public:
     [[nodiscard]] std::vector<GeomSurface> surfaces() const;
 
     operator const TopoDS_Shell &() const;
-
-private:
-    TopoDS_Shell shell_;
 };
 
 } // namespace krado

@@ -47,11 +47,6 @@ public:
     /// @return First derivative
     [[nodiscard]] std::tuple<Vector, Vector> d1(UVParam param) const;
 
-    /// Get area of the surface
-    ///
-    /// @return Area of the surface
-    [[nodiscard]] double area() const;
-
     /// Get range of the parameter
     ///
     /// @return Range as a tuple [lower, upper]
@@ -89,17 +84,12 @@ public:
     /// @return Mesh size at the parameter
     [[nodiscard]] double mesh_size_at_param(UVParam par) const;
 
-    operator const TopoDS_Shape &() const;
-
     operator const TopoDS_Face &() const;
 
 private:
     std::tuple<bool, UVParam> project(Point pt) const;
 
-    TopoDS_Face face_;
     Handle(Geom_Surface) surface_;
-    /// Surface area
-    double surf_area_;
     double umin_, umax_;
     double vmin_, vmax_;
     /// Mesh size for the edge.
