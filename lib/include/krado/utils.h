@@ -20,7 +20,6 @@ class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
-class Mesh;
 class GeomSurface;
 class MeshCurve;
 class Element;
@@ -319,14 +318,6 @@ std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
                                                       Ptr<MeshVertexAbstract> b,
                                                       Ptr<MeshVertexAbstract> c,
                                                       Ptr<MeshVertexAbstract> d);
-
-/// Create side set from Hasse indices
-///
-/// @param mesh Mesh
-/// @param indices
-/// @return Side set
-std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
-std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
 
 /// Permutation
 template <typename T, int N>
