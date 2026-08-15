@@ -4,19 +4,16 @@
 #include "krado/utils.h"
 #include "krado/point.h"
 #include "krado/types.h"
+#include "krado/element.h"
 #include "krado/exception.h"
 #include "krado/uv_param.h"
 #include "krado/vector.h"
 #include "krado/mesh_vertex_abstract.h"
-#include "krado/mesh.h"
 #include "boost/functional/hash.hpp"
 #include "krado/geom_surface.h"
 #include "krado/predicates.h"
-#include "krado/mesh_curve.h"
 #include "krado/geom_curve.h"
 #include "krado/mesh_vertex.h"
-#include "krado/mesh_curve_vertex.h"
-#include <cstdint>
 #include <chrono>
 
 namespace krado {
@@ -160,72 +157,4 @@ get_face_connect(const Element & elem, int side)
 }
 
 } // namespace utils
-
-std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<Index> & idxs)
-{
-    std::vector<SideEntry> sset;
-    sset.reserve(idxs.size());
-    for (const auto & f : idxs) {
-        auto support = mesh.support(f);
-        if (support.size() != 1)
-            throw Exception("Facet {} is not a boundary facet", f);
-
-        auto cell = support[0];
-        auto cell_connect = mesh.cone(cell);
-        auto lfi = utils::index_of(cell_connect, f);
-        if (lfi.has_value())
-            sset.emplace_back(cell, lfi.value());
-    }
-    return sset;
-}
-
-std::vector<SideEntry>
-create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs)
-{
-    if (mesh)
-        return create_side_set(*mesh, idxs);
-    else
-        throw Exception("Null pointer access");
-}
-
-std::array<Ptr<MeshVertexAbstract>, 3>
-ccw_triangle(const GeomSurface & gsurf,
-             Ptr<MeshVertexAbstract> a,
-             Ptr<MeshVertexAbstract> b,
-             Ptr<MeshVertexAbstract> c)
-{
-    auto uv_a = gsurf.parameter_from_point(a->point());
-    auto uv_b = gsurf.parameter_from_point(b->point());
-    auto uv_c = gsurf.parameter_from_point(c->point());
-
-    auto orientation = orient2d(uv_a, uv_b, uv_c);
-    if (orientation > 0)
-        return std::array<Ptr<MeshVertexAbstract>, 3> { a, b, c };
-    else if (orientation < 0)
-        return std::array<Ptr<MeshVertexAbstract>, 3> { a, c, b };
-    else
-        throw Exception("Degenerate triangle detected. Points are collinear.");
-}
-
-std::array<Ptr<MeshVertexAbstract>, 4>
-ccw_quadrangle(const GeomSurface & gsurf,
-               Ptr<MeshVertexAbstract> a,
-               Ptr<MeshVertexAbstract> b,
-               Ptr<MeshVertexAbstract> c,
-               Ptr<MeshVertexAbstract> d)
-{
-    auto uv_a = gsurf.parameter_from_point(a->point());
-    auto uv_b = gsurf.parameter_from_point(b->point());
-    auto uv_c = gsurf.parameter_from_point(c->point());
-
-    auto orientation = orient2d(uv_a, uv_b, uv_c);
-    if (orientation > 0)
-        return std::array<Ptr<MeshVertexAbstract>, 4> { a, b, c, d };
-    else if (orientation < 0)
-        return std::array<Ptr<MeshVertexAbstract>, 4> { a, d, c, b };
-    else
-        throw Exception("Degenerate quadrangle detected.");
-}
-
 } // namespace krado

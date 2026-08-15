@@ -5,15 +5,11 @@
 
 #include "krado/bounding_box_3d.h"
 #include "krado/element.h"
-#include "krado/exception.h"
 #include "krado/point.h"
 #include "krado/transform.h"
-#include "krado/range.h"
 #include "krado/hasse_diagram.h"
 #include "krado/types.h"
-#include "krado/utils.h"
 #include <map>
-#include <unordered_map>
 #include <vector>
 #include <set>
 
@@ -334,6 +330,14 @@ private:
     ///
     HasseDiagram hasse_;
 };
+
+/// Create side set from Hasse indices
+///
+/// @param mesh Mesh
+/// @param indices
+/// @return Side set
+std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
+std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
 
 /// Compute bounding box around the mesh
 ///

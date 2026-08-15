@@ -1079,6 +1079,34 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
         throw Exception("Element construction for your setup is not implemented yet");
 }
 
+std::vector<SideEntry>
+create_side_set(const Mesh & mesh, const std::vector<Index> & idxs)
+{
+    std::vector<SideEntry> sset;
+    sset.reserve(idxs.size());
+    for (const auto & f : idxs) {
+        auto support = mesh.support(f);
+        if (support.size() != 1)
+            throw Exception("Facet {} is not a boundary facet", f);
+
+        auto cell = support[0];
+        auto cell_connect = mesh.cone(cell);
+        auto lfi = utils::index_of(cell_connect, f);
+        if (lfi.has_value())
+            sset.emplace_back(cell, lfi.value());
+    }
+    return sset;
+}
+
+std::vector<SideEntry>
+create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs)
+{
+    if (mesh)
+        return create_side_set(*mesh, idxs);
+    else
+        throw Exception("Null pointer access");
+}
+
 Ptr<Mesh>
 build_mesh(const GeomModel & model)
 {

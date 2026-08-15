@@ -20,7 +20,6 @@ class Point;
 class UVParam;
 class MeshVertexAbstract;
 class Vector;
-class Mesh;
 class GeomSurface;
 class MeshCurve;
 class Element;
@@ -221,6 +220,11 @@ std::string to_str(T val);
 /// @return The distance between the two points
 [[nodiscard]] double distance(Point p1, Point p2);
 
+/// Compute the distance between two points in 2D parametrical space
+///
+/// @param p1 The first point
+/// @param p2 The second point
+/// @return The distance between the two points
 [[nodiscard]] double distance(UVParam p1, UVParam p2);
 
 /// Print number in human readable format
@@ -286,42 +290,6 @@ join(const char * con, const RANGE & vals)
     }
     return oss.str();
 }
-
-/// Create a counter-clock-wise triangle
-///
-/// @param gsurf Geomterical surface
-/// @param a Vertex A
-/// @param b Vertex B
-/// @param c Vertex C
-/// @return Counter-clockwise triangle
-///
-/// NOTE: this should end up in some kind of triangularization module
-std::array<Ptr<MeshVertexAbstract>, 3> ccw_triangle(const GeomSurface & gsurf,
-                                                    Ptr<MeshVertexAbstract> a,
-                                                    Ptr<MeshVertexAbstract> b,
-                                                    Ptr<MeshVertexAbstract> c);
-
-/// Create a counter-clock-wise quadrangle
-///
-/// @param gsurf Geomterical surface
-/// @param a Vertex A
-/// @param b Vertex B
-/// @param c Vertex C
-/// @param d Vertex D
-/// @return Counter-clockwise quadrangle
-std::array<Ptr<MeshVertexAbstract>, 4> ccw_quadrangle(const GeomSurface & gsurf,
-                                                      Ptr<MeshVertexAbstract> a,
-                                                      Ptr<MeshVertexAbstract> b,
-                                                      Ptr<MeshVertexAbstract> c,
-                                                      Ptr<MeshVertexAbstract> d);
-
-/// Create side set from Hasse indices
-///
-/// @param mesh Mesh
-/// @param indices
-/// @return Side set
-std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
-std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
 
 /// Permutation
 template <typename T, int N>

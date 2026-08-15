@@ -26,7 +26,7 @@
 {
     XSControl_Reader::ReadFile
     Memcheck:Leak
-    match-leak-kinds: definite
+    match-leak-kinds: definite,possible
     ...
     fun:_ZN16XSControl_Reader8ReadFileEPKc
     ...
