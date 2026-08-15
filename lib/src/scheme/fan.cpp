@@ -73,7 +73,7 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
         throw Exception("Fan scheme requires one circular curve and two lines on surface {}",
                         mesh_surface->id());
 
-    if (circular_edge->segments().size() == 0)
+    if (circular_edge->segments().empty())
         throw Exception("Circular edge must be meshed before surface meshing on surface {}",
                         mesh_surface->id());
 

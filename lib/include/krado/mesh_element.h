@@ -40,9 +40,9 @@ public:
     /// @return Vertex
     [[nodiscard]] Ptr<MeshVertexAbstract> vertex(int idx) const;
 
-    Span<const Ptr<MeshVertexAbstract>> vertices() const;
+    [[nodiscard]] Span<const Ptr<MeshVertexAbstract>> vertices() const;
 
-    MeshElement get_edge(int i) const;
+    [[nodiscard]] MeshElement get_edge(int i) const;
 
     /// Swap two vertices
     ///

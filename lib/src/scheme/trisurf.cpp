@@ -62,7 +62,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 
     for (auto & srf : volume->surfaces()) {
         assert(!srf.is_null());
-        auto & geom_surface = srf->geom_surface();
+        const auto & geom_surface = srf->geom_surface();
         auto face = TopoDS::Face(geom_surface);
 
         TopLoc_Location location;
@@ -74,7 +74,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
         std::map<Standard_Integer, Ptr<MeshVertexAbstract>> vertices;
 
         for (auto & curve : srf->curves()) {
-            auto & geom_curve = curve->geom_curve();
+            const auto & geom_curve = curve->geom_curve();
             auto edge = TopoDS::Edge(geom_curve);
             auto polygon = BRep_Tool::PolygonOnTriangulation(edge, triangulation, location);
             if (polygon.IsNull())
@@ -120,7 +120,7 @@ SchemeTriSurf::mesh_volume(Ptr<MeshVolume> volume)
 
         for (auto i : make_range(triangulation->NbNodes())) {
             auto idx = i + 1;
-            if (vertices.find(idx) != vertices.end())
+            if (vertices.contains(idx))
                 continue;
 
             auto uv = triangulation->UVNode(idx);
@@ -159,9 +159,9 @@ SchemeTriSurf::select_surface_scheme(Ptr<MeshSurface> surface)
     if (!surface->has_scheme())
         surface->set_scheme<SchemeTriSurf>(this->opts_);
     else {
-        auto scheme = dynamic_cast<SchemeTriSurf *>(&surface->scheme());
+        auto * scheme = dynamic_cast<SchemeTriSurf *>(&surface->scheme());
         if (scheme == nullptr) {
-            auto s = dynamic_cast<Scheme *>(scheme);
+            auto * s = dynamic_cast<Scheme *>(scheme);
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
                             s->name());
@@ -176,9 +176,9 @@ SchemeTriSurf::select_curve_scheme(Ptr<MeshCurve> curve)
         curve->set_scheme<SchemeTriSurf>(this->opts_);
     }
     else {
-        auto scheme = dynamic_cast<SchemeTriSurf *>(&curve->scheme());
+        auto * scheme = dynamic_cast<SchemeTriSurf *>(&curve->scheme());
         if (scheme == nullptr) {
-            auto s = dynamic_cast<Scheme *>(scheme);
+            auto * s = dynamic_cast<Scheme *>(scheme);
             throw Exception("Unable to use {} in combination with scheme {}",
                             scheme_name,
                             s->name());

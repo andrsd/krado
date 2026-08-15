@@ -17,7 +17,7 @@ public:
     /// Compute the length of the edge
     ///
     /// @return Length of the edge
-    double length() const;
+    [[nodiscard]] double length() const;
 
     operator const TopoDS_Wire &() const;
 

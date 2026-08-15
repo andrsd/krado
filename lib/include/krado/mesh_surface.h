@@ -29,7 +29,7 @@ public:
     /// Get the unique identifier of the surface.
     ///
     /// @return The unique identifier of the surface.
-    ShapeID id() const;
+    [[nodiscard]] ShapeID id() const;
 
     /// Get geometrical surface associated with this surface
     ///
@@ -98,7 +98,7 @@ public:
 
     void set_triangles(const std::vector<MeshElement> & new_tris);
 
-    Span<const MeshElement> elements() const;
+    [[nodiscard]] Span<const MeshElement> elements() const;
 
     void remove_all_triangles();
 
@@ -119,7 +119,7 @@ public:
         return *sch_ptr;
     }
 
-    bool has_scheme() const;
+    [[nodiscard]] bool has_scheme() const;
 
     Scheme2D & scheme();
 

@@ -26,7 +26,7 @@ public:
     /// Get the unique identifier of the curve.
     ///
     /// @return The unique identifier of the curve.
-    ShapeID id() const;
+    [[nodiscard]] ShapeID id() const;
 
     /// Get geometrical curve associated with this curve
     ///
@@ -62,7 +62,7 @@ public:
     /// @return Curse segments using vertex indexing local to this edge
     [[nodiscard]] Span<const MeshElement> segments() const;
 
-    bool is_mesh_degenerated() const;
+    [[nodiscard]] bool is_mesh_degenerated() const;
 
     void set_too_small(bool value);
 
@@ -81,12 +81,12 @@ public:
     set_scheme(SCHEME::Options options)
     {
         auto sch = std::make_unique<SCHEME>(options);
-        auto sch_ptr = sch.get();
+        auto * sch_ptr = sch.get();
         this->scheme_ = std::move(sch);
         return *sch_ptr;
     }
 
-    bool has_scheme() const;
+    [[nodiscard]] bool has_scheme() const;
 
     Scheme1D & scheme();
 

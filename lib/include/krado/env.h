@@ -13,13 +13,14 @@ namespace krado {
 class Env {
 private:
     Env();
-    Env(const Env &) = delete;
-    Env & operator=(const Env &) = delete;
 
     const opencascade::handle<Message_Messenger> & msgr_;
     const Message_SequenceOfPrinters & printers_;
 
 public:
+    Env(const Env &) = delete;
+    Env & operator=(const Env &) = delete;
+
     static Env & instance();
 };
 

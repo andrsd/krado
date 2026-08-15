@@ -27,7 +27,7 @@ SchemeBias::params_to_str()
 void
 SchemeBias::mesh_curve(Ptr<MeshCurve> curve)
 {
-    auto & geom_curve = curve->geom_curve();
+    const auto & geom_curve = curve->geom_curve();
     auto n_segs = this->opts_.intervals;
     auto bias_factor = this->opts_.factor;
 

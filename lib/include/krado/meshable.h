@@ -15,7 +15,7 @@ public:
     /// Check if the curve is already meshed
     ///
     /// @return `true` if mesh is already present, `false` otherwise
-    bool is_meshed() const;
+    [[nodiscard]] bool is_meshed() const;
 
     /// Mark curve as meshed
     void set_meshed();
@@ -28,7 +28,7 @@ public:
     /// Get entity marker
     ///
     /// @return Marker associated with this entity
-    Optional<Marker> marker() const;
+    [[nodiscard]] Optional<Marker> marker() const;
 
 private:
     /// Flag indicating if the entity is meshed

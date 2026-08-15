@@ -15,16 +15,16 @@ public:
     LinearPattern(const Axis2 & origin, int nx, int ny, double dx, double dy);
 
     /// Number of points in x-direction
-    double nx() const;
+    [[nodiscard]] double nx() const;
 
     /// Number of points in y-direction
-    double ny() const;
+    [[nodiscard]] double ny() const;
 
     /// Distance between 2 points in x-direction
-    double dx() const;
+    [[nodiscard]] double dx() const;
 
     /// Distance between 2 points in y-direction
-    double dy() const;
+    [[nodiscard]] double dy() const;
 
 private:
     /// Origin of the pattern

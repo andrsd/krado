@@ -38,16 +38,16 @@ public:
     Plane(Point pt, Vector normal);
 
     /// Location of this plane
-    Point location() const;
+    [[nodiscard]] Point location() const;
 
     /// Returns the plane's normal axis
-    Axis1 axis() const;
+    [[nodiscard]] Axis1 axis() const;
 
     /// Returns the X axis of the plane
-    Axis1 x_axis() const;
+    [[nodiscard]] Axis1 x_axis() const;
 
     /// Returns the Y axis of the plane
-    Axis1 y_axis() const;
+    [[nodiscard]] Axis1 y_axis() const;
 
     operator gp_Pln() const;
 

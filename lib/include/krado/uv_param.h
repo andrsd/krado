@@ -22,28 +22,28 @@ public:
     inline UVParam
     operator+(const UVParam & other) const
     {
-        return UVParam(this->u + other.u, this->v + other.v);
+        return { this->u + other.u, this->v + other.v };
     }
 
     /// Subtract two UVParams
     inline UVParam
     operator-(const UVParam & other)
     {
-        return UVParam(this->u - other.u, this->v - other.v);
+        return { this->u - other.u, this->v - other.v };
     }
 
     /// Multiply by scalar
     inline UVParam
     operator*(double alpha)
     {
-        return UVParam(this->u * alpha, this->v * alpha);
+        return { this->u * alpha, this->v * alpha };
     }
 
     // Unary minus operator
     UVParam
     operator-() const
     {
-        return UVParam(-this->u, -this->v);
+        return { -this->u, -this->v };
     }
 
     double u, v;
@@ -52,7 +52,7 @@ public:
 inline UVParam
 operator*(double alpha, const UVParam & param)
 {
-    return UVParam(param.u * alpha, param.v * alpha);
+    return { param.u * alpha, param.v * alpha };
 }
 
 inline double

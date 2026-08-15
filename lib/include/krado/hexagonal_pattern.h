@@ -14,7 +14,7 @@ public:
     HexagonalPattern(const Axis2 & center, double flat_to_flat, int side_segs);
 
     /// Get flat to flat distance
-    double flat_to_flat() const;
+    [[nodiscard]] double flat_to_flat() const;
 
 private:
     /// Center of the pattern

@@ -67,13 +67,13 @@ public:
 
     Range(Index start, Index end) : start_idx_(start), end_idx_(end) {}
 
-    Iterator
+    [[nodiscard]] Iterator
     begin() const
     {
         return Iterator(this->start_idx_);
     }
 
-    Iterator
+    [[nodiscard]] Iterator
     end() const
     {
         return Iterator(this->end_idx_);
@@ -105,7 +105,7 @@ public:
         this->end_idx_ = std::max(this->end_idx_, v + 1);
     }
 
-    bool
+    [[nodiscard]] bool
     contains(Index idx) const
     {
         return (this->start_idx_ <= idx) and (idx < this->end_idx_);
@@ -129,7 +129,7 @@ operator==(const Range & a, const Range & b)
 inline Range
 make_range(Index start, Index end)
 {
-    return Range(start, end);
+    return { start, end };
 }
 
 /// Create a range from 0 to `end`
@@ -138,7 +138,7 @@ make_range(Index start, Index end)
 inline Range
 make_range(Index end)
 {
-    return Range(0, end);
+    return { 0, end };
 }
 
 } // namespace krado

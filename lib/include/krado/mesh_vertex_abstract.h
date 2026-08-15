@@ -27,14 +27,14 @@ public:
     /// Geometrical shape associated with this vertex
     ///
     /// @return Geometrical shape associated with this vertex
-    const GeomShape & geom_shape() const;
+    [[nodiscard]] const GeomShape & geom_shape() const;
 
     /// Get vertex number (this is globally unique number)
     ///
     /// This is/can be used by meshing algorithms that require vertex numbering
     ///
     /// @return Global vertex number
-    int num() const;
+    [[nodiscard]] int num() const;
 
 private:
     /// Geometrical shape associated with this vertex

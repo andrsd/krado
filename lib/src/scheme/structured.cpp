@@ -149,7 +149,7 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
     for (auto j : make_range(nj))
         grid[0][nj - 1 - j] = v3[j];
 
-    auto & gsurf = surface->geom_surface();
+    const auto & gsurf = surface->geom_surface();
     for (auto i : make_range(1, ni - 1)) {
         for (auto j : make_range(1, nj - 1)) {
             auto uv00 = gsurf.parameter_from_point(grid[0][0]->point());

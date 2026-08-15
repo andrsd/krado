@@ -19,7 +19,7 @@ public:
     /// Get the unique identifier of the vertex.
     ///
     /// @return The unique identifier of the vertex.
-    ShapeID id() const;
+    [[nodiscard]] ShapeID id() const;
 
     /// Get geometrical vertex associated with this vertex
     ///
