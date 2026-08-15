@@ -102,3 +102,17 @@ TEST(UtilsTest, human_time)
     EXPECT_EQ(utils::human_time(3725), "1h 2m 5.00s");
     EXPECT_EQ(utils::human_time(3725.2), "1h 2m 5.20s");
 }
+
+TEST(UtilsTest, shift_span)
+{
+    std::vector<Index> idxs = { 10, 11, 15, 23 };
+    auto shifted = shift(idxs, -10);
+    EXPECT_THAT(shifted, testing::ElementsAreArray({ 0, 1, 5, 13 }));
+}
+
+TEST(UtilsTest, shift_set)
+{
+    std::set<Index> idxs = { 10, 15, 11 };
+    auto shifted = shift(idxs, -10);
+    EXPECT_THAT(shifted, testing::UnorderedElementsAreArray({ 0, 1, 5 }));
+}

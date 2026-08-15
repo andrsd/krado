@@ -858,17 +858,23 @@ Mesh::boundary_faces() const
 }
 
 Point
+Mesh::compute_centroid(Span<const Index> connect) const
+{
+    Point center(0, 0, 0);
+    for (const auto & pt_id : connect) {
+        center += this->pnts_[pt_id];
+    }
+    center *= 1. / connect.size();
+    return center;
+}
+
+Point
 Mesh::compute_centroid(Index index) const
 {
-    auto connect = cone_vertices(index);
+    auto cone = cone_vertices(index);
     auto pnts_ofst = this->elems_.size();
-    Point ctr(0, 0, 0);
-    for (const auto & pt_id : connect) {
-        const auto & pt = this->pnts_[pt_id - pnts_ofst];
-        ctr += pt;
-    }
-    ctr *= 1. / connect.size();
-    return ctr;
+    auto connect = shift(cone, -pnts_ofst);
+    return compute_centroid(connect);
 }
 
 Vector

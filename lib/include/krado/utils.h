@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <array>
+#include <set>
 
 namespace krado {
 
@@ -300,6 +301,36 @@ permutate(Span<const T> idxs, const std::array<T, N> & perm)
     for (int i = 0; i < N; ++i)
         perm_idxs[i] = idxs[perm[i]];
     return perm_idxs;
+}
+
+/// Shift indices by an offset
+///
+/// @param idxs Indices to shift
+/// @param ofst Offset by which we shift
+/// @return Shifted indices
+inline std::vector<Index>
+shift(Span<const Index> idxs, u64 ofst)
+{
+    std::vector<Index> result(idxs.begin(), idxs.end());
+    for (auto & v : result)
+        v += ofst;
+    return result;
+}
+
+/// Shift indices by an offset
+///
+/// @param idxs Indices to shift
+/// @param ofst Offset by which we shift
+/// @return Shifted indices
+///
+/// @note This is mainly for feeding the output of `Mesh::cone_vertices`
+inline std::vector<Index>
+shift(const std::set<Index> & idxs, u64 ofst)
+{
+    std::vector<Index> result(idxs.begin(), idxs.end());
+    for (auto & v : result)
+        v += ofst;
+    return result;
 }
 
 } // namespace krado
