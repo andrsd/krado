@@ -742,7 +742,7 @@ PYBIND11_MODULE(krado, m)
         .def("set_up", &Mesh::set_up)
         .def("boundary_edges", &Mesh::boundary_edges)
         .def("boundary_faces", &Mesh::boundary_faces)
-        .def("compute_centroid", &Mesh::compute_centroid)
+        .def("compute_centroid", py::overload_cast<Index>(&Mesh::compute_centroid, py::const_))
         .def("outward_normal", &Mesh::outward_normal)
 
         .def("create_side_set", [](Mesh & self, Marker id, const std::vector<Index> & indices) {

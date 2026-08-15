@@ -300,6 +300,12 @@ public:
 
     /// Compute centroid
     ///
+    /// @param connect Index of the element
+    /// @return Centroid
+    [[nodiscard]] Point compute_centroid(Span<const Index> connect) const;
+
+    /// Compute centroid
+    ///
     /// @param index Index of the element
     /// @return Centroid
     [[nodiscard]] Point compute_centroid(Index index) const;

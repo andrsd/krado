@@ -213,11 +213,7 @@ std::vector<Vector>
 compute_face_normals(const Element & elem, const Mesh & mesh)
 {
     auto idxs = elem.indices();
-    int n_vtx = ElementSelector<ET>::N_VERTICES;
-    Point center(0, 0, 0);
-    for (int i = 0; i < n_vtx; ++i)
-        center += Vector(mesh.point(idxs[i]));
-    center *= (1.0 / n_vtx);
+    auto center = mesh.compute_centroid(idxs);
 
     std::vector<Vector> normals;
     for (auto & fv : ElementSelector<ET>::face_vertices()) {
