@@ -5,7 +5,6 @@
 
 #include "krado/types.h"
 #include "krado/ptr.h"
-#include "Standard_TypeDef.hxx"
 #include <vector>
 #include <tuple>
 #include <map>
@@ -68,7 +67,7 @@ Ptr<Mesh> mirror(Ptr<const Mesh> mesh, const Axis2 & axis);
 /// @param split_param Parameter to split the curve at (must be between the curve's parameter range)
 /// @return Tuple of two curves
 [[nodiscard]] std::tuple<GeomCurve, GeomCurve> split_curve(const GeomCurve & curve,
-                                                           Standard_Real split_param);
+                                                           double split_param);
 
 /// Imprint a curve on a surface
 ///

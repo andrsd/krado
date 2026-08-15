@@ -96,7 +96,7 @@ mirror(Ptr<const Mesh> mesh, const Axis2 & axis)
 }
 
 std::tuple<GeomCurve, GeomCurve>
-split_curve(const GeomCurve & curve, Standard_Real split_param)
+split_curve(const GeomCurve & curve, double split_param)
 {
     double umin, umax;
     Handle(Geom_Curve) orig_curve = BRep_Tool::Curve(curve, umin, umax);
