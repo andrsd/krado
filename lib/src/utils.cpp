@@ -141,7 +141,7 @@ human_time(double time)
 
 [[nodiscard]]
 std::vector<Index>
-get_face_connect(const Element & elem, int side)
+get_face_connect(const Element & elem, u8 side)
 {
     std::vector<Index> face_connect;
     if (elem.type() == ElementType::TETRA4)

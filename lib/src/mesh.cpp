@@ -289,32 +289,32 @@ reverse_element(const Element & elem)
     }
 }
 
-std::size_t
-mirror_local_side(ElementType et, std::size_t side)
+u8
+mirror_local_side(ElementType et, u8 side)
 {
     switch (et) {
     case ElementType::TRI3: {
-        static constexpr std::array<std::size_t, 3> mapping = { 2, 1, 0 };
+        static constexpr std::array<u8, 3> mapping = { 2, 1, 0 };
         return mapping.at(side);
     }
     case ElementType::QUAD4: {
-        static constexpr std::array<std::size_t, 4> mapping = { 3, 2, 1, 0 };
+        static constexpr std::array<u8, 4> mapping = { 3, 2, 1, 0 };
         return mapping.at(side);
     }
     case ElementType::TETRA4: {
-        static constexpr std::array<std::size_t, 4> mapping = { 1, 0, 2, 3 };
+        static constexpr std::array<u8, 4> mapping = { 1, 0, 2, 3 };
         return mapping.at(side);
     }
     case ElementType::PYRAMID5: {
-        static constexpr std::array<std::size_t, 5> mapping = { 0, 4, 3, 2, 1 };
+        static constexpr std::array<u8, 5> mapping = { 0, 4, 3, 2, 1 };
         return mapping.at(side);
     }
     case ElementType::PRISM6: {
-        static constexpr std::array<std::size_t, 5> mapping = { 0, 3, 2, 1, 4 };
+        static constexpr std::array<u8, 5> mapping = { 0, 3, 2, 1, 4 };
         return mapping.at(side);
     }
     case ElementType::HEX8: {
-        static constexpr std::array<std::size_t, 6> mapping = { 2, 3, 0, 1, 4, 5 };
+        static constexpr std::array<u8, 6> mapping = { 2, 3, 0, 1, 4, 5 };
         return mapping.at(side);
     }
     default:
