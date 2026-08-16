@@ -43,18 +43,18 @@ SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
     std::vector<bool> visited(mesh_curves.size(), false);
 
     while (true) {
-        int start_idx = -1;
-        for (int i = 0; i < static_cast<int>(mesh_curves.size()); ++i) {
+        Optional<std::size_t> start_idx;
+        for (std::size_t i = 0; i < mesh_curves.size(); ++i) {
             if (!visited[i]) {
                 start_idx = i;
                 break;
             }
         }
-        if (start_idx == -1)
+        if (not start_idx.has_value())
             break;
 
         std::vector<Ptr<MeshVertexAbstract>> loop;
-        int curr_idx = start_idx;
+        std::size_t curr_idx = start_idx.value();
         visited[curr_idx] = true;
 
         auto curr_crv = mesh_curves[curr_idx];
@@ -64,7 +64,7 @@ SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
         while (loop.front() != loop.back()) {
             auto last_v = loop.back();
             bool found_next = false;
-            for (int i = 0; i < static_cast<int>(mesh_curves.size()); ++i) {
+            for (std::size_t i = 0; i < mesh_curves.size(); ++i) {
                 if (!visited[i]) {
                     auto next_crv = mesh_curves[i];
                     auto next_vtxs = get_mesh_curve_vertices(next_crv);
@@ -110,10 +110,13 @@ SchemeAnnular::interpolate_loop(const std::vector<Ptr<MeshVertexAbstract>> & loo
 std::vector<double>
 SchemeAnnular::get_L(const std::vector<Ptr<MeshVertexAbstract>> & loop)
 {
-    int N = static_cast<int>(loop.size()) - 1;
-    std::vector<double> L(N + 1, 0.0);
-    for (int i = 1; i <= N; ++i) {
-        L[i] = L[i - 1] + utils::distance(loop[i - 1]->point(), loop[i]->point());
+    auto N = loop.size();
+    if (N == 0)
+        return {};
+
+    std::vector<double> L(N, 0.0);
+    for (std::size_t i = 0; i < N - 1; ++i) {
+        L[i + 1] = L[i] + utils::distance(loop[i]->point(), loop[i + 1]->point());
     }
     return L;
 };
