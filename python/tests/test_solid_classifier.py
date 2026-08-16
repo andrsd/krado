@@ -8,7 +8,7 @@ root_dir = os.path.normpath(os.path.join(__file__, "..", "..", ".."))
 assets_dir = os.path.join(root_dir, "test", "assets")
 
 
-def test_area_of_a_square():
+def test_solid_classifier():
     file_name = os.path.join(assets_dir, "mesh", "cube-tet.e")
     mesh = krado.import_mesh(file_name)
     mesh.set_up()
@@ -25,4 +25,4 @@ def test_area_of_a_square():
         if cyl_clsf.inside(centroid):
             inside_facets.append(id)
 
-    assert inside_facets == [23, 30]
+    assert inside_facets == [krado.HasseIndex(23), krado.HasseIndex(30)]

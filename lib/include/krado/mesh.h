@@ -8,6 +8,7 @@
 #include "krado/point.h"
 #include "krado/transform.h"
 #include "krado/hasse_diagram.h"
+#include "krado/ptr.h"
 #include "krado/types.h"
 #include <map>
 #include <vector>
@@ -266,18 +267,18 @@ public:
     /// Get support of a mesh node
     ///
     /// @param index Index of the node
-    [[nodiscard]] Span<const Index> support(Index index) const;
+    [[nodiscard]] Span<const HasseIndex> support(HasseIndex index) const;
 
     /// Get connectivity of a mesh node
     ///
     /// @param index Index of the node
-    [[nodiscard]] Span<const Index> cone(Index index) const;
+    [[nodiscard]] Span<const HasseIndex> cone(HasseIndex index) const;
 
     /// Get cone vertices of a mesh node
     ///
     /// @param index Index of the node
     /// @return Cone vertices
-    [[nodiscard]] std::set<Index> cone_vertices(Index index) const;
+    [[nodiscard]] std::set<HasseIndex> cone_vertices(HasseIndex index) const;
 
     /// Get element type
     ///
@@ -291,12 +292,12 @@ public:
     /// Get all boundary edge IDs
     ///
     /// @return Boundary edge IDs
-    [[nodiscard]] std::vector<Index> boundary_edges() const;
+    [[nodiscard]] std::vector<HasseIndex> boundary_edges() const;
 
     /// Get all boundary face IDs
     ///
     /// @return Boundary face IDs
-    [[nodiscard]] std::vector<Index> boundary_faces() const;
+    [[nodiscard]] std::vector<HasseIndex> boundary_faces() const;
 
     /// Compute centroid
     ///
@@ -308,13 +309,13 @@ public:
     ///
     /// @param index Index of the element
     /// @return Centroid
-    [[nodiscard]] Point compute_centroid(Index index) const;
+    [[nodiscard]] Point compute_centroid(HasseIndex index) const;
 
     /// Compute outward normal
     ///
     /// @param index Index of the edge/face
     /// @return Outward normal
-    [[nodiscard]] Vector outward_normal(Index index) const;
+    [[nodiscard]] Vector outward_normal(HasseIndex index) const;
 
 private:
     /// Mesh points
@@ -342,8 +343,8 @@ private:
 /// @param mesh Mesh
 /// @param indices
 /// @return Side set
-std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<Index> & idxs);
-std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs);
+std::vector<SideEntry> create_side_set(const Mesh & mesh, const std::vector<HasseIndex> & idxs);
+std::vector<SideEntry> create_side_set(Ptr<const Mesh> mesh, const std::vector<HasseIndex> & idxs);
 
 /// Compute bounding box around the mesh
 ///

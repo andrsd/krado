@@ -17,8 +17,8 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
     auto elems = mesh.elements();
     auto pnts = mesh.points();
 
-    std::unordered_map<std::size_t, Index> key_map;
-    std::size_t n_entries = elems.size() + pnts.size();
+    std::unordered_map<HasseKey, HasseIndex> key_map;
+    HasseKey n_entries(elems.size() + pnts.size());
     for (const auto & cell : elems) {
         if (cell.type() == ElementType::TRI3) {
             n_entries += Tri3::N_EDGES;
@@ -46,22 +46,22 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
             // do nothing
         }
     }
-    key_map.reserve(n_entries);
+    key_map.reserve(n_entries.value());
 
     // Count number of nodes
-    u64 n_rows = 0;
+    HasseKey n_rows(0);
     for (Index i : make_range(elems.size())) {
-        auto id = utils::key(-(i + 1));
-        Index elem_node_id = n_rows++;
+        auto id = key(-(HasseIndex(i) + 1));
+        HasseIndex elem_node_id(n_rows++);
         key_map[id] = elem_node_id;
     }
-    this->cell_rng_ = Range(0, elems.size());
+    this->cell_rng_ = make_range(HasseIndex(0), HasseIndex(elems.size()));
     for (Index i : make_range(pnts.size())) {
-        auto vtx_id = utils::key(i);
-        Index vtx_node_id = n_rows++;
+        auto vtx_id = key(HasseIndex(i));
+        HasseIndex vtx_node_id(n_rows++);
         key_map[vtx_id] = vtx_node_id;
     }
-    this->vertex_rng_ = Range(elems.size(), key_map.size());
+    this->vertex_rng_ = make_range(HasseIndex(elems.size()), HasseIndex(key_map.size()));
     u64 a = key_map.size();
     for (Index i : make_range(elems.size())) {
         const auto & cell = elems[i];
@@ -74,7 +74,7 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
         else if (cell.type() == ElementType::HEX8)
             add_faces_nd<Hex8>(key_map, n_rows, cell);
     }
-    this->face_rng_ = Range(a, key_map.size());
+    this->face_rng_ = make_range(HasseIndex(a), HasseIndex(key_map.size()));
     a = key_map.size();
     for (Index i : make_range(elems.size())) {
         const auto & cell = elems[i];
@@ -94,47 +94,47 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
             // do nothing
         }
     }
-    this->edge_rng_ = Range(a, key_map.size());
-    this->out_offsets_.resize(n_rows + 1, 0);
-    this->in_offsets_.resize(n_rows + 1, 0);
-    this->out_inc_.resize(n_rows, 0);
-    this->in_inc_.resize(n_rows, 0);
+    this->edge_rng_ = make_range(HasseIndex(a), HasseIndex(key_map.size()));
+    this->out_offsets_.resize(n_rows.value() + 1, 0);
+    this->in_offsets_.resize(n_rows.value() + 1, 0);
+    this->out_inc_.resize(n_rows.value(), 0);
+    this->in_inc_.resize(n_rows.value(), 0);
 
     // Count number of edges
-    std::unordered_map<std::size_t, Index> edge_key_map;
-    edge_key_map.reserve(2 * n_entries);
+    std::unordered_map<HasseKey, HasseIndex> edge_key_map;
+    edge_key_map.reserve(2 * n_entries.value());
     for (Index i : make_range(elems.size())) {
         const auto & cell = elems[i];
         if (cell.type() == ElementType::TRI3) {
-            add_edges_ed<Tri3>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Tri3>(edge_key_map, key_map, i, cell);
+            add_edges_ed<Tri3>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Tri3>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::QUAD4) {
-            add_edges_ed<Quad4>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Quad4>(edge_key_map, key_map, i, cell);
+            add_edges_ed<Quad4>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Quad4>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::TETRA4) {
-            add_faces_ed<Tetra4>(edge_key_map, key_map, i, cell);
-            add_face_edges_ed<Tetra4>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Tetra4>(edge_key_map, key_map, i, cell);
+            add_faces_ed<Tetra4>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_face_edges_ed<Tetra4>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Tetra4>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::PYRAMID5) {
-            add_faces_ed<Pyramid5>(edge_key_map, key_map, i, cell);
-            add_face_edges_ed<Pyramid5>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Pyramid5>(edge_key_map, key_map, i, cell);
+            add_faces_ed<Pyramid5>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_face_edges_ed<Pyramid5>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Pyramid5>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::PRISM6) {
-            add_faces_ed<Prism6>(edge_key_map, key_map, i, cell);
-            add_face_edges_ed<Prism6>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Prism6>(edge_key_map, key_map, i, cell);
+            add_faces_ed<Prism6>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_face_edges_ed<Prism6>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Prism6>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::HEX8) {
-            add_faces_ed<Hex8>(edge_key_map, key_map, i, cell);
-            add_face_edges_ed<Hex8>(edge_key_map, key_map, i, cell);
-            add_edge_vertices_ed<Hex8>(edge_key_map, key_map, i, cell);
+            add_faces_ed<Hex8>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_face_edges_ed<Hex8>(edge_key_map, key_map, HasseIndex(i), cell);
+            add_edge_vertices_ed<Hex8>(edge_key_map, key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::LINE2) {
-            add_vertices_ed(edge_key_map, key_map, i, cell);
+            add_vertices_ed(edge_key_map, key_map, HasseIndex(i), cell);
         }
     }
     u64 ofst = 0;
@@ -157,35 +157,35 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
     for (Index i : make_range(elems.size())) {
         const auto & cell = elems[i];
         if (cell.type() == ElementType::TRI3) {
-            add_edges<Tri3>(key_map, i, cell);
-            add_edge_vertices<Tri3>(key_map, i, cell);
+            add_edges<Tri3>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Tri3>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::QUAD4) {
-            add_edges<Quad4>(key_map, i, cell);
-            add_edge_vertices<Quad4>(key_map, i, cell);
+            add_edges<Quad4>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Quad4>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::TETRA4) {
-            add_faces<Tetra4>(key_map, i, cell);
-            add_face_edges<Tetra4>(key_map, i, cell);
-            add_edge_vertices<Tetra4>(key_map, i, cell);
+            add_faces<Tetra4>(key_map, HasseIndex(i), cell);
+            add_face_edges<Tetra4>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Tetra4>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::PYRAMID5) {
-            add_faces<Pyramid5>(key_map, i, cell);
-            add_face_edges<Pyramid5>(key_map, i, cell);
-            add_edge_vertices<Pyramid5>(key_map, i, cell);
+            add_faces<Pyramid5>(key_map, HasseIndex(i), cell);
+            add_face_edges<Pyramid5>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Pyramid5>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::PRISM6) {
-            add_faces<Prism6>(key_map, i, cell);
-            add_face_edges<Prism6>(key_map, i, cell);
-            add_edge_vertices<Prism6>(key_map, i, cell);
+            add_faces<Prism6>(key_map, HasseIndex(i), cell);
+            add_face_edges<Prism6>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Prism6>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::HEX8) {
-            add_faces<Hex8>(key_map, i, cell);
-            add_face_edges<Hex8>(key_map, i, cell);
-            add_edge_vertices<Hex8>(key_map, i, cell);
+            add_faces<Hex8>(key_map, HasseIndex(i), cell);
+            add_face_edges<Hex8>(key_map, HasseIndex(i), cell);
+            add_edge_vertices<Hex8>(key_map, HasseIndex(i), cell);
         }
         else if (cell.type() == ElementType::LINE2) {
-            add_vertices(key_map, i, cell);
+            add_vertices(key_map, HasseIndex(i), cell);
         }
     }
 
@@ -193,43 +193,43 @@ HasseDiagram::HasseDiagram(const Mesh & mesh)
     this->in_inc_.clear();
 }
 
-Range
+TRange<HasseIndex>
 HasseDiagram::vertices() const
 {
     return this->vertex_rng_;
 }
 
-Range
+TRange<HasseIndex>
 HasseDiagram::edges() const
 {
     return this->edge_rng_;
 }
 
-Range
+TRange<HasseIndex>
 HasseDiagram::faces() const
 {
     return this->face_rng_;
 }
 
-Range
+TRange<HasseIndex>
 HasseDiagram::cells() const
 {
     return this->cell_rng_;
 }
 
-Span<const Index>
-HasseDiagram::out_vertices(Index entity_id) const
+Span<const HasseIndex>
+HasseDiagram::out_vertices(HasseIndex entity_id) const
 {
-    auto start = this->out_offsets_[entity_id];
-    auto end = this->out_offsets_[entity_id + 1];
+    auto start = this->out_offsets_[entity_id.value()];
+    auto end = this->out_offsets_[entity_id.value() + 1];
     return { this->out_adjacency_.data() + start, static_cast<size_t>(end - start) };
 }
 
-Span<const Index>
-HasseDiagram::in_vertices(Index entity_id) const
+Span<const HasseIndex>
+HasseDiagram::in_vertices(HasseIndex entity_id) const
 {
-    auto start = this->in_offsets_[entity_id];
-    auto end = this->in_offsets_[entity_id + 1];
+    auto start = this->in_offsets_[entity_id.value()];
+    auto end = this->in_offsets_[entity_id.value() + 1];
     return { this->in_adjacency_.data() + start, static_cast<size_t>(end - start) };
 }
 
@@ -246,7 +246,7 @@ HasseDiagram::print() const
 
         std::cerr << i << ":";
         for (auto j : make_range(start, end)) {
-            std::cerr << " " << this->out_adjacency_[j];
+            std::cerr << " " << this->out_adjacency_[j].value();
         }
         std::cerr << std::endl;
     }
@@ -257,7 +257,7 @@ HasseDiagram::print() const
 
         std::cerr << i << ":";
         for (auto j : make_range(start, end)) {
-            std::cerr << " " << this->in_adjacency_[j];
+            std::cerr << " " << this->in_adjacency_[j].value();
         }
         std::cerr << std::endl;
     }

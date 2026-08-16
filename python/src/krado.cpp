@@ -146,6 +146,12 @@ PYBIND11_MODULE(krado, m)
 
     // clang-format off
 
+    py::class_<HasseIndex>(m, "HasseIndex")
+        .def(py::init<u64>())
+        .def(py::self == py::self)
+        .def(py::self != py::self)
+    ;
+
     py::class_<SideEntry>(m, "SideEntry")
         .def_readwrite("elem", &SideEntry::elem)
         .def_readwrite("side", &SideEntry::side)
@@ -729,23 +735,23 @@ PYBIND11_MODULE(krado, m)
 
         .def("remap_block_ids", &Mesh::remap_block_ids)
         .def("support",
-             [](const Mesh & self, Index index) {
+             [](const Mesh & self, HasseIndex index) {
                  auto span = self.support(index);
-                 return std::vector<Index>(span.begin(), span.end());
+                 return std::vector<HasseIndex>(span.begin(), span.end());
              })
         .def("cone",
-             [](const Mesh & self, Index index) {
+             [](const Mesh & self, HasseIndex index) {
                  auto span = self.cone(index);
-                 return std::vector<Index>(span.begin(), span.end());
+                 return std::vector<HasseIndex>(span.begin(), span.end());
              })
         .def("element_type", &Mesh::element_type)
         .def("set_up", &Mesh::set_up)
         .def("boundary_edges", &Mesh::boundary_edges)
         .def("boundary_faces", &Mesh::boundary_faces)
-        .def("compute_centroid", py::overload_cast<Index>(&Mesh::compute_centroid, py::const_))
+        .def("compute_centroid", py::overload_cast<HasseIndex>(&Mesh::compute_centroid, py::const_))
         .def("outward_normal", &Mesh::outward_normal)
 
-        .def("create_side_set", [](Mesh & self, Marker id, const std::vector<Index> & indices) {
+        .def("create_side_set", [](Mesh & self, Marker id, const std::vector<HasseIndex> & indices) {
             auto sset = create_side_set(self, indices);
             self.set_side_set(id, sset);
         })

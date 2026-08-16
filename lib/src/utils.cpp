@@ -44,19 +44,6 @@ sub_connect(Span<const Index> element_connect, const std::vector<u8> & idxs)
     return connect;
 }
 
-std::size_t
-key(const std::vector<Index> & idxs)
-{
-    std::vector<Index> vertices(idxs.begin(), idxs.end());
-    std::sort(vertices.begin(), vertices.end());
-
-    std::size_t hash_value = 0;
-    for (auto v : vertices)
-        boost::hash_combine(hash_value, v);
-
-    return hash_value;
-}
-
 template <>
 std::string
 to_str(ElementType val)

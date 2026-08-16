@@ -165,17 +165,17 @@ remove_duplicates(const PointCloud & cloud, double threshold)
     return { unique_points, point_remap };
 }
 
-std::vector<Index>
-boundary_entities(const Mesh & mesh, Range range)
+std::vector<HasseIndex>
+boundary_entities(const Mesh & mesh, TRange<HasseIndex> range)
 {
     namespace ranges = std::ranges;
 
-    auto is_boundary = [&](Index id) {
+    auto is_boundary = [&](HasseIndex id) {
         return mesh.support(id).size() == 1;
     };
 
     std::size_t n = ranges::count_if(range, is_boundary);
-    std::vector<Index> bnd_ents;
+    std::vector<HasseIndex> bnd_ents;
     bnd_ents.reserve(n);
     ranges::copy_if(range, std::back_inserter(bnd_ents), is_boundary);
 
@@ -800,26 +800,26 @@ Mesh::remap_block_ids(const std::map<Marker, Marker> & block_map)
     return *this;
 }
 
-Span<const Index>
-Mesh::support(Index index) const
+Span<const HasseIndex>
+Mesh::support(HasseIndex index) const
 {
     return this->hasse_.in_vertices(index);
 }
 
-Span<const Index>
-Mesh::cone(Index index) const
+Span<const HasseIndex>
+Mesh::cone(HasseIndex index) const
 {
     return this->hasse_.out_vertices(index);
 }
 
-std::set<Index>
-Mesh::cone_vertices(Index index) const
+std::set<HasseIndex>
+Mesh::cone_vertices(HasseIndex index) const
 {
-    std::list<Index> pts_to_process;
+    std::list<HasseIndex> pts_to_process;
     for (const auto & v : cone(index))
         pts_to_process.push_back(v);
 
-    std::set<Index> verts;
+    std::set<HasseIndex> verts;
     for (auto & v : pts_to_process) {
         auto cn = cone(v);
         if (cn.empty())
@@ -845,13 +845,13 @@ Mesh::set_up()
     this->hasse_ = HasseDiagram(*this);
 }
 
-std::vector<Index>
+std::vector<HasseIndex>
 Mesh::boundary_edges() const
 {
     return boundary_entities(*this, this->hasse_.edges());
 }
 
-std::vector<Index>
+std::vector<HasseIndex>
 Mesh::boundary_faces() const
 {
     return boundary_entities(*this, this->hasse_.faces());
@@ -869,7 +869,7 @@ Mesh::compute_centroid(Span<const Index> connect) const
 }
 
 Point
-Mesh::compute_centroid(Index index) const
+Mesh::compute_centroid(HasseIndex index) const
 {
     auto cone = cone_vertices(index);
     auto pnts_ofst = this->elems_.size();
@@ -878,7 +878,7 @@ Mesh::compute_centroid(Index index) const
 }
 
 Vector
-Mesh::outward_normal(Index index) const
+Mesh::outward_normal(HasseIndex index) const
 {
     auto supp = support(index);
     if (supp.size() != 1)
@@ -892,13 +892,14 @@ Mesh::outward_normal(Index index) const
     }
     else if (this->hasse_.edges().contains(index)) {
         auto connect_verts = cone_vertices(index);
-        std::vector<Index> verts(connect_verts.begin(), connect_verts.end());
+        std::vector<HasseIndex> verts(connect_verts.begin(), connect_verts.end());
         auto pnts_ofst = this->elems_.size();
 
-        auto v1 = Vector(this->pnts_[verts[1] - pnts_ofst] - this->pnts_[verts[0] - pnts_ofst]);
+        auto v1 = Vector(this->pnts_[verts[1].value() - pnts_ofst] -
+                         this->pnts_[verts[0].value() - pnts_ofst]);
         auto n = Vector(-v1.y, v1.x, 0);
         n.normalize();
-        auto c_v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - cell_ctr);
+        auto c_v1 = Vector(this->pnts_[verts[0].value() - pnts_ofst] - cell_ctr);
         auto dot = dot_product(n, c_v1);
         if (dot <= 0)
             n = -n;
@@ -908,12 +909,12 @@ Mesh::outward_normal(Index index) const
         auto side_ctr = compute_centroid(index);
 
         auto connect_verts = cone_vertices(index);
-        std::vector<Index> verts(connect_verts.begin(), connect_verts.end());
+        std::vector<HasseIndex> verts(connect_verts.begin(), connect_verts.end());
         auto pnts_ofst = this->elems_.size();
 
-        auto v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - side_ctr);
-        auto v2 = Vector(this->pnts_[verts[1] - pnts_ofst] - side_ctr);
-        auto c_v1 = Vector(this->pnts_[verts[0] - pnts_ofst] - cell_ctr);
+        auto v1 = Vector(this->pnts_[verts[0].value() - pnts_ofst] - side_ctr);
+        auto v2 = Vector(this->pnts_[verts[1].value() - pnts_ofst] - side_ctr);
+        auto c_v1 = Vector(this->pnts_[verts[0].value() - pnts_ofst] - cell_ctr);
         auto n = cross_product(v1, v2);
         n.normalize();
         auto dot = dot_product(n, c_v1);
@@ -1086,26 +1087,26 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
 }
 
 std::vector<SideEntry>
-create_side_set(const Mesh & mesh, const std::vector<Index> & idxs)
+create_side_set(const Mesh & mesh, const std::vector<HasseIndex> & idxs)
 {
     std::vector<SideEntry> sset;
     sset.reserve(idxs.size());
     for (const auto & f : idxs) {
         auto support = mesh.support(f);
         if (support.size() != 1)
-            throw Exception("Facet {} is not a boundary facet", f);
+            throw Exception("Facet {} is not a boundary facet", f.value());
 
         auto cell = support[0];
         auto cell_connect = mesh.cone(cell);
         auto lfi = utils::index_of(cell_connect, f);
         if (lfi.has_value())
-            sset.emplace_back(cell, lfi.value());
+            sset.emplace_back(cell.value(), lfi.value());
     }
     return sset;
 }
 
 std::vector<SideEntry>
-create_side_set(Ptr<const Mesh> mesh, const std::vector<Index> & idxs)
+create_side_set(Ptr<const Mesh> mesh, const std::vector<HasseIndex> & idxs)
 {
     if (mesh)
         return create_side_set(*mesh, idxs);

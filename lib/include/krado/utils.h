@@ -6,7 +6,6 @@
 #include "krado/types.h"
 #include "krado/uv_param.h"
 #include "boost/functional/hash.hpp"
-#include "krado/ptr.h"
 #include <cstdint>
 #include <string>
 #include <algorithm>
@@ -94,50 +93,6 @@ edge_connect(Span<const Index> element_connect, const std::array<u8, 2> & idxs)
 /// @param side Local side number
 /// @return Vertex indices for a given side
 [[nodiscard]] std::vector<Index> get_face_connect(const Element & elem, u8 side);
-
-/// Create a key from the supplied index. Use this to construct keys for cells
-///
-/// @param id The index to create a key from
-/// @return The key
-[[nodiscard]] inline std::size_t
-key(const Index id)
-{
-    std::size_t hash_value = 0;
-    boost::hash_combine(hash_value, id);
-    return hash_value;
-}
-
-[[nodiscard]] inline std::size_t
-key(const std::array<Index, 2> & idxs)
-{
-    std::array<Index, 2> vertices;
-    if (idxs[0] <= idxs[1]) {
-        vertices[0] = idxs[0];
-        vertices[1] = idxs[1];
-    }
-    else {
-        vertices[0] = idxs[1];
-        vertices[1] = idxs[0];
-    }
-
-    std::size_t hash_value = 0;
-    boost::hash_combine(hash_value, vertices[0]);
-    boost::hash_combine(hash_value, vertices[1]);
-
-    return hash_value;
-}
-
-[[nodiscard]] inline std::size_t
-key(Index one, Index two)
-{
-    return key({ one, two });
-}
-
-/// Create a key from the supplied indices. Use this to construct keys for edges and faces
-///
-/// @param idxs The indices to create a key from
-/// @return The key
-[[nodiscard]] std::size_t key(const std::vector<Index> & idxs);
 
 /// Get map keys
 template <typename K, typename V>
@@ -325,11 +280,12 @@ shift(Span<const Index> idxs, u64 ofst)
 ///
 /// @note This is mainly for feeding the output of `Mesh::cone_vertices`
 inline std::vector<Index>
-shift(const std::set<Index> & idxs, u64 ofst)
+shift(const std::set<HasseIndex> & idxs, u64 ofst)
 {
-    std::vector<Index> result(idxs.begin(), idxs.end());
-    for (auto & v : result)
-        v += ofst;
+    std::vector<Index> result;
+    result.reserve(idxs.size());
+    for (const auto & v : idxs)
+        result.push_back(v.value() + ofst);
     return result;
 }
 
