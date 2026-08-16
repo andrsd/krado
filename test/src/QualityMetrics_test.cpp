@@ -40,6 +40,74 @@ TEST(QualityMetricsTest, tri3_eta)
     EXPECT_NEAR(eta, 1.0, 1e-12);
 }
 
+TEST(QualityMetricsTest, quad4_eta_1)
+{
+    std::vector<Point> points = {
+        Point(0, 0, 0),
+        Point(1, 0, 0),
+        Point(1.5, 1, 0),
+        Point(0.5, 1, 0),
+    };
+    std::vector<Element> elements = { Element::Quad4({ 0, 1, 2, 3 }) };
+    Mesh mesh(points, elements);
+
+    double eta = qm::eta<ElementType::QUAD4>(mesh.element(0), mesh);
+    EXPECT_NEAR(eta, 0.7048327647, 1e-10);
+}
+
+TEST(QualityMetricsTest, tetra4_eta_1)
+{
+    std::vector<Point> points = {
+        Point(0, 0, 0),
+        Point(1, 0, 0),
+        Point(0, 2, 0),
+        Point(0, 0, 3),
+    };
+    std::vector<Element> elements = { Element::Tetra4({ 0, 1, 2, 3 }) };
+    Mesh mesh(points, elements);
+
+    double eta = qm::eta<ElementType::TETRA4>(mesh.element(0), mesh);
+    EXPECT_NEAR(eta, 0.4395753101, 1e-10);
+}
+
+TEST(QualityMetricsTest, hex8_eta_1)
+{
+    std::vector<Point> points = {
+        Point(0, 0, 0),    Point(1, 0, 0),    Point(1.5, 1, 0),  Point(0.5, 1, 0),
+        Point(0.25, 0, 2), Point(1.25, 0, 2), Point(1.75, 1, 2), Point(0.75, 1, 2),
+    };
+    std::vector<Element> elements = { Element::Hex8({ 0, 1, 2, 3, 4, 5, 6, 7 }) };
+    Mesh mesh(points, elements);
+
+    double eta = qm::eta<ElementType::HEX8>(mesh.element(0), mesh);
+    EXPECT_NEAR(eta, 0.7068022227, 1e-10);
+}
+
+TEST(QualityMetricsTest, pri6_eta_1)
+{
+    std::vector<Point> points = {
+        Point(0, 0, 0),    Point(1, 0, 0),    Point(1.5, 1, 0),
+        Point(0.25, 0, 2), Point(1.25, 0, 2), Point(1.75, 1, 2),
+    };
+    std::vector<Element> elements = { Element::Prism6({ 0, 1, 2, 3, 4, 5 }) };
+    Mesh mesh(points, elements);
+
+    double eta = qm::eta<ElementType::PRISM6>(mesh.element(0), mesh);
+    EXPECT_NEAR(eta, 0.3301870045, 1e-10);
+}
+
+TEST(QualityMetricsTest, pyr5_eta_1)
+{
+    std::vector<Point> points = {
+        Point(0, 0, 0), Point(1, 0, 0), Point(1.5, 1, 0), Point(0.5, 1, 0), Point(0.75, 0.5, 2),
+    };
+    std::vector<Element> elements = { Element::Pyramid5({ 0, 1, 2, 3, 4 }) };
+    Mesh mesh(points, elements);
+
+    double eta = qm::eta<ElementType::PYRAMID5>(mesh.element(0), mesh);
+    EXPECT_NEAR(eta, 0.6839331677, 1e-10);
+}
+
 TEST(QualityMetricsTest, tri3_gamma)
 {
     std::vector<Point> points = { Point(0, 0, 0), Point(1, 0, 0), Point(0.5, std::sqrt(3) / 2, 0) };
