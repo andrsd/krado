@@ -35,7 +35,7 @@ public:
     public:
         explicit HalfEdge(Vertex * vv);
 
-        Vector d() const;
+        [[nodiscard]] Vector d() const;
 
         /// origin
         Vertex * v;

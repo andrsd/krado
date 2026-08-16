@@ -55,11 +55,11 @@ PolyMesh::~PolyMesh()
 void
 PolyMesh::reset()
 {
-    for (auto it : this->vertices)
+    for (auto * it : this->vertices)
         delete it;
-    for (auto it : this->hedges)
+    for (auto * it : this->hedges)
         delete it;
-    for (auto it : this->faces)
+    for (auto * it : this->faces)
         delete it;
 }
 
@@ -233,7 +233,7 @@ void
 PolyMesh::cleanv()
 {
     std::vector<Vertex *> uv;
-    for (auto v : this->vertices) {
+    for (auto * v : this->vertices) {
         assert(v != nullptr);
 
         if (v->he)
@@ -248,7 +248,7 @@ void
 PolyMesh::cleanh()
 {
     std::vector<HalfEdge *> uh;
-    for (auto h : this->hedges) {
+    for (auto * h : this->hedges) {
         assert(h != nullptr);
 
         if (h->f)
@@ -263,7 +263,7 @@ void
 PolyMesh::cleanf()
 {
     std::vector<Face *> uf;
-    for (auto f : this->faces) {
+    for (auto * f : this->faces) {
         assert(f != nullptr);
 
         if (f->he)
@@ -502,7 +502,7 @@ walk(PolyMesh::Face * f, UVParam uv)
     Point POS(uv.u, uv.v, 0.);
     PolyMesh::HalfEdge * he = f->he;
 
-    while (1) {
+    while (true) {
         PolyMesh::Vertex * v0 = he->v;
         PolyMesh::Vertex * v1 = he->next->v;
         PolyMesh::Vertex * v2 = he->next->next->v;
@@ -586,7 +586,7 @@ recover_edge(PolyMesh & pm, PolyMesh::Vertex * v_start, PolyMesh::Vertex * v_end
         return std::nullopt;
 
     // find all intersections
-    while (1) {
+    while (true) {
         he = list.back();
         he = he->opposite;
         if (!he)

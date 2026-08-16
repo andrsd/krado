@@ -171,7 +171,7 @@ get_ordered_neighboring_vertices(Ptr<const BDS_Point> p,
     std::vector<Ptr<BDS_Point>> nbg;
     while (true) {
         bool found = false;
-        for (auto & tri : triangles) {
+        for (const auto & tri : triangles) {
             auto pts_res = tri->get_nodes();
             if (not pts_res.has_value())
                 continue;
@@ -375,33 +375,33 @@ compute_some_kind_of_kernel(Ptr<const BDS_Point> p, const std::vector<Ptr<BDS_Po
     auto ll = p->lc();
     for (std::size_t i = 0; i < nbg.size(); i++) {
         if (nbg[i]->degenerated() == 1) {
-            kernels.push_back({ p->u(), nbg[i]->v() });
-            kernels.push_back({ nbg[(i + 1) % nbg.size()]->u(), nbg[i]->v() });
+            kernels.emplace_back(p->u(), nbg[i]->v());
+            kernels.emplace_back(nbg[(i + 1) % nbg.size()]->u(), nbg[i]->v());
 
             lcs.push_back(nbg[i]->lc());
             lcs.push_back(nbg[i]->lc());
         }
         else if (nbg[i]->degenerated() == 2) {
-            kernels.push_back({ nbg[i]->u(), p->v() });
-            kernels.push_back({ nbg[i]->u(), nbg[(i + 1) % nbg.size()]->v() });
+            kernels.emplace_back(nbg[i]->u(), p->v());
+            kernels.emplace_back(nbg[i]->u(), nbg[(i + 1) % nbg.size()]->v());
 
             lcs.push_back(nbg[i]->lc());
             lcs.push_back(nbg[i]->lc());
         }
         else if (nbg[(i + 1) % nbg.size()]->degenerated() == 1) {
-            kernels.push_back({ nbg[i]->u(), nbg[i]->v() });
-            kernels.push_back({ nbg[i]->u(), nbg[(i + 1) % nbg.size()]->v() });
+            kernels.emplace_back(nbg[i]->u(), nbg[i]->v());
+            kernels.emplace_back(nbg[i]->u(), nbg[(i + 1) % nbg.size()]->v());
             lcs.push_back(nbg[i]->lc());
             lcs.push_back(nbg[i]->lc());
         }
         else if (nbg[(i + 1) % nbg.size()]->degenerated() == 2) {
-            kernels.push_back({ nbg[i]->u(), nbg[i]->v() });
-            kernels.push_back({ nbg[(i + 1) % nbg.size()]->u(), nbg[i]->v() });
+            kernels.emplace_back(nbg[i]->u(), nbg[i]->v());
+            kernels.emplace_back(nbg[(i + 1) % nbg.size()]->u(), nbg[i]->v());
             lcs.push_back(nbg[i]->lc());
             lcs.push_back(nbg[i]->lc());
         }
         else {
-            kernels.push_back({ nbg[i]->u(), nbg[i]->v() });
+            kernels.emplace_back(nbg[i]->u(), nbg[i]->v());
             lcs.push_back(nbg[i]->lc());
         }
     }
@@ -1090,8 +1090,7 @@ BDS_Mesh::recover_edge(int num1,
             if (!e->deleted() && e->p1_ != p1 && e->p1_ != p2 && e->p2_ != p1 && e->p2_ != p2)
                 if (intersect_edges_2d(e->p1_->uv(), e->p2_->uv(), p1->uv(), p2->uv())) {
                     // intersect
-                    if (e2r && e2r->find(EdgeToRecover(e->p1_->id(), e->p2_->id(), nullptr)) !=
-                                   e2r->end()) {
+                    if (e2r && e2r->contains(EdgeToRecover(e->p1_->id(), e->p2_->id(), nullptr))) {
                         auto itr1 = e2r->find(EdgeToRecover(e->p1_->id(), e->p2_->id(), nullptr));
                         auto itr2 = e2r->find(EdgeToRecover(num1, num2, nullptr));
                         // Msg::Debug("edge %d %d on model edge %d cannot be recovered because"
@@ -1117,7 +1116,7 @@ BDS_Mesh::recover_edge(int num1,
         if (self_intersection)
             return std::nullopt;
 
-        if (!intersected.size() || ix > 300) {
+        if (intersected.empty() || ix > 300) {
             auto eee = find_edge(num1, num2);
             if (not eee.has_value()) {
                 // if (Msg::GetVerbosity() > 98) {
@@ -1372,11 +1371,23 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
 
     int kk = 0;
     {
+        auto calc_ept = [](Ptr<BDS_Point> a, Ptr<BDS_Point> p, Ptr<BDS_Point> o) -> i32 {
+            if (a == p) {
+                if (not o.is_null())
+                    return o->id();
+                else
+                    return -1;
+            }
+            else {
+                return a->id();
+            }
+        };
+
         std::vector<Ptr<BDS_Edge>> edges(p->edges_);
         for (auto & edge : edges) {
             edge->p1_->config_modified_ = edge->p2_->config_modified_ = true;
-            ept[0][kk] = (edge->p1_ == p) ? (o ? o->id() : -1) : edge->p1_->id();
-            ept[1][kk] = (edge->p2_ == p) ? (o ? o->id() : -1) : edge->p2_->id();
+            ept[0][kk] = calc_ept(edge->p1_, p, o);
+            ept[1][kk] = calc_ept(edge->p2_, p, o);
             if (ept[0][kk] < 0 || ept[1][kk] < 0) {
                 return false;
             }
@@ -1566,7 +1577,7 @@ BDS_Mesh::cleanup()
 
 //
 
-BDS_SwapEdgeTestRecover::BDS_SwapEdgeTestRecover() {}
+BDS_SwapEdgeTestRecover::BDS_SwapEdgeTestRecover() = default;
 
 bool
 BDS_SwapEdgeTestRecover::operator()(Ptr<const BDS_Point> p1,

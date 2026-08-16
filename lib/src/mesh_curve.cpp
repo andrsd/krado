@@ -133,7 +133,7 @@ get_mesh_curve_vertices(Ptr<MeshCurve> curve)
 double
 reparam_mesh_vertex_on_edge(Ptr<MeshVertexAbstract> v, Ptr<MeshCurve> curve)
 {
-    auto & geom_curve = curve->geom_curve();
+    const auto & geom_curve = curve->geom_curve();
     auto bnd_verts = curve->bounding_vertices();
     auto [lo, hi] = geom_curve.param_range();
     if (bnd_verts[0] == v)
