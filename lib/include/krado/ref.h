@@ -185,7 +185,7 @@ public:
     /// Check if the reference is null
     ///
     /// @return `true` if the reference is null (i.e. doe not point to anythin), `false` otherwise
-    bool
+    [[nodiscard]] bool
     is_null() const noexcept
     {
         return !this->ref_.has_value();

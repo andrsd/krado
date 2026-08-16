@@ -36,17 +36,17 @@ public:
     BDS_Point(i32 id, Point pt);
     BDS_Point(i32 id, Point pt, UVParam uv, BDS_GeomEntity ge);
 
-    i32 id() const;
-    double lc() const;
+    [[nodiscard]] i32 id() const;
+    [[nodiscard]] double lc() const;
     void set_lc(double lc);
-    Point point() const;
-    UVParam uv() const;
-    double u() const;
-    double v() const;
-    u8 degenerated() const;
+    [[nodiscard]] Point point() const;
+    [[nodiscard]] UVParam uv() const;
+    [[nodiscard]] double u() const;
+    [[nodiscard]] double v() const;
+    [[nodiscard]] u8 degenerated() const;
     void del(Ptr<BDS_Edge> e);
-    std::vector<Ptr<BDS_Face>> triangles() const;
-    bool config_modified() const;
+    [[nodiscard]] std::vector<Ptr<BDS_Face>> triangles() const;
+    [[nodiscard]] bool config_modified() const;
 
     bool operator<(const BDS_Point & other) const;
 
@@ -75,26 +75,26 @@ class BDS_Edge {
 public:
     BDS_Edge(Ptr<BDS_Point> A, Ptr<BDS_Point> B, Optional<BDS_GeomEntity> ge = std::nullopt);
     std::vector<Ptr<BDS_Face>> faces();
-    double length() const;
-    bool deleted() const;
-    bool active() const;
+    [[nodiscard]] double length() const;
+    [[nodiscard]] bool deleted() const;
+    [[nodiscard]] bool active() const;
     void del();
-    int num_faces() const;
-    int num_triangles() const;
-    Ptr<BDS_Point> common_vertex(Ptr<const BDS_Edge> other) const;
-    Ptr<BDS_Point> other_vertex(Ptr<const BDS_Point> p) const;
+    [[nodiscard]] int num_faces() const;
+    [[nodiscard]] int num_triangles() const;
+    [[nodiscard]] Ptr<BDS_Point> common_vertex(Ptr<const BDS_Edge> other) const;
+    [[nodiscard]] Ptr<BDS_Point> other_vertex(Ptr<const BDS_Point> p) const;
     void add_face(Ptr<BDS_Face> f);
     bool operator<(const BDS_Edge & other) const;
-    Optional<Ptr<BDS_Face>> other_face(Ptr<const BDS_Face> f) const;
+    [[nodiscard]] Optional<Ptr<BDS_Face>> other_face(Ptr<const BDS_Face> f) const;
     void del(Ptr<BDS_Face> t);
-    std::array<Ptr<BDS_Point>, 2> opposite_of() const;
-    std::tuple<std::array<Ptr<BDS_Point>, 3>,
-               std::array<Ptr<BDS_Point>, 3>,
-               std::array<Ptr<BDS_Point>, 2>>
+    [[nodiscard]] std::array<Ptr<BDS_Point>, 2> opposite_of() const;
+    [[nodiscard]] std::tuple<std::array<Ptr<BDS_Point>, 3>,
+                             std::array<Ptr<BDS_Point>, 3>,
+                             std::array<Ptr<BDS_Point>, 2>>
     compute_neighborhood() const;
 
 private:
-    Ptr<BDS_Point> opposite_vertex(const std::array<Ptr<BDS_Point>, 3> & pts) const;
+    [[nodiscard]] Ptr<BDS_Point> opposite_vertex(const std::array<Ptr<BDS_Point>, 3> & pts) const;
 
     std::vector<Ptr<BDS_Face>> faces_;
     bool deleted_;
@@ -110,12 +110,12 @@ public:
 class BDS_Face {
 public:
     BDS_Face(Ptr<BDS_Edge> A, Ptr<BDS_Edge> B, Ptr<BDS_Edge> C);
-    bool deleted() const;
-    bool active() const;
-    int num_edges() const;
+    [[nodiscard]] bool deleted() const;
+    [[nodiscard]] bool active() const;
+    [[nodiscard]] int num_edges() const;
     Optional<Ptr<BDS_Edge>> opposite_edge(Ptr<BDS_Point> p);
     Optional<Ptr<BDS_Point>> opposite_vertex(Ptr<BDS_Edge> e);
-    Optional<std::array<Ptr<BDS_Point>, 3>> get_nodes() const;
+    [[nodiscard]] Optional<std::array<Ptr<BDS_Point>, 3>> get_nodes() const;
 
 public:
     bool deleted_;
@@ -187,7 +187,6 @@ public:
                     Ptr<const BDS_Point> oq1,
                     Ptr<const BDS_Point> oq2,
                     Ptr<const BDS_Point> oq3) const override;
-    virtual ~BDS_SwapEdgeTestRecover() {}
 };
 
 class BDS_SwapEdgeTestQuality : public BDS_SwapEdgeTest {
@@ -211,7 +210,6 @@ public:
                     Ptr<const BDS_Point> oq1,
                     Ptr<const BDS_Point> oq2,
                     Ptr<const BDS_Point> oq3) const override;
-    virtual ~BDS_SwapEdgeTestQuality() {}
 };
 
 class BDS_SwapEdgeTestNormals : public BDS_SwapEdgeTest {
@@ -220,29 +218,29 @@ class BDS_SwapEdgeTestNormals : public BDS_SwapEdgeTest {
 
 public:
     BDS_SwapEdgeTestNormals(GeomSurface * _gf, double ori);
-    virtual bool operator()(Ptr<const BDS_Point> p1,
-                            Ptr<const BDS_Point> p2,
-                            Ptr<const BDS_Point> q1,
-                            Ptr<const BDS_Point> q2) const;
-    virtual bool operator()(Ptr<const BDS_Point> p1,
-                            Ptr<const BDS_Point> p2,
-                            Ptr<const BDS_Point> p3,
-                            Ptr<const BDS_Point> q1,
-                            Ptr<const BDS_Point> q2,
-                            Ptr<const BDS_Point> q3,
-                            Ptr<const BDS_Point> op1,
-                            Ptr<const BDS_Point> op2,
-                            Ptr<const BDS_Point> op3,
-                            Ptr<const BDS_Point> oq1,
-                            Ptr<const BDS_Point> oq2,
-                            Ptr<const BDS_Point> oq3) const;
+    bool operator()(Ptr<const BDS_Point> p1,
+                    Ptr<const BDS_Point> p2,
+                    Ptr<const BDS_Point> q1,
+                    Ptr<const BDS_Point> q2) const override;
+    bool operator()(Ptr<const BDS_Point> p1,
+                    Ptr<const BDS_Point> p2,
+                    Ptr<const BDS_Point> p3,
+                    Ptr<const BDS_Point> q1,
+                    Ptr<const BDS_Point> q2,
+                    Ptr<const BDS_Point> q3,
+                    Ptr<const BDS_Point> op1,
+                    Ptr<const BDS_Point> op2,
+                    Ptr<const BDS_Point> op3,
+                    Ptr<const BDS_Point> oq1,
+                    Ptr<const BDS_Point> oq2,
+                    Ptr<const BDS_Point> oq3) const override;
 };
 
 struct EdgeToRecover {
     EdgeToRecover(int p1, int p2, const GeomCurve * ge);
     bool operator<(const EdgeToRecover & other) const;
 
-    const GeomCurve *
+    [[nodiscard]] const GeomCurve *
     geom_curve() const
     {
         return this->ge_;
@@ -257,22 +255,23 @@ class BDS_Mesh {
 public:
     BDS_Mesh(int max_pts = 0);
 
-    const std::map<int, Ptr<BDS_Point>> & points() const;
-    Span<const Ptr<BDS_Edge>> edges() const;
-    Span<const Ptr<BDS_Face>> triangles() const;
+    [[nodiscard]] const std::map<int, Ptr<BDS_Point>> & points() const;
+    [[nodiscard]] Span<const Ptr<BDS_Edge>> edges() const;
+    [[nodiscard]] Span<const Ptr<BDS_Face>> triangles() const;
     // Points
     Ptr<BDS_Point> add_point(int num, Point pt);
     Ptr<BDS_Point> add_point(int num, UVParam uv, const GeomSurface * gf, BDS_GeomEntity ge);
     void del_point(Ptr<BDS_Point> p);
-    Optional<Ptr<BDS_Point>> find_point(int num) const;
+    [[nodiscard]] Optional<Ptr<BDS_Point>> find_point(int num) const;
     // Edges
     Optional<Ptr<BDS_Edge>> add_edge(int p1, int p2);
     Ptr<BDS_Edge> add_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2);
     void del_edge(Ptr<BDS_Edge> e);
-    Optional<Ptr<BDS_Edge>> find_edge(int p1, int p2) const;
-    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const;
-    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, int p2) const;
-    Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const;
+    [[nodiscard]] Optional<Ptr<BDS_Edge>> find_edge(int p1, int p2) const;
+    [[nodiscard]] Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const;
+    [[nodiscard]] Optional<Ptr<BDS_Edge>> find_edge(Ptr<BDS_Point> p1, int p2) const;
+    [[nodiscard]] Optional<Ptr<BDS_Edge>>
+    find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const;
     // Triangles
     Optional<Ptr<BDS_Face>>
     add_triangle(int p1, int p2, int p3, Optional<BDS_GeomEntity> ge = std::nullopt);
@@ -281,7 +280,7 @@ public:
                                          Ptr<BDS_Edge> e3,
                                          Optional<BDS_GeomEntity> ge = std::nullopt);
     void del_face(Ptr<BDS_Face> t);
-    Optional<Ptr<BDS_Face>>
+    [[nodiscard]] Optional<Ptr<BDS_Face>>
     find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const;
     // Geom entities
     BDS_GeomEntity add_geom(int tag, int degree);

@@ -70,7 +70,7 @@ public:
     //     return cref(*this->ptr_);
     // }
 
-    bool
+    [[nodiscard]] bool
     is_null() const noexcept
     {
         return this->ptr_ == nullptr;
