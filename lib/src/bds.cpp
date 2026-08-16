@@ -17,7 +17,9 @@ namespace krado {
 namespace {
 
 Vector
-vector_triangle(Ptr<const BDS_Point> p1, Ptr<const BDS_Point> p2, Ptr<const BDS_Point> p3)
+vector_triangle(WeakPtr<const BDS_Point> p1,
+                WeakPtr<const BDS_Point> p2,
+                WeakPtr<const BDS_Point> p3)
 {
     auto a = p1->point() - p2->point();
     auto b = p1->point() - p3->point();
@@ -25,9 +27,9 @@ vector_triangle(Ptr<const BDS_Point> p1, Ptr<const BDS_Point> p2, Ptr<const BDS_
 }
 
 double
-vector_triangle_parametric(Ptr<const BDS_Point> p1,
-                           Ptr<const BDS_Point> p2,
-                           Ptr<const BDS_Point> p3)
+vector_triangle_parametric(WeakPtr<const BDS_Point> p1,
+                           WeakPtr<const BDS_Point> p2,
+                           WeakPtr<const BDS_Point> p3)
 {
     auto a = p1->uv() - p2->uv();
     auto b = p1->uv() - p3->uv();
@@ -35,15 +37,17 @@ vector_triangle_parametric(Ptr<const BDS_Point> p1,
 }
 
 Vector
-normal_triangle(Ptr<const BDS_Point> p1, Ptr<const BDS_Point> p2, Ptr<const BDS_Point> p3)
+normal_triangle(WeakPtr<const BDS_Point> p1,
+                WeakPtr<const BDS_Point> p2,
+                WeakPtr<const BDS_Point> p3)
 {
     return vector_triangle(p1, p2, p3).normalized();
 }
 
 double
-_cos_N(Ptr<const BDS_Point> p1,
-       Ptr<const BDS_Point> p2,
-       Ptr<const BDS_Point> p3,
+_cos_N(WeakPtr<const BDS_Point> p1,
+       WeakPtr<const BDS_Point> p2,
+       WeakPtr<const BDS_Point> p3,
        const GeomSurface * gf)
 {
     auto n = normal_triangle(p1, p2, p3);
@@ -63,7 +67,7 @@ _cos_N(Ptr<const BDS_Point> p1,
 }
 
 bool
-is_equivalent(std::array<Ptr<const BDS_Edge>, 3> e, std::array<Ptr<const BDS_Edge>, 3> o)
+is_equivalent(std::array<WeakPtr<const BDS_Edge>, 3> e, std::array<WeakPtr<const BDS_Edge>, 3> o)
 {
     return (o[0] == e[0] && o[1] == e[1] && o[2] == e[2]) ||
            (o[0] == e[0] && o[1] == e[2] && o[2] == e[1]) ||
@@ -74,7 +78,9 @@ is_equivalent(std::array<Ptr<const BDS_Edge>, 3> e, std::array<Ptr<const BDS_Edg
 }
 
 double
-surface_triangle_param(Ptr<const BDS_Point> p1, Ptr<const BDS_Point> p2, Ptr<const BDS_Point> p3)
+surface_triangle_param(WeakPtr<const BDS_Point> p1,
+                       WeakPtr<const BDS_Point> p2,
+                       WeakPtr<const BDS_Point> p3)
 {
     // FIXME
     // THIS ASSUMES DEGENERATED EDGES ALONG AXIS U !!!
@@ -150,8 +156,8 @@ intersect_edges_2d(UVParam p1, UVParam p2, UVParam q1, UVParam q2)
     return intersect_edges_2d(p1.u, p1.v, p2.u, p2.v, q1.u, q1.v, q2.u, q2.v);
 }
 
-std::array<Ptr<BDS_Point>, 2>
-edge_opposite_to_vertex(const std::array<Ptr<BDS_Point>, 3> & pts, Ptr<const BDS_Point> p)
+std::array<WeakPtr<BDS_Point>, 2>
+edge_opposite_to_vertex(const std::array<WeakPtr<BDS_Point>, 3> & pts, WeakPtr<const BDS_Point> p)
 {
     if (pts[0] == p)
         return { pts[1], pts[2] };
@@ -161,14 +167,14 @@ edge_opposite_to_vertex(const std::array<Ptr<BDS_Point>, 3> & pts, Ptr<const BDS
         return { pts[0], pts[1] };
 }
 
-Optional<std::vector<Ptr<BDS_Point>>>
-get_ordered_neighboring_vertices(Ptr<const BDS_Point> p,
-                                 const std::vector<Ptr<BDS_Face>> & triangles)
+Optional<std::vector<WeakPtr<BDS_Point>>>
+get_ordered_neighboring_vertices(WeakPtr<const BDS_Point> p,
+                                 const std::vector<WeakPtr<BDS_Face>> & triangles)
 {
     if (triangles.empty())
         return std::nullopt;
 
-    std::vector<Ptr<BDS_Point>> nbg;
+    std::vector<WeakPtr<BDS_Point>> nbg;
     while (true) {
         bool found = false;
         for (const auto & tri : triangles) {
@@ -209,7 +215,7 @@ get_ordered_neighboring_vertices(Ptr<const BDS_Point> p,
 }
 
 bool
-validity_of_cavity(UVParam p, const std::vector<Ptr<BDS_Point>> & nbg)
+validity_of_cavity(UVParam p, const std::vector<WeakPtr<BDS_Point>> & nbg)
 {
     UVParam q = { nbg[0]->degenerated() == 1 ? nbg[1]->u() : nbg[0]->u(),
                   nbg[0]->degenerated() == 2 ? nbg[1]->v() : nbg[0]->v() };
@@ -231,7 +237,7 @@ validity_of_cavity(UVParam p, const std::vector<Ptr<BDS_Point>> & nbg)
 }
 
 std::tuple<double, double>
-tutte_energy(Point pt, const std::vector<Ptr<BDS_Point>> & nbg)
+tutte_energy(Point pt, const std::vector<WeakPtr<BDS_Point>> & nbg)
 {
     if (nbg.empty())
         return { MAX_LC, 0. };
@@ -268,7 +274,7 @@ centroid_uv(const std::vector<UVParam> & kernel, const std::vector<double> & lcs
 }
 
 std::tuple<UVParam, double>
-centroid_uv(Ptr<const BDS_Point> p,
+centroid_uv(WeakPtr<const BDS_Point> p,
             const GeomSurface & gf,
             const std::vector<UVParam> & kernel,
             const std::vector<double> & lcs)
@@ -299,9 +305,9 @@ centroid_uv(Ptr<const BDS_Point> p,
 }
 
 bool
-minimize_tutte_energy_proj(Ptr<const BDS_Point> p,
+minimize_tutte_energy_proj(WeakPtr<const BDS_Point> p,
                            double E_unmoved,
-                           const std::vector<Ptr<BDS_Point>> & nbg,
+                           const std::vector<WeakPtr<BDS_Point>> & nbg,
                            const std::vector<UVParam> & kernel,
                            const std::vector<double> & lc,
                            const GeomSurface & gf)
@@ -332,9 +338,9 @@ minimize_tutte_energy_proj(Ptr<const BDS_Point> p,
 }
 
 bool
-minimize_tutte_energy_param(Ptr<BDS_Point> p,
+minimize_tutte_energy_param(WeakPtr<BDS_Point> p,
                             double E_unmoved,
-                            const std::vector<Ptr<BDS_Point>> & nbg,
+                            const std::vector<WeakPtr<BDS_Point>> & nbg,
                             const std::vector<UVParam> & kernel,
                             const std::vector<double> & lcs,
                             const GeomSurface & gf)
@@ -366,7 +372,7 @@ intersection(UVParam p1, UVParam p2, UVParam q1, UVParam q2)
 }
 
 std::tuple<std::vector<UVParam>, std::vector<double>>
-compute_some_kind_of_kernel(Ptr<const BDS_Point> p, const std::vector<Ptr<BDS_Point>> & nbg)
+compute_some_kind_of_kernel(WeakPtr<const BDS_Point> p, const std::vector<WeakPtr<BDS_Point>> & nbg)
 {
     std::vector<UVParam> kernels;
     std::vector<double> lcs;
@@ -523,7 +529,7 @@ BDS_Point::degenerated() const
 }
 
 void
-BDS_Point::del(Ptr<BDS_Edge> e)
+BDS_Point::del(WeakPtr<BDS_Edge> e)
 {
     if (this->edges_.empty())
         return;
@@ -531,10 +537,10 @@ BDS_Point::del(Ptr<BDS_Edge> e)
                        this->edges_.end());
 }
 
-std::vector<Ptr<BDS_Face>>
+std::vector<WeakPtr<BDS_Face>>
 BDS_Point::triangles() const
 {
-    std::vector<Ptr<BDS_Face>> t;
+    std::vector<WeakPtr<BDS_Face>> t;
     t.reserve(this->edges_.size());
 
     for (const auto & edge : this->edges_) {
@@ -561,7 +567,7 @@ BDS_Point::operator<(const BDS_Point & other) const
 
 // BDS_Edge
 
-BDS_Edge::BDS_Edge(Ptr<BDS_Point> a, Ptr<BDS_Point> b, Optional<BDS_GeomEntity> ge) :
+BDS_Edge::BDS_Edge(WeakPtr<BDS_Point> a, WeakPtr<BDS_Point> b, Optional<BDS_GeomEntity> ge) :
     deleted_(false),
     g_(ge)
 {
@@ -575,7 +581,7 @@ BDS_Edge::BDS_Edge(Ptr<BDS_Point> a, Ptr<BDS_Point> b, Optional<BDS_GeomEntity> 
     }
 }
 
-std::vector<Ptr<BDS_Face>>
+std::vector<WeakPtr<BDS_Face>>
 BDS_Edge::faces()
 {
     return this->faces_;
@@ -618,8 +624,8 @@ BDS_Edge::num_triangles() const
     return this->faces_.size();
 }
 
-Ptr<BDS_Point>
-BDS_Edge::common_vertex(Ptr<const BDS_Edge> other) const
+WeakPtr<BDS_Point>
+BDS_Edge::common_vertex(WeakPtr<const BDS_Edge> other) const
 {
     if (this->p1_ == other->p1_ || this->p1_ == other->p2_)
         return this->p1_;
@@ -633,8 +639,8 @@ BDS_Edge::common_vertex(Ptr<const BDS_Edge> other) const
     return nullptr;
 }
 
-Ptr<BDS_Point>
-BDS_Edge::other_vertex(Ptr<const BDS_Point> p) const
+WeakPtr<BDS_Point>
+BDS_Edge::other_vertex(WeakPtr<const BDS_Point> p) const
 {
     if (this->p1_ == p)
         return this->p2_;
@@ -645,7 +651,7 @@ BDS_Edge::other_vertex(Ptr<const BDS_Point> p) const
 }
 
 void
-BDS_Edge::add_face(Ptr<BDS_Face> f)
+BDS_Edge::add_face(WeakPtr<BDS_Face> f)
 {
     this->faces_.push_back(f);
 }
@@ -662,8 +668,8 @@ BDS_Edge::operator<(const BDS_Edge & other) const
     return false;
 }
 
-Optional<Ptr<BDS_Face>>
-BDS_Edge::other_face(Ptr<const BDS_Face> f) const
+Optional<WeakPtr<BDS_Face>>
+BDS_Edge::other_face(WeakPtr<const BDS_Face> f) const
 {
     if (num_faces() != 2) {
         Log::error("{} face(s) attached to edge {}-{}",
@@ -681,7 +687,7 @@ BDS_Edge::other_face(Ptr<const BDS_Face> f) const
 }
 
 void
-BDS_Edge::del(Ptr<BDS_Face> t)
+BDS_Edge::del(WeakPtr<BDS_Face> t)
 {
     if (this->faces_.empty())
         return;
@@ -689,7 +695,7 @@ BDS_Edge::del(Ptr<BDS_Face> t)
     this->faces_.erase(
         std::remove_if(
             this->faces_.begin(), this->faces_.end(),
-            [t](Ptr<BDS_Face> ptr) {
+            [t](WeakPtr<BDS_Face> ptr) {
                 return ptr == t;
             }
         ),
@@ -698,8 +704,8 @@ BDS_Edge::del(Ptr<BDS_Face> t)
     // clang-format on
 }
 
-Ptr<BDS_Point>
-BDS_Edge::opposite_vertex(const std::array<Ptr<BDS_Point>, 3> & pts) const
+WeakPtr<BDS_Point>
+BDS_Edge::opposite_vertex(const std::array<WeakPtr<BDS_Point>, 3> & pts) const
 {
     if (pts[0] != this->p1_ && pts[0] != this->p2_)
         return pts[0];
@@ -709,10 +715,10 @@ BDS_Edge::opposite_vertex(const std::array<Ptr<BDS_Point>, 3> & pts) const
         return pts[2];
 }
 
-std::array<Ptr<BDS_Point>, 2>
+std::array<WeakPtr<BDS_Point>, 2>
 BDS_Edge::opposite_of() const
 {
-    std::array<Ptr<BDS_Point>, 2> oface = { nullptr, nullptr };
+    std::array<WeakPtr<BDS_Point>, 2> oface = { nullptr, nullptr };
     if (this->faces_[0]) {
         auto pts_res = this->faces_[0]->get_nodes();
         if (not pts_res.has_value())
@@ -728,14 +734,14 @@ BDS_Edge::opposite_of() const
     return oface;
 }
 
-std::tuple<std::array<Ptr<BDS_Point>, 3>,
-           std::array<Ptr<BDS_Point>, 3>,
-           std::array<Ptr<BDS_Point>, 2>>
+std::tuple<std::array<WeakPtr<BDS_Point>, 3>,
+           std::array<WeakPtr<BDS_Point>, 3>,
+           std::array<WeakPtr<BDS_Point>, 2>>
 BDS_Edge::compute_neighborhood() const
 {
-    std::array<Ptr<BDS_Point>, 2> oface = { nullptr, nullptr };
-    std::array<Ptr<BDS_Point>, 3> pts1 = { nullptr, nullptr, nullptr };
-    std::array<Ptr<BDS_Point>, 3> pts2 = { nullptr, nullptr, nullptr };
+    std::array<WeakPtr<BDS_Point>, 2> oface = { nullptr, nullptr };
+    std::array<WeakPtr<BDS_Point>, 3> pts1 = { nullptr, nullptr, nullptr };
+    std::array<WeakPtr<BDS_Point>, 3> pts2 = { nullptr, nullptr, nullptr };
     if (this->faces_[0]) {
         auto pts_res = this->faces_[0]->get_nodes();
         if (not pts_res.has_value())
@@ -755,7 +761,7 @@ BDS_Edge::compute_neighborhood() const
 
 //
 
-BDS_Face::BDS_Face(Ptr<BDS_Edge> A, Ptr<BDS_Edge> B, Ptr<BDS_Edge> C) :
+BDS_Face::BDS_Face(WeakPtr<BDS_Edge> A, WeakPtr<BDS_Edge> B, WeakPtr<BDS_Edge> C) :
     deleted_(false),
     e1_(A),
     e2_(B),
@@ -781,8 +787,8 @@ BDS_Face::num_edges() const
     return 3;
 }
 
-Optional<Ptr<BDS_Edge>>
-BDS_Face::opposite_edge(Ptr<BDS_Point> p)
+Optional<WeakPtr<BDS_Edge>>
+BDS_Face::opposite_edge(WeakPtr<BDS_Point> p)
 {
     if (this->e1_->p1_ != p && this->e1_->p2_ != p)
         return this->e1_;
@@ -794,8 +800,8 @@ BDS_Face::opposite_edge(Ptr<BDS_Point> p)
     return std::nullopt;
 }
 
-Optional<Ptr<BDS_Point>>
-BDS_Face::opposite_vertex(Ptr<BDS_Edge> e)
+Optional<WeakPtr<BDS_Point>>
+BDS_Face::opposite_vertex(WeakPtr<BDS_Edge> e)
 {
     if (e == this->e1_)
         return this->e2_->common_vertex(this->e3_);
@@ -807,12 +813,12 @@ BDS_Face::opposite_vertex(Ptr<BDS_Edge> e)
     return std::nullopt;
 }
 
-Optional<std::array<Ptr<BDS_Point>, 3>>
+Optional<std::array<WeakPtr<BDS_Point>, 3>>
 BDS_Face::get_nodes() const
 {
-    std::array<Ptr<BDS_Point>, 3> n = { this->e1_->common_vertex(this->e3_),
-                                        this->e1_->common_vertex(this->e2_),
-                                        this->e2_->common_vertex(this->e3_) };
+    std::array<WeakPtr<BDS_Point>, 3> n = { this->e1_->common_vertex(this->e3_),
+                                            this->e1_->common_vertex(this->e2_),
+                                            this->e2_->common_vertex(this->e3_) };
     if (n[0] && n[1] && n[2])
         return n;
     Log::error("Invalid points in face");
@@ -904,7 +910,7 @@ BDS_Mesh::find_point(int idx) const
         return std::nullopt;
 }
 
-Optional<Ptr<BDS_Edge>>
+Optional<WeakPtr<BDS_Edge>>
 BDS_Mesh::add_edge(int idx1, int idx2)
 {
     auto efound = find_edge(idx1, idx2);
@@ -927,13 +933,13 @@ BDS_Mesh::add_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
 {
     auto edge = Ptr<BDS_Edge>::alloc(p1, p2);
     this->edges_.push_back(edge);
-    p1->edges_.push_back(edge);
-    p2->edges_.push_back(edge);
+    p1->edges_.push_back(weak_ptr(edge));
+    p2->edges_.push_back(weak_ptr(edge));
     return edge;
 }
 
 void
-BDS_Mesh::del_edge(Ptr<BDS_Edge> e)
+BDS_Mesh::del_edge(WeakPtr<BDS_Edge> e)
 {
     if (e.is_null())
         return;
@@ -942,7 +948,7 @@ BDS_Mesh::del_edge(Ptr<BDS_Edge> e)
     e->del();
 }
 
-Optional<Ptr<BDS_Edge>>
+Optional<WeakPtr<BDS_Edge>>
 BDS_Mesh::find_edge(int idx1, int idx2) const
 {
     auto p_res = find_point(idx1);
@@ -951,26 +957,26 @@ BDS_Mesh::find_edge(int idx1, int idx2) const
     return find_edge(p, idx2);
 }
 
-Optional<Ptr<BDS_Edge>>
-BDS_Mesh::find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2) const
+Optional<WeakPtr<BDS_Edge>>
+BDS_Mesh::find_edge(WeakPtr<BDS_Point> p1, WeakPtr<BDS_Point> p2) const
 {
     return find_edge(p1, p2->id());
 }
 
-Optional<Ptr<BDS_Edge>>
-BDS_Mesh::find_edge(Ptr<BDS_Point> p1, int p2) const
+Optional<WeakPtr<BDS_Edge>>
+BDS_Mesh::find_edge(WeakPtr<BDS_Point> p1, int p2) const
 {
     for (auto & edge : p1->edges_) {
         if (edge->p1_ == p1 && edge->p2_->id() == p2)
-            return edge;
+            return edge.lock();
         if (edge->p2_ == p1 && edge->p1_->id() == p2)
-            return edge;
+            return edge.lock();
     }
     return std::nullopt;
 }
 
-Optional<Ptr<BDS_Edge>>
-BDS_Mesh::find_edge(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2, Ptr<BDS_Face> t) const
+Optional<WeakPtr<BDS_Edge>>
+BDS_Mesh::find_edge(WeakPtr<BDS_Point> p1, WeakPtr<BDS_Point> p2, WeakPtr<BDS_Face> t) const
 {
     auto id1 = p1->id();
     auto id2 = p2->id();
@@ -998,9 +1004,9 @@ BDS_Mesh::add_triangle(int idx1, int idx2, int idx3, Optional<BDS_GeomEntity> ge
 }
 
 Optional<Ptr<BDS_Face>>
-BDS_Mesh::add_triangle(Ptr<BDS_Edge> e1,
-                       Ptr<BDS_Edge> e2,
-                       Ptr<BDS_Edge> e3,
+BDS_Mesh::add_triangle(WeakPtr<BDS_Edge> e1,
+                       WeakPtr<BDS_Edge> e2,
+                       WeakPtr<BDS_Edge> e3,
                        Optional<BDS_GeomEntity> ge)
 {
     if (e1 && e2 && e3) {
@@ -1016,7 +1022,7 @@ BDS_Mesh::add_triangle(Ptr<BDS_Edge> e1,
 }
 
 void
-BDS_Mesh::del_face(Ptr<BDS_Face> t)
+BDS_Mesh::del_face(WeakPtr<BDS_Face> t)
 {
     if (t.is_null())
         return;
@@ -1026,8 +1032,8 @@ BDS_Mesh::del_face(Ptr<BDS_Face> t)
     t->deleted_ = true;
 }
 
-Optional<Ptr<BDS_Face>>
-BDS_Mesh::find_triangle(Ptr<BDS_Edge> e1, Ptr<BDS_Edge> e2, Ptr<BDS_Edge> e3) const
+Optional<WeakPtr<BDS_Face>>
+BDS_Mesh::find_triangle(WeakPtr<BDS_Edge> e1, WeakPtr<BDS_Edge> e2, WeakPtr<BDS_Edge> e3) const
 {
     for (const auto & t : e1->faces()) {
         if (is_equivalent({ e1, e2, e3 }, { t->e1_, t->e2_, t->e3_ })) {
@@ -1054,7 +1060,7 @@ BDS_Mesh::add_geom(int tag, int degree)
     return *it;
 }
 
-Optional<Ptr<BDS_Edge>>
+Optional<WeakPtr<BDS_Edge>>
 BDS_Mesh::recover_edge(int num1,
                        int num2,
                        bool & fatal,
@@ -1153,8 +1159,8 @@ BDS_Mesh::recover_edge(int num1,
     return std::nullopt;
 }
 
-Optional<Ptr<BDS_Edge>>
-BDS_Mesh::recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
+Optional<WeakPtr<BDS_Edge>>
+BDS_Mesh::recover_edge_fast(WeakPtr<BDS_Point> p1, WeakPtr<BDS_Point> p2)
 {
     for (auto & tri : p1->triangles()) {
         auto edge = tri->opposite_edge(p1);
@@ -1173,7 +1179,7 @@ BDS_Mesh::recover_edge_fast(Ptr<BDS_Point> p1, Ptr<BDS_Point> p2)
 }
 
 bool
-BDS_Mesh::swap_edge(Ptr<BDS_Edge> e, const BDS_SwapEdgeTest & theTest, bool force)
+BDS_Mesh::swap_edge(WeakPtr<BDS_Edge> e, const BDS_SwapEdgeTest & theTest, bool force)
 {
     /*
           p1
@@ -1275,7 +1281,7 @@ BDS_Mesh::swap_edge(Ptr<BDS_Edge> e, const BDS_SwapEdgeTest & theTest, bool forc
 }
 
 bool
-BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force)
+BDS_Mesh::collapse_edge_parametric(WeakPtr<BDS_Edge> e, WeakPtr<BDS_Point> p, bool force)
 {
     if (!force && e->num_faces() != 2)
         return false;
@@ -1327,7 +1333,7 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
     auto tris = p->triangles();
     auto o = e->other_vertex(p);
 
-    Ptr<BDS_Point> pt[3][1024];
+    WeakPtr<BDS_Point> pt[3][1024];
     Optional<BDS_GeomEntity> gs[1024];
     int ept[2][1024];
     Optional<BDS_GeomEntity> egs[1024];
@@ -1371,7 +1377,8 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
 
     int kk = 0;
     {
-        auto calc_ept = [](Ptr<BDS_Point> a, Ptr<BDS_Point> p, Ptr<BDS_Point> o) -> i32 {
+        auto calc_ept =
+            [](WeakPtr<BDS_Point> a, WeakPtr<BDS_Point> p, WeakPtr<BDS_Point> o) -> i32 {
             if (a == p) {
                 if (not o.is_null())
                     return o->id();
@@ -1383,7 +1390,7 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
             }
         };
 
-        std::vector<Ptr<BDS_Edge>> edges(p->edges_);
+        std::vector<WeakPtr<BDS_Edge>> edges(p->edges_);
         for (auto & edge : edges) {
             edge->p1_->config_modified_ = edge->p2_->config_modified_ = true;
             ept[0][kk] = calc_ept(edge->p1_, p, o);
@@ -1412,7 +1419,7 @@ BDS_Mesh::collapse_edge_parametric(Ptr<BDS_Edge> e, Ptr<BDS_Point> p, bool force
 }
 
 bool
-BDS_Mesh::smooth_point_centroid(Ptr<BDS_Point> p, const GeomSurface & gf, double threshold)
+BDS_Mesh::smooth_point_centroid(WeakPtr<BDS_Point> p, const GeomSurface & gf, double threshold)
 {
     if (p->degenerated_)
         return false;
@@ -1451,7 +1458,7 @@ BDS_Mesh::smooth_point_centroid(Ptr<BDS_Point> p, const GeomSurface & gf, double
 }
 
 bool
-BDS_Mesh::split_edge(Ptr<BDS_Edge> e, Ptr<BDS_Point> mid, bool check_area_param)
+BDS_Mesh::split_edge(WeakPtr<BDS_Edge> e, WeakPtr<BDS_Point> mid, bool check_area_param)
 {
     /*
           p1
@@ -1580,10 +1587,10 @@ BDS_Mesh::cleanup()
 BDS_SwapEdgeTestRecover::BDS_SwapEdgeTestRecover() = default;
 
 bool
-BDS_SwapEdgeTestRecover::operator()(Ptr<const BDS_Point> p1,
-                                    Ptr<const BDS_Point> p2,
-                                    Ptr<const BDS_Point> q1,
-                                    Ptr<const BDS_Point> q2) const
+BDS_SwapEdgeTestRecover::operator()(WeakPtr<const BDS_Point> p1,
+                                    WeakPtr<const BDS_Point> p2,
+                                    WeakPtr<const BDS_Point> q1,
+                                    WeakPtr<const BDS_Point> q2) const
 {
     auto ori_t1 = orient2d(q1->uv(), p1->uv(), q2->uv());
     auto ori_t2 = orient2d(q1->uv(), q2->uv(), p2->uv());
@@ -1591,18 +1598,18 @@ BDS_SwapEdgeTestRecover::operator()(Ptr<const BDS_Point> p1,
 }
 
 bool
-BDS_SwapEdgeTestRecover::operator()(Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>,
-                                    Ptr<const BDS_Point>) const
+BDS_SwapEdgeTestRecover::operator()(WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>,
+                                    WeakPtr<const BDS_Point>) const
 {
     return true;
 }
@@ -1618,10 +1625,10 @@ BDS_SwapEdgeTestQuality::BDS_SwapEdgeTestQuality(bool a, bool b) :
 }
 
 bool
-BDS_SwapEdgeTestQuality::operator()(Ptr<const BDS_Point> p1,
-                                    Ptr<const BDS_Point> p2,
-                                    Ptr<const BDS_Point> q1,
-                                    Ptr<const BDS_Point> q2) const
+BDS_SwapEdgeTestQuality::operator()(WeakPtr<const BDS_Point> p1,
+                                    WeakPtr<const BDS_Point> p2,
+                                    WeakPtr<const BDS_Point> q1,
+                                    WeakPtr<const BDS_Point> q2) const
 {
     if (!this->test_small_triangles_)
         return true;
@@ -1649,21 +1656,21 @@ BDS_SwapEdgeTestQuality::operator()(Ptr<const BDS_Point> p1,
 }
 
 bool
-BDS_SwapEdgeTestQuality::operator()(Ptr<const BDS_Point> p1,
-                                    Ptr<const BDS_Point> p2,
-                                    Ptr<const BDS_Point> p3,
-                                    Ptr<const BDS_Point> q1,
-                                    Ptr<const BDS_Point> q2,
-                                    Ptr<const BDS_Point> q3,
-                                    Ptr<const BDS_Point> op1,
-                                    Ptr<const BDS_Point> op2,
-                                    Ptr<const BDS_Point> op3,
-                                    Ptr<const BDS_Point> oq1,
-                                    Ptr<const BDS_Point> oq2,
-                                    Ptr<const BDS_Point> oq3) const
+BDS_SwapEdgeTestQuality::operator()(WeakPtr<const BDS_Point> p1,
+                                    WeakPtr<const BDS_Point> p2,
+                                    WeakPtr<const BDS_Point> p3,
+                                    WeakPtr<const BDS_Point> q1,
+                                    WeakPtr<const BDS_Point> q2,
+                                    WeakPtr<const BDS_Point> q3,
+                                    WeakPtr<const BDS_Point> op1,
+                                    WeakPtr<const BDS_Point> op2,
+                                    WeakPtr<const BDS_Point> op3,
+                                    WeakPtr<const BDS_Point> oq1,
+                                    WeakPtr<const BDS_Point> oq2,
+                                    WeakPtr<const BDS_Point> oq3) const
 {
     // Check if new edge is not on a seam or degenerated
-    std::array<Ptr<const BDS_Point>, 2> pts = { nullptr, nullptr };
+    std::array<WeakPtr<const BDS_Point>, 2> pts = { nullptr, nullptr };
     if (op1 != oq1 && op1 != oq2 && op1 != oq3) {
         pts = { op2, op3 };
     }
@@ -1704,10 +1711,10 @@ BDS_SwapEdgeTestNormals::BDS_SwapEdgeTestNormals(GeomSurface * gf, double ori) :
 }
 
 bool
-BDS_SwapEdgeTestNormals::operator()(Ptr<const BDS_Point> p1,
-                                    Ptr<const BDS_Point> p2,
-                                    Ptr<const BDS_Point> q1,
-                                    Ptr<const BDS_Point> q2) const
+BDS_SwapEdgeTestNormals::operator()(WeakPtr<const BDS_Point> p1,
+                                    WeakPtr<const BDS_Point> p2,
+                                    WeakPtr<const BDS_Point> q1,
+                                    WeakPtr<const BDS_Point> q2) const
 {
     auto s1 = std::abs(surface_triangle_param(p1, p2, q1));
     auto s2 = std::abs(surface_triangle_param(p1, p2, q2));
@@ -1720,18 +1727,18 @@ BDS_SwapEdgeTestNormals::operator()(Ptr<const BDS_Point> p1,
 }
 
 bool
-BDS_SwapEdgeTestNormals::operator()(Ptr<const BDS_Point> p1,
-                                    Ptr<const BDS_Point> p2,
-                                    Ptr<const BDS_Point> p3,
-                                    Ptr<const BDS_Point> q1,
-                                    Ptr<const BDS_Point> q2,
-                                    Ptr<const BDS_Point> q3,
-                                    Ptr<const BDS_Point> op1,
-                                    Ptr<const BDS_Point> op2,
-                                    Ptr<const BDS_Point> op3,
-                                    Ptr<const BDS_Point> oq1,
-                                    Ptr<const BDS_Point> oq2,
-                                    Ptr<const BDS_Point> oq3) const
+BDS_SwapEdgeTestNormals::operator()(WeakPtr<const BDS_Point> p1,
+                                    WeakPtr<const BDS_Point> p2,
+                                    WeakPtr<const BDS_Point> p3,
+                                    WeakPtr<const BDS_Point> q1,
+                                    WeakPtr<const BDS_Point> q2,
+                                    WeakPtr<const BDS_Point> q3,
+                                    WeakPtr<const BDS_Point> op1,
+                                    WeakPtr<const BDS_Point> op2,
+                                    WeakPtr<const BDS_Point> op3,
+                                    WeakPtr<const BDS_Point> oq1,
+                                    WeakPtr<const BDS_Point> oq2,
+                                    WeakPtr<const BDS_Point> oq3) const
 {
     auto qa1 = Tri3::gamma(p1->point(), p2->point(), p3->point());
     auto qa2 = Tri3::gamma(q1->point(), q2->point(), q3->point());
@@ -1749,9 +1756,9 @@ BDS_SwapEdgeTestNormals::operator()(Ptr<const BDS_Point> p1,
 }
 
 void
-recur_tag(Ptr<BDS_Face> t, BDS_GeomEntity g)
+recur_tag(WeakPtr<BDS_Face> t, BDS_GeomEntity g)
 {
-    std::stack<Ptr<BDS_Face>> stack;
+    std::stack<WeakPtr<BDS_Face>> stack;
     stack.push(t);
 
     while (!stack.empty()) {

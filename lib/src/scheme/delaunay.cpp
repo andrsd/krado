@@ -1158,7 +1158,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
     std::set<SwapQuad> configs;
     while (1) {
         std::size_t nsw = 0;
-        for (auto & edge : mesh.edges()) {
+        for (const auto & edge : mesh.edges()) {
             if (edge->active()) {
                 if (edge_swap_test_delaunay_aniso(edge, surface, configs)) {
                     if (mesh.swap_edge(edge, BDS_SwapEdgeTestQuality(false))) {
@@ -1176,7 +1176,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 void
 bds2mesh(const BDS_Mesh & m,
          Ptr<MeshSurface> surface,
-         std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
+         std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
     const auto & geom_surface = surface->geom_surface();
     for (auto & tri : m.triangles()) {
@@ -2156,7 +2156,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     BDS_Mesh m;
 
-    std::map<Ptr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
+    std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
     std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recover_map_inv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
@@ -2252,7 +2252,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
             tri->g_ = std::nullopt;
     }
 
-    for (auto & e : m.edges()) {
+    for (const auto & e : m.edges()) {
         if (e->g_.has_value() && e->num_faces() == 2) {
             const auto faces = e->faces();
             const auto oface = e->opposite_of();
@@ -2313,7 +2313,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     }
     m.cleanup();
 
-    for (auto & e : m.edges()) {
+    for (const auto & e : m.edges()) {
         if (e->num_faces() == 0)
             m.del_edge(e);
         else {
