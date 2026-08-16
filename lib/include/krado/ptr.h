@@ -8,6 +8,9 @@
 
 namespace krado {
 
+template <typename T>
+class WeakPtr;
+
 /// Reference counted pointer.  It works like `std::shared_ptr<T>`
 ///
 /// @tparam T C++ type we point to
@@ -209,6 +212,12 @@ public:
         return this->ctrl_ ? this->ctrl_->strong : 0;
     }
 
+    [[nodiscard]] int
+    weak_count() const
+    {
+        return this->ctrl_ ? this->ctrl_->weak : 0;
+    }
+
     // Is this a null pointer?
     [[nodiscard]] bool
     is_null() const
@@ -262,6 +271,192 @@ public:
 
     template <typename U>
     friend class Ptr;
+
+    template <typename U>
+    friend class WeakPtr;
+};
+
+template <typename T>
+class WeakPtr {
+private:
+    typename Ptr<T>::ControlBlock * cb_ = nullptr;
+
+    void
+    release()
+    {
+        if (!this->cb_)
+            return;
+
+        // If this was the last weak reference and the object is dead, clean up control block
+        if (this->cb_->weak-- == 1) {
+            if (this->cb_->strong == 0) {
+                delete this->cb_;
+            }
+        }
+        this->cb_ = nullptr;
+    }
+
+public:
+    WeakPtr() noexcept = default;
+
+    // Construct from `nullptr`
+    WeakPtr(std::nullptr_t) : cb_(nullptr) {}
+
+    WeakPtr(const Ptr<T> & ptr) noexcept : cb_(ptr.ctrl_)
+    {
+        if (this->cb_) {
+            this->cb_->weak++;
+        }
+    }
+
+    WeakPtr(const WeakPtr & other) noexcept : cb_(other.cb_)
+    {
+        if (this->cb_) {
+            this->cb_->weak++;
+        }
+    }
+
+    template <typename U, typename = std::enable_if_t<std::is_convertible<U *, T *>::value>>
+    WeakPtr(const WeakPtr<U> & other) : cb_(nullptr)
+    {
+        if (other.cb_) {
+            this->cb_ = reinterpret_cast<Ptr<T>::ControlBlock *>(other.cb_);
+            this->cb_->weak++;
+        }
+    }
+
+    WeakPtr(WeakPtr && other) noexcept : cb_(other.cb_) { other.cb_ = nullptr; }
+
+    WeakPtr &
+    operator=(const WeakPtr & other) noexcept
+    {
+        if (this != &other) {
+            release();
+            this->cb_ = other.cb_;
+            if (this->cb_) {
+                this->cb_->weak++;
+            }
+        }
+        return *this;
+    }
+
+    template <typename U, typename = std::enable_if_t<std::is_convertible<U *, T *>::value>>
+    WeakPtr &
+    operator=(const WeakPtr<U> & other)
+    {
+        if (reinterpret_cast<const void *>(this) != reinterpret_cast<const void *>(&other)) {
+            release();
+            this->cb_ = reinterpret_cast<Ptr<T>::ControlBlock *>(other.cb_);
+            if (this->cb_)
+                this->cb_->weak++;
+        }
+        return *this;
+    }
+
+    WeakPtr &
+    operator=(WeakPtr && other) noexcept
+    {
+        if (this != &other) {
+            release();
+            this->cb_ = other.cb_;
+            other.cb_ = nullptr;
+        }
+        return *this;
+    }
+
+    WeakPtr &
+    operator=(const Ptr<T> & ptr) noexcept
+    {
+        release();
+        this->cb_ = ptr.cb_;
+        if (this->cb_) {
+            this->cb_->weak++;
+        }
+        return *this;
+    }
+
+    ~WeakPtr() { release(); }
+
+    explicit
+    operator bool() const
+    {
+        return get() != nullptr;
+    }
+
+    /// Dereference the pointer
+    T &
+    operator*() const
+    {
+        if (this->cb_)
+            return *this->cb_->ptr;
+        else
+            throw Exception("Access into a null pointer");
+    }
+
+    // Access the pointer
+    T *
+    operator->() const
+    {
+        return this->cb_->ptr;
+    }
+
+    // Compare two WeakPtr<T> of the same type
+    bool
+    operator==(const WeakPtr & other) const
+    {
+        return get() == other.get();
+    }
+
+    // Compare against nullptr
+    bool
+    operator==(std::nullptr_t) const
+    {
+        return get() == nullptr;
+    }
+
+    // Compare two Ptr<U> of different types
+    template <typename U>
+    bool
+    operator==(const WeakPtr<U> & other) const
+    {
+        return get() == other.get();
+    }
+
+    // Get the pointer
+    [[nodiscard]] T *
+    get() const
+    {
+        return this->cb_ ? this->cb_->ptr : nullptr;
+    }
+
+    [[nodiscard]] bool
+    expired() const noexcept
+    {
+        return !this->cb_ || this->cb_->strong == 0;
+    }
+
+    // Safely promote to Ptr<T> if object is still alive
+    Ptr<T>
+    lock() const noexcept
+    {
+        if (this->cb_ && this->cb_->strong > 0) {
+            this->cb_->strong++;
+            Ptr<T> p;
+            p.ctrl_ = this->cb_;
+            return p;
+        }
+        return Ptr<T>();
+    }
+
+    // Is this a null pointer?
+    [[nodiscard]] bool
+    is_null() const
+    {
+        return this->cb_ == nullptr;
+    }
+
+    template <typename U>
+    friend class WeakPtr;
 };
 
 template <typename T, typename U>
@@ -280,6 +475,13 @@ dynamic_ptr_cast(const Ptr<U> & other)
     if (casted)
         return Ptr<T>(other, casted);
     return nullptr;
+}
+
+template <typename T>
+WeakPtr<T>
+weak_ptr(const Ptr<T> & other)
+{
+    return WeakPtr<T>(other);
 }
 
 } // namespace krado
