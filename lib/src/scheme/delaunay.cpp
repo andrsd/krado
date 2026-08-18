@@ -978,7 +978,7 @@ void
 build_bds_mesh(Ptr<MeshSurface> surface,
                BDS_Mesh & m,
                std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
-               std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv)
+               std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> & recover_map_inv)
 {
     const auto & geom_surface = surface->geom_surface();
 
@@ -995,16 +995,16 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     //     gf->set(temp);
     // }
 
-    std::map<int, Ptr<BDS_Point>> aaa;
+    std::map<int, Ref<BDS_Point>> aaa;
     for (const auto & vtx : all_vertices)
-        aaa[vtx->num()] = recover_map_inv[vtx];
+        aaa.emplace(vtx->num(), recover_map_inv.at(vtx));
 
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
         const auto g = m.add_geom(surface->id(), 2);
-        const auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
-        aaa[v->data] = pp;
+        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
+        aaa.emplace(v->data, pp);
     }
 
     for (size_t i = 0; i < pm.faces.size(); i++) {
@@ -1012,11 +1012,10 @@ build_bds_mesh(Ptr<MeshSurface> surface,
         const auto a = he->v->data;
         const auto b = he->next->v->data;
         const auto c = he->next->next->v->data;
-        const auto p1 = aaa[a];
-        const auto p2 = aaa[b];
-        const auto p3 = aaa[c];
-        if (p1 && p2 && p3)
-            m.add_triangle(p1->id(), p2->id(), p3->id());
+        auto p1 = aaa.at(a);
+        auto p2 = aaa.at(b);
+        auto p3 = aaa.at(c);
+        m.add_triangle(p1->id(), p2->id(), p3->id());
     }
 }
 
@@ -1063,7 +1062,7 @@ bool
 recover_edge(BDS_Mesh & m,
              Ptr<MeshSurface> surface,
              Ptr<MeshCurve> edge,
-             std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv,
+             std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> & recover_map_inv,
              std::set<EdgeToRecover> * e2r,
              std::set<EdgeToRecover> * not_recovered,
              int pass)
@@ -1124,7 +1123,7 @@ recover_edge(BDS_Mesh & m,
 }
 
 bool
-edge_swap_test_delaunay_aniso(Ptr<BDS_Edge> e,
+edge_swap_test_delaunay_aniso(Ref<BDS_Edge> e,
                               Ptr<MeshSurface> surface,
                               std::set<SwapQuad> & configs)
 {
@@ -1160,8 +1159,8 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
         std::size_t nsw = 0;
         for (const auto & edge : mesh.edges()) {
             if (edge->active()) {
-                if (edge_swap_test_delaunay_aniso(edge, surface, configs)) {
-                    if (mesh.swap_edge(edge, BDS_SwapEdgeTestQuality(false))) {
+                if (edge_swap_test_delaunay_aniso(ref(*edge), surface, configs)) {
+                    if (mesh.swap_edge(ref(*edge), BDS_SwapEdgeTestQuality(false))) {
                         ++nsw;
                     }
                 }
@@ -1176,7 +1175,7 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 void
 bds2mesh(const BDS_Mesh & m,
          Ptr<MeshSurface> surface,
-         std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
+         std::map<Ref<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
 {
     const auto & geom_surface = surface->geom_surface();
     for (auto & tri : m.triangles()) {
@@ -1185,8 +1184,6 @@ bds2mesh(const BDS_Mesh & m,
 
             Ptr<MeshVertexAbstract> v[3] = { nullptr, nullptr, nullptr };
             for (int i = 0; i < 3; i++) {
-                if (n[i] == nullptr)
-                    continue;
                 if (recover_map.find(n[i]) == recover_map.end()) {
                     auto sv = Ptr<MeshSurfaceVertex>::alloc(geom_surface, n[i]->uv());
                     surface->add_vertex(sv);
@@ -2156,19 +2153,19 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     BDS_Mesh m;
 
-    std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
-    std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recover_map_inv;
+    std::map<Ref<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
+    std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> recover_map_inv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
-    std::vector<Ptr<BDS_Point>> points(all_vertices.size());
+    std::vector<Vtr<BDS_Point>> points(all_vertices.size());
     int count = 0;
     for (const auto & vtx : all_vertices) {
         const auto & ge = vtx->geom_shape();
         const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         const auto g = m.add_geom(ge.id(), ge.dim());
-        const auto pp = m.add_point(count, param, &geom_surface, g);
+        auto pp = m.add_point(count, param, &geom_surface, g);
         recover_map[pp] = vtx;
-        recover_map_inv[vtx] = pp;
+        recover_map_inv.emplace(vtx, pp);
         points[count] = pp;
         count++;
     }
@@ -2227,7 +2224,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (res.has_value()) {
             const auto n = res.value();
             if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
-                recur_tag(tri, CLASS_EXTERIOR.value());
+                recur_tag(ref(*tri), CLASS_EXTERIOR.value());
                 break;
             }
         }
@@ -2238,11 +2235,11 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         if (e->g_.has_value() && e->num_faces() == 2) {
             const auto faces = e->faces();
             if (faces[0]->g_ == CLASS_EXTERIOR) {
-                recur_tag(faces[1], CLASS_F.value());
+                recur_tag(ref(*faces[1]), CLASS_F.value());
                 break;
             }
             else if (faces[1]->g_ == CLASS_EXTERIOR) {
-                recur_tag(faces[0], CLASS_F.value());
+                recur_tag(ref(*faces[0]), CLASS_F.value());
                 break;
             }
         }
@@ -2257,11 +2254,11 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
             const auto faces = e->faces();
             const auto oface = e->opposite_of();
             if (oface[0]->id() < 0) {
-                recur_tag(faces[1], CLASS_F.value());
+                recur_tag(ref(*faces[1]), CLASS_F.value());
                 break;
             }
             else if (oface[1]->id() < 0) {
-                recur_tag(faces[0], CLASS_F.value());
+                recur_tag(ref(*faces[0]), CLASS_F.value());
                 break;
             }
         }
@@ -2281,8 +2278,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     if (!only_initial_mesh) {
         Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
         // const auto & sf = sizing_field();
-        for (auto & [id, pp] : m.points()) {
-            if (auto itv = recover_map.find(pp); itv != recover_map.end()) {
+        for (const auto & [id, pp] : m.points()) {
+            if (auto itv = recover_map.find(ref(*pp)); itv != recover_map.end()) {
                 const auto vtx = itv->second;
                 const auto & ge = vtx->geom_shape();
                 double lc;
@@ -2309,13 +2306,13 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // delete useless stuff
     for (auto & tri : m.triangles()) {
         if (not tri->g_.has_value())
-            m.del_face(tri);
+            m.del_face(ref(*tri));
     }
     m.cleanup();
 
     for (const auto & e : m.edges()) {
         if (e->num_faces() == 0)
-            m.del_edge(e);
+            m.del_edge(ref(*e));
         else {
             if (not e->g_.has_value())
                 e->g_ = CLASS_F;

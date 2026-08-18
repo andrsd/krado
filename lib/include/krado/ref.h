@@ -73,6 +73,13 @@ public:
         return this->ptr_ < other.ptr_;
     }
 
+    template <typename U>
+    bool
+    operator>=(const Ref<U> & other) const noexcept
+    {
+        return this->ptr_ >= other.ptr_;
+    }
+
     explicit operator bool() const = delete;
 
 private:
@@ -138,6 +145,13 @@ public:
     operator<(const Ref<U> & other) const noexcept
     {
         return this->ptr_ < other.ptr_;
+    }
+
+    template <typename U>
+    bool
+    operator>=(const Ref<U> & other) const noexcept
+    {
+        return this->ptr_ >= other.ptr_;
     }
 
     explicit operator bool() const = delete;
