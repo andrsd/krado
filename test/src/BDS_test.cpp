@@ -48,3 +48,18 @@ TEST(BDSMeshTest, edges)
     m.del_edge(e4);
     EXPECT_TRUE(e4->deleted());
 }
+
+TEST(BDSMeshTest, edges_2)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+
+    m.add_edge(pt1, pt2);
+    m.add_edge(pt2, pt3);
+    m.add_edge(pt3, pt1);
+    m.add_edge(pt3, pt4);
+    m.add_edge(pt4, pt1);
+}
