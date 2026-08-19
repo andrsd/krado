@@ -2,23 +2,26 @@
 // SPDX-License-Identifier: MIT
 
 #include "krado/log.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace krado {
 
 namespace {
 
-bool
-initialize()
-{
-    spdlog::set_pattern("[%^%l%$] %v");
-    return true;
-}
-
-static bool initialized_ = initialize();
+static bool initialized_ = Log::initialize();
 
 } // namespace
 
 int Log::verbosity_ = 1;
+std::shared_ptr<spdlog::logger> Log::logger_;
+
+bool
+Log::initialize()
+{
+    logger_ = spdlog::stdout_color_mt(krado::Log::LOGGER_NAME);
+    spdlog::set_pattern("[%^%l%$] %v");
+    return true;
+}
 
 void
 Log::set_verbosity(int level)
@@ -39,6 +42,13 @@ Log::set_verbosity(int level)
         spdlog::set_level(spdlog::level::debug);
         break;
     }
+}
+
+void
+Log::set_logger(std::shared_ptr<spdlog::logger> logger)
+{
+    spdlog::drop(LOGGER_NAME);
+    logger_ = logger;
 }
 
 } // namespace krado
