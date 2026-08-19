@@ -46,6 +46,30 @@ public:
         return { -this->u, -this->v };
     }
 
+    [[nodiscard]] double
+    magnitude() const
+    {
+        return std::sqrt(this->u * this->u + this->v * this->v);
+    }
+
+    void
+    normalize()
+    {
+        auto n = magnitude();
+        if (n) {
+            this->u /= n;
+            this->v /= n;
+        }
+    }
+
+    [[nodiscard]] UVParam
+    normalized() const
+    {
+        UVParam v = *this;
+        v.normalize();
+        return v;
+    }
+
     double u, v;
 };
 

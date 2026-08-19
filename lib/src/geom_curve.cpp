@@ -197,7 +197,7 @@ GeomCurve::mesh_size_at_param(double u) const
         auto lc1 = fv.mesh_size();
         auto lc2 = lv.mesh_size();
         auto alpha = (u - u_lo) / (u_hi - u_lo);
-        return ((1 - alpha) * lc1) + (alpha * lc2);
+        return (1 - alpha) * lc1 + alpha * lc2;
     }
     else if (not fv.is_null() && std::abs(u - u_lo) < EPSILON) {
         return fv.mesh_size();

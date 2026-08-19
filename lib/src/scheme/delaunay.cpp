@@ -1,0 +1,2376 @@
+// SPDX-FileCopyrightText: 2026 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
+#include "krado/scheme/delaunay.h"
+#include "krado/ref.h"
+#include "krado/qtr.h"
+#include "krado/consts.h"
+#include "krado/mesh_curve.h"
+#include "krado/mesh_surface.h"
+#include "krado/mesh_vertex.h"
+#include "krado/mesh_surface_vertex.h"
+#include "krado/mesh_curve_vertex.h"
+#include "krado/geom_surface.h"
+#include "krado/geom_curve.h"
+#include "krado/bds.h"
+#include "krado/log.h"
+#include "krado/poly_mesh.h"
+#include "krado/bounding_box_3d.h"
+#include "krado/uv_param.h"
+#include "krado/numerics.h"
+#include "krado/utils.h"
+#include "krado/element.h"
+#include "krado/predicates.h"
+#include "krado/exception.h"
+#include "krado/element.h"
+#include "krado/vector.h"
+#include "krado/predicates.h"
+#include <Eigen/Dense>
+#include <map>
+#include <list>
+
+namespace krado {
+
+namespace {
+
+const double LIMIT = 0.5 * std::sqrt(2.0) * 1;
+
+struct Metric {
+    Metric(double a, double b, double c) : val_({ a, b, c }) {}
+
+private:
+    std::array<double, 3> val_;
+
+public:
+    double
+    operator[](int idx) const
+    {
+        return this->val_[idx];
+    }
+
+    /// Build metric
+    ///
+    /// @param surface Geometrical surface
+    /// @param uv Parametrical point
+    /// @return Computed metric
+    static Metric
+    build(const GeomSurface & surface, UVParam uv)
+    {
+        const auto [du, dv] = surface.d1(uv);
+        Metric metric(dot_product(du, du), dot_product(dv, du), dot_product(dv, dv));
+        return metric;
+    }
+};
+
+struct NodeCopies {
+    // max 8 copies -- reduced to 4
+    static constexpr std::size_t MAX_COPIES = 8;
+    Ptr<MeshVertexAbstract> mv;
+    std::size_t n_copies;
+    std::array<UVParam, MAX_COPIES> uv;
+    std::array<std::size_t, MAX_COPIES> id;
+
+    NodeCopies(Ptr<MeshVertexAbstract> _mv, UVParam _uv) : mv(_mv), n_copies(1)
+    {
+        this->uv[0] = _uv;
+        std::fill(this->id.begin(), this->id.end(), 0);
+    }
+
+    void
+    add_copy(UVParam _uv)
+    {
+        for (std::size_t i = 0; i < this->n_copies; i++) {
+            if (std::abs(this->uv[i].u - _uv.u) < 1.e-9 && std::abs(this->uv[i].v - _uv.v) < 1.e-9)
+                return;
+        }
+        this->uv[this->n_copies] = _uv;
+        this->n_copies++;
+    }
+
+    std::size_t
+    closest(UVParam _uv)
+    {
+        double min_d = MAX_LC;
+        std::size_t index = 0;
+        for (std::size_t i = 0; i < this->n_copies; i++) {
+            const auto dist = utils::distance(_uv, this->uv[i]);
+            if (dist < min_d) {
+                min_d = dist;
+                index = i;
+            }
+        }
+        return this->id[index];
+    }
+};
+
+struct BidimMeshData {
+    std::map<Ptr<MeshVertexAbstract>, int> indices;
+    std::vector<UVParam> uv;
+    std::vector<double> v_sizes;
+    std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence;
+    std::map<Ptr<MeshVertexAbstract>, UVParam> * parametric_coordinates;
+    std::set<MeshElement, MeshElementLessThan> internal_edges; // embedded edges
+    //  std::set<MVertex*> internalVertices; // embedded vertices
+
+    BidimMeshData(std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * e = nullptr,
+                  std::map<Ptr<MeshVertexAbstract>, UVParam> * p = nullptr) :
+        equivalence(e),
+        parametric_coordinates(p)
+    {
+    }
+
+    void
+    add_vertex(Ptr<MeshVertexAbstract> mv, UVParam uv, double size)
+    {
+        int index = this->uv.size();
+        this->indices[mv] = index;
+        if (this->parametric_coordinates) {
+            auto it = this->parametric_coordinates->find(mv);
+            if (it != this->parametric_coordinates->end()) {
+                uv = it->second;
+            }
+        }
+        this->uv.push_back(uv);
+        this->v_sizes.push_back(size);
+    }
+
+    int
+    index(Ptr<MeshVertexAbstract> mv) const
+    {
+        return this->indices.at(mv);
+    }
+
+    Ptr<MeshVertexAbstract>
+    equivalent(Ptr<MeshVertexAbstract> v1) const
+    {
+        if (this->equivalence) {
+            auto it = this->equivalence->find(v1);
+            if (it == this->equivalence->end())
+                return nullptr;
+            return it->second;
+        }
+        return nullptr;
+    }
+};
+
+UVParam
+circ_uv(const MeshElement & t, BidimMeshData & data)
+{
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
+    const auto ctr = Tri3::circum_center(data.uv[index0], data.uv[index1], data.uv[index2]);
+    if (ctr.has_value())
+        return ctr.value();
+    else
+        return { std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest() };
+}
+
+std::tuple<UVParam, bool>
+inv_map_uv(const MeshElement & t, UVParam p, const BidimMeshData & data, double tol)
+{
+    std::array<std::array<double, 2>, 2> mat;
+    std::array<double, 2> b;
+
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
+
+    const auto u0 = data.uv[index0].u;
+    const auto v0 = data.uv[index0].v;
+    const auto u1 = data.uv[index1].u;
+    const auto v1 = data.uv[index1].v;
+    const auto u2 = data.uv[index2].u;
+    const auto v2 = data.uv[index2].v;
+
+    mat[0][0] = u1 - u0;
+    mat[0][1] = u2 - u0;
+    mat[1][0] = v1 - v0;
+    mat[1][1] = v2 - v0;
+
+    b[0] = p.u - u0;
+    b[1] = p.v - v0;
+    const auto res = sys2x2(mat, b);
+    if (res.has_value()) {
+        const auto uv = res.value();
+        const auto inside = uv[0] >= -tol && uv[1] >= -tol && uv[0] <= 1. + tol &&
+                            uv[1] <= 1. + tol && 1. - uv[0] - uv[1] > -tol;
+        return { { uv[0], uv[1] }, inside };
+    }
+    else {
+        return { { 0., 0. }, false };
+    }
+}
+
+double
+surf_uv(const MeshElement & t, BidimMeshData & data)
+{
+    const auto index0 = data.index(t.vertex(0));
+    const auto index1 = data.index(t.vertex(1));
+    const auto index2 = data.index(t.vertex(2));
+    const auto uv1 = data.uv[index1] - data.uv[index0];
+    const auto uv2 = data.uv[index2] - data.uv[index0];
+    return 0.5 * determinant(uv1, uv2);
+}
+
+double
+compute_tolerance(double radius)
+{
+    if (radius <= 1e3)
+        return 1e-12;
+    if (radius <= 1e5)
+        return 1e-11;
+    return 1e-9;
+}
+
+std::tuple<UVParam, double>
+circum_center_metric(UVParam pa, UVParam pb, UVParam pc, Metric metric)
+{
+    // d = (u2-u1) M (u2-u1) = u2 M u2 + u1 M u1 - 2 u2 M u1
+    std::array<std::array<double, 2>, 2> sys;
+    std::array<double, 2> rhs;
+
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
+
+    sys[0][0] = 2. * a * (pa.u - pb.u) + 2. * b * (pa.v - pb.v);
+    sys[0][1] = 2. * d * (pa.v - pb.v) + 2. * b * (pa.u - pb.u);
+    sys[1][0] = 2. * a * (pa.u - pc.u) + 2. * b * (pa.v - pc.v);
+    sys[1][1] = 2. * d * (pa.v - pc.v) + 2. * b * (pa.u - pc.u);
+
+    rhs[0] = a * (pa.u * pa.u - pb.u * pb.u) + d * (pa.v * pa.v - pb.v * pb.v) +
+             2. * b * (pa.u * pa.v - pb.u * pb.v);
+    rhs[1] = a * (pa.u * pa.u - pc.u * pc.u) + d * (pa.v * pa.v - pc.v * pc.v) +
+             2. * b * (pa.u * pa.v - pc.u * pc.v);
+
+    const auto res = sys2x2(sys, rhs);
+    std::array<double, 2> x = res.has_value() ? res.value() : std::array<double, 2> { 0., 0. };
+
+    const auto radius = (x[0] - pa.u) * (x[0] - pa.u) * a + (x[1] - pa.v) * (x[1] - pa.v) * d +
+                        2. * (x[0] - pa.u) * (x[1] - pa.v) * b;
+    return { { x[0], x[1] }, radius };
+}
+
+std::tuple<UVParam, double>
+circum_center_metric(const MeshElement & base, Metric metric, const BidimMeshData & data)
+{
+    // d = (u2-u1) M (u2-u1) = u2 M u2 + u1 M u1 - 2 u2 M u1
+    const auto index0 = data.index(base.vertex(0));
+    const auto index1 = data.index(base.vertex(1));
+    const auto index2 = data.index(base.vertex(2));
+    return circum_center_metric(data.uv[index0], data.uv[index1], data.uv[index2], metric);
+}
+
+bool
+in_circum_circle_aniso(UVParam p1, UVParam p2, UVParam p3, UVParam uv, Metric metric)
+{
+    const auto [x, radius2] = circum_center_metric(p1, p2, p3, metric);
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
+    const auto d0 = (x.u - uv.u);
+    const auto d1 = (x.v - uv.v);
+    const auto d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
+    const auto tolerance = compute_tolerance(radius2);
+    return d3 < radius2 - tolerance;
+}
+
+bool
+in_circum_circle_aniso(const MeshElement & base, UVParam uv, Metric metric, BidimMeshData & data)
+{
+    const auto [x, radius2] = circum_center_metric(base, metric, data);
+    const auto a = metric[0];
+    const auto b = metric[1];
+    const auto d = metric[2];
+    const auto d0 = (x.u - uv.u);
+    const auto d1 = (x.v - uv.v);
+    const auto d3 = d0 * d0 * a + d1 * d1 * d + 2.0 * d0 * d1 * b;
+    return d3 < radius2;
+}
+
+bool
+intersection_segments_2(UVParam p1, UVParam p2, UVParam q1, UVParam q2)
+{
+    auto a = orient2d(p1, p2, q1);
+    auto b = orient2d(p1, p2, q2);
+    if (a * b > 0)
+        return false;
+    a = orient2d(q1, q2, p1);
+    b = orient2d(q1, q2, p2);
+    if (a * b > 0)
+        return false;
+    return true;
+}
+
+class Triangle {
+private:
+    bool deleted_;
+    double circum_radius_;
+    MeshElement base_;
+    std::array<Optional<Ref<Triangle>>, Tri3::N_EDGES> neigh_;
+
+public:
+    Triangle(const MeshElement & t, double circum_radius) :
+        deleted_(false),
+        circum_radius_(circum_radius),
+        base_(t),
+        neigh_({ std::nullopt, std::nullopt, std::nullopt })
+    {
+    }
+
+    bool
+    is_active() const
+    {
+        return not this->deleted_;
+    }
+
+    bool
+    is_deleted() const
+    {
+        return this->deleted_;
+    }
+
+    void
+    force_radius(double r)
+    {
+        this->circum_radius_ = r;
+    }
+
+    double
+    radius() const
+    {
+        return this->circum_radius_;
+    }
+
+    Optional<Ptr<MeshVertexAbstract>>
+    other_side(int i)
+    {
+        if (!this->neigh_[i])
+            return std::nullopt;
+        const auto n = this->neigh_[i].value();
+        const auto v1 = this->base_.vertex((i + 2) % 3);
+        const auto v2 = this->base_.vertex(i);
+        for (int j = 0; j < Tri3::N_VERTICES; j++)
+            if (n->tri().vertex(j) != v1 && n->tri().vertex(j) != v2)
+                return n->tri().vertex(j);
+        return std::nullopt;
+    }
+
+    void
+    set_tri(const MeshElement & t)
+    {
+        this->base_ = t;
+    }
+
+    const MeshElement &
+    tri() const
+    {
+        return this->base_;
+    }
+
+    void
+    set_neighbor(int idx, Ref<Triangle> n)
+    {
+        this->neigh_[idx] = n;
+    }
+
+    Optional<Ref<Triangle>>
+    neighbor(int idx) const
+    {
+        return this->neigh_[idx];
+    }
+
+    void
+    set_active(bool flag)
+    {
+        this->deleted_ = not flag;
+    }
+
+    bool
+    assert_neigh() const
+    {
+        if (this->deleted_)
+            return true;
+        for (int i = 0; i < Tri3::N_EDGES; i++) {
+            const auto n = this->neigh_[i];
+            if (n && (not(*n)->is_neigh(*this)))
+                return false;
+        }
+        return true;
+    }
+
+    bool
+    is_neigh(Ref<const Triangle> t) const
+    {
+        for (int i = 0; i < Tri3::N_EDGES; i++)
+            if (this->neigh_[i] == t)
+                return true;
+        return false;
+    }
+};
+
+class CompareTrianglePtr {
+public:
+    using is_transparent = void;
+
+    bool
+    operator()(const Qtr<Triangle> & a, const Qtr<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Ref<Triangle> & a, const Qtr<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Qtr<Triangle> & a, const Ref<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+    bool
+    operator()(const Ref<Triangle> & a, const Ref<Triangle> & b) const
+    {
+        return compare(a, b);
+    }
+
+private:
+    template <typename T, typename U>
+    bool
+    compare(const T & a, const U & b) const
+    {
+        if (a->radius() > b->radius())
+            return true;
+        if (a->radius() < b->radius())
+            return false;
+        // note: this effectively builds 3 triangles and compare them using the MeshElementLessThan
+        // operator()
+        return this->lf_(a->tri(), b->tri());
+    }
+
+    MeshElementLessThan lf_;
+};
+
+struct EdgeXFace {
+    std::array<Ptr<MeshVertexAbstract>, 2> v;
+    Ref<Triangle> t1;
+    int i1;
+    int ori;
+
+    EdgeXFace(Ref<Triangle> t, int i_fac) : t1(t), i1(i_fac), ori(1)
+    {
+        this->v[0] = t1->tri().vertex(i_fac == 0 ? 2 : i_fac - 1);
+        this->v[1] = t1->tri().vertex(i_fac);
+        if (this->v[0]->num() > this->v[1]->num()) {
+            this->ori = -1;
+            std::swap(v[0], v[1]);
+        }
+    }
+
+    Ptr<MeshVertexAbstract>
+    vertex(int i) const
+    {
+        return this->v[i];
+    }
+
+    bool
+    operator<(const EdgeXFace & other) const
+    {
+        if (vertex(0)->num() < other.vertex(0)->num())
+            return true;
+        if (vertex(0)->num() > other.vertex(0)->num())
+            return false;
+        if (vertex(1)->num() < other.vertex(1)->num())
+            return true;
+        return false;
+    }
+
+    bool
+    operator==(const EdgeXFace & other) const
+    {
+        if (vertex(0)->num() == other.vertex(0)->num() &&
+            vertex(1)->num() == other.vertex(1)->num())
+            return true;
+        return false;
+    }
+};
+
+void
+set_lcs_init(const MeshElement & t, std::map<Ptr<MeshVertexAbstract>, double> & v_sizes)
+{
+    for (int i = 0; i < 3; i++) {
+        for (int j = i + 1; j < 3; j++) {
+            const auto vi = t.vertex(i);
+            const auto vj = t.vertex(j);
+            v_sizes[vi] = -1;
+            v_sizes[vj] = -1;
+        }
+    }
+}
+
+void
+set_lcs(const MeshElement & t,
+        std::map<Ptr<MeshVertexAbstract>, double> & v_sizes,
+        BidimMeshData & data)
+{
+    for (int i = 0; i < 3; i++) {
+        for (int j = i + 1; j < 3; j++) {
+            const auto vi = t.vertex(i);
+            const auto vj = t.vertex(j);
+            if (vi != data.equivalent(vj) && vj != data.equivalent(vi)) {
+                const auto l = utils::distance(vi->point(), vj->point());
+                const auto iti = v_sizes.find(vi);
+                const auto itj = v_sizes.find(vj);
+                if (iti->second < 0 || iti->second > l)
+                    iti->second = l;
+                if (itj->second < 0 || itj->second > l)
+                    itj->second = l;
+            }
+        }
+    }
+}
+
+Optional<int>
+is_active(Ref<const Triangle> t, double limit)
+{
+    if (t->is_deleted())
+        return std::nullopt;
+    for (int active = 0; active < 3; active++) {
+        const auto neigh = t->neighbor(active);
+        if (!neigh || ((*neigh)->radius() < limit && (*neigh)->radius() > 0)) {
+            return { active };
+        }
+    }
+    return std::nullopt;
+}
+
+template <class Iterator>
+void
+connect_tris(Iterator beg, Iterator end)
+{
+    std::vector<EdgeXFace> conn;
+
+    while (beg != end) {
+        if ((*beg)->is_active()) {
+            for (int j = 0; j < 3; j++) {
+                conn.push_back(EdgeXFace(ref(**beg), j));
+            }
+        }
+        ++beg;
+    }
+
+    if (conn.empty())
+        return;
+
+    std::sort(conn.begin(), conn.end());
+
+    for (std::size_t i = 0; i < conn.size() - 1; i++) {
+        const auto & f1 = conn[i];
+        const auto & f2 = conn[i + 1];
+
+        if (f1 == f2 && f1.t1 != f2.t1) {
+            f1.t1->set_neighbor(f1.i1, f2.t1);
+            f2.t1->set_neighbor(f2.i1, f1.t1);
+            ++i;
+        }
+    }
+}
+
+void
+connect_triangles(std::set<Qtr<Triangle>, CompareTrianglePtr> & l)
+{
+    connect_tris(l.begin(), l.end());
+}
+
+void
+recur_find_cavity_aniso(Ptr<MeshSurface> surface,
+                        std::list<EdgeXFace> & shell,
+                        std::list<Ref<Triangle>> & cavity,
+                        Metric metric,
+                        UVParam param,
+                        Ref<Triangle> t,
+                        BidimMeshData & data)
+{
+    t->set_active(false);
+    // the cavity that has to be removed because it violates delaunay
+    // criterion
+    cavity.push_back(t);
+
+    for (int i = 0; i < Tri3::N_EDGES; i++) {
+        const auto neigh = t->neighbor(i);
+        EdgeXFace exf(t, i);
+        // take care of untouchable internal edges
+        const auto it =
+            data.internal_edges.find(MeshElement::Line2({ exf.vertex(0), exf.vertex(1) }));
+        if (not neigh || it != data.internal_edges.end())
+            shell.push_back(exf);
+        else if ((*neigh)->is_active()) {
+            const auto circ = in_circum_circle_aniso((*neigh)->tri(), param, metric, data);
+            if (circ)
+                recur_find_cavity_aniso(surface, shell, cavity, metric, param, *neigh, data);
+            else
+                shell.push_back(exf);
+        }
+    }
+}
+
+bool
+build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
+                                      std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+                                      BidimMeshData & data)
+{
+    std::map<Ptr<MeshVertexAbstract>, double> v_sizes_map;
+
+    for (auto & tri : surface->triangles())
+        set_lcs_init(tri, v_sizes_map);
+
+    const auto itfind = v_sizes_map.find(nullptr);
+    if (itfind != v_sizes_map.end()) {
+        Log::error("Some NULL points exist in 2D mesh");
+        return false;
+    }
+
+    for (auto & tri : surface->triangles())
+        set_lcs(tri, v_sizes_map, data);
+
+    // NOTE: just a rough sketch what should happen here - will need fixing
+    // take care of embedded vertices
+    for (auto & v : surface->embedded_vertices()) {
+        auto & gvtx = v->geom_vertex();
+        v_sizes_map[v] = std::min(v_sizes_map[v], gvtx.mesh_size());
+    }
+
+    // take care of embedded edges
+    for (auto & crv : surface->embedded_curves()) {
+        if (crv->is_mesh_degenerated())
+            continue;
+
+        for (auto & seg : crv->segments())
+            data.internal_edges.insert(seg);
+    }
+
+    // take care of small edges in  order not to "pollute" the size field
+    for (auto & crv : surface->curves()) {
+        if (crv->is_mesh_degenerated())
+            continue;
+
+        for (auto & seg : crv->segments()) {
+            const auto v0 = seg.vertex(0);
+            const auto v1 = seg.vertex(1);
+
+            const auto d = utils::distance(v0->point(), v1->point());
+            const auto d0 = v_sizes_map[v0];
+            const auto d1 = v_sizes_map[v1];
+            if (d0 < .5 * d)
+                v_sizes_map[v0] = .5 * d;
+            if (d1 < .5 * d)
+                v_sizes_map[v1] = .5 * d;
+        }
+    }
+
+    const auto & geom_surface = surface->geom_surface();
+    for (const auto & [vtx, size] : v_sizes_map) {
+        const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
+        data.add_vertex(vtx, param, size);
+    }
+    for (const auto & tri : surface->triangles()) {
+        const auto v0 = tri.vertex(0);
+        const auto v1 = tri.vertex(1);
+        const auto v2 = tri.vertex(2);
+
+        const auto lc = (data.v_sizes[data.index(v0)] + data.v_sizes[data.index(v1)] +
+                         data.v_sizes[data.index(v2)]) /
+                        3.;
+
+        const auto circum_radius = circum_radius_euclidian(tri, lc);
+        all_tris.emplace(Qtr<Triangle>::alloc(tri, circum_radius));
+    }
+    surface->remove_all_triangles();
+    connect_triangles(all_tris);
+
+    return true;
+}
+
+struct MeshVertexPtrLessThan {
+    bool
+    operator()(const Ptr<MeshVertexAbstract> & v1, const Ptr<MeshVertexAbstract> & v2) const
+    {
+        return v1->num() < v2->num();
+    }
+};
+
+// build a set with all points of the boundaries
+std::tuple<std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan>,
+           std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan>>
+build_vertices(Ptr<MeshSurface> surface, Span<const Ptr<MeshCurve>> curves)
+{
+    std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> all_vertices;
+    std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> boundary;
+
+    const auto & geom_surface = surface->geom_surface();
+    for (const auto & crv : curves) {
+        const auto & geom_curve = crv->geom_curve();
+        if (geom_curve.is_seam(geom_surface))
+            return { {}, {} };
+
+        if (not crv->is_mesh_degenerated()) {
+            for (auto & seg : crv->segments()) {
+                const auto v1 = seg.vertex(0);
+                const auto v2 = seg.vertex(1);
+
+                all_vertices.insert(v1);
+                all_vertices.insert(v2);
+                if (boundary.find(v1) == boundary.end())
+                    boundary.insert(v1);
+                else
+                    boundary.erase(v1);
+                if (boundary.find(v2) == boundary.end())
+                    boundary.insert(v2);
+                else
+                    boundary.erase(v2);
+            }
+        }
+        else
+            Log::debug("Degenerated mesh on edge {}", crv->id());
+    }
+
+    return { all_vertices, boundary };
+}
+
+/// construct set with embedded vertices from embedded edges and embedded vertices
+std::set<Ptr<MeshVertexAbstract>>
+build_embedded_vertices(Ptr<MeshSurface> surface)
+{
+    std::set<Ptr<MeshVertexAbstract>> vertices;
+    // add embedded vertices
+    for (const auto & crv : surface->embedded_curves()) {
+        if (crv->is_mesh_degenerated())
+            continue;
+
+        for (const auto & vtx : crv->bounding_vertices())
+            vertices.insert(vtx);
+        for (const auto & vtx : crv->curve_vertices())
+            vertices.insert(vtx);
+    }
+
+    // add embedded vertices
+    for (const auto & vtx : surface->embedded_vertices())
+        vertices.insert(vtx);
+
+    return vertices;
+}
+
+std::unordered_map<int, NodeCopies>
+make_node_copies(Ptr<MeshSurface> surface)
+{
+    std::unordered_map<int, NodeCopies> copies;
+
+    const auto & geom_surface = surface->geom_surface();
+
+    std::vector<Ptr<MeshCurve>> all_curves;
+    auto curves = surface->curves();
+    all_curves.insert(all_curves.end(), curves.begin(), curves.end());
+    auto emb_curves = surface->embedded_curves();
+    all_curves.insert(all_curves.end(), emb_curves.begin(), emb_curves.end());
+
+    std::set<Ptr<MeshCurve>> touched;
+
+    // NOTE: this may not not be needed for meshing a single surface
+    // if (edges.empty())
+    //     edges.insert(edges.end(), gf->model()->firstEdge(), gf->model()->lastEdge());
+
+    for (auto & crv : all_curves) {
+        if (crv->is_mesh_degenerated())
+            continue;
+
+        const auto & geom_curve = crv->geom_curve();
+        std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> e_vertices;
+        for (auto & seg : crv->segments()) {
+            const auto v1 = seg.vertex(0);
+            const auto v2 = seg.vertex(1);
+            e_vertices.insert(v1);
+            e_vertices.insert(v2);
+        }
+        int direction = -1;
+        if (geom_curve.is_seam(geom_surface)) {
+            direction = 0;
+            if (touched.find(crv) == touched.end())
+                touched.insert(crv);
+            else
+                direction = 1;
+        }
+        // printf("model edge %lu %lu vertices\n", e->tag(), e_vertices.size());
+        for (auto & v : e_vertices) {
+            UVParam param;
+            if (direction != -1) {
+                auto u = reparam_mesh_vertex_on_edge(v, crv);
+                param = reparam_on_surface(geom_surface, geom_curve, u);
+            }
+            else {
+#if 0
+                // TODO: if we ever have discrete surfaces
+                // Hmm...
+                if (!gf->haveParametrization() && gf->geomType() == GEntity::DiscreteSurface) {
+                    param = SPoint2(v->x(), v->y());
+                }
+                else
+                    reparamMeshVertexOnFace(v, gf, param);
+#else
+                param = reparam_mesh_vertex_on_surface(v, geom_surface);
+#endif
+            }
+            const auto it = copies.find(v->num());
+            if (it == copies.end()) {
+                NodeCopies c(v, param);
+                copies.emplace(v->num(), c);
+            }
+            else {
+                it->second.add_copy(param);
+            }
+        }
+    }
+
+    for (auto & v : surface->embedded_vertices()) {
+        const auto param = reparam_mesh_vertex_on_surface(v, geom_surface);
+        NodeCopies c(v, param);
+        copies.emplace(v->num(), c);
+    }
+
+    return copies;
+}
+
+int
+delaunay_edge_criterion_plane_isotropic(PolyMesh::HalfEdge * he, void *)
+{
+    if (he->opposite == nullptr)
+        return -1;
+    const auto * v0 = he->v;
+    const auto * v1 = he->next->v;
+    const auto * v2 = he->next->next->v;
+    const auto * v = he->opposite->next->next->v;
+
+    // FIXME : should be oriented anyway !
+    const auto result = -incircle(v0->position, v1->position, v2->position, v->position);
+
+    return (result > 0) ? 1 : 0;
+}
+
+PolyMesh
+surface_initial_mesh(Ptr<MeshSurface> surface,
+                     bool recover /*, std::vector<double> * additional = nullptr*/)
+{
+    const auto face_tag = surface->id();
+    PolyMesh pm;
+
+    auto copies = make_node_copies(surface);
+
+    BoundingBox3D bb;
+    for (auto & [_, c] : copies) {
+        for (std::size_t i = 0; i < c.n_copies; i++)
+            bb += Point(c.uv[i].u, c.uv[i].v, 0.);
+    }
+    bb *= 1.1;
+    pm.initialize_rectangle(bb.min().x, bb.max().x, bb.min().y, bb.max().y);
+    PolyMesh::Face * f = pm.faces[0];
+    for (auto & [vnum, cps] : copies) {
+        for (std::size_t i = 0; i < cps.n_copies; i++) {
+            auto uv = cps.uv[i];
+            // find face in which lies x,y
+            f = walk(f, uv);
+            // split f and then swap edges to recover delaunayness
+            pm.split_triangle(uv.u, uv.v, 0, f, delaunay_edge_criterion_plane_isotropic, nullptr);
+            // remember node tags
+            cps.id[i] = pm.vertices.size() - 1;
+            pm.vertices[pm.vertices.size() - 1]->data = vnum;
+        }
+    }
+
+    if (recover) {
+        std::vector<Ptr<MeshCurve>> all_curves;
+        auto curves = surface->curves();
+        all_curves.insert(all_curves.end(), curves.begin(), curves.end());
+        auto emb_curves = surface->embedded_curves();
+        all_curves.insert(all_curves.end(), emb_curves.begin(), emb_curves.end());
+
+        // NOTE: not sure if we really need this
+        // if (edges.empty())
+        //     edges.insert(edges.end(), surface->model()->firstEdge(),
+        //     surface->model()->lastEdge());
+
+        for (auto & crv : all_curves) {
+            if (crv->is_mesh_degenerated())
+                continue;
+
+            for (auto & seg : crv->segments()) {
+                auto c0 = copies.find(seg.vertex(0)->num());
+                auto c1 = copies.find(seg.vertex(1)->num());
+                if (c0 == copies.end() || c1 == copies.end())
+                    Log::error("unable to find {} {} {} {}",
+                               seg.vertex(0)->num(),
+                               seg.vertex(1)->num(),
+                               c0 == copies.end(),
+                               c1 == copies.end());
+                if (c0->second.n_copies > c1->second.n_copies) {
+                    std::swap(c0, c1);
+                }
+                for (std::size_t j = 0; j < c0->second.n_copies; j++) {
+                    auto * v0 = pm.vertices[c0->second.id[j]];
+                    auto * v1 = pm.vertices[c1->second.closest(c0->second.uv[j])];
+                    const auto result = recover_edge(pm, v0, v1);
+                    if (result.has_value()) {
+                        const auto he = pm.get_edge(v0, v1);
+                        if (he) {
+                            if (he->opposite)
+                                he->opposite->data = crv->id();
+                            he->data = crv->id();
+                        }
+                    }
+                    else {
+                        Log::warn("Impossible to recover edge {} {}",
+                                  seg.vertex(0)->num(),
+                                  seg.vertex(1)->num());
+                    }
+                }
+            }
+        }
+
+        // color all PolyMesh::Faces
+        // the first 4 vertices are "infinite vertices" --> color them with tag -2
+        // meaning exterior
+        auto * other_side = color(pm.vertices[0]->he, -2);
+        // other_side is inthernal to the face --> color them with tag faceTag
+        other_side = color(other_side, face_tag);
+        // holes will be tagged -1
+
+        // flip edges that have been scrambled
+        int iter = 0;
+        while (iter++ < 100) {
+            int count = 0;
+            for (auto & he : pm.hedges) {
+                if (he->opposite && he->f->data == face_tag && he->opposite->f->data == face_tag) {
+                    if (delaunay_edge_criterion_plane_isotropic(he, nullptr)) {
+                        if (intersect(he->v,
+                                      he->next->v,
+                                      he->next->next->v,
+                                      he->opposite->next->next->v)) {
+                            pm.swap_edge(he);
+                            count++;
+                        }
+                    }
+                }
+            }
+            if (!count)
+                break;
+        }
+    }
+
+    // if (additional)
+    //     addPoints(pm, *additional, bb);
+
+    return pm;
+}
+
+void
+build_bds_mesh(Ptr<MeshSurface> surface,
+               BDS_Mesh & m,
+               std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
+               std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv)
+{
+    const auto & geom_surface = surface->geom_surface();
+
+    // std::vector<GEdge *> temp;
+    // if (replacementEdges) {
+    //     temp = gf->edges();
+    //     gf->set(*replacementEdges);
+    // }
+    // recover and color so most of the code below can go away. Works also for
+    // periodic faces
+    const auto pm = surface_initial_mesh(surface, true);
+
+    // if (replacementEdges) {
+    //     gf->set(temp);
+    // }
+
+    std::map<int, Ptr<BDS_Point>> aaa;
+    for (const auto & vtx : all_vertices)
+        aaa[vtx->num()] = recover_map_inv[vtx];
+
+    for (int ip = 0; ip < 4; ip++) {
+        auto * v = pm.vertices[ip];
+        v->data = -ip - 1;
+        const auto g = m.add_geom(surface->id(), 2);
+        const auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
+        aaa[v->data] = pp;
+    }
+
+    for (size_t i = 0; i < pm.faces.size(); i++) {
+        auto * he = pm.faces[i]->he;
+        const auto a = he->v->data;
+        const auto b = he->next->v->data;
+        const auto c = he->next->next->v->data;
+        const auto p1 = aaa[a];
+        const auto p2 = aaa[b];
+        const auto p3 = aaa[c];
+        if (p1 && p2 && p3)
+            m.add_triangle(p1->id(), p2->id(), p3->id());
+    }
+}
+
+struct SwapQuad {
+    std::array<int, 4> v;
+
+    bool
+    operator<(const SwapQuad & o) const
+    {
+        if (this->v[0] < o.v[0])
+            return true;
+        if (this->v[0] > o.v[0])
+            return false;
+        if (this->v[1] < o.v[1])
+            return true;
+        if (this->v[1] > o.v[1])
+            return false;
+        if (this->v[2] < o.v[2])
+            return true;
+        if (this->v[2] > o.v[2])
+            return false;
+        if (this->v[3] < o.v[3])
+            return true;
+        return false;
+    }
+
+    SwapQuad(Ptr<MeshVertexAbstract> v1,
+             Ptr<MeshVertexAbstract> v2,
+             Ptr<MeshVertexAbstract> v3,
+             Ptr<MeshVertexAbstract> v4)
+    {
+        this->v = { v1->num(), v2->num(), v3->num(), v4->num() };
+        std::sort(v.begin(), v.end());
+    }
+
+    SwapQuad(int v1, int v2, int v3, int v4)
+    {
+        this->v = { v1, v2, v3, v4 };
+        std::sort(v.begin(), v.end());
+    }
+};
+
+bool
+recover_edge(BDS_Mesh & m,
+             Ptr<MeshSurface> surface,
+             Ptr<MeshCurve> edge,
+             std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> & recover_map_inv,
+             std::set<EdgeToRecover> * e2r,
+             std::set<EdgeToRecover> * not_recovered,
+             int pass)
+{
+    Optional<BDS_GeomEntity> g;
+    if (pass == 2)
+        g = m.add_geom(edge->id(), 1);
+
+    const auto & geom_curve = edge->geom_curve();
+    bool fatally_failed = false;
+
+    for (auto & seg : edge->segments()) {
+        const auto vstart = seg.vertex(0);
+        const auto vend = seg.vertex(1);
+        const auto itpstart = recover_map_inv.find(vstart);
+        const auto itpend = recover_map_inv.find(vend);
+        if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
+            const auto pstart = itpstart->second;
+            const auto pend = itpend->second;
+            if (pass == 1)
+                e2r->insert(EdgeToRecover(pstart->id(), pend->id(), &geom_curve));
+            else {
+                const auto e =
+                    m.recover_edge(pstart->id(), pend->id(), fatally_failed, e2r, not_recovered);
+                if (e.has_value())
+                    e.value()->g_ = g;
+                else {
+                    if (fatally_failed) {
+                        Log::error("Unable to recover the edge on curve {} (on surface {})",
+                                   edge->id(),
+                                   surface->id());
+                    }
+                    return !fatally_failed;
+                }
+            }
+        }
+    }
+
+    auto bnd_vtxs = edge->bounding_vertices();
+    if (pass == 2 && not bnd_vtxs[0].is_null()) {
+        const auto vstart = bnd_vtxs[0];
+        const auto vend = bnd_vtxs[1];
+        const auto itpstart = recover_map_inv.find(vstart);
+        const auto itpend = recover_map_inv.find(vend);
+        if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
+            const auto pstart = itpstart->second;
+            const auto pend = itpend->second;
+            if (!pstart->g_) {
+                pstart->g_ = m.add_geom(pstart->id(), 0);
+            }
+            if (!pend->g_) {
+                pend->g_ = m.add_geom(pend->id(), 0);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool
+edge_swap_test_delaunay_aniso(Ptr<BDS_Edge> e,
+                              Ptr<MeshSurface> surface,
+                              std::set<SwapQuad> & configs)
+{
+    if (!e->p1_->config_modified() && !e->p2_->config_modified())
+        return false;
+
+    if (e->num_faces() != 2)
+        return false;
+
+    const auto op = e->opposite_of();
+
+    SwapQuad sq(e->p1_->id(), e->p2_->id(), op[0]->id(), op[1]->id());
+    if (configs.find(sq) != configs.end())
+        return false;
+    configs.insert(sq);
+
+    const auto edge_center = 0.5 * (e->p1_->uv() + e->p2_->uv());
+
+    const auto p1 = e->p1_->uv();
+    const auto p2 = e->p2_->uv();
+    const auto p3 = op[0]->uv();
+    const auto p4 = op[1]->uv();
+    const auto metric = Metric::build(surface->geom_surface(), edge_center);
+    return in_circum_circle_aniso(p1, p2, p3, p4, metric);
+}
+
+int
+delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
+{
+    int nb_swap = 0;
+    std::set<SwapQuad> configs;
+    while (1) {
+        std::size_t nsw = 0;
+        for (const auto & edge : mesh.edges()) {
+            if (edge->active()) {
+                if (edge_swap_test_delaunay_aniso(edge, surface, configs)) {
+                    if (mesh.swap_edge(edge, BDS_SwapEdgeTestQuality(false))) {
+                        ++nsw;
+                    }
+                }
+            }
+        }
+        nb_swap += nsw;
+        if (!nsw)
+            return nb_swap;
+    }
+}
+
+void
+bds2mesh(const BDS_Mesh & m,
+         Ptr<MeshSurface> surface,
+         std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
+{
+    const auto & geom_surface = surface->geom_surface();
+    for (auto & tri : m.triangles()) {
+        if (tri->active()) {
+            const auto n = tri->get_nodes().value();
+
+            Ptr<MeshVertexAbstract> v[3] = { nullptr, nullptr, nullptr };
+            for (int i = 0; i < 3; i++) {
+                if (n[i] == nullptr)
+                    continue;
+                if (recover_map.find(n[i]) == recover_map.end()) {
+                    auto sv = Ptr<MeshSurfaceVertex>::alloc(geom_surface, n[i]->uv());
+                    surface->add_vertex(sv);
+                    v[i] = sv;
+                    recover_map[n[i]] = v[i];
+                }
+                else
+                    v[i] = recover_map[n[i]];
+            }
+            // when a singular point is present, degenerated triangles may be
+            // created, for example on a sphere that contains one pole
+            if (v[0] != v[1] && v[0] != v[2] && v[1] != v[2])
+                surface->add_triangle(ccw_triangle(geom_surface, v[0], v[1], v[2]));
+        }
+    }
+}
+
+void
+mark_triangles_active(std::list<Ref<Triangle>> & cavity, bool state)
+{
+    for (auto & tri : cavity)
+        tri->set_active(state);
+}
+
+int
+insert_vertex_b(const std::list<EdgeXFace> & shell,
+                std::list<Ref<Triangle>> & cavity,
+                bool force,
+                Ptr<MeshVertexAbstract> v,
+                std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+                std::set<Ref<Triangle>, CompareTrianglePtr> * active_tris,
+                BidimMeshData & data,
+                bool verify_star_shapeness = true)
+{
+    if (cavity.size() == 1)
+        return -1;
+
+    if (shell.size() != cavity.size() + 2)
+        return -2;
+
+    const double EPS = verify_star_shapeness ? 1.e-12 : 1.e12;
+
+    // check that volume is conserved
+    double new_volume = 0.0;
+    double new_min_quality = 2.0;
+
+    const double old_volume =
+        std::accumulate(begin(cavity),
+                        end(cavity),
+                        0.0,
+                        [&](double volume, Ref<const Triangle> triangle) {
+                            return volume + std::abs(surf_uv(triangle->tri(), data));
+                        });
+
+    std::vector<Qtr<Triangle>> new_tris;
+    new_tris.reserve(shell.size());
+
+    std::vector<Ref<Triangle>> new_cavity;
+    bool one_point_is_too_close = false;
+    for (auto it = shell.begin(); it != shell.end(); ++it) {
+        Ptr<MeshVertexAbstract> v0, v1;
+        if (it->ori > 0) {
+            v0 = it->vertex(0);
+            v1 = it->vertex(1);
+        }
+        else {
+            v0 = it->vertex(1);
+            v1 = it->vertex(0);
+        }
+        const auto t = MeshElement::Tri3({ v0, v1, v });
+        const auto index0 = data.index(t.vertex(0));
+        const auto index1 = data.index(t.vertex(1));
+        const auto index2 = data.index(t.vertex(2));
+        constexpr double ONE_THIRD = 1. / 3.;
+        const auto lc =
+            ONE_THIRD * (data.v_sizes[index0] + data.v_sizes[index1] + data.v_sizes[index2]);
+
+        const auto circ_radius = circum_radius_euclidian(t, lc);
+        new_tris.emplace_back(Qtr<Triangle>::alloc(t, circ_radius));
+        auto t4 = ref(*new_tris.back());
+
+        const auto d1 = utils::distance(v0->point(), v->point());
+        const auto d2 = utils::distance(v1->point(), v->point());
+        const auto d3 = utils::distance(v0->point(), v1->point());
+        auto d4 = MAX_LC;
+        // avoid angles that are too obtuse
+        const double cosv = ((d1 * d1 + d2 * d2 - d3 * d3) / (2. * d1 * d2));
+
+        if (v0->geom_shape().dim() != 2 && v1->geom_shape().dim() != 2) {
+            const auto v0v1 = v1->point() - v0->point();
+            const auto v0v = v->point() - v0->point();
+            const auto pv = cross_product(v0v1, v0v);
+            d4 = pv.magnitude() / d3;
+        }
+
+        if ((d1 < lc * .5 || d2 < lc * .5 || d4 < lc * .4 || cosv < -.9999) && !force) {
+            one_point_is_too_close = true;
+        }
+
+        // all new triangles are pushed front in order to be able to destroy them if
+        // the cavity is not star shaped around the new vertex.
+        new_cavity.push_back(t4);
+
+        const auto other_side = it->t1->neighbor(it->i1);
+        if (other_side)
+            new_cavity.push_back(other_side.value());
+
+        auto ss = std::abs(surf_uv(t4->tri(), data));
+        if (ss < 1.e-25)
+            ss = MAX_LC;
+
+        new_volume += ss;
+
+        const auto tri_gamma =
+            Tri3::gamma(t.vertex(0)->point(), t.vertex(1)->point(), t.vertex(1)->point());
+        new_min_quality = std::min(new_min_quality, tri_gamma);
+    }
+
+    // for adding a point we require that the area remains the same after addition
+    // of the point, and that the point is not too close to an edge
+    if (std::abs(old_volume - new_volume) < EPS * old_volume && !one_point_is_too_close) {
+        connect_tris(new_cavity.begin(), new_cavity.end());
+        // 30 % of the time is spent here!
+        all_tris.insert(std::make_move_iterator(new_tris.begin()),
+                        std::make_move_iterator(new_tris.end()));
+        if (active_tris) {
+            for (auto i = new_cavity.begin(); i != new_cavity.end(); ++i) {
+                auto cav_tri = *i;
+                auto active_edge = is_active(cav_tri, LIMIT);
+                if (active_edge.has_value() && cav_tri->radius() > LIMIT) {
+                    if ((*active_tris).find(cav_tri) == (*active_tris).end())
+                        active_tris->insert(cav_tri);
+                }
+            }
+        }
+        return 1;
+    }
+    else {
+        // the cavity is NOT star shaped
+        mark_triangles_active(cavity, true);
+        new_tris.clear();
+
+        if (std::abs(old_volume - new_volume) > EPS * old_volume)
+            return -3;
+        if (one_point_is_too_close)
+            return -4;
+        return -5;
+    }
+}
+
+Optional<Ref<Triangle>>
+search_for_triangle(Ref<Triangle> t,
+                    UVParam pt,
+                    BidimMeshData & data,
+                    std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+                    bool force = false)
+{
+    const auto [_, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
+    if (inside)
+        return t;
+
+    const auto q1 = pt;
+    for (std::size_t j = 0; j < all_tris.size(); j++) {
+        const auto index0 = data.index(t->tri().vertex(0));
+        const auto index1 = data.index(t->tri().vertex(1));
+        const auto index2 = data.index(t->tri().vertex(2));
+        const auto q2 = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+        int i;
+        for (i = 0; i < 3; i++) {
+            const auto i1 = data.index(t->tri().vertex(i == 0 ? 2 : i - 1));
+            const auto i2 = data.index(t->tri().vertex(i));
+            const auto p1 = data.uv[i1];
+            const auto p2 = data.uv[i2];
+            if (intersection_segments_2(p1, p2, q1, q2))
+                break;
+        }
+        if (i >= 3)
+            throw Exception("impossible");
+
+        if (!t->neighbor(i))
+            break;
+        t = t->neighbor(i).value();
+
+        const auto [_, inside] = inv_map_uv(t->tri(), pt, data, 1.e-8);
+        if (inside)
+            return t;
+    }
+
+    if (!force)
+        return std::nullopt; // FIXME: removing this leads to horrible performance
+
+    for (auto & tri : all_tris) {
+        if (tri->is_active()) {
+            const auto [_, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
+            if (inside)
+                return ref(*tri);
+        }
+    }
+    return std::nullopt;
+}
+
+bool
+insert_a_point(Ptr<MeshSurface> surface,
+               Ref<Triangle> worst,
+               UVParam center,
+               Metric metric,
+               BidimMeshData & data,
+               std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+               std::set<Ref<Triangle>, CompareTrianglePtr> * active_tris = nullptr,
+               bool test_star_shapeness = false)
+{
+    Optional<Ref<Triangle>> ptin;
+    std::list<EdgeXFace> shell;
+    std::list<Ref<Triangle>> cavity;
+
+    // if the point is able to break the bad triangle "worst"
+    if (in_circum_circle_aniso(worst->tri(), center, metric, data)) {
+        recur_find_cavity_aniso(surface, shell, cavity, metric, center, ref(*worst), data);
+        for (const auto & t : cavity) {
+            const auto [_, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
+            if (inside) {
+                ptin = t;
+                break;
+            }
+        }
+    }
+    else {
+        ptin = search_for_triangle(worst, center, data, all_tris, false);
+        if (ptin.has_value()) {
+            recur_find_cavity_aniso(surface, shell, cavity, metric, center, ptin.value(), data);
+        }
+    }
+
+    if (ptin.has_value()) {
+        // we use here local coordinates as real coordinates x,y and z will be computed hereafter
+        const auto & geom_surface = surface->geom_surface();
+        const auto v = Ptr<MeshSurfaceVertex>::alloc(geom_surface, center);
+        const auto lc = geom_surface.mesh_size_at_param(center);
+        data.add_vertex(v, center, lc);
+
+        const auto result = insert_vertex_b(shell,
+                                            cavity,
+                                            false,
+                                            v,
+                                            all_tris,
+                                            active_tris,
+                                            data,
+                                            test_star_shapeness);
+
+        if (result != 1) {
+            if (result == -1)
+                Log::debug("Point {} cannot be inserted because cavity if of size 1", center);
+            if (result == -2)
+                Log::debug("Point {} cannot be inserted because euler formula is not fulfilled",
+                           center);
+            if (result == -3)
+                Log::debug("Point {} cannot be inserted because cavity is not star shaped", center);
+            if (result == -4)
+                Log::debug("Point {} cannot be inserted because it is too close to another point",
+                           center);
+            if (result == -5)
+                Log::debug(
+                    "Point {} cannot be inserted because it is out of the parametric domain)",
+                    center);
+
+            const auto it = all_tris.find(worst);
+            auto tri = all_tris.extract(it);
+            tri.value()->force_radius(-1);
+            all_tris.insert(std::move(tri));
+            mark_triangles_active(cavity, true);
+            return false;
+        }
+        else {
+            surface->add_vertex(v);
+            return true;
+        }
+    }
+    else {
+        mark_triangles_active(cavity, true);
+        auto it = all_tris.find(worst);
+        auto tri = all_tris.extract(it);
+        tri.value()->force_radius(0);
+        all_tris.insert(std::move(tri));
+        return false;
+    }
+}
+
+void
+reverse_triangle(MeshElement & tri)
+{
+    assert(tri.type() == ElementType::TRI3);
+    tri.swap_vertices(1, 2);
+}
+
+void
+compute_equivalences(Ptr<MeshSurface> surface, BidimMeshData & data)
+{
+    std::vector<MeshElement> new_tris;
+    for (const auto & tri : surface->triangles()) {
+        std::array<Ptr<MeshVertexAbstract>, 3> v;
+        for (int j = 0; j < Tri3::N_VERTICES; j++) {
+            v[j] = tri.vertex(j);
+            const auto it = data.equivalence->find(v[j]);
+            if (it != data.equivalence->end()) {
+                v[j] = it->second;
+            }
+        }
+        if (v[0] != v[1] && v[0] != v[2] && v[2] != v[1])
+            new_tris.push_back(MeshElement::Tri3({ v[0], v[1], v[2] }));
+    }
+    surface->set_triangles(new_tris);
+}
+
+struct EquivalentTriangle {
+private:
+    MeshElement t_;
+    std::array<Ptr<MeshVertexAbstract>, 3> v_;
+
+public:
+    EquivalentTriangle(
+        const MeshElement & t,
+        const std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> & equivalence) :
+        t_(t)
+    {
+        for (int i = 0; i < Tri3::N_VERTICES; i++) {
+            const auto v = t.vertex(i);
+            const auto it = equivalence.find(v);
+            if (it == equivalence.end())
+                this->v_[i] = v;
+            else
+                this->v_[i] = it->second;
+        }
+        std::sort(this->v_.begin(), this->v_.end());
+    }
+
+    bool
+    operator<(const EquivalentTriangle & other) const
+    {
+        for (int i = 0; i < Tri3::N_VERTICES; i++) {
+            if (other.v_[i].get() > this->v_[i].get())
+                return true;
+            if (other.v_[i].get() < this->v_[i].get())
+                return false;
+        }
+        return false;
+    }
+
+    const MeshElement &
+    elem() const
+    {
+        return this->t_;
+    }
+};
+
+bool
+compute_equivalent_triangles(
+    Ptr<MeshSurface> surface,
+    const std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> & equivalence)
+{
+    // NOTE: (DA) what is the purpose of this? compute `eq_tris` and then forget it? WTF?
+    std::vector<MeshElement> wtf;
+    std::set<EquivalentTriangle> eq_tris;
+    for (auto & tri : surface->triangles()) {
+        EquivalentTriangle et(tri, equivalence);
+        const auto iteq = eq_tris.find(et);
+        if (iteq == eq_tris.end())
+            eq_tris.insert(et);
+        else {
+            wtf.push_back(iteq->elem());
+            wtf.push_back(tri);
+        }
+    }
+
+    if (not wtf.empty()) {
+        Log::info("{} triangles are equivalent", wtf.size());
+        return true;
+    }
+    else
+        return false;
+}
+
+void
+split_equivalent_triangles(Ptr<MeshSurface> surface, BidimMeshData & data)
+{
+    compute_equivalent_triangles(surface, *data.equivalence);
+}
+
+/// Compute normal of a triangle
+///
+/// @param t Triangle
+/// @param data BidimMeshData
+Vector
+compute_normal(const MeshElement & t, const BidimMeshData & data)
+{
+    const auto v0 = t.vertex(0);
+    const auto v1 = t.vertex(1);
+    const auto v2 = t.vertex(2);
+
+    const auto index0 = data.index(v0);
+    const auto index1 = data.index(v1);
+    const auto index2 = data.index(v2);
+    return normal(data.uv[index0], data.uv[index1], data.uv[index2]);
+}
+
+void
+transfer_data_structure(Ptr<MeshSurface> surface,
+                        std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
+                        BidimMeshData & data)
+{
+    for (auto & tri : all_tris)
+        if (tri->is_active())
+            surface->add_element(std::move(tri->tri()));
+    all_tris.clear();
+
+    // make sure all the triangles are oriented in the same way in
+    // parameter space (it would be nicer to change the actual algorithm
+    // to ensure that we create correctly-oriented triangles in the
+    // first place)
+
+    if (surface->triangles().size() > 1) {
+        const auto & t1 = surface->triangles()[0];
+        const auto n1 = compute_normal(t1, data);
+
+        for (std::size_t j = 1; j < surface->triangles().size(); j++) {
+            auto & tj = surface->triangles()[j];
+            const auto nj = compute_normal(tj, data);
+
+            // orient the bignou
+            if (dot_product(n1, nj) < 0.0)
+                reverse_triangle(tj);
+        }
+    }
+
+    if (data.equivalence != nullptr) {
+        split_equivalent_triangles(surface, data);
+        compute_equivalences(surface, data);
+    }
+}
+
+void
+delete_unused_vertices(Ptr<MeshSurface> /*surface*/)
+{
+#if 0
+    std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> allverts;
+    for(std::size_t i = 0; i < surface->triangles().size(); i++) {
+      for(int j = 0; j < 3; j++) {
+        if(gf->triangles[i]->getVertex(j)->onWhat() == gf)
+          allverts.insert(gf->triangles[i]->getVertex(j));
+      }
+    }
+    for(std::size_t i = 0; i < gf->quadrangles.size(); i++) {
+      for(int j = 0; j < 4; j++) {
+        if(gf->quadrangles[i]->getVertex(j)->onWhat() == gf)
+          allverts.insert(gf->quadrangles[i]->getVertex(j));
+      }
+    }
+    for(std::size_t i = 0; i < gf->mesh_vertices.size(); i++) {
+      if(allverts.find(gf->mesh_vertices[i]) == allverts.end())
+        delete gf->mesh_vertices[i];
+    }
+    gf->mesh_vertices.clear();
+    gf->mesh_vertices.insert(gf->mesh_vertices.end(), allverts.begin(),
+                             allverts.end());
+#endif
+}
+
+// ---
+
+double
+length_metric(UVParam p, UVParam q, Metric metric)
+{
+    return std::sqrt((p.u - q.u) * metric[0] * (p.u - q.u) +
+                     2 * (p.u - q.u) * metric[1] * (p.v - q.v) +
+                     (p.v - q.v) * metric[2] * (p.v - q.v));
+}
+
+/*
+          /|
+         / |
+        /  |
+       /   |
+   lc /    |  r
+     /     |
+    /      |
+   /       x
+  /        |
+ /         |  r/2
+/          |
+-----------+
+     lc/2
+
+     (3 r/2)^2 = lc^2 - lc^2/4
+     -> lc^2 3/4 = 9r^2/4
+     -> lc^2 = 3 r^2
+
+     r^2 /4 + lc^2/4 = r^2
+     -> lc^2 = 3 r^2
+
+*/
+
+std::tuple<double, UVParam, Metric>
+optimal_point_frontal(Ptr<MeshSurface> surface,
+                      Ref<Triangle> worst,
+                      int active_edge,
+                      BidimMeshData & data)
+{
+    const auto & base = worst->tri();
+    auto center = circ_uv(base, data);
+    auto index0 = data.index(base.vertex(0));
+    auto index1 = data.index(base.vertex(1));
+    const auto index2 = data.index(base.vertex(2));
+    const auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+    const auto metric = Metric::build(surface->geom_surface(), pa);
+    double r2;
+    std::tie(center, r2) = circum_center_metric(worst->tri(), metric, data);
+    // compute the middle point of the edge
+    const int ip1 = active_edge - 1 < 0 ? 2 : active_edge - 1;
+    const int ip2 = active_edge;
+
+    index0 = data.index(base.vertex(ip1));
+    index1 = data.index(base.vertex(ip2));
+    const auto midpoint = 0.5 * (data.uv[index0] + data.uv[index1]);
+
+    // now we have the edge center and the center of the circumcircle, we try to
+    // find a point that would produce a perfect triangle while connecting the 2
+    // points of the active edge
+    auto dir = (center - midpoint).normalized();
+    const auto RATIO = std::sqrt(dir.u * dir.u * metric[0] + 2 * dir.v * dir.u * metric[1] +
+                                 dir.v * dir.v * metric[2]);
+
+    const auto rhoM1 = 0.5 * (data.v_sizes[index0] + data.v_sizes[index1]); // * RATIO;
+    // const double rhoM2 = 0.5 * (data.vSizesBGM[index0] + data.vSizesBGM[index1]); // * RATIO;
+    // const double rhoM = Extend1dMeshIn2dSurfaces(gf) ? std::min(rhoM1, rhoM2) : rhoM2;
+    // const double rhoM_hat = rhoM;
+    const auto rhoM_hat = rhoM1;
+
+    const auto q = length_metric(center, midpoint, metric);
+    const auto d = rhoM_hat * std::sqrt(3.0) * 0.5;
+
+    // d is corrected in a way that the mesh size is computed at point newPoint
+
+    const auto L = std::min(d, q);
+
+    const auto new_point = midpoint + L / RATIO * dir;
+
+    return { L, new_point, metric };
+}
+
+std::tuple<bool, int>
+point_inside_parametric_domain(const std::vector<UVParam> & bnd, UVParam p, UVParam out)
+{
+    assert(bnd.size() % 2 == 0);
+    int count = 0;
+    for (std::size_t i = 0; i < bnd.size(); i += 2) {
+        const auto p1 = bnd[i];
+        const auto p2 = bnd[i + 1];
+        auto a = orient2d(p1, p2, p);
+        auto b = orient2d(p1, p2, out);
+        if (a * b < 0) {
+            a = orient2d(p, out, p1);
+            b = orient2d(p, out, p2);
+            if (a * b < 0)
+                count++;
+        }
+    }
+    if (count % 2 == 0)
+        return { false, count };
+    return { true, count };
+}
+
+class SurfaceFunctor {
+public:
+    virtual ~SurfaceFunctor() {}
+    virtual Point operator()(double u, double v) const = 0;
+};
+
+class CurveFunctor {
+public:
+    virtual ~CurveFunctor() {}
+    virtual Point operator()(double t) const = 0;
+};
+
+class CurveFunctorCircle : public CurveFunctor {
+    Vector n1_, n2_;
+    Point middle_;
+    double d_;
+
+public:
+    CurveFunctorCircle(Vector n1, Vector n2, Point middle, double d) :
+        n1_(n1),
+        n2_(n2),
+        middle_(middle),
+        d_(d)
+    {
+    }
+
+    Point
+    operator()(double t) const
+    {
+        auto dir = this->d_ * (this->n1_ * std::cos(t) + this->n2_ * std::sin(t));
+        return this->middle_ + dir;
+    }
+};
+
+class SurfaceFunctorGFace : public SurfaceFunctor {
+    const GeomSurface & gf_;
+
+public:
+    SurfaceFunctorGFace(const GeomSurface & gf) : gf_(gf) {}
+
+    virtual Point
+    operator()(double u, double v) const
+    {
+        return this->gf_.point({ u, v });
+    }
+};
+
+bool
+newton_fd(bool (*func)(const Eigen::VectorXd &, Eigen::VectorXd &, void *),
+          Eigen::VectorXd & x,
+          void * data,
+          double relax = 1.,
+          double tolx = 1e-6)
+{
+    const int MAXIT = 100;
+    const double EPS = 1.e-4;
+    const int N = x.size();
+
+    Eigen::MatrixXd J(N, N);
+    Eigen::VectorXd f(N), feps(N), dx(N);
+
+    for (int iter = 0; iter < MAXIT; iter++) {
+        if (x.norm() > 1.e6)
+            return false;
+        if (!func(x, f, data)) {
+            return false;
+        }
+
+        bool is_zero = false;
+        for (int k = 0; k < N; k++) {
+            if (f(k) == 0.)
+                is_zero = true;
+            else
+                is_zero = false;
+            if (is_zero == false)
+                break;
+        }
+        if (is_zero)
+            break;
+
+        for (int j = 0; j < N; j++) {
+            double h = EPS * fabs(x(j));
+            if (h == 0.)
+                h = EPS;
+            x(j) += h;
+            if (!func(x, feps, data)) {
+                return false;
+            }
+            for (int i = 0; i < N; i++) {
+                J(i, j) = (feps(i) - f(i)) / h;
+            }
+            x(j) -= h;
+        }
+
+        if (N == 1)
+            dx(0) = f(0) / J(0, 0);
+        else {
+            Eigen::FullPivLU<Eigen::MatrixXd> lu_full(J);
+            dx = lu_full.solve(f);
+        }
+
+        for (int i = 0; i < N; i++)
+            x(i) -= relax * dx(i);
+
+        if (dx.norm() < tolx) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool _kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * _data);
+
+struct IntersectCurveSurfaceData {
+    const CurveFunctor & c;
+    const SurfaceFunctor & s;
+    const double epsilon;
+    IntersectCurveSurfaceData(const CurveFunctor & _c,
+                              const SurfaceFunctor & _s,
+                              const double & eps) :
+        c(_c),
+        s(_s),
+        epsilon(eps)
+    {
+    }
+
+    Optional<Point>
+    apply(Point new_point)
+    {
+        try {
+            Eigen::VectorXd uvt(3);
+            uvt[0] = new_point.x;
+            uvt[1] = new_point.y;
+            uvt[2] = new_point.z;
+            Eigen::VectorXd res(3);
+            _kaboom(uvt, res, this);
+            // printf("start with %12.5E\n",res.norm());
+            if (res.norm() < epsilon)
+                return new_point;
+
+            if (newton_fd(_kaboom, uvt, this)) {
+                // printf("--- CONVERGED -----------\n");
+                // printf("newton done\n");
+                return Point(uvt(0), uvt(1), uvt(2));
+            }
+        }
+        catch (...) {
+            // printf("intersect curve surface failed !\n");
+        }
+        // printf("newton failed\n");
+        return std::nullopt;
+    }
+};
+
+bool
+_kaboom(const Eigen::VectorXd & uvt, Eigen::VectorXd & res, void * context)
+{
+    const auto * data = static_cast<IntersectCurveSurfaceData *>(context);
+    const auto s = data->s(uvt(0), uvt(1));
+    const auto c = data->c(uvt(2));
+    res(0) = s.x - c.x;
+    res(1) = s.y - c.y;
+    res(2) = s.z - c.z;
+    return true;
+}
+
+Optional<Point>
+intersect_curve_surface(CurveFunctor & c, SurfaceFunctor & s, Point uvt, double epsilon)
+{
+    IntersectCurveSurfaceData data(c, s, epsilon);
+    return data.apply(uvt);
+}
+
+/*
+            x
+            |
+            |
+            | d =  3^{1/2}/2 h
+            |
+            |
+      ------p------->   n
+            h
+
+   x point of the plane
+
+   h being some kind of average between the size field
+   and the edge length
+*/
+
+std::tuple<bool, UVParam, Metric>
+optimal_point_frontal_b(Ptr<MeshSurface> surface,
+                        Ref<Triangle> worst,
+                        int active_edge,
+                        BidimMeshData & data)
+{
+    // as a starting point, let us use the "fast algo"
+    const auto [d, new_point, metric] = optimal_point_frontal(surface, worst, active_edge, data);
+    const auto ip1 = (active_edge + 2) % 3;
+    const auto ip2 = active_edge;
+    const auto ip3 = (active_edge + 1) % 3;
+    const auto v1 = worst->tri().vertex(ip1)->point();
+    const auto v2 = worst->tri().vertex(ip2)->point();
+    const auto v3 = worst->tri().vertex(ip3)->point();
+    const auto middle = 0.5 * (v1 + v2);
+    const auto v1v2 = v2 - v1;
+    const auto tmp = v3 - middle;
+    auto n1 = cross_product(v1v2, tmp);
+    if (n1.magnitude() < 1.e-12)
+        return { true, new_point, metric };
+    auto n2 = cross_product(n1, v1v2);
+    n1.normalize();
+    n2.normalize();
+    // we look for a point that is
+    // P = d * (n1 std::cos(t) + n2 std::sin(t)) that is on the surface
+    // so we have to find t, starting with t = 0
+    //  return true;
+
+    Point uvt(new_point.u, new_point.v, 0.0);
+    CurveFunctorCircle cc(n2, n1, middle, d);
+    SurfaceFunctorGFace ss(surface->geom_surface());
+
+    const auto ppp = intersect_curve_surface(cc, ss, uvt, d * 1.e-8);
+    if (ppp.has_value()) {
+        auto pt = ppp.value();
+        return { true, { pt.x, pt.y }, metric };
+    }
+
+    return { true, new_point, metric };
+}
+
+} // namespace
+
+void
+bowyer_watson(Ptr<MeshSurface> surface, int max_pnt)
+{
+    std::set<Qtr<Triangle>, CompareTrianglePtr> all_tris;
+    BidimMeshData data;
+    if (!build_mesh_generation_data_structures(surface, all_tris, data)) {
+        Log::error("Invalid meshing data structure");
+        return;
+    }
+
+    if (all_tris.empty()) {
+        Log::error("No triangles in initial mesh");
+        return;
+    }
+
+    int iter = 0;
+    while (true) {
+        auto worst = ref(**all_tris.begin());
+        if (worst->is_deleted()) {
+            all_tris.erase(all_tris.begin());
+        }
+        else {
+            if (iter++ % 5000 == 0) {
+                Log::debug("{} points created -- worst tri radius is {}",
+                           data.v_sizes.size(),
+                           worst->radius());
+            }
+            // VERIFY STOP !!!
+            if (worst->radius() < 0.5 * std::sqrt(2.0) || (int) data.v_sizes.size() > max_pnt) {
+                break;
+            }
+
+            const auto & base = worst->tri();
+            const auto index0 = data.index(base.vertex(0));
+            const auto index1 = data.index(base.vertex(1));
+            const auto index2 = data.index(base.vertex(2));
+            const auto pa = 1. / 3. * (data.uv[index0] + data.uv[index1] + data.uv[index2]);
+
+            const auto metric = Metric::build(surface->geom_surface(), pa);
+            const auto [ctr2, r2] = circum_center_metric(worst->tri(), metric, data);
+            insert_a_point(surface, worst, ctr2, metric, data, all_tris);
+        }
+    }
+
+    transfer_data_structure(surface, all_tris, data);
+}
+
+void
+bowyer_watson_frontal(Ptr<MeshSurface> surface,
+                      std::map<Ptr<MeshVertexAbstract>, Ptr<MeshVertexAbstract>> * equivalence,
+                      std::map<Ptr<MeshVertexAbstract>, UVParam> * parametric_coordinates,
+                      std::vector<UVParam> * true_boundary)
+{
+    std::set<Qtr<Triangle>, CompareTrianglePtr> all_tris;
+    std::set<Ref<Triangle>, CompareTrianglePtr> active_tris;
+    BidimMeshData data(equivalence, parametric_coordinates);
+    const bool test_star_shapeness = true;
+
+    // std::set<GEntity *> degenerated;
+    // getDegeneratedVertices(surface, degenerated);
+
+    if (!build_mesh_generation_data_structures(surface, all_tris, data)) {
+        Log::error("Invalid meshing data structure");
+        return;
+    }
+
+    // compute active triangle
+    for (auto & tri : all_tris) {
+        auto ref_tri = ref(*tri);
+        const auto active_edge = is_active(ref_tri, LIMIT);
+        if (active_edge.has_value())
+            active_tris.insert(ref_tri);
+        else if (tri->radius() < LIMIT)
+            break;
+    }
+
+    const auto & geom_surface = surface->geom_surface();
+    const auto [ru_lo, ru_hi] = geom_surface.param_range(0);
+    const auto [rv_lo, rv_hi] = geom_surface.param_range(1);
+    const UVParam FAR(2 * ru_hi, 2 * rv_hi);
+
+    // insert points
+    int n_iters = 0;
+    while (not active_tris.empty()) {
+        const auto worst = active_tris.extract(active_tris.begin()).value();
+        if (worst->is_deleted())
+            continue;
+
+        const auto active_edge = is_active(worst, LIMIT);
+        if (active_edge.has_value() && worst->radius() > LIMIT) {
+            if (n_iters++ % 5000 == 0)
+                Log::debug("{} points created -- Worst tri radius is {}",
+                           surface->surface_vertices().size(),
+                           worst->radius());
+            const auto [success, new_point, metric] =
+                optimal_point_frontal_b(surface, worst, active_edge.value(), data);
+            if (success) {
+                if (true_boundary == nullptr) {
+                    insert_a_point(surface,
+                                   worst,
+                                   new_point,
+                                   metric,
+                                   data,
+                                   all_tris,
+                                   &active_tris,
+                                   test_star_shapeness);
+                }
+                else {
+                    const auto [inside, _] =
+                        point_inside_parametric_domain(*true_boundary, new_point, FAR);
+                    if (inside)
+                        insert_a_point(surface,
+                                       worst,
+                                       new_point,
+                                       metric,
+                                       data,
+                                       all_tris,
+                                       &active_tris,
+                                       test_star_shapeness);
+                }
+            }
+        }
+    }
+
+    transfer_data_structure(surface, all_tris, data);
+}
+
+SchemeDelaunay::SchemeDelaunay(const std::string & name) : Scheme(name) {}
+
+bool
+SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
+                                Span<Ptr<MeshCurve>> curves,
+                                bool only_initial_mesh)
+{
+    const auto & geom_surface = surface->geom_surface();
+    ///
+    auto [all_vertices, boundary] = build_vertices(surface, curves);
+    if (not boundary.empty()) {
+        Log::error("The 1D mesh seems not to be forming a closed loop ({} boundary "
+                   "nodes are considered once)",
+                   boundary.size());
+        return false;
+    }
+
+    auto emb_edge_vtxs = build_embedded_vertices(surface);
+    all_vertices.insert(emb_edge_vtxs.begin(), emb_edge_vtxs.end());
+
+    if (all_vertices.size() < 3) {
+        Log::warn("Mesh generation of surface {} skipped: only {} nodes on the boundary",
+                  surface->id(),
+                  all_vertices.size());
+        return true;
+    }
+    else if (all_vertices.size() == 3) {
+        std::array<Ptr<MeshVertexAbstract>, 3> tri;
+        std::copy(all_vertices.begin(), all_vertices.end(), tri.begin());
+        surface->add_triangle(ccw_triangle(geom_surface, tri[0], tri[1], tri[2]));
+        return true;
+    }
+
+    ///
+
+    const Optional<BDS_GeomEntity> CLASS_F = BDS_GeomEntity(1, 2);
+    const Optional<BDS_GeomEntity> CLASS_EXTERIOR = BDS_GeomEntity(1, 3);
+
+    BDS_Mesh m;
+
+    std::map<WeakPtr<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
+    std::map<Ptr<MeshVertexAbstract>, Ptr<BDS_Point>> recover_map_inv;
+    // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
+
+    std::vector<Ptr<BDS_Point>> points(all_vertices.size());
+    int count = 0;
+    for (const auto & vtx : all_vertices) {
+        const auto & ge = vtx->geom_shape();
+        const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
+        const auto g = m.add_geom(ge.id(), ge.dim());
+        const auto pp = m.add_point(count, param, &geom_surface, g);
+        recover_map[pp] = vtx;
+        recover_map_inv[vtx] = pp;
+        points[count] = pp;
+        count++;
+    }
+
+    build_bds_mesh(surface, m, all_vertices, recover_map_inv);
+
+    // Recover the boundary edges and compute characteristic lenghts using mesh
+    // edge spacing. If two of these edges intersect, then the 1D mesh have to be
+    // densified
+    Log::debug("Recovering {} model curves", curves.size());
+    std::set<EdgeToRecover> edges_to_recover;
+    std::set<EdgeToRecover> edges_not_recovered;
+    for (auto & crv : curves) {
+        if (crv->is_mesh_degenerated())
+            continue;
+        recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
+    }
+    for (auto & crv : surface->embedded_curves()) {
+        if (crv->is_mesh_degenerated())
+            continue;
+        recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
+    }
+
+    // effectively recover the medge
+    for (const auto & crv : curves) {
+        if (crv->is_mesh_degenerated())
+            continue;
+
+        if (not recover_edge(m,
+                             surface,
+                             crv,
+                             recover_map_inv,
+                             &edges_to_recover,
+                             &edges_not_recovered,
+                             2)) {
+            return false;
+        }
+    }
+    Log::debug("Recovering {} mesh edges ({} not recovered)",
+               edges_to_recover.size(),
+               edges_not_recovered.size());
+    if (edges_not_recovered.size()) {
+        // TODO
+        throw Exception("Not implemented yet");
+    }
+    Log::debug("Boundary edges recovered for surface {}", surface->id());
+
+    // ---
+
+    // look for a triangle that has a negative node and recursively tag all
+    // exterior triangles
+    for (auto & tri : m.triangles())
+        tri->g_ = std::nullopt;
+    for (auto & tri : m.triangles()) {
+        const auto res = tri->get_nodes();
+        if (res.has_value()) {
+            const auto n = res.value();
+            if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
+                recur_tag(tri, CLASS_EXTERIOR.value());
+                break;
+            }
+        }
+    }
+
+    // now find an edge that has belongs to one of the exterior triangles
+    for (const auto & e : m.edges()) {
+        if (e->g_.has_value() && e->num_faces() == 2) {
+            const auto faces = e->faces();
+            if (faces[0]->g_ == CLASS_EXTERIOR) {
+                recur_tag(faces[1], CLASS_F.value());
+                break;
+            }
+            else if (faces[1]->g_ == CLASS_EXTERIOR) {
+                recur_tag(faces[0], CLASS_F.value());
+                break;
+            }
+        }
+    }
+    for (auto & tri : m.triangles()) {
+        if (tri->g_ == CLASS_EXTERIOR)
+            tri->g_ = std::nullopt;
+    }
+
+    for (const auto & e : m.edges()) {
+        if (e->g_.has_value() && e->num_faces() == 2) {
+            const auto faces = e->faces();
+            const auto oface = e->opposite_of();
+            if (oface[0]->id() < 0) {
+                recur_tag(faces[1], CLASS_F.value());
+                break;
+            }
+            else if (oface[1]->id() < 0) {
+                recur_tag(faces[0], CLASS_F.value());
+                break;
+            }
+        }
+    }
+
+    // ---
+
+    for (auto & edge : surface->embedded_curves()) {
+        if (edge->is_mesh_degenerated())
+            continue;
+        recover_edge(m, surface, edge, recover_map_inv, &edges_to_recover, &edges_not_recovered, 2);
+    }
+
+    // ---
+
+    // compute characteristic lengths at vertices
+    if (!only_initial_mesh) {
+        Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
+        // const auto & sf = sizing_field();
+        for (auto & [id, pp] : m.points()) {
+            if (auto itv = recover_map.find(pp); itv != recover_map.end()) {
+                const auto vtx = itv->second;
+                const auto & ge = vtx->geom_shape();
+                double lc;
+                if (ge.dim() == 0) {
+                    auto mvtx = dynamic_ptr_cast<MeshVertex>(vtx);
+                    auto gvertex = mvtx->geom_vertex();
+                    lc = gvertex.mesh_size();
+                }
+                else if (ge.dim() == 1) {
+                    auto mcvtx = dynamic_ptr_cast<MeshCurveVertex>(vtx);
+                    auto gcurve = mcvtx->geom_curve();
+                    auto t = mcvtx->parameter();
+                    lc = gcurve.mesh_size_at_param(t);
+                }
+                else
+                    lc = MAX_LC;
+                pp->set_lc(lc);
+            }
+        }
+    }
+
+    // ---
+
+    // delete useless stuff
+    for (auto & tri : m.triangles()) {
+        if (not tri->g_.has_value())
+            m.del_face(tri);
+    }
+    m.cleanup();
+
+    for (const auto & e : m.edges()) {
+        if (e->num_faces() == 0)
+            m.del_edge(e);
+        else {
+            if (not e->g_.has_value())
+                e->g_ = CLASS_F;
+            if (not e->p1_->g_.has_value() || e->p1_->g_->degree > e->g_->degree)
+                e->p1_->g_ = e->g_;
+            if (not e->p2_->g_.has_value() || e->p2_->g_->degree > e->g_->degree)
+                e->p2_->g_ = e->g_;
+        }
+    }
+    m.cleanup();
+    m.del_point(m.find_point(-1).value());
+    m.del_point(m.find_point(-2).value());
+    m.del_point(m.find_point(-3).value());
+    m.del_point(m.find_point(-4).value());
+
+    // ---
+
+    for (auto & t : m.triangles()) {
+        if (t->active()) {
+            const auto res = t->get_nodes();
+            if (res.has_value()) {
+                const auto n = res.value();
+                const auto v1 = recover_map[n[0]];
+                const auto v2 = recover_map[n[1]];
+                const auto v3 = recover_map[n[2]];
+                if (v1 != v2 && v1 != v3 && v2 != v3)
+                    surface->add_triangle(ccw_triangle(geom_surface, v1, v2, v3));
+            }
+        }
+    }
+
+    // ---
+
+    Log::debug("Delaunizing the initial mesh");
+    delaunayize_bds(surface, m);
+
+    // ---
+
+    surface->delete_mesh();
+
+    // ---
+
+    bds2mesh(m, surface, recover_map);
+
+    insertion_algo(surface);
+
+    delete_unused_vertices(surface);
+
+    return true;
+}
+
+void
+SchemeDelaunay::mesh_surface(Ptr<MeshSurface> surface)
+{
+    mesh_generation(surface, surface->curves(), false);
+}
+
+} // namespace krado

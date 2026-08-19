@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "krado/ref.h"
 #include <utility>
 #include <cstddef>
 #include <type_traits>
@@ -57,7 +58,19 @@ public:
         return this->ptr_;
     }
 
-    bool
+    Ref<T>
+    borrow() noexcept
+    {
+        return ref(*this->ptr_);
+    }
+
+    // Ref<const T>
+    // borrow() const noexcept
+    // {
+    //     return cref(*this->ptr_);
+    // }
+
+    [[nodiscard]] bool
     is_null() const noexcept
     {
         return this->ptr_ == nullptr;
