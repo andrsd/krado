@@ -19,7 +19,7 @@ public:
     log(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::info(fmt, std::forward<Args>(args)...);
+            logger_->info(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -27,7 +27,7 @@ public:
     log(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::info(fmt, std::forward<Args>(args)...);
+            logger_->info(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -35,7 +35,7 @@ public:
     info(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::info(fmt, std::forward<Args>(args)...);
+            logger_->info(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -43,7 +43,7 @@ public:
     info(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::info(fmt, std::forward<Args>(args)...);
+            logger_->info(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -51,7 +51,7 @@ public:
     warn(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::warn(fmt, std::forward<Args>(args)...);
+            logger_->warn(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -59,7 +59,7 @@ public:
     warn(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::warn(fmt, std::forward<Args>(args)...);
+            logger_->warn(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -67,7 +67,7 @@ public:
     error(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::error(fmt, std::forward<Args>(args)...);
+            logger_->error(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -75,7 +75,7 @@ public:
     error(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::error(fmt, std::forward<Args>(args)...);
+            logger_->error(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -83,7 +83,7 @@ public:
     trace(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::trace(fmt, std::forward<Args>(args)...);
+            logger_->trace(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -91,7 +91,7 @@ public:
     trace(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::trace(fmt, std::forward<Args>(args)...);
+            logger_->trace(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -99,7 +99,7 @@ public:
     debug(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::debug(fmt, std::forward<Args>(args)...);
+            logger_->debug(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -107,7 +107,7 @@ public:
     debug(int level, fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= level)
-            spdlog::debug(fmt, std::forward<Args>(args)...);
+            logger_->debug(fmt, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -115,12 +115,21 @@ public:
     critical(fmt::format_string<Args...> fmt, Args &&... args)
     {
         if (verbosity_ >= 1)
-            spdlog::critical(fmt, std::forward<Args>(args)...);
+            logger_->critical(fmt, std::forward<Args>(args)...);
     }
 
+    static void set_logger(std::shared_ptr<spdlog::logger> gui_logger);
+
+public:
+    static bool initialize();
+
 private:
+    static std::shared_ptr<spdlog::logger> logger_;
+
     /// Verbosity level of the logger
     static int verbosity_;
+
+    static constexpr std::string LOGGER_NAME = "libkrado";
 };
 
 } // namespace krado
