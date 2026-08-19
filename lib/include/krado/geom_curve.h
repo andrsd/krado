@@ -118,6 +118,7 @@ private:
 
     friend class MeshCurve;
     friend Point get_circle_center(const GeomCurve & crv);
+    friend double get_circle_radius(const GeomCurve & crv);
 };
 
 /// Get center of a circular curve
@@ -125,6 +126,12 @@ private:
 /// @param crv Curve to investigate
 /// @return Center of the circle
 Point get_circle_center(const GeomCurve & crv);
+
+/// Get circle radius
+///
+/// @param crv Curve to investigate
+/// @return Circle radius
+double get_circle_radius(const GeomCurve & crv);
 
 } // namespace krado
 

@@ -199,3 +199,19 @@ TEST(GeomCurveTest, orientation)
     auto line = testing::build_line(Point(0, 0, 0), Point(3, 4, 0));
     EXPECT_EQ(line.orientation(), GeomCurve::Orientation::Forward);
 }
+
+TEST(GeomCurveTest, get_circle_center)
+{
+    auto circ = testing::build_circle(Point(1, 2, 0), 4.);
+    auto curves = circ.curves();
+    auto pt = get_circle_center(curves[0]);
+    EXPECT_TRUE(pt.is_equal(Point(1, 2, 0), 1e-15));
+}
+
+TEST(GeomCurveTest, get_circle_radius)
+{
+    auto circ = testing::build_circle(Point(1, 2, 0), 4.);
+    auto curves = circ.curves();
+    auto r = get_circle_radius(curves[0]);
+    EXPECT_NEAR(r, 4, 1e-15);
+}

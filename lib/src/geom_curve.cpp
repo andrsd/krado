@@ -231,6 +231,16 @@ get_circle_center(const GeomCurve & crv)
     return Point::create(circle->Location());
 }
 
+double
+get_circle_radius(const GeomCurve & crv)
+{
+    if (crv.type() != GeomCurve::CurveType::Circle)
+        throw Exception("Curve is not a circle");
+
+    const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
+    return circle->Radius();
+}
+
 } // namespace krado
 
 std::ostream &
