@@ -129,7 +129,7 @@ Point get_circle_center(const GeomCurve & crv);
 ///
 /// @param crv Curve to investigate
 /// @return Circle radius
-double get_circle_radius(const GeomCurve & crv);
+double get_radius(const GeomCurve & crv);
 
 } // namespace krado
 

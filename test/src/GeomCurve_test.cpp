@@ -212,6 +212,6 @@ TEST(GeomCurveTest, get_circle_radius)
 {
     auto circ = testing::build_circle(Point(1, 2, 0), 4.);
     auto curves = circ.curves();
-    auto r = get_circle_radius(curves[0]);
+    auto r = get_radius(curves[0]);
     EXPECT_NEAR(r, 4, 1e-15);
 }

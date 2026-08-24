@@ -232,7 +232,7 @@ get_circle_center(const GeomCurve & crv)
 }
 
 double
-get_circle_radius(const GeomCurve & crv)
+get_radius(const GeomCurve & crv)
 {
     if (crv.type() != GeomCurve::CurveType::Circle)
         throw Exception("Curve is not a circle");
