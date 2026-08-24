@@ -154,3 +154,21 @@ TEST(GeomSurfaceTest, reparam_on_surface)
     EXPECT_NEAR(p.y, 0., 1e-10);
     EXPECT_NEAR(p.z, 0., 1e-10);
 }
+
+TEST(GeomSurfaceTest, type)
+{
+    {
+        auto rect = testing::build_rect(Point(0, 0, 0), Point(2., 1., 0.));
+        EXPECT_EQ(rect.type(), GeomSurface::SurfaceType::Plane);
+    }
+    {
+        auto cyl = testing::build_cylinder(Point(0, 0, 0), 1., 2.);
+        auto surfs = cyl.surfaces();
+        EXPECT_EQ(surfs[0].type(), GeomSurface::SurfaceType::Cylindrical);
+    }
+    {
+        auto sph = testing::build_sphere(Point(0, 0, 0), 1.);
+        auto surfs = sph.surfaces();
+        EXPECT_EQ(surfs[0].type(), GeomSurface::SurfaceType::Spherical);
+    }
+}

@@ -20,11 +20,26 @@ class Vector;
 
 class GeomSurface : public GeomShape {
 public:
+    enum class SurfaceType : u8 {
+        Plane,
+        Spherical,
+        Cylindrical,
+        BSpline,
+        Bezier,
+        Conical,
+        Unknown
+    };
+
     explicit GeomSurface(const TopoDS_Face & face);
     GeomSurface(const GeomSurface & other);
     GeomSurface(GeomSurface && other);
 
     int dim() const final;
+
+    /// Get surface type
+    ///
+    /// @return Surface type
+    [[nodiscard]] SurfaceType type() const;
 
     /// Get physical location from parametrical position
     ///
@@ -90,6 +105,7 @@ private:
     std::tuple<bool, UVParam> project(Point pt) const;
 
     Handle(Geom_Surface) surface_;
+    SurfaceType surface_type_;
     double umin_, umax_;
     double vmin_, vmax_;
     /// Mesh size for the edge.
@@ -120,3 +136,38 @@ UVParam reparam_on_surface(const GeomSurface & surface, const GeomCurve & curve,
 } // namespace krado
 
 std::ostream & operator<<(std::ostream & stream, const krado::GeomSurface & srf);
+std::ostream & operator<<(std::ostream & stream, const krado::GeomSurface::SurfaceType & type);
+
+// fmt formatters
+
+template <>
+struct fmt::formatter<krado::GeomSurface::SurfaceType> {
+    constexpr auto
+    parse(format_parse_context & ctx) -> decltype(ctx.begin())
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto
+    format(const krado::GeomSurface::SurfaceType & obj, FormatContext & ctx) const
+        -> decltype(ctx.out())
+    {
+        switch (obj) {
+        case krado::GeomSurface::SurfaceType::Plane:
+            return fmt::format_to(ctx.out(), "plane");
+        case krado::GeomSurface::SurfaceType::Spherical:
+            return fmt::format_to(ctx.out(), "spherical");
+        case krado::GeomSurface::SurfaceType::Cylindrical:
+            return fmt::format_to(ctx.out(), "cylindrical");
+        case krado::GeomSurface::SurfaceType::BSpline:
+            return fmt::format_to(ctx.out(), "b-spline");
+        case krado::GeomSurface::SurfaceType::Bezier:
+            return fmt::format_to(ctx.out(), "bezier");
+        case krado::GeomSurface::SurfaceType::Conical:
+            return fmt::format_to(ctx.out(), "conical");
+        default:
+            return fmt::format_to(ctx.out(), "unknown");
+        }
+    }
+};

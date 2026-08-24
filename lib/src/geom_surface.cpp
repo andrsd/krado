@@ -20,18 +20,37 @@
 #include "ShapeAnalysis.hxx"
 #include "BRepClass_FaceClassifier.hxx"
 #include "Geom_Circle.hxx"
+#include "Geom_Plane.hxx"
+#include "Geom_BSplineSurface.hxx"
+#include "Geom_BezierSurface.hxx"
+#include "Geom_ConicalSurface.hxx"
+#include "Geom_CylindricalSurface.hxx"
+#include "Geom_SphericalSurface.hxx"
 #include <set>
 
 namespace krado {
 
 GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face)
-
 {
     auto face1 = TopoDS::Face(this->shape_);
 
     this->surface_ = BRep_Tool::Surface(face1);
 
     ShapeAnalysis::GetFaceUVBounds(face1, this->umin_, this->umax_, this->vmin_, this->vmax_);
+    if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_Plane))
+        this->surface_type_ = SurfaceType::Plane;
+    else if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_SphericalSurface))
+        this->surface_type_ = SurfaceType::Spherical;
+    else if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_CylindricalSurface))
+        this->surface_type_ = SurfaceType::Cylindrical;
+    else if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_BSplineSurface))
+        this->surface_type_ = SurfaceType::BSpline;
+    else if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_BezierSurface))
+        this->surface_type_ = SurfaceType::Bezier;
+    else if (this->surface_->DynamicType() == STANDARD_TYPE(Geom_ConicalSurface))
+        this->surface_type_ = SurfaceType::Conical;
+    else
+        this->surface_type_ = SurfaceType::Unknown;
 
     this->proj_pt_on_surface_.Init(this->surface_,
                                    this->umin_,
@@ -43,6 +62,7 @@ GeomSurface::GeomSurface(const TopoDS_Face & face) : GeomShape(face)
 GeomSurface::GeomSurface(const GeomSurface & other) :
     GeomShape(other),
     surface_(other.surface_),
+    surface_type_(other.surface_type_),
     umin_(other.umin_),
     umax_(other.umax_),
     vmin_(other.vmin_),
@@ -58,6 +78,7 @@ GeomSurface::GeomSurface(const GeomSurface & other) :
 GeomSurface::GeomSurface(GeomSurface && other) :
     GeomShape(other),
     surface_(other.surface_),
+    surface_type_(other.surface_type_),
     umin_(other.umin_),
     umax_(other.umax_),
     vmin_(other.vmin_),
@@ -74,6 +95,12 @@ int
 GeomSurface::dim() const
 {
     return 2;
+}
+
+GeomSurface::SurfaceType
+GeomSurface::type() const
+{
+    return this->surface_type_;
 }
 
 Point
@@ -273,5 +300,41 @@ operator<<(std::ostream & stream, const krado::GeomSurface & srf)
     stream << "(u, v)=[" << u_min << ", " << u_max << "]x";
     stream << "[" << v_min << ", " << v_max << "], ";
     stream << "area=" << srf.area();
+    return stream;
+}
+
+std::ostream &
+operator<<(std::ostream & stream, const krado::GeomSurface::SurfaceType & type)
+{
+    switch (type) {
+    case krado::GeomSurface::SurfaceType::Plane:
+        stream << "plane";
+        break;
+
+    case krado::GeomSurface::SurfaceType::Spherical:
+        stream << "spherical";
+        break;
+
+    case krado::GeomSurface::SurfaceType::Cylindrical:
+        stream << "cylindrical";
+        break;
+
+    case krado::GeomSurface::SurfaceType::BSpline:
+        stream << "b-spline";
+        break;
+
+    case krado::GeomSurface::SurfaceType::Bezier:
+        stream << "bezier";
+        break;
+
+    case krado::GeomSurface::SurfaceType::Conical:
+        stream << "conical";
+        break;
+
+    case krado::GeomSurface::SurfaceType::Unknown:
+    default:
+        stream << "unknown";
+        break;
+    }
     return stream;
 }
