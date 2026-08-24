@@ -258,6 +258,11 @@ GeomSurface::mesh_size_at_param(UVParam par) const
     return MAX_LC;
 }
 
+const Handle(Geom_Surface) & GeomSurface::surface_handle() const
+{
+    return this->surface_;
+}
+
 GeomSurface
 GeomSurface::create(const Wire & wire)
 {

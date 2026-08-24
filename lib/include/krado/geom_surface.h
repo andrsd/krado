@@ -101,6 +101,8 @@ public:
 
     operator const TopoDS_Face &() const;
 
+    [[nodiscard]] const Handle(Geom_Surface) & surface_handle() const;
+
 private:
     std::tuple<bool, UVParam> project(Point pt) const;
 
