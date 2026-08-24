@@ -287,6 +287,16 @@ is_circular_face(const GeomSurface & surface)
     return !curve.IsNull() && curve->IsKind(STANDARD_TYPE(Geom_Circle));
 }
 
+double
+get_radius(const GeomSurface & surface)
+{
+    if (surface.type() != GeomSurface::SurfaceType::Cylindrical)
+        throw Exception("Surface is not a sylinder");
+
+    const auto & cyl = Handle(Geom_CylindricalSurface)::DownCast(surface.surface_handle());
+    return cyl->Radius();
+}
+
 UVParam
 reparam_on_surface(const GeomSurface & surface, const GeomCurve & curve, double u)
 {

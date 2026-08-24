@@ -172,3 +172,11 @@ TEST(GeomSurfaceTest, type)
         EXPECT_EQ(surfs[0].type(), GeomSurface::SurfaceType::Spherical);
     }
 }
+
+TEST(GeomSurfaceTest, get_cylinder_radius)
+{
+    auto cyl = testing::build_cylinder(Point(0, 0, 0), 1.23, 2.45);
+    auto surfs = cyl.surfaces();
+    auto rad = get_radius(surfs[0]);
+    EXPECT_NEAR(rad, 1.23, 1e-15);
+}
