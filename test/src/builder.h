@@ -20,5 +20,6 @@ krado::GeomSurface build_rect(krado::Point pt1, krado::Point pt2);
 krado::GeomSurface build_annulus(krado::Point center, double outer_radius, double inner_radius);
 krado::GeomVolume build_box(const krado::Point & v1, const krado::Point & v2);
 krado::GeomVolume build_cylinder(const krado::Point & center, double radius, double height);
+krado::GeomVolume build_sphere(const krado::Point & center, double radius);
 
 } // namespace testing

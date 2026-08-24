@@ -14,6 +14,7 @@
 #include "BRepBuilderAPI_MakeWire.hxx"
 #include "BRepBuilderAPI_MakeFace.hxx"
 #include "BRepPrimAPI_MakeCylinder.hxx"
+#include "BRepPrimAPI_MakeSphere.hxx"
 #include "GC_MakeArcOfCircle.hxx"
 #include "GC_MakeCircle.hxx"
 #include "krado/geom_surface.h"
@@ -187,6 +188,16 @@ build_cylinder(const Point & center, double radius, double height)
     gp_Ax2 ax2;
     ax2.SetLocation(center);
     BRepPrimAPI_MakeCylinder maker(ax2, radius, height);
+    maker.Build();
+    return GeomVolume(maker.Solid());
+}
+
+GeomVolume
+build_sphere(const krado::Point & center, double radius)
+{
+    gp_Ax2 ax2;
+    ax2.SetLocation(center);
+    BRepPrimAPI_MakeSphere maker(ax2, radius);
     maker.Build();
     return GeomVolume(maker.Solid());
 }
