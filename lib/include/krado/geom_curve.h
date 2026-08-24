@@ -117,8 +117,6 @@ private:
     Optional<double> mesh_size_;
 
     friend class MeshCurve;
-    friend Point get_circle_center(const GeomCurve & crv);
-    friend double get_circle_radius(const GeomCurve & crv);
 };
 
 /// Get center of a circular curve

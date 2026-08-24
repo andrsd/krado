@@ -227,7 +227,7 @@ get_circle_center(const GeomCurve & crv)
     if (crv.type() != GeomCurve::CurveType::Circle)
         throw Exception("Curve is not a circle");
 
-    const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
+    const auto & circle = Handle(Geom_Circle)::DownCast(crv.curve_handle());
     return Point::create(circle->Location());
 }
 
@@ -237,7 +237,7 @@ get_circle_radius(const GeomCurve & crv)
     if (crv.type() != GeomCurve::CurveType::Circle)
         throw Exception("Curve is not a circle");
 
-    const Handle(Geom_Circle) & circle = Handle(Geom_Circle)::DownCast(crv.curve_);
+    const auto & circle = Handle(Geom_Circle)::DownCast(crv.curve_handle());
     return circle->Radius();
 }
 
