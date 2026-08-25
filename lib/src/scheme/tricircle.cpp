@@ -17,58 +17,11 @@
 #include <vector>
 
 namespace krado {
+namespace {
 
-static const std::string scheme_name = "tricircle";
-
-SchemeTriCircle::SchemeTriCircle(Options options) : Scheme(scheme_name), Scheme2D(), opts_(options)
+std::vector<Ptr<MeshVertexAbstract>>
+circumference_vertices(const Ptr<MeshSurface> mesh_surface)
 {
-}
-
-std::string
-SchemeTriCircle::params_to_str()
-{
-    std::vector<std::string> spars;
-    spars.push_back(fmt::format("radial_intervals={}", this->opts_.radial_intervals));
-    spars.push_back(fmt::format("symmetry={}",
-                                this->opts_.symmetry_type == SymmetryType::QUADRANT ? "quadrant"
-                                                                                    : "hexagonal"));
-    return join(", ", spars);
-}
-
-void
-SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
-{
-    if (!curve->has_scheme()) {
-        // We use a step of 6 for both symmetry types to grow the ring sizes faster,
-        // which helps maintain better triangle quality (closer to equilateral).
-        int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
-        int step = 6;
-        int n_intervals = S1 + step * (this->opts_.radial_intervals - 1);
-        SchemeEqual::Options opts;
-        opts.intervals = n_intervals;
-        curve->set_scheme<SchemeEqual>(opts);
-    }
-}
-
-void
-SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
-{
-    const auto & gsurf = mesh_surface->geom_surface();
-    if (!is_circular_face(gsurf))
-        throw Exception("Surface {} is not a circle", mesh_surface->id());
-
-    auto n_radial = this->opts_.radial_intervals;
-    if (n_radial <= 0)
-        throw Exception("Parameter 'radial_intervals' must be a positive number");
-
-    // Center vertex
-    auto geom_crv = gsurf.curves()[0];
-    auto ctr_pnt = get_circle_center(geom_crv);
-    auto uv_ctr = gsurf.parameter_from_point(ctr_pnt);
-    auto ctr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv_ctr);
-    mesh_surface->add_vertex(ctr);
-
-    // Collect all boundary vertices in order
     std::vector<Ptr<MeshVertexAbstract>> circum_verts;
     for (auto & mesh_crv : mesh_surface->curves()) {
         auto cvs = get_mesh_curve_vertices(mesh_crv);
@@ -85,15 +38,23 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // Ensure it's closed
     if (circum_verts.front() != circum_verts.back())
         circum_verts.push_back(circum_verts.front());
+    return circum_verts;
+}
 
-    // N is number of segments on the boundary
-    int N = static_cast<int>(circum_verts.size()) - 1;
+std::vector<std::vector<Ptr<MeshVertexAbstract>>>
+create_points(Ptr<MeshSurface> mesh_surface,
+              Point ctr_pnt,
+              const std::vector<Ptr<MeshVertexAbstract>> & circum_verts,
+              int n_radial,
+              int S1)
+{
+    const auto & gsurf = mesh_surface->geom_surface();
 
-    // Target S1 (segments in the innermost ring)
-    int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+    auto N = static_cast<int>(circum_verts.size()) - 1;
 
-    if (N < S1)
-        throw Exception("Boundary must have at least {} segments for the selected symmetry.", S1);
+    auto uv_ctr = gsurf.parameter_from_point(ctr_pnt);
+    auto ctr = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv_ctr);
+    mesh_surface->add_vertex(ctr);
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings(n_radial + 1);
     rings[n_radial] = circum_verts;
@@ -147,25 +108,36 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
     // ring 0 is center
     rings[0] = { ctr };
 
-    // Create triangles
+    return rings;
+}
+
+void
+create_triangles(Ptr<MeshSurface> mesh_surface,
+                 const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & rings,
+                 int n_radial)
+{
+    const auto & gsurf = mesh_surface->geom_surface();
+    // ring 0 is center
+    auto ctr = rings[0][0];
 
     // center fan (ring 0 -> ring 1)
-    auto & r1 = rings[1];
+    const auto & r1 = rings[1];
     for (size_t i = 0; i < r1.size() - 1; ++i) {
         mesh_surface->add_triangle(ccw_triangle(gsurf, ctr, r1[i], r1[i + 1]));
     }
 
     // ring-to-ring strips
     for (int k = 1; k < n_radial; ++k) {
-        auto & inner = rings[k];
-        auto & outer = rings[k + 1];
-        int Sin = static_cast<int>(inner.size()) - 1;
-        int Sout = static_cast<int>(outer.size()) - 1;
+        const auto & inner = rings[k];
+        const auto & outer = rings[k + 1];
+        auto Sin = static_cast<int>(inner.size()) - 1;
+        auto Sout = static_cast<int>(outer.size()) - 1;
 
         int v = 0; // outer index
         int w = 0; // inner index
         while (v < Sout || w < Sin) {
-            if (v < Sout && (w == Sin || static_cast<double>(v) / Sout <= static_cast<double>(w) / Sin)) {
+            if (v < Sout &&
+                (w == Sin || static_cast<double>(v) / Sout <= static_cast<double>(w) / Sin)) {
                 mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], inner[w]));
                 v++;
             }
@@ -175,6 +147,69 @@ SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
             }
         }
     }
+}
+
+} // namespace
+
+static const std::string scheme_name = "tricircle";
+
+SchemeTriCircle::SchemeTriCircle(Options options) : Scheme(scheme_name), Scheme2D(), opts_(options)
+{
+}
+
+std::string
+SchemeTriCircle::params_to_str()
+{
+    std::vector<std::string> spars;
+    spars.push_back(fmt::format("radial_intervals={}", this->opts_.radial_intervals));
+    spars.push_back(fmt::format("symmetry={}",
+                                this->opts_.symmetry_type == SymmetryType::QUADRANT ? "quadrant"
+                                                                                    : "hexagonal"));
+    return join(", ", spars);
+}
+
+void
+SchemeTriCircle::select_curve_scheme(Ptr<MeshCurve> curve)
+{
+    if (!curve->has_scheme()) {
+        // We use a step of 6 for both symmetry types to grow the ring sizes faster,
+        // which helps maintain better triangle quality (closer to equilateral).
+        int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+        int step = 6;
+        int n_intervals = S1 + step * (this->opts_.radial_intervals - 1);
+        SchemeEqual::Options opts;
+        opts.intervals = n_intervals;
+        curve->set_scheme<SchemeEqual>(opts);
+    }
+}
+
+void
+SchemeTriCircle::mesh_surface(Ptr<MeshSurface> mesh_surface)
+{
+    const auto & gsurf = mesh_surface->geom_surface();
+    if (!is_circular_face(gsurf))
+        throw Exception("Surface {} is not a circle", mesh_surface->id());
+
+    auto n_radial = this->opts_.radial_intervals;
+    if (n_radial <= 0)
+        throw Exception("Parameter 'radial_intervals' must be a positive number");
+
+    // Collect all boundary vertices in order
+    auto circum_verts = circumference_vertices(mesh_surface);
+
+    // Target S1 (segments in the innermost ring)
+    int S1 = (this->opts_.symmetry_type == SymmetryType::HEXAGONAL) ? 6 : 4;
+    // N is number of segments on the boundary
+    auto N = static_cast<int>(circum_verts.size()) - 1;
+    if (N < S1)
+        throw Exception("Boundary must have at least {} segments for the selected symmetry.", S1);
+
+    // Center vertex
+    auto geom_crv = gsurf.curves()[0];
+    auto ctr_pnt = get_circle_center(geom_crv);
+
+    auto rings = create_points(mesh_surface, ctr_pnt, circum_verts, n_radial, S1);
+    create_triangles(mesh_surface, rings, n_radial);
 }
 
 } // namespace krado
