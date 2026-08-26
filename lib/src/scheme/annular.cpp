@@ -14,8 +14,8 @@ namespace krado {
 SchemeAnnular::SchemeAnnular(const std::string & name) : Scheme(name), Scheme2D() {}
 
 Point
-SchemeAnnular::find_center_point(Ptr<MeshSurface> mesh_surface,
-                                 const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & loops)
+find_center_point(const Ptr<MeshSurface> mesh_surface,
+                  const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & loops)
 {
     for (auto & mesh_crv : mesh_surface->curves()) {
         if (mesh_crv->geom_curve().type() == GeomCurve::CurveType::Circle)
@@ -36,7 +36,7 @@ SchemeAnnular::find_center_point(Ptr<MeshSurface> mesh_surface,
 }
 
 std::vector<std::vector<Ptr<MeshVertexAbstract>>>
-SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
+get_boundary_loops(Ptr<MeshSurface> surface)
 {
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> loops;
     auto mesh_curves = surface->curves();
@@ -92,9 +92,9 @@ SchemeAnnular::get_boundary_loops(Ptr<MeshSurface> surface)
 }
 
 Point
-SchemeAnnular::interpolate_loop(const std::vector<Ptr<MeshVertexAbstract>> & loop,
-                                const std::vector<double> & L,
-                                double l)
+interpolate_loop(const std::vector<Ptr<MeshVertexAbstract>> & loop,
+                 const std::vector<double> & L,
+                 double l)
 {
     int N = static_cast<int>(loop.size()) - 1;
     auto it = std::lower_bound(L.begin(), L.end(), l);
@@ -108,7 +108,7 @@ SchemeAnnular::interpolate_loop(const std::vector<Ptr<MeshVertexAbstract>> & loo
 };
 
 std::vector<double>
-SchemeAnnular::get_L(const std::vector<Ptr<MeshVertexAbstract>> & loop)
+get_L(const std::vector<Ptr<MeshVertexAbstract>> & loop)
 {
     auto N = loop.size();
     if (N == 0)
