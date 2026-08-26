@@ -113,33 +113,26 @@ SchemeTriAnnular::select_curve_scheme(Ptr<MeshCurve> /* curve */)
 void
 SchemeTriAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
-    auto n_radial = this->opts_.radial_intervals;
+    const auto n_radial = this->opts_.radial_intervals;
     if (n_radial < 2)
         throw Exception("Parameter 'radial_intervals' must be at least 2");
 
-    auto loops = get_boundary_loops(mesh_surface);
+    const auto loops = get_boundary_loops(mesh_surface);
     if (loops.size() != 2)
         throw Exception("'{}' scheme requires exactly 2 boundary loops, found {}",
                         scheme_name,
                         loops.size());
 
     // Identify inner and outer loops
-    auto ctr_pnt = find_center_point(mesh_surface, loops);
+    const auto ctr_pnt = find_center_point(mesh_surface, loops);
+    const bool inner = avg_distance(loops[0], ctr_pnt) < avg_distance(loops[1], ctr_pnt);
+    const auto & inner_loop = inner ? loops[0] : loops[1];
+    const auto & outer_loop = inner ? loops[1] : loops[0];
 
-    auto avg_dist = [&](const std::vector<Ptr<MeshVertexAbstract>> & loop) {
-        double d = 0;
-        for (const auto & v : loop)
-            d += v->point().distance(ctr_pnt);
-        return d / loop.size();
-    };
+    const auto N_in = static_cast<int>(inner_loop.size()) - 1;
+    const auto N_out = static_cast<int>(outer_loop.size()) - 1;
 
-    auto & inner_loop = (avg_dist(loops[0]) < avg_dist(loops[1])) ? loops[0] : loops[1];
-    auto & outer_loop = (avg_dist(loops[0]) < avg_dist(loops[1])) ? loops[1] : loops[0];
-
-    auto N_in = static_cast<int>(inner_loop.size()) - 1;
-    auto N_out = static_cast<int>(outer_loop.size()) - 1;
-
-    int expected_N_in = N_out - 6 * n_radial;
+    const int expected_N_in = N_out - 6 * n_radial;
     if (N_in != expected_N_in)
         throw Exception("For '{}' scheme, inner loop ({}) must have {} segments (outer has "
                         "{}) with {} radial intervals (decreasing by 6 per ring)",
@@ -149,7 +142,7 @@ SchemeTriAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
                         N_out,
                         n_radial);
 
-    auto rings = create_points(mesh_surface, n_radial, inner_loop, outer_loop);
+    const auto rings = create_points(mesh_surface, n_radial, inner_loop, outer_loop);
     create_triangles(mesh_surface, rings, n_radial);
 }
 

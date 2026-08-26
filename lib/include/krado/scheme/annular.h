@@ -20,6 +20,8 @@ public:
     SchemeAnnular(const std::string & name);
 };
 
+double avg_distance(const std::vector<Ptr<MeshVertexAbstract>> & loop, Point ctr_pnt);
+
 Point find_center_point(Ptr<MeshSurface> mesh_surface,
                         const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & loops);
 

@@ -13,6 +13,15 @@ namespace krado {
 
 SchemeAnnular::SchemeAnnular(const std::string & name) : Scheme(name), Scheme2D() {}
 
+double
+avg_distance(const std::vector<Ptr<MeshVertexAbstract>> & loop, Point ctr_pnt)
+{
+    double d = 0;
+    for (const auto & v : loop)
+        d += v->point().distance(ctr_pnt);
+    return d / loop.size();
+};
+
 Point
 find_center_point(const Ptr<MeshSurface> mesh_surface,
                   const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & loops)
