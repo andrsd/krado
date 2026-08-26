@@ -44,8 +44,8 @@ sort_curves(Span<Ptr<MeshCurve>> curves)
     remaining_curves.pop_back();
 
     while (!remaining_curves.empty()) {
-        auto last_curve = sorted_curves.back();
-        auto last_vtx = last_curve->geom_curve().last_vertex().point();
+        const auto last_curve = sorted_curves.back();
+        const auto last_vtx = last_curve->geom_curve().last_vertex().point();
 
         bool found = false;
         for (auto it = remaining_curves.begin(); it != remaining_curves.end(); ++it) {
@@ -89,13 +89,13 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
             throw Exception("Scheme 'structured' requires all curves to be meshed first");
     }
 
-    auto res = sort_curves(curves);
+    const auto res = sort_curves(curves);
     if (not res.has_value())
         throw Exception("Curves in surface {} do not form a closed loop", surface->id());
 
     // Now sorted_curves should be in a loop. 0 and 2 should be opposite, 1 and 3 should be
     // opposite.
-    auto sorted_curves = res.value();
+    const auto sorted_curves = res.value();
 
     auto v0 = get_ordered_vertices(sorted_curves[0]);
     auto v1 = get_ordered_vertices(sorted_curves[1]);
@@ -128,8 +128,8 @@ SchemeStructured::mesh_surface(Ptr<MeshSurface> surface)
         throw Exception("Opposite curves 1 and 3 must have the same number of segments for scheme "
                         "'structured'");
 
-    auto ni = v0.size();
-    auto nj = v1.size();
+    const auto ni = v0.size();
+    const auto nj = v1.size();
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> grid(
         ni,

@@ -48,7 +48,7 @@ std::vector<std::vector<Ptr<MeshVertexAbstract>>>
 get_boundary_loops(Ptr<MeshSurface> surface)
 {
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> loops;
-    auto mesh_curves = surface->curves();
+    const auto mesh_curves = surface->curves();
     std::vector<bool> visited(mesh_curves.size(), false);
 
     while (true) {
@@ -63,19 +63,19 @@ get_boundary_loops(Ptr<MeshSurface> surface)
             break;
 
         std::vector<Ptr<MeshVertexAbstract>> loop;
-        std::size_t curr_idx = start_idx.value();
+        const std::size_t curr_idx = start_idx.value();
         visited[curr_idx] = true;
 
-        auto curr_crv = mesh_curves[curr_idx];
-        auto vtxs = get_mesh_curve_vertices(curr_crv);
+        const auto curr_crv = mesh_curves[curr_idx];
+        const auto vtxs = get_mesh_curve_vertices(curr_crv);
         loop = vtxs;
 
         while (loop.front() != loop.back()) {
-            auto last_v = loop.back();
+            const auto last_v = loop.back();
             bool found_next = false;
             for (std::size_t i = 0; i < mesh_curves.size(); ++i) {
                 if (!visited[i]) {
-                    auto next_crv = mesh_curves[i];
+                    const auto next_crv = mesh_curves[i];
                     auto next_vtxs = get_mesh_curve_vertices(next_crv);
                     if (next_vtxs.front() == last_v) {
                         loop.insert(loop.end(), next_vtxs.begin() + 1, next_vtxs.end());
@@ -105,21 +105,21 @@ interpolate_loop(const std::vector<Ptr<MeshVertexAbstract>> & loop,
                  const std::vector<double> & L,
                  double l)
 {
-    int N = static_cast<int>(loop.size()) - 1;
-    auto it = std::lower_bound(L.begin(), L.end(), l);
+    const auto N = static_cast<int>(loop.size()) - 1;
+    const auto it = std::lower_bound(L.begin(), L.end(), l);
     int j = static_cast<int>(std::distance(L.begin(), it));
     if (j > 0)
         j--;
     if (j >= N)
         j = N - 1;
-    double beta = (L[j + 1] > L[j]) ? (l - L[j]) / (L[j + 1] - L[j]) : 0.0;
+    const double beta = (L[j + 1] > L[j]) ? (l - L[j]) / (L[j + 1] - L[j]) : 0.0;
     return loop[j]->point() + (loop[j + 1]->point() - loop[j]->point()) * beta;
 };
 
 std::vector<double>
 get_L(const std::vector<Ptr<MeshVertexAbstract>> & loop)
 {
-    auto N = loop.size();
+    const auto N = loop.size();
     if (N == 0)
         return {};
 

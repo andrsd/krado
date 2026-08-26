@@ -27,7 +27,7 @@ void
 SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 {
     const auto & geom_curve = curve->geom_curve();
-    auto n_segs = this->opts_.intervals;
+    const auto n_segs = this->opts_.intervals;
 
     Integral igrl;
     igrl.integrate(geom_curve, [=](double t) {
@@ -37,8 +37,8 @@ SchemeEqual::mesh_curve(Ptr<MeshCurve> curve)
 
     const double b = geom_curve.length() / static_cast<double>(n_segs);
     for (int count = 1, num_pts = 1; num_pts < n_segs;) {
-        auto pt1 = igrl.point(count - 1);
-        auto pt2 = igrl.point(count);
+        const auto pt1 = igrl.point(count - 1);
+        const auto pt2 = igrl.point(count);
         const auto d = static_cast<double>(num_pts) * b;
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             const auto dt = pt2.t - pt1.t;

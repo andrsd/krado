@@ -28,8 +28,8 @@ namespace {
 Ptr<MeshVertex>
 find_shared_vertex(Ptr<MeshCurve> crv1, Ptr<MeshCurve> crv2)
 {
-    auto bnd1 = crv1->bounding_vertices();
-    auto bnd2 = crv2->bounding_vertices();
+    const auto bnd1 = crv1->bounding_vertices();
+    const auto bnd2 = crv2->bounding_vertices();
     if (bnd1[0] == bnd2[0] || bnd1[0] == bnd2[1])
         return bnd1[0];
     else if (bnd1[1] == bnd2[0] || bnd1[1] == bnd2[1])
@@ -46,7 +46,7 @@ void
 SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
 {
     const auto & gsurf = mesh_surface->geom_surface();
-    auto curves = mesh_surface->curves();
+    const auto curves = mesh_surface->curves();
     if (curves.size() != 3)
         throw Exception("Fan scheme requires exactly 3 curves on surface {}", mesh_surface->id());
 
@@ -134,26 +134,26 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
     rings[0] = circular_verts;
     // Rings 1 to M-1
     for (auto k : make_range(1, M)) {
-        auto s = N - k;
-        auto idx = M - k;
-        auto start = l1cvs[idx];
-        auto end = l2cvs[idx];
-        auto p_start = start->point();
-        auto p_end = end->point();
+        const auto s = N - k;
+        const auto idx = M - k;
+        const auto start = l1cvs[idx];
+        const auto end = l2cvs[idx];
+        const auto p_start = start->point();
+        auto const p_end = end->point();
 
         // build arc for each ring so we can lay out the points on concentric circles
-        auto radius = utils::distance(p_start, center_vtx->point());
-        auto circ = Circle::create(center_vtx->point(), radius);
-        auto arc = ArcOfCircle::create(circ, p_start, p_end);
-        auto [t_lo, t_hi] = arc.param_range();
+        const auto radius = utils::distance(p_start, center_vtx->point());
+        const auto circ = Circle::create(center_vtx->point(), radius);
+        const auto arc = ArcOfCircle::create(circ, p_start, p_end);
+        const auto [t_lo, t_hi] = arc.param_range();
 
         rings[k].push_back(start);
         for (auto i : make_range(1, s)) {
-            auto beta = static_cast<double>(i) / s;
-            auto t = t_lo + (t_hi - t_lo) * beta;
-            auto p = arc.point(t);
-            auto uv = gsurf.parameter_from_point(p);
-            auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
+            const auto beta = static_cast<double>(i) / s;
+            const auto t = t_lo + (t_hi - t_lo) * beta;
+            const auto p = arc.point(t);
+            const auto uv = gsurf.parameter_from_point(p);
+            const auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
             mesh_surface->add_vertex(v);
             rings[k].emplace_back(v);
         }
@@ -196,19 +196,19 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
 
     // "outer" triangle strips
     for (auto k : make_range(M - 1)) {
-        auto & outer = rings[k];
-        auto & inner = rings[k + 1];
+        const auto & outer = rings[k];
+        const auto & inner = rings[k + 1];
 
         // number of segments on the outer arc
-        auto s = outer.size() - 1;
+        const auto s = outer.size() - 1;
 
         if (s == 1) {
             // This should never happen
             throw Exception("Ring {} has 1 segment", k);
         }
         else if (s == 2) {
-            auto v0 = outer[0], v1 = outer[1], v2 = outer[2];
-            auto w0 = inner[0], w1 = inner[1];
+            const auto v0 = outer[0], v1 = outer[1], v2 = outer[2];
+            const auto w0 = inner[0], w1 = inner[1];
 
             mesh_surface->add_triangle(ccw_triangle(gsurf, v0, v1, w0));
             mesh_surface->add_triangle(ccw_triangle(gsurf, v1, w1, w0));
@@ -254,7 +254,7 @@ SchemeFan::mesh_surface(Ptr<MeshSurface> mesh_surface)
     }
     // "inner" triangle fan
     {
-        auto & outer = rings[M - 1];
+        const auto & outer = rings[M - 1];
         for (auto v : make_range(outer.size() - 1))
             mesh_surface->add_triangle(ccw_triangle(gsurf, outer[v], outer[v + 1], center_vtx));
     }

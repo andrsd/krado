@@ -37,9 +37,9 @@ SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
 
     Integral igrl;
     igrl.integrate(geom_curve, [&](double t) {
-        auto der = geom_curve.d1(t);
-        auto ds = der.magnitude();
-        auto kappa = geom_curve.curvature(t);
+        const auto der = geom_curve.d1(t);
+        const auto ds = der.magnitude();
+        const auto kappa = geom_curve.curvature(t);
         double h;
         if (kappa > 1e-12)
             h = this->opts_.deflection / kappa;
@@ -52,19 +52,19 @@ SchemeCurvature::mesh_curve(Ptr<MeshCurve> curve)
         return ds / h;
     });
 
-    auto total_weight = igrl.point(igrl.num_points() - 1).p;
+    const auto total_weight = igrl.point(igrl.num_points() - 1).p;
     if (total_weight < 1e-6) {
         Log::warn("Curve {} is too small for curvature scheme", curve->id());
         curve->set_too_small(true);
         return;
     }
 
-    std::size_t n_segs = std::max(1, static_cast<int>(std::round(total_weight)));
-    auto delta_weight = total_weight / static_cast<double>(n_segs);
+    const std::size_t n_segs = std::max(1, static_cast<int>(std::round(total_weight)));
+    const auto delta_weight = total_weight / static_cast<double>(n_segs);
 
     for (std::size_t count = 1, num_pts = 1; num_pts < n_segs;) {
-        auto pt1 = igrl.point(count - 1);
-        auto pt2 = igrl.point(count);
+        const auto pt1 = igrl.point(count - 1);
+        const auto pt2 = igrl.point(count);
         const auto d = static_cast<double>(num_pts) * delta_weight;
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             const auto dt = pt2.t - pt1.t;

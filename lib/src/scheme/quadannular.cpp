@@ -27,30 +27,30 @@ create_points(Ptr<MeshSurface> mesh_surface,
               const std::vector<Ptr<MeshVertexAbstract>> & outer_loop)
 {
     const auto & gsurf = mesh_surface->geom_surface();
-    auto N_out = static_cast<int>(outer_loop.size()) - 1;
+    const auto N_out = static_cast<int>(outer_loop.size()) - 1;
 
     std::vector<std::vector<Ptr<MeshVertexAbstract>>> rings(n_radial + 1);
     rings[0] = inner_loop;
     rings[n_radial] = outer_loop;
 
-    auto L_in = get_L(inner_loop);
-    auto L_out = get_L(outer_loop);
-    auto total_L_in = L_in.back();
-    auto total_L_out = L_out.back();
+    const auto L_in = get_L(inner_loop);
+    const auto L_out = get_L(outer_loop);
+    const auto total_L_in = L_in.back();
+    const auto total_L_out = L_out.back();
 
     // Generate intermediate rings
     for (auto k : make_range(1, n_radial)) {
-        auto alpha_r = static_cast<double>(k) / n_radial;
-        auto Sk = N_out;
+        const auto alpha_r = static_cast<double>(k) / n_radial;
+        const auto Sk = N_out;
 
         for (auto i : make_range(Sk)) {
-            auto l_rel = static_cast<double>(i) / Sk;
-            auto p_in = interpolate_loop(inner_loop, L_in, l_rel * total_L_in);
-            auto p_out = interpolate_loop(outer_loop, L_out, l_rel * total_L_out);
-            Point p = p_in + (p_out - p_in) * alpha_r;
+            const auto l_rel = static_cast<double>(i) / Sk;
+            const auto p_in = interpolate_loop(inner_loop, L_in, l_rel * total_L_in);
+            const auto p_out = interpolate_loop(outer_loop, L_out, l_rel * total_L_out);
+            const Point p = p_in + (p_out - p_in) * alpha_r;
 
-            auto uv = gsurf.parameter_from_point(p);
-            auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
+            const auto uv = gsurf.parameter_from_point(p);
+            const auto v = Ptr<MeshSurfaceVertex>::alloc(gsurf, uv);
             mesh_surface->add_vertex(v);
             rings[k].emplace_back(v);
         }
@@ -69,7 +69,7 @@ create_quadrangles(Ptr<MeshSurface> mesh_surface,
     for (auto k : make_range(n_radial)) {
         const auto & inner = rings[k];
         const auto & outer = rings[k + 1];
-        auto N = static_cast<int>(inner.size()) - 1;
+        const auto N = static_cast<int>(inner.size()) - 1;
 
         for (auto i : make_range(N)) {
             mesh_surface->add_quadrangle(

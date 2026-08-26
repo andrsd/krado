@@ -36,8 +36,8 @@ SchemeSize::mesh_curve(Ptr<MeshCurve> curve)
     int n_segs = std::round(geom_curve.length() / this->opts_.size);
     const double b = geom_curve.length() / static_cast<double>(n_segs);
     for (int count = 1, num_pts = 1; num_pts < n_segs;) {
-        auto pt1 = igrl.point(count - 1);
-        auto pt2 = igrl.point(count);
+        const auto pt1 = igrl.point(count - 1);
+        const auto pt2 = igrl.point(count);
         const double d = num_pts * b;
         if ((std::abs(pt2.p) >= std::abs(d)) && (std::abs(pt1.p) < std::abs(d))) {
             const auto dt = pt2.t - pt1.t;
