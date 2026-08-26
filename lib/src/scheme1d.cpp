@@ -17,7 +17,7 @@
 namespace krado {
 
 void
-Scheme1D::build_curve_segments(Ptr<MeshCurve> curve)
+build_curve_segments(Ptr<MeshCurve> curve)
 {
     auto bnd_verts = curve->bounding_vertices();
     if (bnd_verts.size() != 2)

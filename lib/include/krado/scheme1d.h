@@ -15,12 +15,11 @@ public:
     virtual ~Scheme1D() = default;
 
     virtual void mesh_curve(Ptr<MeshCurve> mcurve) = 0;
-
-protected:
-    /// Build segments for a curve
-    ///
-    /// @param curve Mesh curve
-    void build_curve_segments(Ptr<MeshCurve> curve);
 };
+
+/// Build segments for a curve
+///
+/// @param curve Mesh curve
+void build_curve_segments(Ptr<MeshCurve> curve);
 
 } // namespace krado
