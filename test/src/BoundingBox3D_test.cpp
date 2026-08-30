@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "builder.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/transform.h"
 
 using namespace krado;
 
@@ -167,4 +168,90 @@ TEST(BoundingBox3DTest, op_shl)
     std::stringstream ss;
     ss << bbox;
     EXPECT_EQ(ss.str(), "BoundingBox: min=(x=0, y=0, z=0), max=(x=1, y=2, z=3)");
+}
+
+TEST(BoundingBox3DTest, op_plus_equals)
+{
+    BoundingBox3D bbox1(Point(1, 1, 1), Point(3, 2, 1));
+    BoundingBox3D bbox2(Point(-3, -2, -1), Point(0, 0, 0));
+    bbox1 += bbox2;
+    auto min = bbox1.min();
+    EXPECT_NEAR(min.x, -3., 1e-10);
+    EXPECT_NEAR(min.y, -2., 1e-10);
+    EXPECT_NEAR(min.z, -1., 1e-10);
+
+    auto max = bbox1.max();
+    EXPECT_NEAR(max.x, 3., 1e-10);
+    EXPECT_NEAR(max.y, 2., 1e-10);
+    EXPECT_NEAR(max.z, 1., 1e-10);
+}
+
+TEST(BoundingBox3DTest, transform)
+{
+    {
+        BoundingBox3D bbox(Point(-1, -2, -3), Point(3, 2, 1));
+        auto trsf = Trsf::identity() * Trsf::scaled(-3, 2, -4);
+        bbox.transform(trsf);
+        auto sz = bbox.size();
+        EXPECT_NEAR(sz[0], 12., 1e-10);
+        EXPECT_NEAR(sz[1], 8., 1e-10);
+        EXPECT_NEAR(sz[2], 16., 1e-10);
+    }
+    {
+        BoundingBox3D bbox(Point(-1, -2, -3), Point(3, 4, 2));
+        auto trsf = Trsf::identity() * Trsf::translated(1, 2, 3);
+        bbox.transform(trsf);
+        auto min = bbox.min();
+        EXPECT_NEAR(min.x, 0., 1e-10);
+        EXPECT_NEAR(min.y, 0., 1e-10);
+        EXPECT_NEAR(min.z, 0., 1e-10);
+
+        auto max = bbox.max();
+        EXPECT_NEAR(max.x, 4., 1e-10);
+        EXPECT_NEAR(max.y, 6., 1e-10);
+        EXPECT_NEAR(max.z, 5., 1e-10);
+    }
+}
+
+TEST(BoundingBox3DTest, determine_spatial_dim)
+{
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 0, 0));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 1);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 2, 0));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 2);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 2, 3));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 3);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 0, 3));
+        auto dim = determine_spatial_dim(bbox);
+        EXPECT_FALSE(dim.has_value());
+    }
+}
+
+TEST(BoundingBox3DTest, make_cube)
+{
+    BoundingBox3D bbox(Point(-2, -3, -4), Point(4, 3, 2));
+    bbox.make_cube();
+
+    auto min = bbox.min();
+    EXPECT_NEAR(min.x, -4.196152, 1e-6);
+    EXPECT_NEAR(min.y, -5.196152, 1e-6);
+    EXPECT_NEAR(min.z, -6.196152, 1e-6);
+
+    auto max = bbox.max();
+    EXPECT_NEAR(max.x, 6.196152, 1e-6);
+    EXPECT_NEAR(max.y, 5.196152, 1e-6);
+    EXPECT_NEAR(max.z, 4.196152, 1e-6);
 }

@@ -4,12 +4,13 @@
 #pragma once
 
 #include "krado/point.h"
-#include <vector>
+#include "krado/types.h"
 #include <array>
 
 namespace krado {
 
 class GeomShape;
+class Trsf;
 
 /// Bounding box in 3D
 ///
@@ -18,6 +19,7 @@ class BoundingBox3D {
 public:
     BoundingBox3D();
     BoundingBox3D(Point pt);
+    BoundingBox3D(Point min, Point max);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
     BoundingBox3D(const GeomShape & shape);
 
@@ -51,7 +53,7 @@ public:
 
     [[nodiscard]] bool contains(double x, double y, double z) const;
 
-    [[nodiscard]] bool transform(const std::vector<double> & tfo);
+    void transform(const Trsf & tfo);
 
     [[nodiscard]] std::array<double, 3> size() const;
 
@@ -69,7 +71,7 @@ private:
 ///
 /// @param bbox Boudning box
 /// @return Spatial dimension
-int determine_spatial_dim(const BoundingBox3D & bbox);
+Optional<int> determine_spatial_dim(const BoundingBox3D & bbox);
 
 } // namespace krado
 

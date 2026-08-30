@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <array>
+
 namespace krado {
 
 class Point;
@@ -78,7 +80,7 @@ public:
 private:
     static constexpr int N = 4;
 
-    double mat_[N][N];
+    std::array<std::array<double, N>, N> mat_;
 
 public:
     /// Create isotropic scaling transformation
