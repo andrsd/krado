@@ -170,6 +170,22 @@ TEST(BoundingBox3DTest, op_shl)
     EXPECT_EQ(ss.str(), "BoundingBox: min=(x=0, y=0, z=0), max=(x=1, y=2, z=3)");
 }
 
+TEST(BoundingBox3DTest, op_plus_equals)
+{
+    BoundingBox3D bbox1(Point(1, 1, 1), Point(3, 2, 1));
+    BoundingBox3D bbox2(Point(-3, -2, -1), Point(0, 0, 0));
+    bbox1 += bbox2;
+    auto min = bbox1.min();
+    EXPECT_NEAR(min.x, -3., 1e-10);
+    EXPECT_NEAR(min.y, -2., 1e-10);
+    EXPECT_NEAR(min.z, -1., 1e-10);
+
+    auto max = bbox1.max();
+    EXPECT_NEAR(max.x, 3., 1e-10);
+    EXPECT_NEAR(max.y, 2., 1e-10);
+    EXPECT_NEAR(max.z, 1., 1e-10);
+}
+
 TEST(BoundingBox3DTest, transform)
 {
     {
