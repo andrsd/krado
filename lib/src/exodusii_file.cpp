@@ -981,8 +981,10 @@ ExodusIIFile::write(Ptr<const Mesh> mesh)
     this->exo_.create(this->fn_);
     auto bbox = compute_bounding_box(mesh);
     auto dim = determine_spatial_dim(bbox);
+    if (not dim.has_value())
+        throw Exception("Unusual mesh, unable to write.");
 
-    auto [x, y, z] = build_coords(*mesh, dim);
+    auto [x, y, z] = build_coords(*mesh, dim.value());
     std::map<Index, int> exii_elem_ids;
     auto [blocks, block_names] = build_blocks(*mesh, exii_elem_ids);
     auto [side_sets, side_set_names] = build_side_sets(*mesh, exii_elem_ids);
@@ -993,17 +995,17 @@ ExodusIIFile::write(Ptr<const Mesh> mesh)
     int n_elem_blks = blocks.size();
     int n_node_sets = node_sets.size();
     int n_side_sets = side_sets.size();
-    this->exo_.init("", dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
+    this->exo_.init("", dim.value(), n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
     write_info(this->exo_);
-    write_coords(this->exo_, dim, x, y, z);
+    write_coords(this->exo_, dim.value(), x, y, z);
     write_element_blocks(this->exo_, blocks, block_names);
     write_side_sets(this->exo_, side_sets, side_set_names);
     write_node_sets(this->exo_, node_sets, node_set_names);
 
     Log::info(
         "- {}D, {} node(s), {} element(s), {} element block(s), {} node set(s), {} side set(s)",
-        dim,
+        dim.value(),
         utils::human_number(n_nodes),
         utils::human_number(n_elems),
         utils::human_number(n_elem_blks),
@@ -1021,11 +1023,13 @@ ExodusIIFile::write(const GeomModel & model)
 
     auto bbox = compute_bounding_box(model);
     auto dim = determine_spatial_dim(bbox);
+    if (not dim.has_value())
+        throw Exception("Unusual mesh, unable to write.");
 
     auto pnt_map = build_points(model);
-    auto [x, y, z] = build_coords(pnt_map, dim);
-    auto [blocks, block_names] = build_blocks(model, pnt_map, dim);
-    auto [side_sets, side_set_names] = build_side_sets(model, blocks, pnt_map, dim);
+    auto [x, y, z] = build_coords(pnt_map, dim.value());
+    auto [blocks, block_names] = build_blocks(model, pnt_map, dim.value());
+    auto [side_sets, side_set_names] = build_side_sets(model, blocks, pnt_map, dim.value());
     auto [node_sets, node_set_names] = build_node_sets(model, pnt_map);
 
     int n_nodes = pnt_map.size();
@@ -1036,17 +1040,17 @@ ExodusIIFile::write(const GeomModel & model)
     int n_node_sets = node_sets.size();
     int n_side_sets = side_sets.size();
 
-    this->exo_.init("", dim, n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
+    this->exo_.init("", dim.value(), n_nodes, n_elems, n_elem_blks, n_node_sets, n_side_sets);
 
     write_info(this->exo_);
-    write_coords(this->exo_, dim, x, y, z);
+    write_coords(this->exo_, dim.value(), x, y, z);
     write_element_blocks(this->exo_, blocks, block_names);
     write_side_sets(this->exo_, side_sets, side_set_names);
     write_node_sets(this->exo_, node_sets, node_set_names);
 
     Log::info(
         "- {}D, {} node(s), {} element(s), {} element block(s), {} node set(s), {} side set(s)",
-        dim,
+        dim.value(),
         utils::human_number(n_nodes),
         utils::human_number(n_elems),
         utils::human_number(n_elem_blks),

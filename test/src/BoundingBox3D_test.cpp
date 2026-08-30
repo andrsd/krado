@@ -212,3 +212,30 @@ TEST(BoundingBox3DTest, transform)
         EXPECT_NEAR(max.z, 5., 1e-10);
     }
 }
+
+TEST(BoundingBox3DTest, determine_spatial_dim)
+{
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 0, 0));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 1);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 2, 0));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 2);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 2, 3));
+        auto dim = determine_spatial_dim(bbox);
+        ASSERT_TRUE(dim.has_value());
+        EXPECT_EQ(dim.value(), 3);
+    }
+    {
+        BoundingBox3D bbox(Point(1, 0, 0), Point(2, 0, 3));
+        auto dim = determine_spatial_dim(bbox);
+        EXPECT_FALSE(dim.has_value());
+    }
+}

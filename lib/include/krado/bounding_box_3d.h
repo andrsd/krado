@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/point.h"
+#include "krado/types.h"
 #include <array>
 
 namespace krado {
@@ -70,7 +71,7 @@ private:
 ///
 /// @param bbox Boudning box
 /// @return Spatial dimension
-int determine_spatial_dim(const BoundingBox3D & bbox);
+Optional<int> determine_spatial_dim(const BoundingBox3D & bbox);
 
 } // namespace krado
 

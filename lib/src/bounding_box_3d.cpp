@@ -222,7 +222,7 @@ BoundingBox3D::size(int n) const
         return std::numeric_limits<double>::infinity();
 }
 
-int
+Optional<int>
 determine_spatial_dim(const BoundingBox3D & bbox)
 {
     auto sz = bbox.size();
@@ -233,7 +233,7 @@ determine_spatial_dim(const BoundingBox3D & bbox)
     else if ((sz[0] > 0) && (sz[1] > 0) && (sz[2] > 0))
         return 3;
     else
-        throw Exception("Unusual mesh, unable to write.");
+        return std::nullopt;
 }
 
 } // namespace krado

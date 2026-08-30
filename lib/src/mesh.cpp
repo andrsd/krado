@@ -1071,17 +1071,20 @@ build_elements(const GeomModel & model, const std::map<Ptr<MeshVertexAbstract>, 
 
     auto bbox = compute_bounding_box(model);
     auto dim = determine_spatial_dim(bbox);
-
-    if (dim == 1)
-        return build_1d_elements(model, vtx_map);
-    else if (dim == 2) {
-        if (not model.surfaces().empty())
-            return build_2d_elements(model, vtx_map);
-        else
+    if (dim.has_value()) {
+        if (dim.value() == 1)
             return build_1d_elements(model, vtx_map);
+        else if (dim.value() == 2) {
+            if (not model.surfaces().empty())
+                return build_2d_elements(model, vtx_map);
+            else
+                return build_1d_elements(model, vtx_map);
+        }
+        else if (dim.value() == 3)
+            return build_3d_elements(model, vtx_map);
+        else
+            throw Exception("Unsupported dimension {}", dim.value());
     }
-    else if (dim == 3)
-        return build_3d_elements(model, vtx_map);
     else
         throw Exception("Element construction for your setup is not implemented yet");
 }
