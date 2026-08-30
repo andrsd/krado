@@ -7,6 +7,7 @@
 #include "krado/vector.h"
 #include "krado/axis1.h"
 #include "krado/axis2.h"
+#include "krado/transform.h"
 #include "gp_Pnt.hxx"
 #include <iostream>
 #include <iomanip>
@@ -281,18 +282,12 @@ Point::operator<(const Point & p) const
 }
 
 void
-Point::transform(const std::vector<double> & tfo)
+Point::transform(const Trsf & tfo)
 {
-    if (tfo.size() < 12)
-        throw Exception("Expecting at least 12 entries in 'tfo'.");
-    double old[3] = { x, y, z };
-    x = y = z = 0.;
-    int idx = 0;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            (*this)(i) += old[j] * tfo[idx++];
-        (*this)(i) += tfo[idx++];
-    }
+    auto pt = tfo * Point(this->x, this->y, this->z);
+    this->x = pt.x;
+    this->y = pt.y;
+    this->z = pt.z;
 }
 
 Point::operator gp_Pnt() const

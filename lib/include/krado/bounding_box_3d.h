@@ -10,6 +10,7 @@
 namespace krado {
 
 class GeomShape;
+class Trsf;
 
 /// Bounding box in 3D
 ///
@@ -18,6 +19,7 @@ class BoundingBox3D {
 public:
     BoundingBox3D();
     BoundingBox3D(Point pt);
+    BoundingBox3D(Point min, Point max);
     BoundingBox3D(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
     BoundingBox3D(const GeomShape & shape);
 
@@ -51,7 +53,7 @@ public:
 
     [[nodiscard]] bool contains(double x, double y, double z) const;
 
-    [[nodiscard]] bool transform(const std::vector<double> & tfo);
+    [[nodiscard]] bool transform(const Trsf & tfo);
 
     [[nodiscard]] std::array<double, 3> size() const;
 

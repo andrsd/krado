@@ -6,6 +6,7 @@
 #include "krado/vector.h"
 #include "krado/exception.h"
 #include "krado/geom_shape.h"
+#include "krado/transform.h"
 #include "Bnd_Box.hxx"
 #include "BRepBndLib.hxx"
 #include <limits>
@@ -17,6 +18,8 @@ constexpr auto MAX = std::numeric_limits<double>::max();
 BoundingBox3D::BoundingBox3D() : min_pt_(MAX, MAX, MAX), max_pt_(-MAX, -MAX, -MAX) {}
 
 BoundingBox3D::BoundingBox3D(Point pt) : min_pt_(pt), max_pt_(pt) {}
+
+BoundingBox3D::BoundingBox3D(Point min, Point max) : min_pt_(min), max_pt_(max) {}
 
 BoundingBox3D::BoundingBox3D(double xmin,
                              double ymin,
@@ -191,12 +194,10 @@ BoundingBox3D::contains(double x, double y, double z) const
 }
 
 bool
-BoundingBox3D::transform(const std::vector<double> & tfo)
+BoundingBox3D::transform(const Trsf & tfo)
 {
-    if (tfo.size() != 16)
-        return false;
-    this->min_pt_.transform(tfo);
-    this->max_pt_.transform(tfo);
+    this->min_pt_ = tfo * this->min_pt_;
+    this->max_pt_ = tfo * this->max_pt_;
     return true;
 }
 

@@ -14,6 +14,7 @@ class Vector;
 class UVParam;
 class Axis1;
 class Axis2;
+class Trsf;
 
 /// Point in 3D space
 class Point {
@@ -64,7 +65,7 @@ public:
     [[nodiscard]] double distance(Point p) const;
     // lexicographic
     [[nodiscard]] bool operator<(const Point & p) const;
-    void transform(const std::vector<double> & tfo);
+    void transform(const Trsf & tfo);
 
     void mirror(const Point & pt);
     void mirror(const Axis1 & ax1);
