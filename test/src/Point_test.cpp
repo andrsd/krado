@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "krado/point.h"
 #include "krado/vector.h"
+#include "krado/uv_param.h"
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/exception.h"
@@ -23,13 +24,26 @@ TEST(PointTest, ctor)
     EXPECT_DOUBLE_EQ(pt.z, 3.);
 }
 
+TEST(PointTest, ctor_uv)
+{
+    UVParam uv(1., 2.);
+    Point pt(uv);
+    EXPECT_DOUBLE_EQ(pt.x, 1.);
+    EXPECT_DOUBLE_EQ(pt.y, 2.);
+    EXPECT_DOUBLE_EQ(pt.z, 0.);
+}
+
 TEST(PointTest, oper_call)
 {
     Point pt(1., 2., 3.);
     EXPECT_DOUBLE_EQ(pt(0), 1.);
     EXPECT_DOUBLE_EQ(pt(1), 2.);
     EXPECT_DOUBLE_EQ(pt(2), 3.);
+}
 
+TEST(PointTest, oper_call_throws_on_invalid_index)
+{
+    Point pt(1., 2., 3.);
     EXPECT_THROW({ pt(3); }, Exception);
 }
 
@@ -280,4 +294,14 @@ TEST(PointTest, mirrored_ax2)
     EXPECT_NEAR(npt.x, -1, 1e-15);
     EXPECT_NEAR(npt.y, 0, 1e-15);
     EXPECT_NEAR(npt.z, -2, 1e-15);
+}
+
+TEST(PointTest, less_than)
+{
+    EXPECT_TRUE(Point(1, 0, 0) < Point(2, 0, 0));
+    EXPECT_FALSE(Point(2, 0, 0) < Point(1, 0, 0));
+    EXPECT_TRUE(Point(0, 1, 0) < Point(0, 2, 0));
+    EXPECT_FALSE(Point(0, 2, 0) < Point(0, 1, 0));
+    EXPECT_TRUE(Point(0, 0, 1) < Point(0, 0, 2));
+    EXPECT_FALSE(Point(0, 0, 2) < Point(0, 0, 1));
 }
