@@ -20,8 +20,18 @@ public:
     SchemeAnnular(const std::string & name);
 };
 
+/// Compute average distance from points in a loop to a center
+///
+/// @param loop "Loop" with vertex points
+/// @param ctr_pnt Center point
+/// @return Average distance
 double avg_distance(const std::vector<Ptr<MeshVertexAbstract>> & loop, Point ctr_pnt);
 
+/// Find "center" point of surface
+///
+/// @param mesh_surface Mesh surface to find center for (used if it is bounded by a circular curve)
+/// @param loops Vertex "loops" that define the boundary
+/// @return Center point
 Point find_center_point(Ptr<MeshSurface> mesh_surface,
                         const std::vector<std::vector<Ptr<MeshVertexAbstract>>> & loops);
 

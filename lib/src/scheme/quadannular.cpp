@@ -104,17 +104,25 @@ SchemeQuadAnnular::mesh_surface(Ptr<MeshSurface> mesh_surface)
     if (n_radial < 1)
         throw Exception("Parameter 'radial_intervals' must be at least 1");
 
-    const auto loops = get_boundary_loops(mesh_surface);
-    if (loops.size() != 2)
-        throw Exception("'{}' scheme requires exactly 2 boundary loops, found {}",
-                        scheme_name,
-                        loops.size());
+    // check that we have 2 bounding curves that are circular
+    auto curves = mesh_surface->curves();
+    if (curves.size() != 2)
+        throw Exception("Surface {} is not bounded by 2 curves", mesh_surface->id());
+
+    for (int i : { 0, 1 }) {
+        if (curves[i]->geom_curve().type() != GeomCurve::CurveType::Circle)
+            throw Exception("Curve {} is not circular curve", curves[i]->id());
+    }
+
+    std::array<double, 2> radius = { get_radius(curves[0]->geom_curve()),
+                                     get_radius(curves[1]->geom_curve()) };
+    bool inner = radius[0] < radius[1];
 
     // Identify inner and outer loops
-    const auto ctr_pnt = find_center_point(mesh_surface, loops);
-    const bool inner = avg_distance(loops[0], ctr_pnt) < avg_distance(loops[1], ctr_pnt);
-    const auto & inner_loop = inner ? loops[0] : loops[1];
-    const auto & outer_loop = inner ? loops[1] : loops[0];
+    const auto & inner_loop =
+        inner ? get_mesh_curve_vertices(curves[0]) : get_mesh_curve_vertices(curves[1]);
+    const auto & outer_loop =
+        inner ? get_mesh_curve_vertices(curves[1]) : get_mesh_curve_vertices(curves[0]);
 
     const auto N_in = static_cast<int>(inner_loop.size()) - 1;
     const auto N_out = static_cast<int>(outer_loop.size()) - 1;
