@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "builder.h"
 #include "krado/bounding_box_3d.h"
+#include "krado/transform.h"
 
 using namespace krado;
 
@@ -167,4 +168,31 @@ TEST(BoundingBox3DTest, op_shl)
     std::stringstream ss;
     ss << bbox;
     EXPECT_EQ(ss.str(), "BoundingBox: min=(x=0, y=0, z=0), max=(x=1, y=2, z=3)");
+}
+
+TEST(BoundingBox3DTest, transform)
+{
+    {
+        BoundingBox3D bbox(Point(-1, -2, -3), Point(3, 2, 1));
+        auto trsf = Trsf::identity() * Trsf::scaled(-3, 2, -4);
+        bbox.transform(trsf);
+        auto sz = bbox.size();
+        EXPECT_NEAR(sz[0], 12., 1e-10);
+        EXPECT_NEAR(sz[1], 8., 1e-10);
+        EXPECT_NEAR(sz[2], 16., 1e-10);
+    }
+    {
+        BoundingBox3D bbox(Point(-1, -2, -3), Point(3, 4, 2));
+        auto trsf = Trsf::identity() * Trsf::translated(1, 2, 3);
+        bbox.transform(trsf);
+        auto min = bbox.min();
+        EXPECT_NEAR(min.x, 0., 1e-10);
+        EXPECT_NEAR(min.y, 0., 1e-10);
+        EXPECT_NEAR(min.z, 0., 1e-10);
+
+        auto max = bbox.max();
+        EXPECT_NEAR(max.x, 4., 1e-10);
+        EXPECT_NEAR(max.y, 6., 1e-10);
+        EXPECT_NEAR(max.z, 5., 1e-10);
+    }
 }

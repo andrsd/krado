@@ -5,6 +5,7 @@
 #include "krado/axis1.h"
 #include "krado/axis2.h"
 #include "krado/exception.h"
+#include "krado/transform.h"
 
 using namespace krado;
 
@@ -304,4 +305,24 @@ TEST(PointTest, less_than)
     EXPECT_FALSE(Point(0, 2, 0) < Point(0, 1, 0));
     EXPECT_TRUE(Point(0, 0, 1) < Point(0, 0, 2));
     EXPECT_FALSE(Point(0, 0, 2) < Point(0, 0, 1));
+}
+
+TEST(PointTest, transform)
+{
+    {
+        auto trsf = Trsf::identity() * Trsf::scaled(2, -1, 4);
+        auto p = Point(1, 2, 3);
+        p.transform(trsf);
+        EXPECT_NEAR(p.x, 2., 1e-10);
+        EXPECT_NEAR(p.y, -2., 1e-10);
+        EXPECT_NEAR(p.z, 12., 1e-10);
+    }
+    {
+        auto trsf = Trsf::identity() * Trsf::translated(2, -1, 4);
+        auto p = Point(1, 2, 3);
+        p.transform(trsf);
+        EXPECT_NEAR(p.x, 3., 1e-10);
+        EXPECT_NEAR(p.y, 1., 1e-10);
+        EXPECT_NEAR(p.z, 7., 1e-10);
+    }
 }

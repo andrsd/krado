@@ -4,7 +4,6 @@
 #pragma once
 
 #include "krado/point.h"
-#include <vector>
 #include <array>
 
 namespace krado {
@@ -53,7 +52,7 @@ public:
 
     [[nodiscard]] bool contains(double x, double y, double z) const;
 
-    [[nodiscard]] bool transform(const Trsf & tfo);
+    void transform(const Trsf & tfo);
 
     [[nodiscard]] std::array<double, 3> size() const;
 

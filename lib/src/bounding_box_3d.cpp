@@ -193,12 +193,11 @@ BoundingBox3D::contains(double x, double y, double z) const
         return false;
 }
 
-bool
+void
 BoundingBox3D::transform(const Trsf & tfo)
 {
     this->min_pt_ = tfo * this->min_pt_;
     this->max_pt_ = tfo * this->max_pt_;
-    return true;
 }
 
 std::array<double, 3>
