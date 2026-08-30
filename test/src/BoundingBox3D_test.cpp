@@ -239,3 +239,19 @@ TEST(BoundingBox3DTest, determine_spatial_dim)
         EXPECT_FALSE(dim.has_value());
     }
 }
+
+TEST(BoundingBox3DTest, make_cube)
+{
+    BoundingBox3D bbox(Point(-2, -3, -4), Point(4, 3, 2));
+    bbox.make_cube();
+
+    auto min = bbox.min();
+    EXPECT_NEAR(min.x, -4.196152, 1e-6);
+    EXPECT_NEAR(min.y, -5.196152, 1e-6);
+    EXPECT_NEAR(min.z, -6.196152, 1e-6);
+
+    auto max = bbox.max();
+    EXPECT_NEAR(max.x, 6.196152, 1e-6);
+    EXPECT_NEAR(max.y, 5.196152, 1e-6);
+    EXPECT_NEAR(max.z, 4.196152, 1e-6);
+}
