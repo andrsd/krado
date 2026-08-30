@@ -10,15 +10,12 @@ namespace krado {
 
 /// Base class for patterns
 class Pattern {
-public:
-    Pattern();
+protected:
     Pattern(const std::vector<Point> & points);
 
+public:
     ///
     [[nodiscard]] const std::vector<Point> & points() const;
-
-protected:
-    void set_points(std::vector<Point> && points);
 
 private:
     std::vector<Point> pts_;

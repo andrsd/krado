@@ -10,10 +10,14 @@ namespace krado {
 
 /// Linear pattern
 class LinearPattern : public Pattern {
-public:
-    LinearPattern(const Axis2 & origin, int nx, double dx);
-    LinearPattern(const Axis2 & origin, int nx, int ny, double dx, double dy);
+    LinearPattern(const std::vector<Point> & points,
+                  const Axis2 & origin,
+                  int nx,
+                  int ny,
+                  double dx,
+                  double dy);
 
+public:
     /// Number of points in x-direction
     [[nodiscard]] double nx() const;
 
@@ -37,6 +41,25 @@ private:
     int ny_;
     ///
     double dy_;
+
+public:
+    /// Create linear pattern in 1 direction
+    ///
+    /// @param origin Location where the pattern starts
+    /// @param nx Number of horizontal "points"
+    /// @param dx Distance between "points"
+    /// @return Linear pattern
+    static LinearPattern create(const Axis2 & origin, int nx, double dx);
+
+    /// Create linear pattern in 2 directions
+    ///
+    /// @param origin Location where the pattern starts
+    /// @param nx Number of horizontal "points"
+    /// @param ny Number of vertical "points"
+    /// @param dx Distance between horizontal "points"
+    /// @param dy Distance between vertical "points"
+    /// @return Linear pattern
+    static LinearPattern create(const Axis2 & origin, int nx, int ny, double dx, double dy);
 };
 
 } // namespace krado

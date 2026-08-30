@@ -10,16 +10,20 @@ namespace krado {
 
 /// Circular pattern
 class CircularPattern : public Pattern {
+    CircularPattern(const std::vector<Point> & points,
+                    const Axis2 & center,
+                    double radius,
+                    int divisions);
+
 public:
-    /// Create circular pattern over full circle
-    ///
-    /// @param center Center of the pattern
-    /// @param radius Radius of the pattern
-    /// @param divisions Number of segments around the circle
-    CircularPattern(const Axis2 & center, double radius, int divisions, double start_angle = 0.);
+    /// Center
+    [[nodiscard]] Point center() const;
 
     /// Get radius
     [[nodiscard]] double radius() const;
+
+    /// Get divisions
+    [[nodiscard]] int divisions() const;
 
 private:
     /// Center of the pattern
@@ -28,6 +32,16 @@ private:
     double radius_;
     /// number of divisions
     int divs_;
+
+public:
+    /// Create circular pattern over full circle
+    ///
+    /// @param center Center of the pattern
+    /// @param radius Radius of the pattern
+    /// @param divisions Number of segments around the circle
+    /// @return Circular pattern
+    static CircularPattern
+    create(const Axis2 & center, double radius, int divisions, double start_angle = 0.);
 };
 
 } // namespace krado

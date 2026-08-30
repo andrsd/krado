@@ -12,7 +12,7 @@ TEST(CircularPatternTest, points)
     Axis2 ax2(org, n, v_x);
 
     auto radius = 2.;
-    CircularPattern cp(ax2, radius, 6);
+    auto cp = CircularPattern::create(ax2, radius, 6);
     auto points = cp.points();
     ASSERT_EQ(points.size(), 6);
     auto h = 0.5 * sqrt(3.) * radius;

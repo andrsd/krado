@@ -15,7 +15,7 @@ TEST(LinearPatternTest, points_1d)
     Vector v_x(1, 1, 0);
     Axis2 ax2(org, n, v_x);
 
-    LinearPattern lp(ax2, 3, 1);
+    auto lp = LinearPattern::create(ax2, 3, 1);
     auto points = lp.points();
     EXPECT_TRUE(points[0].is_equal(Point(1, 0, 0)));
     EXPECT_TRUE(points[1].is_equal(Point(1 + sqrt2 / 2., sqrt2 / 2., 0)));
@@ -29,7 +29,7 @@ TEST(LinearPatternTest, points_2d)
     Vector v_x(1, 1, 0);
     Axis2 ax2(org, n, v_x);
 
-    LinearPattern lp(ax2, 3, 2, 1, 2);
+    auto lp = LinearPattern::create(ax2, 3, 2, 1, 2);
     auto points = lp.points();
     EXPECT_TRUE(points[0].is_equal(Point(1, 0, 0)));
     EXPECT_TRUE(points[1].is_equal(Point(1 + sqrt2 / 2., sqrt2 / 2., 0)));

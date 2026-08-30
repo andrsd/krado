@@ -12,7 +12,7 @@ TEST(HexagonalPatternTest, test)
     Axis2 ax2(ctr, n, v_x);
 
     double flat2flat = 4.;
-    HexagonalPattern hp(ax2, flat2flat, 2);
+    auto hp = HexagonalPattern::create(ax2, flat2flat, 2);
     auto points = hp.points();
     ASSERT_EQ(points.size(), 12);
 

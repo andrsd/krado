@@ -14,11 +14,37 @@ constexpr int N_CORNERS = 6;
 constexpr int N_SIDES = 6;
 constexpr double DEG60 = M_PI / 3.;
 
-HexagonalPattern::HexagonalPattern(const Axis2 & center, double flat_to_flat, int side_segs) :
-    Pattern(),
+HexagonalPattern::HexagonalPattern(const std::vector<Point> & points,
+                                   const Axis2 & center,
+                                   double flat_to_flat,
+                                   int side_segs) :
+    Pattern(points),
     center_(center),
     flat_to_flat_(flat_to_flat),
     num_side_segs_(side_segs)
+{
+}
+
+Point
+HexagonalPattern::center() const
+{
+    return this->center_.location();
+}
+
+double
+HexagonalPattern::flat_to_flat() const
+{
+    return this->flat_to_flat_;
+}
+
+int
+HexagonalPattern::num_side_segments() const
+{
+    return this->num_side_segs_;
+}
+
+HexagonalPattern
+HexagonalPattern::create(const Axis2 & center, double flat_to_flat, int side_segs)
 {
     auto ctr_pt = center.location();
     double radius = flat_to_flat / std::sqrt(3.);
@@ -41,20 +67,14 @@ HexagonalPattern::HexagonalPattern(const Axis2 & center, double flat_to_flat, in
     for (auto s : make_range(N_SIDES)) {
         Vector side = corners[(s + 1) % N_SIDES] - corners[s];
         Vector side_dir = side.normalized();
-        double ds = side.magnitude() / this->num_side_segs_;
-        for (auto i : make_range(this->num_side_segs_)) {
+        double ds = side.magnitude() / side_segs;
+        for (auto i : make_range(side_segs)) {
             auto pt = corners[s] + i * ds * side_dir;
             points.emplace_back(pt);
         }
     }
 
-    set_points(std::move(points));
-}
-
-double
-HexagonalPattern::flat_to_flat() const
-{
-    return this->flat_to_flat_;
+    return { points, center, flat_to_flat, side_segs };
 }
 
 } // namespace krado

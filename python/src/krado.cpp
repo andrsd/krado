@@ -958,8 +958,12 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<LinearPattern, Pattern>(m, "LinearPattern")
-        .def(py::init<const Axis2 &, int, double>())
-        .def(py::init<const Axis2 &, int, int, double, double>())
+        .def(py::init([](const Axis2 & origin, int nx, double dx) {
+                return LinearPattern::create(origin, nx, dx);
+            }))
+        .def(py::init([](const Axis2 & origin, int nx, int ny, double dx, double dy) {
+                return LinearPattern::create(origin, nx, ny, dx, dy);
+            }))
         .def("nx", &LinearPattern::nx)
         .def("ny", &LinearPattern::ny)
         .def("dx", &LinearPattern::dx)
@@ -967,13 +971,18 @@ PYBIND11_MODULE(krado, m)
     ;
 
     py::class_<CircularPattern, Pattern>(m, "CircularPattern")
-        .def(py::init<const Axis2 &, double, int, double>(),
+        .def(py::init([](const Axis2 & center, double radius, int divisions, double start_angle) {
+                return CircularPattern::create(center, radius, divisions, start_angle);
+            }),
             py::arg("center"), py::arg("radius"), py::arg("divisions"), py::arg("start_angle") = 0.)
         .def("radius", &CircularPattern::radius)
     ;
 
     py::class_<HexagonalPattern, Pattern>(m, "HexagonalPattern")
-        .def(py::init<const Axis2 &, double, int>())
+        .def(py::init([](const Axis2 & center, double flat_to_flat, int side_segs) {
+                return HexagonalPattern::create(center, flat_to_flat, side_segs);
+            }))
+        .def("center", &HexagonalPattern::center)
         .def("flat_to_flat", &HexagonalPattern::flat_to_flat)
     ;
 
