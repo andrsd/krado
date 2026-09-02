@@ -27,7 +27,7 @@ public:
 
     /// Subtract two UVParams
     inline UVParam
-    operator-(const UVParam & other)
+    operator-(const UVParam & other) const
     {
         return { this->u - other.u, this->v - other.v };
     }
