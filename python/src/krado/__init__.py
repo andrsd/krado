@@ -30,7 +30,6 @@ __all__ = [
     "MeshVolume",
     "Pattern",
     "Point",
-    "Scheme",
     "STEPFile",
     "Trsf",
     "Vector",
