@@ -38,11 +38,11 @@ TEST(SchemeTriFrontalTest, rectangle)
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    EXPECT_EQ(surf->surface_vertices().size(), 1);
+    ASSERT_EQ(surf->surface_vertices().size(), 1);
     auto & sv = surf->surface_vertices()[0];
     EXPECT_TRUE(sv->point().is_equal(Point(1, 0.5, 0.)));
 
-    EXPECT_EQ(surf->triangles().size(), 10);
+    ASSERT_EQ(surf->triangles().size(), 10);
 }
 
 TEST(SchemeTriFrontalTest, circle)
@@ -65,13 +65,13 @@ TEST(SchemeTriFrontalTest, circle)
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    EXPECT_EQ(surf->surface_vertices().size(), 2);
+    ASSERT_EQ(surf->surface_vertices().size(), 2);
     auto & sv1 = surf->surface_vertices()[0];
     EXPECT_TRUE(sv1->point().is_equal(Point(0.12059, 0.0499502, 0.), 1e-5));
     auto & sv2 = surf->surface_vertices()[1];
     EXPECT_TRUE(sv2->point().is_equal(Point(-0.181639, -0.0752373, 0.), 1e-5));
 
-    EXPECT_EQ(surf->triangles().size(), 10);
+    ASSERT_EQ(surf->triangles().size(), 10);
 }
 
 TEST(SchemeTriFrontalTest, quarter_circle)
@@ -87,9 +87,9 @@ TEST(SchemeTriFrontalTest, quarter_circle)
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    EXPECT_EQ(surf->surface_vertices().size(), 1);
+    ASSERT_EQ(surf->surface_vertices().size(), 1);
     auto & sv = surf->surface_vertices()[0];
     EXPECT_TRUE(sv->point().is_equal(Point(0.433013, 0.433013, 0.), 1e-5));
 
-    EXPECT_EQ(surf->triangles().size(), 7);
+    ASSERT_EQ(surf->triangles().size(), 7);
 }
