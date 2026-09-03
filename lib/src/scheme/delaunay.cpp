@@ -325,12 +325,6 @@ public:
         return not this->deleted_;
     }
 
-    [[nodiscard]] bool
-    is_deleted() const
-    {
-        return this->deleted_;
-    }
-
     void
     force_radius(double r)
     {
@@ -537,7 +531,7 @@ set_lcs(const MeshElement & t,
 Optional<int>
 is_active(Ref<const Triangle> t, double limit)
 {
-    if (t->is_deleted())
+    if (not t->is_active())
         return std::nullopt;
     for (int active = 0; active < 3; active++) {
         const auto neigh = t->neighbor(active);
@@ -2014,7 +2008,7 @@ bowyer_watson(Ptr<MeshSurface> surface, int max_pnt)
     int iter = 0;
     while (true) {
         auto worst = (*all_tris.begin()).borrow();
-        if (worst->is_deleted()) {
+        if (not worst->is_active()) {
             all_tris.erase(all_tris.begin());
         }
         else {
@@ -2081,7 +2075,7 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     int n_iters = 0;
     while (not active_tris.empty()) {
         const auto worst = active_tris.extract(active_tris.begin()).value();
-        if (worst->is_deleted())
+        if (not worst->is_active())
             continue;
 
         const auto active_edge = is_active(worst, LIMIT);
