@@ -134,13 +134,13 @@ struct BidimMeshData {
         this->v_sizes.push_back(size);
     }
 
-    int
+    [[nodiscard]] int
     index(Ptr<MeshVertexAbstract> mv) const
     {
         return this->indices.at(mv);
     }
 
-    Ptr<MeshVertexAbstract>
+    [[nodiscard]] Ptr<MeshVertexAbstract>
     equivalent(Ptr<MeshVertexAbstract> v1) const
     {
         if (this->equivalence) {
@@ -319,13 +319,13 @@ public:
     {
     }
 
-    bool
+    [[nodiscard]] bool
     is_active() const
     {
         return not this->deleted_;
     }
 
-    bool
+    [[nodiscard]] bool
     is_deleted() const
     {
         return this->deleted_;
@@ -337,7 +337,7 @@ public:
         this->circum_radius_ = r;
     }
 
-    double
+    [[nodiscard]] double
     radius() const
     {
         return this->circum_radius_;
@@ -363,7 +363,7 @@ public:
         this->base_ = t;
     }
 
-    const MeshElement &
+    [[nodiscard]] const MeshElement &
     tri() const
     {
         return this->base_;
@@ -375,7 +375,7 @@ public:
         this->neigh_[idx] = n;
     }
 
-    Optional<Ref<Triangle>>
+    [[nodiscard]] Optional<Ref<Triangle>>
     neighbor(int idx) const
     {
         return this->neigh_[idx];
@@ -387,7 +387,7 @@ public:
         this->deleted_ = not flag;
     }
 
-    bool
+    [[nodiscard]] bool
     assert_neigh() const
     {
         if (this->deleted_)
@@ -400,7 +400,7 @@ public:
         return true;
     }
 
-    bool
+    [[nodiscard]] bool
     is_neigh(Ref<const Triangle> t) const
     {
         for (int i = 0; i < Tri3::N_EDGES; i++)
@@ -440,7 +440,7 @@ public:
 
 private:
     template <typename T, typename U>
-    bool
+    [[nodiscard]] bool
     compare(const T & a, const U & b) const
     {
         if (a->radius() > b->radius())
@@ -471,7 +471,7 @@ struct EdgeXFace {
         }
     }
 
-    Ptr<MeshVertexAbstract>
+    [[nodiscard]] Ptr<MeshVertexAbstract>
     vertex(int i) const
     {
         return this->v[i];
@@ -639,17 +639,17 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
 
     // NOTE: just a rough sketch what should happen here - will need fixing
     // take care of embedded vertices
-    for (auto & v : surface->embedded_vertices()) {
-        auto & gvtx = v->geom_vertex();
+    for (const auto & v : surface->embedded_vertices()) {
+        const auto & gvtx = v->geom_vertex();
         v_sizes_map[v] = std::min(v_sizes_map[v], gvtx.mesh_size());
     }
 
     // take care of embedded edges
-    for (auto & crv : surface->embedded_curves()) {
+    for (const auto & crv : surface->embedded_curves()) {
         if (crv->is_mesh_degenerated())
             continue;
 
-        for (auto & seg : crv->segments())
+        for (const auto & seg : crv->segments())
             data.internal_edges.insert(seg);
     }
 
@@ -658,7 +658,7 @@ build_mesh_generation_data_structures(Ptr<MeshSurface> surface,
         if (crv->is_mesh_degenerated())
             continue;
 
-        for (auto & seg : crv->segments()) {
+        for (const auto & seg : crv->segments()) {
             const auto v0 = seg.vertex(0);
             const auto v1 = seg.vertex(1);
 
@@ -718,7 +718,7 @@ build_vertices(Ptr<MeshSurface> surface, Span<const Ptr<MeshCurve>> curves)
             return { {}, {} };
 
         if (not crv->is_mesh_degenerated()) {
-            for (auto & seg : crv->segments()) {
+            for (const auto & seg : crv->segments()) {
                 const auto v1 = seg.vertex(0);
                 const auto v2 = seg.vertex(1);
 
@@ -789,7 +789,7 @@ make_node_copies(Ptr<MeshSurface> surface)
 
         const auto & geom_curve = crv->geom_curve();
         std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> e_vertices;
-        for (auto & seg : crv->segments()) {
+        for (const auto & seg : crv->segments()) {
             const auto v1 = seg.vertex(0);
             const auto v2 = seg.vertex(1);
             e_vertices.insert(v1);
@@ -804,7 +804,7 @@ make_node_copies(Ptr<MeshSurface> surface)
                 direction = 1;
         }
         // printf("model edge %lu %lu vertices\n", e->tag(), e_vertices.size());
-        for (auto & v : e_vertices) {
+        for (const auto & v : e_vertices) {
             UVParam param;
             if (direction != -1) {
                 auto u = reparam_mesh_vertex_on_edge(v, crv);
@@ -834,7 +834,7 @@ make_node_copies(Ptr<MeshSurface> surface)
         }
     }
 
-    for (auto & v : surface->embedded_vertices()) {
+    for (const auto & v : surface->embedded_vertices()) {
         const auto param = reparam_mesh_vertex_on_surface(v, geom_surface);
         NodeCopies c(v, param);
         copies.emplace(v->num(), c);
@@ -905,7 +905,7 @@ surface_initial_mesh(Ptr<MeshSurface> surface,
             if (crv->is_mesh_degenerated())
                 continue;
 
-            for (auto & seg : crv->segments()) {
+            for (const auto & seg : crv->segments()) {
                 auto c0 = copies.find(seg.vertex(0)->num());
                 auto c1 = copies.find(seg.vertex(1)->num());
                 if (c0 == copies.end() || c1 == copies.end())
@@ -978,7 +978,7 @@ void
 build_bds_mesh(Ptr<MeshSurface> surface,
                BDS_Mesh & m,
                std::set<Ptr<MeshVertexAbstract>, MeshVertexPtrLessThan> & all_vertices,
-               std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> & recover_map_inv)
+               std::map<Ptr<MeshVertexAbstract>, BDSPointHandle> & recover_map_inv)
 {
     const auto & geom_surface = surface->geom_surface();
 
@@ -995,27 +995,27 @@ build_bds_mesh(Ptr<MeshSurface> surface,
     //     gf->set(temp);
     // }
 
-    std::map<int, Ref<BDS_Point>> aaa;
+    std::map<int, BDSPointHandle> points_by_num;
     for (const auto & vtx : all_vertices)
-        aaa.emplace(vtx->num(), recover_map_inv.at(vtx));
+        points_by_num.emplace(vtx->num(), recover_map_inv.at(vtx));
 
     for (int ip = 0; ip < 4; ip++) {
         auto * v = pm.vertices[ip];
         v->data = -ip - 1;
         const auto g = m.add_geom(surface->id(), 2);
-        auto pp = m.add_point(v->data, { v->position.x, v->position.y }, &geom_surface, g);
-        aaa.emplace(v->data, pp);
+        auto ph = m.add_point(v->data, { v->position.x, v->position.y }, geom_surface, g);
+        points_by_num.emplace(v->data, ph);
     }
 
-    for (size_t i = 0; i < pm.faces.size(); i++) {
+    for (std::size_t i = 0; i < pm.faces.size(); i++) {
         auto * he = pm.faces[i]->he;
         const auto a = he->v->data;
         const auto b = he->next->v->data;
         const auto c = he->next->next->v->data;
-        auto p1 = aaa.at(a);
-        auto p2 = aaa.at(b);
-        auto p3 = aaa.at(c);
-        m.add_triangle(p1->id(), p2->id(), p3->id());
+        auto ph1 = points_by_num.at(a);
+        auto ph2 = points_by_num.at(b);
+        auto ph3 = points_by_num.at(c);
+        m.add_face(ph1, ph2, ph3);
     }
 }
 
@@ -1062,7 +1062,7 @@ bool
 recover_edge(BDS_Mesh & m,
              Ptr<MeshSurface> surface,
              Ptr<MeshCurve> edge,
-             std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> & recover_map_inv,
+             std::map<Ptr<MeshVertexAbstract>, BDSPointHandle> & recover_map_inv,
              std::set<EdgeToRecover> * e2r,
              std::set<EdgeToRecover> * not_recovered,
              int pass)
@@ -1071,24 +1071,24 @@ recover_edge(BDS_Mesh & m,
     if (pass == 2)
         g = m.add_geom(edge->id(), 1);
 
-    const auto & geom_curve = edge->geom_curve();
     bool fatally_failed = false;
 
-    for (auto & seg : edge->segments()) {
+    for (const auto & seg : edge->segments()) {
         const auto vstart = seg.vertex(0);
         const auto vend = seg.vertex(1);
         const auto itpstart = recover_map_inv.find(vstart);
         const auto itpend = recover_map_inv.find(vend);
         if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
-            const auto pstart = itpstart->second;
-            const auto pend = itpend->second;
+            const auto ph_start = itpstart->second;
+            const auto ph_end = itpend->second;
             if (pass == 1)
-                e2r->insert(EdgeToRecover(pstart->id(), pend->id(), &geom_curve));
+                e2r->insert(EdgeToRecover(ph_start, ph_end));
             else {
-                const auto e =
-                    m.recover_edge(pstart->id(), pend->id(), fatally_failed, e2r, not_recovered);
-                if (e.has_value())
-                    e.value()->g_ = g;
+                const auto eh =
+                    m.recover_edge(ph_start, ph_end, fatally_failed, e2r, not_recovered);
+                if (eh.has_value()) {
+                    m.set_ge(eh.value(), g);
+                }
                 else {
                     if (fatally_failed) {
                         Log::error("Unable to recover the edge on curve {} (on surface {})",
@@ -1108,13 +1108,13 @@ recover_edge(BDS_Mesh & m,
         const auto itpstart = recover_map_inv.find(vstart);
         const auto itpend = recover_map_inv.find(vend);
         if (itpstart != recover_map_inv.end() && itpend != recover_map_inv.end()) {
-            const auto pstart = itpstart->second;
-            const auto pend = itpend->second;
-            if (!pstart->g_) {
-                pstart->g_ = m.add_geom(pstart->id(), 0);
+            auto & pstart = m.get_point(itpstart->second);
+            auto & pend = m.get_point(itpend->second);
+            if (not pstart.ge.has_value()) {
+                pstart.ge = m.add_geom(pstart.id, 0);
             }
-            if (!pend->g_) {
-                pend->g_ = m.add_geom(pend->id(), 0);
+            if (not pend.ge.has_value()) {
+                pend.ge = m.add_geom(pend.id, 0);
             }
         }
     }
@@ -1123,29 +1123,36 @@ recover_edge(BDS_Mesh & m,
 }
 
 bool
-edge_swap_test_delaunay_aniso(Ref<BDS_Edge> e,
+edge_swap_test_delaunay_aniso(BDS_Mesh & mesh,
+                              BDSEdgeHandle eh,
                               Ptr<MeshSurface> surface,
                               std::set<SwapQuad> & configs)
 {
-    if (!e->p1_->config_modified() && !e->p2_->config_modified())
+    const auto & edge = mesh.get_edge(eh);
+
+    auto & pt1 = mesh.get_point(edge.p1);
+    auto & pt2 = mesh.get_point(edge.p2);
+    if (!pt1.config_modified && !pt2.config_modified)
         return false;
 
-    if (e->num_faces() != 2)
+    if (mesh.num_faces(eh) != 2)
         return false;
 
-    const auto op = e->opposite_of();
+    const auto oph = mesh.opposite_of(eh);
+    const auto & op0 = mesh.get_point(oph[0]);
+    const auto & op1 = mesh.get_point(oph[1]);
 
-    SwapQuad sq(e->p1_->id(), e->p2_->id(), op[0]->id(), op[1]->id());
-    if (configs.find(sq) != configs.end())
+    SwapQuad sq(pt1.id, pt2.id, op0.id, op1.id);
+    if (configs.contains(sq))
         return false;
     configs.insert(sq);
 
-    const auto edge_center = 0.5 * (e->p1_->uv() + e->p2_->uv());
+    const auto edge_center = 0.5 * (pt1.uv + pt2.uv);
 
-    const auto p1 = e->p1_->uv();
-    const auto p2 = e->p2_->uv();
-    const auto p3 = op[0]->uv();
-    const auto p4 = op[1]->uv();
+    const auto p1 = pt1.uv;
+    const auto p2 = pt2.uv;
+    const auto p3 = op0.uv;
+    const auto p4 = op1.uv;
     const auto metric = Metric::build(surface->geom_surface(), edge_center);
     return in_circum_circle_aniso(p1, p2, p3, p4, metric);
 }
@@ -1155,12 +1162,13 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 {
     int nb_swap = 0;
     std::set<SwapQuad> configs;
-    while (1) {
+    while (true) {
         std::size_t nsw = 0;
-        for (const auto & edge : mesh.edges()) {
-            if (edge->active()) {
-                if (edge_swap_test_delaunay_aniso(ref(*edge), surface, configs)) {
-                    if (mesh.swap_edge(ref(*edge), BDS_SwapEdgeTestQuality(false))) {
+        for (const auto eh : mesh.edges()) {
+            const auto & edge = mesh.get_edge(eh);
+            if (edge.active) {
+                if (edge_swap_test_delaunay_aniso(mesh, eh, surface, configs)) {
+                    if (mesh.swap_edge(eh, BDS_SwapEdgeTestQuality(mesh, false))) {
                         ++nsw;
                     }
                 }
@@ -1175,17 +1183,19 @@ delaunayize_bds(Ptr<MeshSurface> surface, BDS_Mesh & mesh)
 void
 bds2mesh(const BDS_Mesh & m,
          Ptr<MeshSurface> surface,
-         std::map<Ref<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> & recover_map)
+         std::map<BDSPointHandle, Ptr<MeshVertexAbstract>> & recover_map)
 {
     const auto & geom_surface = surface->geom_surface();
-    for (auto & tri : m.triangles()) {
-        if (tri->active()) {
-            const auto n = tri->get_nodes().value();
+    for (const auto th : m.faces()) {
+        const auto & tri = m.get_face(th);
+        if (tri.active) {
+            const auto n = m.get_nodes(th).value();
 
             Ptr<MeshVertexAbstract> v[3] = { nullptr, nullptr, nullptr };
             for (int i = 0; i < 3; i++) {
                 if (recover_map.find(n[i]) == recover_map.end()) {
-                    auto sv = Ptr<MeshSurfaceVertex>::alloc(geom_surface, n[i]->uv());
+                    const auto & ppp = m.get_point(n[i]);
+                    auto sv = Ptr<MeshSurfaceVertex>::alloc(geom_surface, ppp.uv);
                     surface->add_vertex(sv);
                     v[i] = sv;
                     recover_map[n[i]] = v[i];
@@ -1375,7 +1385,7 @@ search_for_triangle(Ref<Triangle> t,
     if (!force)
         return std::nullopt; // FIXME: removing this leads to horrible performance
 
-    for (auto & tri : all_tris) {
+    for (const auto & tri : all_tris) {
         if (tri->is_active()) {
             const auto [_, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
@@ -1531,7 +1541,7 @@ public:
         return false;
     }
 
-    const MeshElement &
+    [[nodiscard]] const MeshElement &
     elem() const
     {
         return this->t_;
@@ -1593,7 +1603,7 @@ transfer_data_structure(Ptr<MeshSurface> surface,
                         std::set<Qtr<Triangle>, CompareTrianglePtr> & all_tris,
                         BidimMeshData & data)
 {
-    for (auto & tri : all_tris)
+    for (const auto & tri : all_tris)
         if (tri->is_active())
             surface->add_element(std::move(tri->tri()));
     all_tris.clear();
@@ -1756,13 +1766,13 @@ point_inside_parametric_domain(const std::vector<UVParam> & bnd, UVParam p, UVPa
 
 class SurfaceFunctor {
 public:
-    virtual ~SurfaceFunctor() {}
+    virtual ~SurfaceFunctor() = default;
     virtual Point operator()(double u, double v) const = 0;
 };
 
 class CurveFunctor {
 public:
-    virtual ~CurveFunctor() {}
+    virtual ~CurveFunctor() = default;
     virtual Point operator()(double t) const = 0;
 };
 
@@ -1781,7 +1791,7 @@ public:
     }
 
     Point
-    operator()(double t) const
+    operator()(double t) const override
     {
         auto dir = this->d_ * (this->n1_ * std::cos(t) + this->n2_ * std::sin(t));
         return this->middle_ + dir;
@@ -1794,8 +1804,8 @@ class SurfaceFunctorGFace : public SurfaceFunctor {
 public:
     SurfaceFunctorGFace(const GeomSurface & gf) : gf_(gf) {}
 
-    virtual Point
-    operator()(double u, double v) const
+    Point
+    operator()(double u, double v) const override
     {
         return this->gf_.point({ u, v });
     }
@@ -2053,7 +2063,7 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
     }
 
     // compute active triangle
-    for (auto & tri : all_tris) {
+    for (const auto & tri : all_tris) {
         auto ref_tri = ref(*tri);
         const auto active_edge = is_active(ref_tri, LIMIT);
         if (active_edge.has_value())
@@ -2153,8 +2163,8 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     BDS_Mesh m;
 
-    std::map<Ref<BDS_Point>, Ptr<MeshVertexAbstract>, PointLessThan> recover_map;
-    std::map<Ptr<MeshVertexAbstract>, Ref<BDS_Point>> recover_map_inv;
+    std::map<BDSPointHandle, Ptr<MeshVertexAbstract>> recover_map;
+    std::map<Ptr<MeshVertexAbstract>, BDSPointHandle> recover_map_inv;
     // std::vector<GEdge *> edges = replacementEdges ? *replacementEdges : gf->edges();
 
     int count = 0;
@@ -2162,9 +2172,9 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
         const auto & ge = vtx->geom_shape();
         const auto param = reparam_mesh_vertex_on_surface(vtx, geom_surface);
         const auto g = m.add_geom(ge.id(), ge.dim());
-        auto pp = m.add_point(count, param, &geom_surface, g);
-        recover_map[pp] = vtx;
-        recover_map_inv.emplace(vtx, pp);
+        const auto ph = m.add_point(count, param, geom_surface, g);
+        recover_map[ph] = vtx;
+        recover_map_inv.emplace(vtx, ph);
         count++;
     }
 
@@ -2181,7 +2191,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
             continue;
         recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
     }
-    for (auto & crv : surface->embedded_curves()) {
+    for (const auto & crv : surface->embedded_curves()) {
         if (crv->is_mesh_degenerated())
             continue;
         recover_edge(m, surface, crv, recover_map_inv, &edges_to_recover, &edges_not_recovered, 1);
@@ -2215,48 +2225,57 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // look for a triangle that has a negative node and recursively tag all
     // exterior triangles
-    for (auto & tri : m.triangles())
-        tri->g_ = std::nullopt;
-    for (auto & tri : m.triangles()) {
-        const auto res = tri->get_nodes();
+    for (const auto th : m.faces())
+        m.get_face(th).ge = std::nullopt;
+    for (const auto th : m.faces()) {
+        const auto res = m.get_nodes(th);
         if (res.has_value()) {
-            const auto n = res.value();
-            if (n[0]->id() < 0 || n[1]->id() < 0 || n[2]->id() < 0) {
-                recur_tag(ref(*tri), CLASS_EXTERIOR.value());
+            const auto nh = res.value();
+            const auto & n0 = m.get_point(nh[0]);
+            const auto & n1 = m.get_point(nh[1]);
+            const auto & n2 = m.get_point(nh[2]);
+            if (n0.id < 0 || n1.id < 0 || n2.id < 0) {
+                m.recur_tag(th, CLASS_EXTERIOR.value());
                 break;
             }
         }
     }
 
     // now find an edge that has belongs to one of the exterior triangles
-    for (const auto & e : m.edges()) {
-        if (e->g_.has_value() && e->num_faces() == 2) {
-            const auto faces = e->faces();
-            if (faces[0]->g_ == CLASS_EXTERIOR) {
-                recur_tag(ref(*faces[1]), CLASS_F.value());
+    for (const auto eh : m.edges()) {
+        const auto & e = m.get_edge(eh);
+        if (e.ge.has_value() && m.num_faces(eh) == 2) {
+            // const auto faces = e.faces;
+            const auto & face0 = m.get_face(e.faces[0]);
+            const auto & face1 = m.get_face(e.faces[1]);
+            if (face0.ge == CLASS_EXTERIOR) {
+                m.recur_tag(e.faces[1], CLASS_F.value());
                 break;
             }
-            else if (faces[1]->g_ == CLASS_EXTERIOR) {
-                recur_tag(ref(*faces[0]), CLASS_F.value());
+            else if (face1.ge == CLASS_EXTERIOR) {
+                m.recur_tag(e.faces[0], CLASS_F.value());
                 break;
             }
         }
     }
-    for (auto & tri : m.triangles()) {
-        if (tri->g_ == CLASS_EXTERIOR)
-            tri->g_ = std::nullopt;
+    for (const auto th : m.faces()) {
+        auto & tri = m.get_face(th);
+        if (tri.ge == CLASS_EXTERIOR)
+            tri.ge = std::nullopt;
     }
 
-    for (const auto & e : m.edges()) {
-        if (e->g_.has_value() && e->num_faces() == 2) {
-            const auto faces = e->faces();
-            const auto oface = e->opposite_of();
-            if (oface[0]->id() < 0) {
-                recur_tag(ref(*faces[1]), CLASS_F.value());
+    for (const auto eh : m.edges()) {
+        const auto & e = m.get_edge(eh);
+        if (e.ge.has_value() && m.num_faces(eh) == 2) {
+            const auto ofh = m.opposite_of(eh);
+            const auto & oface0 = m.get_point(ofh[0]);
+            const auto & oface1 = m.get_point(ofh[1]);
+            if (oface0.id < 0) {
+                m.recur_tag(e.faces[1], CLASS_F.value());
                 break;
             }
-            else if (oface[1]->id() < 0) {
-                recur_tag(ref(*faces[0]), CLASS_F.value());
+            else if (oface1.id < 0) {
+                m.recur_tag(e.faces[0], CLASS_F.value());
                 break;
             }
         }
@@ -2264,7 +2283,7 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
 
     // ---
 
-    for (auto & edge : surface->embedded_curves()) {
+    for (const auto & edge : surface->embedded_curves()) {
         if (edge->is_mesh_degenerated())
             continue;
         recover_edge(m, surface, edge, recover_map_inv, &edges_to_recover, &edges_not_recovered, 2);
@@ -2275,26 +2294,23 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // compute characteristic lengths at vertices
     if (!only_initial_mesh) {
         Log::debug("Computing mesh size field at mesh nodes {}", edges_to_recover.size());
-        // const auto & sf = sizing_field();
-        for (const auto & [id, pp] : m.points()) {
-            if (auto itv = recover_map.find(ref(*pp)); itv != recover_map.end()) {
+        for (const auto ph : m.points()) {
+            if (auto itv = recover_map.find(ph); itv != recover_map.end()) {
                 const auto vtx = itv->second;
                 const auto & ge = vtx->geom_shape();
-                double lc;
                 if (ge.dim() == 0) {
                     auto mvtx = dynamic_ptr_cast<MeshVertex>(vtx);
                     auto gvertex = mvtx->geom_vertex();
-                    lc = gvertex.mesh_size();
+                    m.set_lc(ph, gvertex.mesh_size());
                 }
                 else if (ge.dim() == 1) {
                     auto mcvtx = dynamic_ptr_cast<MeshCurveVertex>(vtx);
                     auto gcurve = mcvtx->geom_curve();
                     auto t = mcvtx->parameter();
-                    lc = gcurve.mesh_size_at_param(t);
+                    m.set_lc(ph, gcurve.mesh_size_at_param(t));
                 }
                 else
-                    lc = MAX_LC;
-                pp->set_lc(lc);
+                    m.set_lc(ph, MAX_LC);
             }
         }
     }
@@ -2302,35 +2318,34 @@ SchemeDelaunay::mesh_generation(Ptr<MeshSurface> surface,
     // ---
 
     // delete useless stuff
-    for (auto & tri : m.triangles()) {
-        if (not tri->g_.has_value())
-            m.del_face(ref(*tri));
+    for (const auto fh : m.faces()) {
+        auto & tri = m.get_face(fh);
+        if (not tri.ge.has_value())
+            m.del_face(fh);
     }
-    m.cleanup();
 
-    for (const auto & e : m.edges()) {
-        if (e->num_faces() == 0)
-            m.del_edge(ref(*e));
+    for (const auto eh : m.edges()) {
+        if (m.num_faces(eh) == 0)
+            m.del_edge(eh);
         else {
-            if (not e->g_.has_value())
-                e->g_ = CLASS_F;
-            if (not e->p1_->g_.has_value() || e->p1_->g_->degree > e->g_->degree)
-                e->p1_->g_ = e->g_;
-            if (not e->p2_->g_.has_value() || e->p2_->g_->degree > e->g_->degree)
-                e->p2_->g_ = e->g_;
+            auto & e = m.get_edge(eh);
+            if (not e.ge.has_value())
+                e.ge = CLASS_F;
+            auto & p1 = m.get_point(e.p1);
+            if (not p1.ge.has_value() || p1.ge->degree > e.ge->degree)
+                p1.ge = e.ge;
+            auto & p2 = m.get_point(e.p1);
+            if (not p2.ge.has_value() || p2.ge->degree > e.ge->degree)
+                p2.ge = e.ge;
         }
     }
-    m.cleanup();
-    m.del_point(m.find_point(-1).value());
-    m.del_point(m.find_point(-2).value());
-    m.del_point(m.find_point(-3).value());
-    m.del_point(m.find_point(-4).value());
 
     // ---
 
-    for (auto & t : m.triangles()) {
-        if (t->active()) {
-            const auto res = t->get_nodes();
+    for (const auto th : m.faces()) {
+        const auto & t = m.get_face(th);
+        if (t.active) {
+            const auto res = m.get_nodes(th);
             if (res.has_value()) {
                 const auto n = res.value();
                 const auto v1 = recover_map[n[0]];

@@ -7,19 +7,90 @@
 #include "krado/types.h"
 #include "krado/point.h"
 #include "krado/uv_param.h"
-#include "krado/qtr.h"
-#include "krado/ref.h"
-#include "krado/vtr.h"
 #include <vector>
 #include <map>
 #include <set>
+#include <ranges>
 
 namespace krado {
 
 class BDS_Edge;
 class BDS_Face;
+class BDS_Mesh;
 class GeomSurface;
 class GeomCurve;
+
+struct BDSPointHandle {
+    u32 id { UINT32_MAX };
+
+    bool
+    operator==(const BDSPointHandle & other) const
+    {
+        return this->id == other.id;
+    }
+
+    bool
+    operator<(const BDSPointHandle & other) const
+    {
+        return this->id < other.id;
+    }
+
+    bool
+    operator>(const BDSPointHandle & other) const
+    {
+        return this->id > other.id;
+    }
+
+    bool
+    operator>=(const BDSPointHandle & other) const
+    {
+        return this->id >= other.id;
+    }
+
+    [[nodiscard]] bool
+    is_null() const
+    {
+        return this->id == UINT32_MAX;
+    }
+};
+
+struct BDSEdgeHandle {
+    u32 id { UINT32_MAX };
+
+    bool
+    operator==(const BDSEdgeHandle & other) const
+    {
+        return this->id == other.id;
+    }
+
+    bool
+    operator!=(const BDSEdgeHandle & other) const
+    {
+        return this->id != other.id;
+    }
+
+    [[nodiscard]] bool
+    is_null() const
+    {
+        return this->id == UINT32_MAX;
+    }
+};
+
+struct BDSFaceHandle {
+    u32 id { UINT32_MAX };
+
+    bool
+    operator==(const BDSFaceHandle & other) const
+    {
+        return this->id == other.id;
+    }
+
+    [[nodiscard]] bool
+    is_null() const
+    {
+        return this->id == UINT32_MAX;
+    }
+};
 
 class BDS_GeomEntity {
 public:
@@ -37,91 +108,42 @@ public:
     BDS_Point(i32 id, Point pt);
     BDS_Point(i32 id, Point pt, UVParam uv, BDS_GeomEntity ge);
 
-    [[nodiscard]] i32 id() const;
-    [[nodiscard]] double lc() const;
-    void set_lc(double lc);
-    [[nodiscard]] Point point() const;
-    [[nodiscard]] UVParam uv() const;
     [[nodiscard]] double u() const;
     [[nodiscard]] double v() const;
-    [[nodiscard]] u8 degenerated() const;
-    void del(Ref<BDS_Edge> e);
-    [[nodiscard]] std::vector<Vtr<BDS_Face>> triangles() const;
-    [[nodiscard]] bool config_modified() const;
+    void del(BDSEdgeHandle eh);
 
-    bool operator<(const BDS_Point & other) const;
-
-private:
     // Characteristic length at point and is propagated
-    double lc_pts_;
-    Point pt_;
-    UVParam uv_;
-    bool config_modified_;
-    u8 degenerated_;
-    i32 id_;
-    Vtr<BDS_Point> periodic_counterpart_;
-
-public:
-    Optional<BDS_GeomEntity> g_;
-
-private:
-    std::vector<Ref<BDS_Edge>> edges_;
-
-    friend class BDS_Edge;
-    friend class BDS_Mesh;
-    friend class BDS_SwapEdgeTestQuality;
+    double lc;
+    Point point;
+    UVParam uv;
+    bool config_modified;
+    u8 degenerated;
+    i32 id;
+    BDSPointHandle periodic_counterpart;
+    Optional<BDS_GeomEntity> ge;
+    std::vector<BDSEdgeHandle> edges;
 };
 
 class BDS_Edge {
 public:
-    BDS_Edge(Ref<BDS_Point> A, Ref<BDS_Point> B, Optional<BDS_GeomEntity> ge = std::nullopt);
-    std::vector<Vtr<BDS_Face>> faces();
-    [[nodiscard]] double length() const;
-    [[nodiscard]] bool deleted() const;
-    [[nodiscard]] bool active() const;
-    void del();
-    [[nodiscard]] int num_faces() const;
-    [[nodiscard]] int num_triangles() const;
-    [[nodiscard]] Optional<Ref<BDS_Point>> common_vertex(Ref<const BDS_Edge> other) const;
-    [[nodiscard]] Optional<Ref<BDS_Point>> other_vertex(Ref<const BDS_Point> p) const;
-    void add_face(Ref<BDS_Face> f);
-    bool operator<(const BDS_Edge & other) const;
-    [[nodiscard]] Optional<Ref<BDS_Face>> other_face(Ref<BDS_Face> f) const;
-    void del(Vtr<BDS_Face> t);
-    [[nodiscard]] std::array<Vtr<BDS_Point>, 2> opposite_of() const;
-    [[nodiscard]] std::tuple<Optional<std::array<Ref<BDS_Point>, 3>>,
-                             Optional<std::array<Ref<BDS_Point>, 3>>,
-                             std::array<Optional<Ref<BDS_Point>>, 2>>
-    compute_neighborhood() const;
+    BDS_Edge(BDSPointHandle A, BDSPointHandle B, Optional<BDS_GeomEntity> ge = std::nullopt);
 
-private:
-    [[nodiscard]] Ref<BDS_Point> opposite_vertex(const std::array<Ref<BDS_Point>, 3> & pts) const;
-
-    std::vector<Vtr<BDS_Face>> faces_;
-    bool deleted_;
-
-public:
-    Ref<BDS_Point> p1_, p2_;
-    Optional<BDS_GeomEntity> g_;
-
-    friend class BDS_Face;
-    friend class BDS_Mesh;
+    std::vector<BDSFaceHandle> faces;
+    bool active;
+    BDSPointHandle p1, p2;
+    Optional<BDS_GeomEntity> ge;
 };
 
 class BDS_Face {
 public:
-    BDS_Face(Ref<BDS_Edge> A, Ref<BDS_Edge> B, Ref<BDS_Edge> C);
-    [[nodiscard]] bool deleted() const;
-    [[nodiscard]] bool active() const;
-    [[nodiscard]] int num_edges() const;
-    Optional<Ref<BDS_Edge>> opposite_edge(Ref<BDS_Point> p);
-    Optional<Ref<BDS_Point>> opposite_vertex(Ref<BDS_Edge> e);
-    [[nodiscard]] Optional<std::array<Ref<BDS_Point>, 3>> get_nodes() const;
+    BDS_Face(BDSEdgeHandle A,
+             BDSEdgeHandle B,
+             BDSEdgeHandle C,
+             Optional<BDS_GeomEntity> ge = std::nullopt);
 
-public:
-    bool deleted_;
-    Ref<BDS_Edge> e1_, e2_, e3_;
-    Optional<BDS_GeomEntity> g_;
+    bool active;
+    BDSEdgeHandle e1, e2, e3;
+    Optional<BDS_GeomEntity> ge;
 };
 
 struct GeomLessThan {
@@ -132,85 +154,76 @@ struct GeomLessThan {
     }
 };
 
-struct PointLessThan {
-    bool
-    operator()(Ref<const BDS_Point> ent1, Ref<const BDS_Point> ent2) const
-    {
-        return *ent1 < *ent2;
-    }
-};
-
-struct EdgeLessThan {
-    bool
-    operator()(Ref<const BDS_Edge> ent1, Ref<const BDS_Edge> ent2) const
-    {
-        return *ent1 < *ent2;
-    }
-};
-
 class BDS_SwapEdgeTest {
+protected:
+    const BDS_Mesh & mesh_;
+
+    BDS_SwapEdgeTest(const BDS_Mesh & mesh) : mesh_(mesh) {}
+
 public:
-    virtual bool operator()(Ref<const BDS_Point> p1,
-                            Ref<const BDS_Point> p2,
-                            Ref<const BDS_Point> q1,
-                            Ref<const BDS_Point> q2) const = 0;
-    virtual bool operator()(Ref<const BDS_Point> p1,
-                            Ref<const BDS_Point> p2,
-                            Ref<const BDS_Point> p3,
-                            Ref<const BDS_Point> q1,
-                            Ref<const BDS_Point> q2,
-                            Ref<const BDS_Point> q3,
-                            Ref<const BDS_Point> op1,
-                            Ref<const BDS_Point> op2,
-                            Ref<const BDS_Point> op3,
-                            Ref<const BDS_Point> oq1,
-                            Ref<const BDS_Point> oq2,
-                            Ref<const BDS_Point> oq3) const = 0;
+    virtual bool operator()(BDSPointHandle ph1,
+                            BDSPointHandle ph2,
+                            BDSPointHandle qh1,
+                            BDSPointHandle qh2) const = 0;
+    virtual bool operator()(BDSPointHandle ph1,
+                            BDSPointHandle ph2,
+                            BDSPointHandle ph3,
+                            BDSPointHandle qh1,
+                            BDSPointHandle qh2,
+                            BDSPointHandle qh3,
+                            BDSPointHandle oph1,
+                            BDSPointHandle oph2,
+                            BDSPointHandle oph3,
+                            BDSPointHandle oqh1,
+                            BDSPointHandle oqh2,
+                            BDSPointHandle oqh3) const = 0;
     virtual ~BDS_SwapEdgeTest() = default;
 };
 
 class BDS_SwapEdgeTestRecover : public BDS_SwapEdgeTest {
 public:
-    BDS_SwapEdgeTestRecover();
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2) const override;
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> p3,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2,
-                    Ref<const BDS_Point> q3,
-                    Ref<const BDS_Point> op1,
-                    Ref<const BDS_Point> op2,
-                    Ref<const BDS_Point> op3,
-                    Ref<const BDS_Point> oq1,
-                    Ref<const BDS_Point> oq2,
-                    Ref<const BDS_Point> oq3) const override;
+    BDS_SwapEdgeTestRecover(const BDS_Mesh & mesh);
+
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2) const override;
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle ph3,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2,
+                    BDSPointHandle qh3,
+                    BDSPointHandle oph1,
+                    BDSPointHandle oph2,
+                    BDSPointHandle oph3,
+                    BDSPointHandle oqh1,
+                    BDSPointHandle oqh2,
+                    BDSPointHandle oqh3) const override;
 };
 
 class BDS_SwapEdgeTestQuality : public BDS_SwapEdgeTest {
     bool test_quality_, test_small_triangles_;
 
 public:
-    BDS_SwapEdgeTestQuality(bool a, bool b = true);
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2) const override;
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> p3,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2,
-                    Ref<const BDS_Point> q3,
-                    Ref<const BDS_Point> op1,
-                    Ref<const BDS_Point> op2,
-                    Ref<const BDS_Point> op3,
-                    Ref<const BDS_Point> oq1,
-                    Ref<const BDS_Point> oq2,
-                    Ref<const BDS_Point> oq3) const override;
+    BDS_SwapEdgeTestQuality(const BDS_Mesh & mesh, bool a, bool b = true);
+
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2) const override;
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle ph3,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2,
+                    BDSPointHandle qh3,
+                    BDSPointHandle oph1,
+                    BDSPointHandle oph2,
+                    BDSPointHandle oph3,
+                    BDSPointHandle oqh1,
+                    BDSPointHandle oqh2,
+                    BDSPointHandle oqh3) const override;
 };
 
 class BDS_SwapEdgeTestNormals : public BDS_SwapEdgeTest {
@@ -218,96 +231,188 @@ class BDS_SwapEdgeTestNormals : public BDS_SwapEdgeTest {
     double ori_;
 
 public:
-    BDS_SwapEdgeTestNormals(GeomSurface * _gf, double ori);
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2) const override;
-    bool operator()(Ref<const BDS_Point> p1,
-                    Ref<const BDS_Point> p2,
-                    Ref<const BDS_Point> p3,
-                    Ref<const BDS_Point> q1,
-                    Ref<const BDS_Point> q2,
-                    Ref<const BDS_Point> q3,
-                    Ref<const BDS_Point> op1,
-                    Ref<const BDS_Point> op2,
-                    Ref<const BDS_Point> op3,
-                    Ref<const BDS_Point> oq1,
-                    Ref<const BDS_Point> oq2,
-                    Ref<const BDS_Point> oq3) const override;
+    BDS_SwapEdgeTestNormals(const BDS_Mesh & mesh, GeomSurface * _gf, double ori);
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2) const override;
+    bool operator()(BDSPointHandle ph1,
+                    BDSPointHandle ph2,
+                    BDSPointHandle ph3,
+                    BDSPointHandle qh1,
+                    BDSPointHandle qh2,
+                    BDSPointHandle qh3,
+                    BDSPointHandle oph1,
+                    BDSPointHandle oph2,
+                    BDSPointHandle oph3,
+                    BDSPointHandle oqh1,
+                    BDSPointHandle oqh2,
+                    BDSPointHandle oqh3) const override;
 };
 
 struct EdgeToRecover {
-    EdgeToRecover(int p1, int p2, const GeomCurve * ge);
+    EdgeToRecover(BDSPointHandle p1, BDSPointHandle p2);
     bool operator<(const EdgeToRecover & other) const;
 
-    [[nodiscard]] const GeomCurve *
-    geom_curve() const
-    {
-        return this->ge_;
-    }
-
 private:
-    int p1_, p2_;
-    const GeomCurve * ge_;
+    BDSPointHandle p1_, p2_;
 };
 
 class BDS_Mesh {
 public:
-    BDS_Mesh(int max_pts = 0);
+    BDS_Mesh();
 
-    [[nodiscard]] const std::map<int, Qtr<BDS_Point>> & points() const;
-    [[nodiscard]] Span<const Qtr<BDS_Edge>> edges() const;
-    [[nodiscard]] Span<const Qtr<BDS_Face>> triangles() const;
-    // Points
-    Ref<BDS_Point> add_point(int num, Point pt);
-    Ref<BDS_Point> add_point(int num, UVParam uv, const GeomSurface * gf, BDS_GeomEntity ge);
-    void del_point(Ref<BDS_Point> p);
-    [[nodiscard]] Optional<Ref<BDS_Point>> find_point(int num) const;
-    // Edges
-    Optional<Ref<BDS_Edge>> add_edge(int p1, int p2);
-    Ref<BDS_Edge> add_edge(Ref<BDS_Point> p1, Ref<BDS_Point> p2);
-    void del_edge(Ref<BDS_Edge> e);
-    [[nodiscard]] Optional<Ref<BDS_Edge>> find_edge(int p1, int p2) const;
-    [[nodiscard]] Optional<Ref<BDS_Edge>> find_edge(Ref<BDS_Point> p1, Ref<BDS_Point> p2) const;
-    [[nodiscard]] Optional<Ref<BDS_Edge>> find_edge(Ref<BDS_Point> p1, int p2) const;
-    [[nodiscard]] Optional<Ref<BDS_Edge>>
-    find_edge(Ref<BDS_Point> p1, Ref<BDS_Point> p2, Vtr<BDS_Face> t) const;
-    // Triangles
-    Optional<Ref<BDS_Face>>
-    add_triangle(int p1, int p2, int p3, Optional<BDS_GeomEntity> ge = std::nullopt);
-    Optional<Ref<BDS_Face>> add_triangle(Ref<BDS_Edge> e1,
-                                         Ref<BDS_Edge> e2,
-                                         Ref<BDS_Edge> e3,
-                                         Optional<BDS_GeomEntity> ge = std::nullopt);
-    void del_face(Vtr<BDS_Face> t);
-    [[nodiscard]] Optional<Ref<BDS_Face>>
-    find_triangle(Ref<BDS_Edge> e1, Ref<BDS_Edge> e2, Ref<BDS_Edge> e3) const;
     // Geom entities
     BDS_GeomEntity add_geom(int tag, int degree);
-    // 2D operators
-    Optional<Ref<BDS_Edge>> recover_edge(int p1,
-                                         int p2,
+
+    BDSPointHandle add_point(int num, Point pt);
+    BDSPointHandle
+    add_point(int num, UVParam uv, const GeomSurface & geom_surface, BDS_GeomEntity ge);
+
+    [[nodiscard]] const BDS_Point & get_point(BDSPointHandle pt) const;
+    [[nodiscard]] BDS_Point & get_point(BDSPointHandle pt);
+
+    [[nodiscard]] const BDS_Edge & get_edge(BDSEdgeHandle h) const;
+    [[nodiscard]] BDS_Edge & get_edge(BDSEdgeHandle h);
+
+    [[nodiscard]] const BDS_Face & get_face(BDSFaceHandle h) const;
+    [[nodiscard]] BDS_Face & get_face(BDSFaceHandle h);
+
+    [[nodiscard]] Optional<std::array<BDSPointHandle, 3>> get_nodes(BDSFaceHandle fh) const;
+
+    [[nodiscard]] BDSPointHandle opposite_vertex(BDSEdgeHandle eh,
+                                                 const std::array<BDSPointHandle, 3> & pts) const;
+
+    [[nodiscard]] Optional<BDSPointHandle> opposite_vertex(BDSFaceHandle fh,
+                                                           BDSEdgeHandle eh) const;
+
+    [[nodiscard]] Optional<BDSPointHandle> common_vertex(BDSEdgeHandle eh1,
+                                                         BDSEdgeHandle eh2) const;
+
+    // Lightweight range generators returning strong handles
+    [[nodiscard]] auto
+    points() const
+    {
+        return std::views::iota(0u, static_cast<uint32_t>(this->points_.size())) |
+               std::views::transform([](uint32_t id) { return BDSPointHandle { id }; });
+    }
+
+    [[nodiscard]] auto
+    edges() const
+    {
+        return std::views::iota(0u, static_cast<uint32_t>(this->edges_.size())) |
+               std::views::transform([](uint32_t id) { return BDSEdgeHandle { id }; });
+    }
+
+    [[nodiscard]] auto
+    faces() const
+    {
+        return std::views::iota(0u, static_cast<uint32_t>(this->triangles_.size())) |
+               std::views::transform([](uint32_t id) { return BDSFaceHandle { id }; });
+    }
+
+    // points
+
+    [[nodiscard]] std::vector<BDSFaceHandle> triangles(BDSPointHandle ph) const;
+
+    void set_lc(BDSPointHandle ph, double lc);
+
+    [[nodiscard]] Optional<BDSPointHandle> find_point(int idx) const;
+
+    void del_point(BDSPointHandle ph);
+
+    // edges
+
+    void set_ge(BDSEdgeHandle eh, Optional<BDS_GeomEntity> ge);
+
+    [[nodiscard]] u32 num_faces(BDSEdgeHandle eh) const;
+
+    Optional<BDSEdgeHandle> add_edge(BDSPointHandle ph1, BDSPointHandle ph2);
+
+    [[nodiscard]] Optional<BDSEdgeHandle> find_edge(BDSPointHandle ph1, BDSPointHandle ph2) const;
+
+    [[nodiscard]] Optional<BDSEdgeHandle>
+    find_edge(BDSPointHandle ph1, BDSPointHandle ph2, BDSFaceHandle fh) const;
+
+    [[nodiscard]] std::array<BDSPointHandle, 2> opposite_of(BDSEdgeHandle eh) const;
+
+    [[nodiscard]] Optional<BDSPointHandle> other_vertex(BDSEdgeHandle eh, BDSPointHandle fh) const;
+
+    [[nodiscard]] Optional<BDSFaceHandle> other_face(BDSEdgeHandle eh, BDSFaceHandle fh) const;
+
+    [[nodiscard]] std::tuple<Optional<std::array<BDSPointHandle, 3>>,
+                             Optional<std::array<BDSPointHandle, 3>>,
+                             std::array<Optional<BDSPointHandle>, 2>>
+    compute_neighborhood(BDSEdgeHandle eh) const;
+
+    bool collapse_edge_parametric(BDSEdgeHandle eh, BDSPointHandle ph, bool = false);
+
+    void del_edge(BDSEdgeHandle e);
+
+    // faces
+
+    Optional<BDSFaceHandle> add_face(BDSPointHandle p1,
+                                     BDSPointHandle p2,
+                                     BDSPointHandle p3,
+                                     Optional<BDS_GeomEntity> ge = std::nullopt);
+
+    Optional<BDSFaceHandle> add_face(BDSEdgeHandle e1,
+                                     BDSEdgeHandle e2,
+                                     BDSEdgeHandle e3,
+                                     Optional<BDS_GeomEntity> ge = std::nullopt);
+
+    Optional<BDSEdgeHandle> opposite_edge(BDSFaceHandle fh, BDSPointHandle p);
+
+    void del_face(BDSFaceHandle th);
+
+    //
+
+    Optional<BDSEdgeHandle> recover_edge(BDSPointHandle p1,
+                                         BDSPointHandle p2,
                                          bool & fatal,
                                          std::set<EdgeToRecover> * e2r = nullptr,
                                          std::set<EdgeToRecover> * not_recovered = nullptr);
-    Optional<Ref<BDS_Edge>> recover_edge_fast(Ref<BDS_Point> p1, Ref<BDS_Point> p2);
 
-    /// Can invalidate the iterators for \p edge
-    bool swap_edge(Ref<BDS_Edge>, const BDS_SwapEdgeTest & theTest, bool force = false);
-    bool collapse_edge_parametric(Ref<BDS_Edge>, Ref<BDS_Point>, bool = false);
-    bool smooth_point_centroid(Ref<BDS_Point> p, const GeomSurface & gf, double thresh);
-    bool split_edge(Ref<BDS_Edge>, Ref<BDS_Point> mid, bool check_area_param = false);
+    Optional<BDSEdgeHandle> recover_edge_fast(BDSPointHandle ph1, BDSPointHandle ph2);
+
+    bool swap_edge(BDSEdgeHandle eh, const BDS_SwapEdgeTest & theTest, bool force = false);
+
+    void recur_tag(BDSFaceHandle th, BDS_GeomEntity ge);
+
     void cleanup();
 
 private:
-    int max_point_num_;
-    std::set<BDS_GeomEntity, GeomLessThan> geom_;
-    std::map<int, Qtr<BDS_Point>> points_;
-    std::vector<Qtr<BDS_Edge>> edges_;
-    std::vector<Qtr<BDS_Face>> triangles_;
-};
+    bool validity_of_cavity(UVParam p, const std::vector<BDSPointHandle> & nbg);
 
-void recur_tag(Ref<BDS_Face> t, BDS_GeomEntity g);
+    Optional<std::vector<BDSPointHandle>>
+    get_ordered_neighboring_vertices(BDSPointHandle p,
+                                     const std::vector<BDSFaceHandle> & triangles);
+
+    std::tuple<double, double> tutte_energy(Point pt, const std::vector<BDSPointHandle> & nbg);
+
+    bool minimize_tutte_energy_proj(BDSPointHandle ph,
+                                    double E_unmoved,
+                                    const std::vector<BDSPointHandle> & nbg,
+                                    const std::vector<UVParam> & kernel,
+                                    const std::vector<double> & lc,
+                                    const GeomSurface & gf);
+    bool minimize_tutte_energy_param(BDSPointHandle ph,
+                                     double E_unmoved,
+                                     const std::vector<BDSPointHandle> & nbg,
+                                     const std::vector<UVParam> & kernel,
+                                     const std::vector<double> & lcs,
+                                     const GeomSurface & gf);
+
+    std::tuple<std::vector<UVParam>, std::vector<double>>
+    compute_some_kind_of_kernel(BDSPointHandle ph, const std::vector<BDSPointHandle> & nbg);
+
+    double surface_triangle_param(BDSPointHandle p1, BDSPointHandle p2, BDSPointHandle p3);
+
+    std::set<BDS_GeomEntity, GeomLessThan> geom_;
+    std::map<int, BDSPointHandle> points_by_num_;
+    std::vector<BDS_Point> points_;
+    std::vector<BDS_Edge> edges_;
+    std::vector<BDS_Face> triangles_;
+};
 
 } // namespace krado
