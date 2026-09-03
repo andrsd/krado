@@ -4,6 +4,7 @@
 #pragma once
 
 #include "krado/ref.h"
+#include "krado/exception.h"
 #include <utility>
 #include <cstddef>
 #include <type_traits>
@@ -59,8 +60,10 @@ public:
     }
 
     Ref<T>
-    borrow() noexcept
+    borrow() const
     {
+        if (this->ptr_ == nullptr)
+            throw Exception("Null pointer dereference");
         return ref(*this->ptr_);
     }
 

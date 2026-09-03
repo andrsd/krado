@@ -1273,7 +1273,7 @@ insert_vertex_b(const std::list<EdgeXFace> & shell,
 
         const auto circ_radius = circum_radius_euclidian(t, lc);
         new_tris.emplace_back(Qtr<Triangle>::alloc(t, circ_radius));
-        auto t4 = ref(*new_tris.back());
+        auto t4 = new_tris.back().borrow();
 
         const auto d1 = utils::distance(v0->point(), v->point());
         const auto d2 = utils::distance(v1->point(), v->point());
@@ -1389,7 +1389,7 @@ search_for_triangle(Ref<Triangle> t,
         if (tri->is_active()) {
             const auto [_, inside] = inv_map_uv(tri->tri(), pt, data, 1.e-8);
             if (inside)
-                return ref(*tri);
+                return tri.borrow();
         }
     }
     return std::nullopt;
@@ -1411,7 +1411,7 @@ insert_a_point(Ptr<MeshSurface> surface,
 
     // if the point is able to break the bad triangle "worst"
     if (in_circum_circle_aniso(worst->tri(), center, metric, data)) {
-        recur_find_cavity_aniso(surface, shell, cavity, metric, center, ref(*worst), data);
+        recur_find_cavity_aniso(surface, shell, cavity, metric, center, worst, data);
         for (const auto & t : cavity) {
             const auto [_, inside] = inv_map_uv(t->tri(), center, data, 1.e-8);
             if (inside) {
@@ -2013,7 +2013,7 @@ bowyer_watson(Ptr<MeshSurface> surface, int max_pnt)
 
     int iter = 0;
     while (true) {
-        auto worst = ref(**all_tris.begin());
+        auto worst = (*all_tris.begin()).borrow();
         if (worst->is_deleted()) {
             all_tris.erase(all_tris.begin());
         }
@@ -2064,7 +2064,7 @@ bowyer_watson_frontal(Ptr<MeshSurface> surface,
 
     // compute active triangle
     for (const auto & tri : all_tris) {
-        auto ref_tri = ref(*tri);
+        auto ref_tri = tri.borrow();
         const auto active_edge = is_active(ref_tri, LIMIT);
         if (active_edge.has_value())
             active_tris.insert(ref_tri);
