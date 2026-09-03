@@ -47,7 +47,7 @@ public:
     }
 
     // Explicit accessor
-    T &
+    [[nodiscard]] T &
     get() const noexcept
     {
         return *this->ptr_;
@@ -109,19 +109,19 @@ public:
     Ref & operator=(const Ref &) noexcept = default;
 
     // Pointer-like access
-    const T *
+    [[nodiscard]] const T *
     operator->() const noexcept
     {
         return ptr_;
     }
 
-    const T &
+    [[nodiscard]] const T &
     operator*() const noexcept
     {
         return *ptr_;
     }
 
-    const T &
+    [[nodiscard]] const T &
     get() const noexcept
     {
         return *this->ptr_;
