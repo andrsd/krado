@@ -922,7 +922,7 @@ surface_initial_mesh(Ptr<MeshSurface> surface,
                     auto * v1 = pm.vertices[c1->second.closest(c0->second.uv[j])];
                     const auto result = recover_edge(pm, v0, v1);
                     if (result.has_value()) {
-                        const auto he = pm.get_edge(v0, v1);
+                        auto * const he = pm.get_edge(v0, v1);
                         if (he) {
                             if (he->opposite)
                                 he->opposite->data = crv->id();
