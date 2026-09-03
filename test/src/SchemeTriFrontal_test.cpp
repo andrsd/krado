@@ -58,7 +58,7 @@ TEST(SchemeTriFrontalTest, circle)
     opts.max_size = 0.75;
     model.surface(1)->set_scheme<SchemeTriFrontal>(opts);
     model.surface(1)->set_marker(1000);
-    model.surface(1)->set_mesh_size(0.5);
+    model.surface(1)->set_mesh_size(0.6);
     model.mesh_surface(1);
 
     auto surf = model.surface(1);

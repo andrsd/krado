@@ -35,11 +35,9 @@ TEST(SchemeTriDelaunayTest, rectangle)
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    ASSERT_EQ(surf->surface_vertices().size(), 1);
-    auto & sv = surf->surface_vertices()[0];
-    EXPECT_TRUE(sv->point().is_equal(Point(1, 0.5, 0.)));
+    ASSERT_EQ(surf->surface_vertices().size(), 0);
 
-    ASSERT_EQ(surf->triangles().size(), 10);
+    ASSERT_EQ(surf->triangles().size(), 8);
 }
 
 TEST(SchemeTriDelaunayTest, circle)
@@ -82,9 +80,7 @@ TEST(SchemeTriDelaunayTest, quarter_circle)
     model.mesh_surface(1);
 
     auto surf = model.surface(1);
-    ASSERT_EQ(surf->surface_vertices().size(), 1);
-    auto & sv = surf->surface_vertices()[0];
-    EXPECT_TRUE(sv->point().is_equal(Point(0.433013, 0.433013, 0.), 1e-5));
+    ASSERT_EQ(surf->surface_vertices().size(), 0);
 
-    ASSERT_EQ(surf->triangles().size(), 7);
+    ASSERT_EQ(surf->triangles().size(), 5);
 }

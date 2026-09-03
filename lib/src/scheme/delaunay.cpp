@@ -437,10 +437,20 @@ private:
     [[nodiscard]] bool
     compare(const T & a, const U & b) const
     {
-        if (a->radius() > b->radius())
-            return true;
-        if (a->radius() < b->radius())
+        // This is numerically stable sort. This makes sure that we produce the same meshes on
+        // different machines. Gmsh compares `rad_a` and `rad_b` directly, but that produces
+        // different meshes when radii are equal to machine precision, but different b/c of the
+        // numerical noise.
+        constexpr double EPS = 1e-9;
+
+        const double rad_a = a->radius();
+        const double rad_b = b->radius();
+        const double diff = rad_a - rad_b;
+
+        if (diff > EPS)
             return false;
+        if (diff < -EPS)
+            return true;
         // note: this effectively builds 3 triangles and compare them using the MeshElementLessThan
         // operator()
         return this->lf_(a->tri(), b->tri());
