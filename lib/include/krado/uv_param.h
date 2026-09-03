@@ -27,7 +27,7 @@ public:
 
     /// Subtract two UVParams
     inline UVParam
-    operator-(const UVParam & other)
+    operator-(const UVParam & other) const
     {
         return { this->u - other.u, this->v - other.v };
     }
@@ -44,6 +44,30 @@ public:
     operator-() const
     {
         return { -this->u, -this->v };
+    }
+
+    [[nodiscard]] double
+    magnitude() const
+    {
+        return std::sqrt(this->u * this->u + this->v * this->v);
+    }
+
+    void
+    normalize()
+    {
+        auto n = magnitude();
+        if (n) {
+            this->u /= n;
+            this->v /= n;
+        }
+    }
+
+    [[nodiscard]] UVParam
+    normalized() const
+    {
+        UVParam v = *this;
+        v.normalize();
+        return v;
     }
 
     double u, v;

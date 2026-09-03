@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: 2026 David Andrs <andrsd@gmail.com>
-// SPDX-License-Identifier: MIT
-
 #include "gtest/gtest.h"
 #include "krado/quality_measures.h"
 #include "krado/mesh.h"

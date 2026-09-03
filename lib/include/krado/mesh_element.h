@@ -62,6 +62,12 @@ public:
     static MeshElement Quad4(const std::array<Ptr<MeshVertexAbstract>, 4> & vtx);
 };
 
+struct MeshElementLessThan {
+    bool operator()(const MeshElement & f1, const MeshElement & f2) const;
+};
+
+std::vector<int> sorted_vertex_nums(const MeshElement & elem);
+
 /// Compute circum radius using quality norm
 double circum_radius_quality(const MeshElement & tri);
 
