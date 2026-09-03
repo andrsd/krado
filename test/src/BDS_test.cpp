@@ -141,3 +141,214 @@ TEST(BDSMeshTest, tris)
     EXPECT_EQ(t1.value().id, 0);
     EXPECT_EQ(t2.value().id, 1);
 }
+
+TEST(BDSMeshTest, opposite_vertex)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto pts = m.get_nodes(BDSFaceHandle { 0 });
+        ASSERT_TRUE(pts.has_value());
+        auto opp = m.opposite_vertex(BDSEdgeHandle { 0 }, pts.value());
+        EXPECT_EQ(opp, BDSPointHandle { 2 });
+    }
+
+    {
+        auto opp = m.opposite_vertex(BDSFaceHandle { 0 }, BDSEdgeHandle { 0 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSPointHandle { 2 });
+    }
+    {
+        auto opp = m.opposite_vertex(BDSFaceHandle { 0 }, BDSEdgeHandle { 1 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSPointHandle { 0 });
+    }
+    {
+        auto opp = m.opposite_vertex(BDSFaceHandle { 0 }, BDSEdgeHandle { 2 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSPointHandle { 1 });
+    }
+}
+
+TEST(BDSMeshTest, find_edge)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto e = m.find_edge(BDSPointHandle { 0 }, BDSPointHandle { 1 });
+        ASSERT_TRUE(e.has_value());
+        EXPECT_EQ(e.value(), BDSEdgeHandle { 0 });
+    }
+
+    {
+        auto e = m.find_edge(BDSPointHandle { 0 }, BDSPointHandle { 1 }, BDSFaceHandle { 0 });
+        ASSERT_TRUE(e.has_value());
+        EXPECT_EQ(e.value(), BDSEdgeHandle { 0 });
+    }
+    {
+        auto e = m.find_edge(BDSPointHandle { 1 }, BDSPointHandle { 2 }, BDSFaceHandle { 0 });
+        ASSERT_TRUE(e.has_value());
+        EXPECT_EQ(e.value(), BDSEdgeHandle { 1 });
+    }
+    {
+        auto e = m.find_edge(BDSPointHandle { 2 }, BDSPointHandle { 0 }, BDSFaceHandle { 0 });
+        ASSERT_TRUE(e.has_value());
+        EXPECT_EQ(e.value(), BDSEdgeHandle { 2 });
+    }
+}
+
+TEST(BDSMeshTest, opposite_of)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto opp = m.opposite_of(BDSEdgeHandle { 0 });
+        EXPECT_FALSE(opp[0].is_null());
+        EXPECT_TRUE(opp[1].is_null());
+
+        EXPECT_EQ(opp[0], BDSPointHandle { 2 });
+    }
+
+    {
+        auto opp = m.opposite_of(BDSEdgeHandle { 2 });
+        EXPECT_FALSE(opp[0].is_null());
+        EXPECT_FALSE(opp[1].is_null());
+        EXPECT_EQ(opp[0], BDSPointHandle { 1 });
+        EXPECT_EQ(opp[1], BDSPointHandle { 3 });
+    }
+}
+
+TEST(BDSMeshTest, other_vertex)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto opp = m.other_vertex(BDSEdgeHandle { 0 }, BDSPointHandle { 0 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSPointHandle { 1 });
+    }
+    {
+        auto opp = m.other_vertex(BDSEdgeHandle { 0 }, BDSPointHandle { 1 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSPointHandle { 0 });
+    }
+}
+
+TEST(BDSMeshTest, other_face)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto opp = m.other_face(BDSEdgeHandle { 2 }, BDSFaceHandle { 0 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSFaceHandle { 1 });
+    }
+    {
+        auto opp = m.other_face(BDSEdgeHandle { 2 }, BDSFaceHandle { 1 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSFaceHandle { 0 });
+    }
+}
+
+TEST(BDSMeshTest, opposite_edge)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto opp = m.opposite_edge(BDSFaceHandle { 0 }, BDSPointHandle { 0 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSEdgeHandle { 1 });
+    }
+    {
+        auto opp = m.opposite_edge(BDSFaceHandle { 0 }, BDSPointHandle { 1 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSEdgeHandle { 2 });
+    }
+    {
+        auto opp = m.opposite_edge(BDSFaceHandle { 0 }, BDSPointHandle { 2 });
+        ASSERT_TRUE(opp.has_value());
+        EXPECT_EQ(opp.value(), BDSEdgeHandle { 0 });
+    }
+}
+
+TEST(BDSMeshTest, find_point)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto pt = m.find_point(1);
+        ASSERT_TRUE(pt.has_value());
+        EXPECT_EQ(pt, pt1);
+    }
+
+    {
+        auto pt = m.find_point(1000);
+        EXPECT_FALSE(pt.has_value());
+    }
+}
+
+TEST(BDSMeshTest, triangles)
+{
+    BDS_Mesh m;
+    auto pt1 = m.add_point(1, Point(0, 0));
+    auto pt2 = m.add_point(2, Point(2, 0));
+    auto pt3 = m.add_point(3, Point(2, 1));
+    auto pt4 = m.add_point(4, Point(0, 1));
+    m.add_face(pt1, pt2, pt3);
+    m.add_face(pt3, pt4, pt1);
+
+    {
+        auto tris = m.triangles(BDSPointHandle { 0 });
+        ASSERT_EQ(tris.size(), 2);
+        EXPECT_EQ(tris[0], BDSFaceHandle { 0 });
+        EXPECT_EQ(tris[1], BDSFaceHandle { 1 });
+    }
+
+    {
+        auto tris = m.triangles(BDSPointHandle { 1 });
+        ASSERT_EQ(tris.size(), 1);
+        EXPECT_EQ(tris[0], BDSFaceHandle { 0 });
+    }
+}

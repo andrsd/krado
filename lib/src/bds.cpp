@@ -488,13 +488,13 @@ BDS_Mesh::opposite_of(BDSEdgeHandle eh) const
 {
     std::array<BDSPointHandle, 2> oface;
     const auto & edge = get_edge(eh);
-    if (not edge.faces[0].is_null()) {
+    if (edge.faces.size() > 0 && not edge.faces[0].is_null()) {
         auto pts_res = get_nodes(edge.faces[0]);
         if (not pts_res.has_value())
             return {};
         oface[0] = opposite_vertex(eh, pts_res.value());
     }
-    if (not edge.faces[1].is_null()) {
+    if (edge.faces.size() > 1 && not edge.faces[1].is_null()) {
         auto pts_res = get_nodes(edge.faces[1]);
         if (not pts_res.has_value())
             return {};
